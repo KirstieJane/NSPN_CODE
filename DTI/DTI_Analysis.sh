@@ -5,14 +5,14 @@
 #        DESCRIPTION:  This script takes an input directory that must contain
 #                      dti.nii.gz, bvals and bvecs and runs  
 #                      eddy current correction, rotate bvecs, brain extraction,
-#					   dtifit, bedpostX and tbss 1 and 2
+#                      dtifit, bedpostX and tbss 1 and 2
 #        PARAMETER 1:  DTI data folder, eg: ${allvols_dir}
-#		 PARAMETER 2:  sub_id, eg: ${subid}
+#         PARAMETER 2:  sub_id, eg: ${subid}
 #              USAGE:  dti_analysis <dti_data_folder> <sub_id>
 #                          eg: dti_analysis ${allvols_dir} ${sub_id}
 #
 #             AUTHOR:  Kirstie Whitaker
-#							kirstie.whitaker@berkeley.edu or kw401@cam.ac.uk
+#                            kirstie.whitaker@berkeley.edu or kw401@cam.ac.uk
 #            CREATED:  19th February 2013
 #==============================================================================
 
