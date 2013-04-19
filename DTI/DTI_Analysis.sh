@@ -3,7 +3,7 @@
 #==============================================================================
 #               NAME:  DTI_Analysis
 #        DESCRIPTION:  This script takes an input directory that must contain
-#                      dti.nii.gz, bvals and bvecs and runs  
+#                      dti.nii.gz, bvals and bvecs, and then runs  
 #                      eddy current correction, rotate bvecs, brain extraction,
 #                      dtifit, bedpostX and tbss 1 and 2
 #        PARAMETER 1:  DTI data folder, eg: ${allvols_dir}
