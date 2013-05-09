@@ -4,7 +4,7 @@
 #               NAME:  DTI_Analysis
 #
 #        DESCRIPTION:  This script takes an input directory that must contain
-#                      dti.nii.gz, bvals and bvecs, and then runs  
+#                      dti.nii.gz, bvals and bvecs_orig, and then runs  
 #                      eddy current correction, rotate bvecs, brain extraction,
 #                      dtifit, bedpostX and tbss 1 and 2
 #
@@ -27,15 +27,15 @@ echo ${dir}
 
 # If the dti.nii.gz, bvals and bvecs files don't exist then
 # print an error message and exit
-if [[ ! -f ${dir}/dti.nii.gz ]; then
+if [[ ! -f ${dir}/dti.nii.gz ]]; then
     echo "    No dti.nii.gz file"
     exit=1
 fi
-if [[ ! -f ${dir}/bvals ]; then
+if [[ ! -f ${dir}/bvals ]]; then
     echo "    No bvals file"
     exit=1
 fi
-if [[ ! -f ${dir}/bvecs]; then
+if [[ ! -f ${dir}/bvecs_orig ]]; then
     echo "    No bvecs file"
     exit=1
 fi
