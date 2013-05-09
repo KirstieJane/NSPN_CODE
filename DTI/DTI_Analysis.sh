@@ -2,17 +2,19 @@
 
 #==============================================================================
 #               NAME:  DTI_Analysis
+#
 #        DESCRIPTION:  This script takes an input directory that must contain
 #                      dti.nii.gz, bvals and bvecs, and then runs  
 #                      eddy current correction, rotate bvecs, brain extraction,
 #                      dtifit, bedpostX and tbss 1 and 2
-#        PARAMETER 1:  DTI data folder, eg: ${allvols_dir}
-#         PARAMETER 2:  sub_id, eg: ${subid}
+#
+#        PARAMETER 1:  DTI data folder (full path), eg: ${dti_dir}
+#        PARAMETER 2:  sub_id, eg: ${subid}
 #              USAGE:  dti_analysis <dti_data_folder> <sub_id>
-#                          eg: dti_analysis ${allvols_dir} ${sub_id}
+#                          eg: dti_analysis ${dti_dir} ${sub_id}
 #
 #             AUTHOR:  Kirstie Whitaker
-#                            kirstie.whitaker@berkeley.edu or kw401@cam.ac.uk
+#                          kw401@cam.ac.uk
 #            CREATED:  19th February 2013
 #==============================================================================
 
@@ -22,6 +24,24 @@ logdir=${dir}/LOGS
 mkdir -p ${logdir}
 
 echo ${dir}
+
+# If the dti.nii.gz, bvals and bvecs files don't exist then
+# print an error message and exit
+if [[ ! -f ${dir}/dti.nii.gz ]; then
+    echo "    No dti.nii.gz file"
+    exit=1
+fi
+if [[ ! -f ${dir}/bvals ]; then
+    echo "    No bvals file"
+    exit=1
+fi
+if [[ ! -f ${dir}/bvecs]; then
+    echo "    No bvecs file"
+    exit=1
+fi
+if [[ ${exit} == 1 ]]; then
+    exit
+fi
 
 # Eddy correct
 if [[ ! -f ${dir}/dti_ec.nii.gz ]]; then
