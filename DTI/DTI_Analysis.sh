@@ -8,21 +8,29 @@
 #                      eddy current correction, rotate bvecs, brain extraction,
 #                      dtifit, bedpostX and tbss 1 and 2
 #
-#        PARAMETER 1:  DTI data folder (full path), eg: ${dti_dir}
-#        PARAMETER 2:  sub_id, eg: ${subid}
+#        PARAMETER 1:  DTI data folder (full path)
+#                       eg: /home/kw401/UCHANGE/ANALYSES/SUB_DATA/UCL/12385/DTI
+#        PARAMETER 2:  sub_id
+#                       eg: 12385
 #              USAGE:  dti_analysis <dti_data_folder> <sub_id>
-#                          eg: dti_analysis ${dti_dir} ${sub_id}
+#                       (miss out the ... for this example!)
+#                        eg: dti_analysis /home/kw401/UCHANGE/ANALYSES/ ... 
+#                                              ... SUB_DATA/UCL/12385/DTI 12385
 #
 #             AUTHOR:  Kirstie Whitaker
 #                          kw401@cam.ac.uk
 #            CREATED:  19th February 2013
 #==============================================================================
 
+# Define some variables
 dir=$1
 sub=$2
+
+# Create the log directory
 logdir=${dir}/LOGS
 mkdir -p ${logdir}
 
+# Get going!
 echo ${dir}
 
 # If the dti.nii.gz, bvals and bvecs files don't exist then
@@ -54,6 +62,8 @@ fi
 
 # Rotate bvecs
 # NOTE - the path to this script is hard coded
+# If you don't have it, go get it from:
+# 
 rot_bvecs_script=(/home/kw401/CAMBRIDGE_SCRIPTS/FSL_SCRIPTS/fdt_rotate_bvecs.sh)
 
 if [[ ! -f ${dir}/bvecs ]]; then
