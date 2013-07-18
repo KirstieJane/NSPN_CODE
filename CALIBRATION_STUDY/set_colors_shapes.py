@@ -31,3 +31,5 @@ def set_colors_shapes():
     # * Loc 3 (UCL): triangle
 
     shapes = np.array(['o','D','^'])
+
+    return colors, shapes
