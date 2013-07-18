@@ -35,5 +35,6 @@ def read_in_data(results_file):
     
     data.sort(order='loc_id')
     
+    return data
 
 
