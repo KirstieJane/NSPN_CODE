@@ -10,6 +10,8 @@ Email: kw401@cam.ac.uk
 # IMPORTS
 import os
 import itertools as it
+#------------------------------------------------------------------------------
+import wrangle_text_files
 #==============================================================================
 
 #==============================================================================
@@ -42,7 +44,7 @@ data_dir = '/work/imagingD/NSPN/workspaces/kw401/BOOTSTRAPPING_ANALYSES'
 #  transform: the registration path from MNI to DTI space
 
 #  roi_name: the name of the roi
-
+#==============================================================================
 subs = [ '06', '07', '08' ]
 locs = [ 'WBIC', 'CBSU', 'UCL' ]
 scans = [ 'DTI_2A', 'DTI_2B' ]
