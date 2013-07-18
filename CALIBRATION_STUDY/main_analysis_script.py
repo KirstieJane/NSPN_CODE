@@ -73,5 +73,7 @@ for incl_excl, n_b0s, ec_b0, b0_order, sep_av, transform, roi_name in it.product
     
     colors, shapes = set_colors_shapes()
     
+    print data
+    
     plot_data(data, results_dir, roi_name, colors, shapes)
 

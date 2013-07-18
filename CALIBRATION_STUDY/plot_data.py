@@ -26,14 +26,13 @@ def plot_data(data, results_dir, roi_name, colors, shapes):
     subs = list(set(subs))
     sub_ids = [ np.int(sub) for sub in subs ]
 
-    # List of locations
-    locs = [ loc for loc in data['loc'] ]
-    locs = list(set(locs))
-
     # List of location_ids
     loc_ids = [ loc_id for loc_id in data['loc_id'] ]
     loc_ids = list(set(loc_ids))
     loc_ids = [ np.int(loc_id) for loc_id in loc_ids ]
+
+    # List of locations
+    locs = [ data['loc'][data['loc_id']==loc_id][0] for loc_id in data['loc_id'] ]
     
     output_name = os.path.join(results_dir, '{}_plot_by_subs.png'.format(roi_name))
     
