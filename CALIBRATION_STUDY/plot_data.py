@@ -13,7 +13,11 @@ def plot_data(data, results_dir, roi_name, colors, shapes):
                 colors
                 shapes
     """
-
+    #==========================================================================
+    import numpy as np
+    import os
+    #==========================================================================
+    
     # Get a list of the subjects:
     subs = [ sub for sub in data['sub'] ]
     subs = list(set(subs))

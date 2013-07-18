@@ -11,6 +11,10 @@ def set_colors_shapes():
     Returns:    colors: 3 x 5 array of colors
                 shapes: 1 x 3 array of shapes
     """
+    #==========================================================================
+    import numpy as np
+    #==========================================================================
+    
     # Define your colors and shapes
     # 
     # Colors:

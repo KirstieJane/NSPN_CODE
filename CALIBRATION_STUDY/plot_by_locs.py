@@ -22,6 +22,11 @@ def plot_by_locs(data, output_name, colors, shapes, sub_ids, loc_ids, locs, figs
                         loc_ids=loc_ids, locs=locs, figsize=(15,5))
 
     """
+    #==========================================================================
+    import numpy as np
+    import matplotlib.pylab as plt
+    from matplotlib.ticker import MaxNLocator
+    #==========================================================================
     
     fig = plt.figure(figsize=(15,5))
     ax1 = plt.subplot(131)

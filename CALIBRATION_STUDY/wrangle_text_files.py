@@ -27,7 +27,11 @@ def wrangle_text_files(data_dir, incl_excl, n_b0s, ec_b0, b0_order, sep_av, tran
                                                 b0_order, sep_av, transform, roi_name, subs,
                                                 locs, scans)
     """
-    
+    #==========================================================================
+    import itertools as it
+    import os
+    #==========================================================================
+
     # Define your results_dir. This folder replicates a lot of the directory structure in the subject dirs in a directory called "RESULTS" in the data_dir.
     
     # Example results_dir: RESULTS/EXCL_VOL31/B0S_6/B0_ORDER_00_14_27_41_54_68/SEPARATE/MNI_FNIRT_MPRAGE_BBR_B0
