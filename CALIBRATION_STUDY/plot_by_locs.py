@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-def plot_by_locs(data, output_name, colors, shapes, sub_ids, loc_ids, locs, figsize=(15,5)):
+def plot_by_locs(data, output_name, colors, shapes, sub_ids, loc_ids, locs, roi_name, figsize=(15,5)):
     """
     Plot_by_subs takes a data rec_array and loops through three measures:
         fa, md, and vol_vox and plots each on separate plots with the
