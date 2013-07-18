@@ -11,7 +11,10 @@ Email: kw401@cam.ac.uk
 import os
 import itertools as it
 #------------------------------------------------------------------------------
-import wrangle_text_files
+from wrangle_text_files import wrangle_text_files
+from read_in_data import read_in_data
+from set_colors_shapes import set_colors_shapes
+from plot_data import plot_data
 #==============================================================================
 
 #==============================================================================

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-def wrangle_text_files(data_dir, incl_excl, n_b0s, ec_b0, b0_order, sep_av, transform, roi_name):
+def wrangle_text_files(data_dir, incl_excl, n_b0s, ec_b0, b0_order, sep_av, transform, roi_name, subs, locs, scans):
     """
     Created by Kirstie Whitaker
     Email: kw401@cam.ac.uk

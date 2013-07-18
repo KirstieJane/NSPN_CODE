@@ -16,6 +16,9 @@ def plot_data(data, results_dir, roi_name, colors, shapes):
     #==========================================================================
     import numpy as np
     import os
+    #--------------------------------------------------------------------------
+    from plot_by_subs import plot_by_subs
+    from plot_by_locs import plot_by_locs
     #==========================================================================
     
     # Get a list of the subjects:
