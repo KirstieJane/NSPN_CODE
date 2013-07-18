@@ -32,7 +32,7 @@ def plot_data(data, results_dir, roi_name, colors, shapes):
     loc_ids = [ np.int(loc_id) for loc_id in loc_ids ]
 
     # List of locations
-    locs = [ data['loc'][data['loc_id']==loc_id][0] for loc_id in data['loc_id'] ]
+    locs = [ data['loc'][data['loc_id']==loc_id][0] for loc_id in loc_ids ]
     
     output_name = os.path.join(results_dir, '{}_plot_by_subs.png'.format(roi_name))
     
