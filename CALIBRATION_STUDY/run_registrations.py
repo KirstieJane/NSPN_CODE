@@ -41,15 +41,14 @@ def run_registrations(data_dir, incl_excl, n_b0s, b0_order, sep_av, subs, locs, 
                                     sep_av)
                                     
         highres_dir = os.path.join(data_dir, sub, loc, 'MPRAGE')
-        
-        reg_dir = os.path.join(data_dir, sub, loc, 'REG')
-        
+                
         ec_b0 = b0_order.split('_')[0]
         
         # Setup the command
-        command = '{} {} {} {}'.format(registration_script, 
+        command = '{} {} {} {} {}'.format(registration_script, 
                                         dti_dir,
                                         highres_dir,
+                                        scan,
                                         ec_b0)
     
         # And if the dti directory exists, then run it!
