@@ -9,6 +9,7 @@ Email: kw401@cam.ac.uk
 #==============================================================================
 # IMPORTS
 import os
+import numpy as np
 import itertools as it
 #------------------------------------------------------------------------------
 from get_b0_orders import get_b0_orders
