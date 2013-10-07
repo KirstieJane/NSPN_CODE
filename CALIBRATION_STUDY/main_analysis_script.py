@@ -55,7 +55,7 @@ incl_excl = [ 'EXCL_VOL31']
 n_b0s = [ '6' ]
 ec_b0 = [ '00' ]
 b0_order = [ '00_14_27_41_54_68' ]
-sep_av = [ 'SEPARATE', 'AVERAGE' ] 
+sep_av = [ 'SEPARATE' ] 
 transform = [ 'MNI_FNIRT_MPRAGE_BBR_B0' ]
 roi_name = [ 'lcing', 'rcing', 'wholebrain', 'bodycc' ]
 #==============================================================================
