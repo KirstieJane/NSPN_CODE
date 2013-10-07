@@ -66,6 +66,16 @@ roi_name = [ 'lcing', 'rcing', 'wholebrain', 'bodycc' ]
 #==============================================================================
 # And now get going:
 
+b0_orders = get_b0_orders(1)
+    
+for incl_excl, sep_av, b0_order in it.product(incl_excl, sep_av, b0_orders):
+    '''
+    Loop through the combinations of include/exclude volume 31,
+    whether the b0s were combined first or not,
+    the ways of ordering just 1 b0 (6)
+    '''
+    run_registrations(data_dir, incl_excl, 1, b0_order, sep_av, subs, locs, scans)
+
 for incl_excl, n_b0s, sep_av, transform, roi_name in it.product(incl_excl, n_b0s, sep_av, transform, roi_name):
     '''
     Loop through all the combinations of include/exclude volume 31,
@@ -74,17 +84,12 @@ for incl_excl, n_b0s, sep_av, transform, roi_name in it.product(incl_excl, n_b0s
         how the roi was transformed from standard space,
         and all the rois
     '''
-    b0_orders = get_b0_orders(1)
-    
-    for b0_order in b0_orders:
-    
-        run_registrations(data_dir, incl_excl, 1, b0_order, sep_av, subs, locs, scans)
 
     b0_orders = get_b0_orders(np.int(n_b0s))
 
     for b0_order in b0_orders:
     
-        run_roistats(data_dir, incl_excl, n_b0s, b0_order, sep_av, subs, locs, scans, transform, roi_name)
+        #run_roistats(data_dir, incl_excl, n_b0s, b0_order, sep_av, subs, locs, scans, transform, roi_name)
 
         results_file, results_dir = wrangle_text_files(data_dir, incl_excl, n_b0s,
                                             b0_order, sep_av, transform,
