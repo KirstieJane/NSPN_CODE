@@ -56,7 +56,7 @@ locs = [ 'WBIC', 'CBSU', 'UCL' ]
 scans = [ 'DTI_2A', 'DTI_2B' ]
 incl_excl = [ 'EXCL_VOL31']
 n_b0s = [ '1', '2', '3', '4', '5', '6' ]
-ec_b0 = [ '00', '14', '27', '41', '54', '68' ]
+#ec_b0 = [ '00', '14', '27', '41', '54', '68' ]
 #b0_order = [ '00_14_27_41_54_68' ]
 sep_av = [ 'SEPARATE' ] 
 transform = [ 'MNI_FNIRT_MPRAGE_BBR_B0' ]
@@ -66,23 +66,28 @@ roi_name = [ 'lcing', 'rcing', 'wholebrain', 'bodycc' ]
 #==============================================================================
 # And now get going:
 
-for incl_excl, n_b0s, ec_b0, sep_av, transform, roi_name in it.product(incl_excl, n_b0s, ec_b0, sep_av, transform, roi_name):
+for incl_excl, n_b0s, sep_av, transform, roi_name in it.product(incl_excl, n_b0s, sep_av, transform, roi_name):
     '''
     Loop through all the combinations of include/exclude volume 31,
         the number of b0s,
-        which b0 was used as the eddy correct volume, 
         whether the b0s were combined first or not,
         how the roi was transformed from standard space,
         and all the rois
     '''
-    b0_orders = get_b0_orders(np.int(n_b0s))
+    b0_orders = get_b0_orders(1)
     
     for b0_order in b0_orders:
     
-        run_registrations(data_dir, incl_excl, n_b0s, b0_order, sep_av, subs, locs, scans)
+        run_registrations(data_dir, incl_excl, 1, b0_order, sep_av, subs, locs, scans)
+
+    b0_orders = get_b0_orders(np.int(n_b0s))
+
+    for b0_order in b0_orders:
+    
+        run_roistats(data_dir, incl_excl, n_b0s, b0_order, sep_av, subs, locs, scans, transform, roi_name)
 
         results_file, results_dir = wrangle_text_files(data_dir, incl_excl, n_b0s,
-                                            ec_b0, b0_order, sep_av, transform,
+                                            b0_order, sep_av, transform,
                                             roi_name, subs, locs, scans)
         
         data = read_in_data(results_file)
