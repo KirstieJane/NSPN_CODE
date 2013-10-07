@@ -55,7 +55,7 @@ subs = [ '06', '07', '08' ]
 locs = [ 'WBIC', 'CBSU', 'UCL' ]
 scans = [ 'DTI_2A', 'DTI_2B' ]
 incl_excl = [ 'EXCL_VOL31']
-n_b0s = [ '6' ]
+n_b0s = [ '1', '2', '3', '4', '5', '6' ]
 ec_b0 = [ '00', '14', '27', '41', '54', '68' ]
 #b0_order = [ '00_14_27_41_54_68' ]
 sep_av = [ 'SEPARATE' ] 
@@ -80,7 +80,7 @@ for incl_excl, n_b0s, ec_b0, sep_av, transform, roi_name in it.product(incl_excl
     for b0_order in b0_orders:
     
         run_registrations(data_dir, incl_excl, n_b0s, b0_order, sep_av, subs, locs, scans)
-        
+
         results_file, results_dir = wrangle_text_files(data_dir, incl_excl, n_b0s,
                                             ec_b0, b0_order, sep_av, transform,
                                             roi_name, subs, locs, scans)
