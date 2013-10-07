@@ -54,5 +54,5 @@ def run_registrations(data_dir, incl_excl, n_b0s, b0_order, sep_av, subs, locs, 
     
         # And if the dti directory exists, then run it!
         if os.path.exists(dti_dir):
-            subprocess.call(command)
+            subprocess.call(command, shell=True)
         
