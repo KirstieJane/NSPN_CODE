@@ -49,7 +49,7 @@ def run_registrations(data_dir, incl_excl, n_b0s, b0_order, sep_av, subs, locs, 
         # Setup the command
         command = '{} {} {} {}'.format(registration_script, 
                                         dti_dir,
-                                        mprage_dir,
+                                        highres_dir,
                                         ec_b0)
     
         # And if the dti directory exists, then run it!
