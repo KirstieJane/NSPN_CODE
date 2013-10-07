@@ -42,7 +42,7 @@ data_dir = '/work/imagingD/NSPN/workspaces/kw401/BOOTSTRAPPING_ANALYSES'
 #  b0_order: the order that the b0s were in the 4D file
 
 #  sep_av: whether the b0s were averaged before the tensor was fit
-#       or kept separatesu
+#       or kept separate
 
 #  transform: the registration path from MNI to DTI space
 
@@ -55,7 +55,7 @@ incl_excl = [ 'EXCL_VOL31']
 n_b0s = [ '6' ]
 ec_b0 = [ '00' ]
 b0_order = [ '00_14_27_41_54_68' ]
-sep_av = [ 'SEPARATE' ] 
+sep_av = [ 'SEPARATE', 'AVERAGE' ] 
 transform = [ 'MNI_FNIRT_MPRAGE_BBR_B0' ]
 roi_name = [ 'lcing', 'rcing', 'wholebrain', 'bodycc' ]
 #==============================================================================
