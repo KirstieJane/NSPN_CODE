@@ -75,7 +75,7 @@ for incl_excl, n_b0s, ec_b0, sep_av, transform, roi_name in it.product(incl_excl
         how the roi was transformed from standard space,
         and all the rois
     '''
-    b0_orders = get_b0_orders(np.float(n_b0s))
+    b0_orders = get_b0_orders(np.int(n_b0s))
     
     for b0_order in b0_orders:
     
