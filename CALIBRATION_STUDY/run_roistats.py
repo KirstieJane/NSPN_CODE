@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-def run_roistats(data_dir, incl_excl, n_b0s, b0_order, sep_av, subs, locs, scans, transform):
+def run_roistats(data_dir, incl_excl, n_b0s, b0_order, sep_av, subs, locs, scans, rois_dir):
 
     """
     Created by Kirstie Whitaker
     Email: kw401@cam.ac.uk
     
-    run_registrations runs all the necessary registrations
+    runs a bash script for all the various roi extractions
     
     Inputs:     data_dir
                 incl_excl
@@ -16,10 +16,11 @@ def run_roistats(data_dir, incl_excl, n_b0s, b0_order, sep_av, subs, locs, scans
                 subs
                 locs
                 scans
+                rois_dir
                 
-    Usage:      run_registrations(data_dir, incl_excl, n_b0s,
-                                    b0_order, sep_av, transform, subs,
-                                    locs, scans)
+    Usage:      run_roistats(data_dir, incl_excl, n_b0s,
+                                    b0_order, sep_av, subs,
+                                    locs, scans, rois_dir)
     """
     #==========================================================================
     import itertools as it
@@ -33,21 +34,24 @@ def run_roistats(data_dir, incl_excl, n_b0s, b0_order, sep_av, subs, locs, scans
         # Define the various components needed by the registration script
         registration_script = os.path.join(data_dir, 'SCRIPTS',
                                             'DTI_PROCESSING-master',
-                                            'registrations.sh')
+                                            'roistats.sh')
 
+        rois_dir = os.path.join(data_dir, 'ROIS')
+        
         dti_dir = os.path.join(data_dir, sub, loc, scan,
                                     incl_excl, 'B0S_{}'.format(n_b0s),
                                     'B0_ORDER_{}'.format(b0_order), 
                                     sep_av)
                                     
-        highres_dir = os.path.join(data_dir, sub, loc, 'MPRAGE')
+        reg_dir = os.path.join(data_dir, sub, loc, 'REG')
                
         ec_b0 = b0_order.split('_')[0]
         
         # Setup the command
-        command = '{} {} {} {} {}'.format(registration_script, 
+        command = '{} {} {} {} {} {}'.format(registration_script, 
+                                        rois_dir,
                                         dti_dir,
-                                        highres_dir,
+                                        reg_dir,
                                         scan,
                                         ec_b0)
     

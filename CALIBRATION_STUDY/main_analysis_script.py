@@ -54,11 +54,11 @@ data_dir = '/work/imagingD/NSPN/workspaces/kw401/BOOTSTRAPPING_ANALYSES'
 subs = [ '06', '07', '08' ]
 locs = [ 'WBIC', 'CBSU', 'UCL' ]
 scans = [ 'DTI_2A', 'DTI_2B' ]
-incl_excl = [ 'EXCL_VOL31']
-n_b0s = [ '1', '2', '3', '4', '5', '6' ]
+incl_excl_list = [ 'EXCL_VOL31' ]
+n_b0s_list = [ '1', '2', '3', '4', '5', '6' ]
 #ec_b0 = [ '00', '14', '27', '41', '54', '68' ]
 #b0_order = [ '00_14_27_41_54_68' ]
-sep_av = [ 'SEPARATE' ] 
+sep_av_list = [ 'SEPARATE' ] 
 transform = [ 'MNI_FNIRT_MPRAGE_BBR_B0' ]
 roi_name = [ 'lcing', 'rcing', 'wholebrain', 'bodycc' ]
 #==============================================================================
@@ -68,14 +68,29 @@ roi_name = [ 'lcing', 'rcing', 'wholebrain', 'bodycc' ]
 
 b0_orders = get_b0_orders(1)
     
-for incl_excl, sep_av, b0_order in it.product(incl_excl, sep_av, b0_orders):
+for incl_excl, sep_av, b0_order in it.product(incl_excl_list, sep_av_list, b0_orders):
     '''
     Loop through the combinations of include/exclude volume 31,
     whether the b0s were combined first or not,
-    the ways of ordering just 1 b0 (6)
+    and the ways of ordering just 1 b0 (6)
     '''
     run_registrations(data_dir, incl_excl, 1, b0_order, sep_av, subs, locs, scans)
 
+for incl_excl, sep_av, n_b0s in it.product(incl_excl_list, sep_av_list, n_b0s_list):
+    '''
+    Loop through the combinations of include/exclude volume 31,
+    whether the b0s were combined first or not,
+    and the number of b0s that were included
+    '''
+    b0_orders = get_b0_orders(np.int(n_b0s))
+    
+    for b0_order in b0_orders:
+        '''
+        Also loop through the different orders of the b0s
+        '''
+        run_roistats(data_dir, incl_excl, n_b0s, b0_order, sep_av, subs, locs, scans)
+    
+"""
 for incl_excl, n_b0s, sep_av, transform, roi_name in it.product(incl_excl, n_b0s, sep_av, transform, roi_name):
     '''
     Loop through all the combinations of include/exclude volume 31,
@@ -89,8 +104,6 @@ for incl_excl, n_b0s, sep_av, transform, roi_name in it.product(incl_excl, n_b0s
 
     for b0_order in b0_orders:
     
-        #run_roistats(data_dir, incl_excl, n_b0s, b0_order, sep_av, subs, locs, scans, transform, roi_name)
-
         results_file, results_dir = wrangle_text_files(data_dir, incl_excl, n_b0s,
                                             b0_order, sep_av, transform,
                                             roi_name, subs, locs, scans)
@@ -101,3 +114,4 @@ for incl_excl, n_b0s, sep_av, transform, roi_name in it.product(incl_excl, n_b0s
         
         plot_data(data, results_dir, roi_name, colors, shapes)
 
+"""
