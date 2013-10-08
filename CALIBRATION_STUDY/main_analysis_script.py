@@ -14,6 +14,7 @@ import itertools as it
 #------------------------------------------------------------------------------
 from get_b0_orders import get_b0_orders
 from run_registrations import run_registrations
+from run_roistats import run_roistats
 from wrangle_text_files import wrangle_text_files
 from read_in_data import read_in_data
 from set_colors_shapes import set_colors_shapes
