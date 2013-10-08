@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-def run_roistats(data_dir, incl_excl, n_b0s, b0_order, sep_av, subs, locs, scans, rois_dir):
+def run_roistats(data_dir, incl_excl, n_b0s, b0_order, sep_av, subs, locs, scans):
 
     """
     Created by Kirstie Whitaker
