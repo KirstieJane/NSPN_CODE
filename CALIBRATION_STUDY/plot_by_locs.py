@@ -28,10 +28,11 @@ def plot_by_locs(data, output_name, colors, shapes, sub_ids, loc_ids, locs, roi_
     from matplotlib.ticker import MaxNLocator
     #==========================================================================
     
+    # Set up the figure
     fig = plt.figure(figsize=(15,5))
-    ax1 = plt.subplot(131)
-    ax2 = plt.subplot(132)
-    ax3 = plt.subplot(133)
+    ax1 = plt.subplot(131)  # FA axis
+    ax2 = plt.subplot(132)  # MD axis
+    ax3 = plt.subplot(133)  # volume axis
     ax = [ax1, ax2, ax3]
     
     # Loop through the three measures (FA, MD, VOL_VOX)
