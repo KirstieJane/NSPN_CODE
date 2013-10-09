@@ -58,7 +58,7 @@ subs = [ '06', '07', '08' ]
 locs = [ 'WBIC', 'CBSU', 'UCL' ]
 scans = [ 'DTI_2A', 'DTI_2B' ]
 incl_excl_list = [ 'EXCL_VOL31' ]
-n_b0s_list = [ '1', '2', '3', '4', '5', '6' ]
+n_b0s_list = [ '6' ]
 #ec_b0 = [ '00', '14', '27', '41', '54', '68' ]
 #b0_order = [ '00_14_27_41_54_68' ]
 sep_av_list = [ 'SEPARATE' ] 
@@ -116,9 +116,9 @@ for incl_excl, n_b0s, sep_av, transform, roi_name in it.product(incl_excl_list, 
                                             b0_order, sep_av, transform,
                                             roi_name, subs, locs, scans)
         
-        #data = read_in_data(results_file)
+        data = read_in_data(results_file)
         
-        #plot_data(data, results_dir, roi_name, colors, shapes)
+        plot_data(data, results_dir, roi_name, colors, shapes)
 
 # Now answer specific questions that you care about
 
