@@ -122,7 +122,7 @@ for incl_excl, n_b0s, sep_av, transform, roi_name in it.product(incl_excl_list, 
 
 # Now answer specific questions that you care about
 
-Q_ec_vol_n6(incl_excl_list, sep_av_list, transform_list, roi_list, colors, shapes)
+Q_ec_vol_n6(data_dir, incl_excl_list, sep_av_list, transform_list, roi_list, colors, shapes)
 
 '''
 # Find all the results files in all the b0_order folders
