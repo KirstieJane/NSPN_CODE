@@ -30,7 +30,7 @@ def combine_data(data_all, data_new, dict):
     data_new = rfn.append_fields(data_new, dict.keys()[0], col, usemask=False, asrecarray=True)
 
     # If data_all exists, then join data_new to the end of it
-    if np.any(data_all):
+    if not data_all == None:
         
         data_all = np.rfn(data_all, data_new, usemask=False, asrecarray=True)
     
