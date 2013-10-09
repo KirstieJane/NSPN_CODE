@@ -59,7 +59,7 @@ def wrangle_text_files(data_dir, incl_excl, n_b0s, b0_order, sep_av, transform, 
             mask_dir = os.path.join( data_dir, sub, loc, scan,
                                     incl_excl, 'B0S_{}'.format(n_b0s),
                                     'B0_ORDER_{}'.format(b0_order),
-                                    sep_av, 'MASK_MNI_TO_DTI', transform )
+                                    sep_av, 'ROI_VALUES', transform )
         
             fa_filename = os.path.join(mask_dir, '{}_FA.txt'.format(roi_name))
             md_filename = os.path.join(mask_dir, '{}_MD.txt'.format(roi_name))
