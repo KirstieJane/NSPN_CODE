@@ -60,13 +60,13 @@ n_b0s_list = [ '1', '2', '3', '4', '5', '6' ]
 #ec_b0 = [ '00', '14', '27', '41', '54', '68' ]
 #b0_order = [ '00_14_27_41_54_68' ]
 sep_av_list = [ 'SEPARATE' ] 
-transform = [ 'MNI_FNIRT_MPRAGE_BBR_B0' ]
+transform = [ 'MNI_DIFF_FA_DIRECT', 'MNI_DIFF_VIA_HIGHRES_LIN', 'MNI_DIFF_VIA_HIGHRES_NL_BBR' ]
 roi_name = [ 'lcing', 'rcing', 'wholebrain', 'bodycc' ]
 #==============================================================================
 
 #==============================================================================
 # And now get going:
-
+"""
 b0_orders = get_b0_orders(1)
     
 for incl_excl, sep_av, b0_order in it.product(incl_excl_list, sep_av_list, b0_orders):
@@ -90,8 +90,9 @@ for incl_excl, sep_av, n_b0s in it.product(incl_excl_list, sep_av_list, n_b0s_li
         Also loop through the different orders of the b0s
         '''
         run_roistats(data_dir, incl_excl, n_b0s, b0_order, sep_av, subs, locs, scans)
-    
+
 """
+    
 for incl_excl, n_b0s, sep_av, transform, roi_name in it.product(incl_excl, n_b0s, sep_av, transform, roi_name):
     '''
     Loop through all the combinations of include/exclude volume 31,
@@ -115,4 +116,4 @@ for incl_excl, n_b0s, sep_av, transform, roi_name in it.product(incl_excl, n_b0s
         
         plot_data(data, results_dir, roi_name, colors, shapes)
 
-"""
+
