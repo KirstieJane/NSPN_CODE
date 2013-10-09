@@ -67,7 +67,7 @@ def plot_by_locs(data, output_name, colors, shapes, sub_ids, loc_ids, locs, roi_
                                             marker=m, s=20, alpha=0.5 )
                     
                     # ... connect them with a line ...
-                    ax[count].plot(np.ones(n)*loc, data[measure][mask], c=c)
+                    #ax[count].plot(np.ones(n)*loc, data[measure][mask], c=c)
                 
                 # And for everyone we'll plot the average
                 # (which is just the data if you only have one point)
