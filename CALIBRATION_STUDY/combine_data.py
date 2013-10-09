@@ -27,7 +27,7 @@ def combine_data(data_all, data_new, dict):
         col = np.repeat(col, len(data_new))
         
         # Add this column to the data_new recarray
-        if not str(value).isdigit():
+        if key == 'b0_order':
             data_new = rfn.append_fields(data_new, key, col, usemask=False, asrecarray=True, dtypes='S100')
         else:
             data_new = rfn.append_fields(data_new, key, col, usemask=False, asrecarray=True)
