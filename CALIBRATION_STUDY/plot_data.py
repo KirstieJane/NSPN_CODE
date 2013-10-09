@@ -19,6 +19,7 @@ def plot_data(data, results_dir, roi_name, colors, shapes):
     #--------------------------------------------------------------------------
     from plot_by_subs import plot_by_subs
     from plot_by_locs import plot_by_locs
+    from plot_by_b0s import plot_by_b0s
     #==========================================================================
     
     # Make sure the results_dir exists
@@ -55,5 +56,14 @@ def plot_data(data, results_dir, roi_name, colors, shapes):
                                 colors=colors, shapes=shapes,
                                 sub_ids= sub_ids, loc_ids=loc_ids, locs=locs,
                                 roi_name=roi_name, figsize=(15,5))
+                                
+        if 'n_b0s' in data.dtype.names:
+            output_name = os.path.join(results_dir, '{}_plot_by_b0s.png'.format(roi_name))
+            
+            plot_by_b0s(data=data, output_name=output_name,
+                                    colors=colors, shapes=shapes,
+                                    sub_ids= sub_ids, loc_ids=loc_ids, locs=locs,
+                                    roi_name=roi_name, figsize=(15,5))
+                                
     else:
         print '  Data already plotted'

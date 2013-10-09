@@ -59,7 +59,7 @@ locs = [ 'WBIC', 'CBSU', 'UCL' ]
 scans = [ 'DTI_2A', 'DTI_2B' ]
 incl_excl_list = [ 'EXCL_VOL31' ]
 n_b0s_list = [ '6' ]
-#ec_b0 = [ '00', '14', '27', '41', '54', '68' ]
+ec_b0_list = [ '00', '14', '27', '41', '54', '68' ]
 #b0_order = [ '00_14_27_41_54_68' ]
 sep_av_list = [ 'SEPARATE' ] 
 transform_list = [ 'MNI_DIFF_FA_DIRECT', 'MNI_DIFF_VIA_HIGHRES_LIN', 'MNI_DIFF_VIA_HIGHRES_NL_BBR' ]
@@ -123,6 +123,12 @@ for incl_excl, n_b0s, sep_av, transform, roi_name in it.product(incl_excl_list, 
 # Now answer specific questions that you care about
 
 Q_ec_vol_n6(data_dir, incl_excl_list, sep_av_list, transform_list, roi_list, colors, shapes)
+
+
+# How does everything change with the different number of B0s?
+
+Q_n_b0s(data_dir, incl_excl_list, sep_av_list, transform_list, roi_list, ec_b0_list, colors, shapes)
+
 
 '''
 # Find all the results files in all the b0_order folders

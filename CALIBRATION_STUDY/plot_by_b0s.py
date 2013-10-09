@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 
-def plot_by_locs(data, output_name, colors, shapes, sub_ids, loc_ids, locs, roi_name, figsize=(15,5)):
+def plot_by_b0s(data, output_name, colors, shapes, sub_ids, loc_ids, locs, roi_name, figsize=(15,5)):
     """
-    Plot_by_locs takes a data rec_array and loops through three measures:
+    Plot_by_b0s takes a data rec_array and loops through three measures:
         fa, md, and vol_vox and plots each on separate plots with the
-        x-axis representing the different locations
+        x-axis representing the different numbers of b0s that were included
+        in the calculation
     
     Required:   data rec_array (eg: data)
                 output_name (eg: results_dir/'plot_by_subs.png')
@@ -17,7 +18,7 @@ def plot_by_locs(data, output_name, colors, shapes, sub_ids, loc_ids, locs, roi_
     Optional:   figsize (default 15 x 5)
 
     Example usage:
-        plot_by_locs(data=data, output_name=results_dir/'plot_by_subs.png',
+        plot_by_b0s(data=data, output_name=results_dir/'plot_by_subs.png',
                         colors=colors, shapes=shapes, sub_ids=sub_ids,
                         loc_ids=loc_ids, locs=locs, figsize=(15,5))
 
@@ -45,7 +46,7 @@ def plot_by_locs(data, output_name, colors, shapes, sub_ids, loc_ids, locs, roi_
             # that will hold the mean values for each location so we
             # can plot a line through them at the end
             
-            mean_array = np.zeros(3)
+            mean_array = np.zeros([3,6])
             
             for j, loc in enumerate(loc_ids):
 
@@ -53,33 +54,39 @@ def plot_by_locs(data, output_name, colors, shapes, sub_ids, loc_ids, locs, roi_
                 c=colors[j,i]
                 m=shapes[j]
 
-                # Mask the data so you only have this sub at this loc's numbers
-                mask = ( data['sub'] == sub ) & ( data['loc_id']== loc )
-
-                # Find the number of data points you have for this sub at this location
-                n = np.sum(mask)
-
-                if n > 1:
-                    # If you have more than one data point then we're going to plot
-                    # the individual points (kinda small and a little transparent)
-                    ax[count].scatter(np.ones(n)*loc, data[measure][mask],
-                                            c=c, edgecolor=c,
-                                            marker=m, s=20, alpha=0.5 )
-                    
-                    # ... connect them with a line ...
-                    #ax[count].plot(np.ones(n)*loc, data[measure][mask], c=c)
+                for k, n_b0s in enumerate(range(1,7)):
                 
-                # And for everyone we'll plot the average
-                # (which is just the data if you only have one point)
-                mean = np.average(data[measure][mask])
-                mean_array[j] = mean # Update the mean_array for plotting later!
-                ax[count].scatter(loc, mean,
-                                    c=c, edgecolor=c,
-                                    marker=m, s=50 )
+                    # Mask the data again so that you only have the values for
+                    # this number of b0s, for this sub and at this loc's numbers
+                    mask = ( data['sub'] == sub ) & ( data['loc_id']== loc ) & ( data['n_b0s'] == n_b0s )
+
+                    # Find the number of data points you have for this sub at this location
+                    n = np.sum(mask)                    
+                    
+                    if n > 1:
+                        # If you have more than one data point then we're going to plot
+                        # the individual points (kinda small and a little transparent)
+                        ax[count].scatter(np.ones(n)*loc, data[measure][mask],
+                                                c=c, edgecolor=c,
+                                                marker=m, s=20, alpha=0.5 )
+                        
+                        # ... connect them with a line ...
+                        #ax[count].plot(np.ones(n)*loc, data[measure][mask], c=c)
+                
+                    # And for everyone we'll plot the average
+                    # (which is just the data if you only have one point)
+                    mean = np.average(data[measure][mask])
+                    mean_array[j,k] = mean # Update the mean_array for plotting later!
+                    ax[count].scatter(loc, mean,
+                                        c=c, edgecolor=c,
+                                        marker=m, s=50 )
                 
             # Now that we've filled up the mean_array let's plot it :)
             c=colors[3,i]
-            ax[count].plot(loc_ids, mean_array, c=c, zorder=0)
+            
+            for j in range(3):
+
+                ax[count].plot(range(1,7), mean_array[j,:], c=c, zorder=0)
             
             # Set the y limits
             # This is to deal with very small numbers (the MaxNLocator gets all turned around!)
@@ -90,10 +97,10 @@ def plot_by_locs(data, output_name, colors, shapes, sub_ids, loc_ids, locs, roi_
             
         # Set the axis labels    
         ax[count].set_ylabel('{}'.format(measure.upper()))
-        ax[count].set_xlabel('Scanner Location')
+        ax[count].set_xlabel('Number of B0s')
         
         # And label the x axis with the scanner locations
-        ax[count].set_xticklabels(locs)
+        ax[count].set_xticklabels(range(1,7))
 
     # Adjust the power limits so that you use scientific notation on the y axis
     plt.ticklabel_format(style='sci', axis='y')
@@ -103,7 +110,7 @@ def plot_by_locs(data, output_name, colors, shapes, sub_ids, loc_ids, locs, roi_
     [ a.yaxis.set_major_locator(MaxNLocator(6)) for a in ax ]
     
     # Set the x axis ticks to be at the loc_ids
-    [ a.set_xticks(loc_ids) for a in ax ]
+    [ a.set_xticks(range(1,7)) for a in ax ]
 
     # Set the overall title
     fig.suptitle('Region of interest: {}'.format(roi_name), fontsize=20)
@@ -111,3 +118,5 @@ def plot_by_locs(data, output_name, colors, shapes, sub_ids, loc_ids, locs, roi_
     
     # And now save it!
     plt.savefig(output_name, bbox_inches=0, facecolor='w', edgecolor='w', transparent=True)
+
+    
