@@ -123,9 +123,11 @@ for incl_excl, n_b0s, sep_av, transform, roi_name in it.product(incl_excl_list, 
 
 Q_ec_vol_n6(incl_excl_list, sep_av_list, transform_list, roi_list, colors, shapes)
 
+'''
 # Find all the results files in all the b0_order folders
 for incl_excl, n_b0s, sep_av, transform, roi_name in it.product(incl_excl_list, n_b0s_list, sep_av_list, transform_list, roi_list):
 
     data_allorders, results_allorders_dir = collapse_data(data_dir, incl_excl_list, n_b0s_list, sep_av_list, transform_list, roi_list)
 
     plot_data(data_allorders, results_allorders_dir, roi_name, colors, shapes)
+'''
