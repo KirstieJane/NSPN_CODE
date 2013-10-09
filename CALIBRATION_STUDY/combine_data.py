@@ -32,7 +32,7 @@ def combine_data(data_all, data_new, dict):
     # If data_all exists, then join data_new to the end of it
     if not data_all == None:
         
-        data_all = np.rfn(data_all, data_new, usemask=False, asrecarray=True)
+        data_all = rfn.stack_arrays(data_all, data_new, usemask=False, asrecarray=True)
     
     # If data_all doesn't yet exist then data_new becomes data_all
     else:
