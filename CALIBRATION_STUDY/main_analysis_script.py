@@ -126,5 +126,9 @@ for incl_excl, n_b0s, sep_av, transform, roi_name in it.product(incl_excl_list, 
     
     results_allorders_dir = os.path.join(data_dir, 'RESULTS', incl_excl, 'B0S_{}'.format(n_b0s),
                                 'ALL_ORDERS', sep_av, transform)
-    
+
+    # Make the directory if it doesn't yet exist
+    if not os.path.exists(results_allorders_dir):
+        os.makedirs(results_allorders_dir)
+
     plot_data(data_allorders, results_dir, roi_name, colors, shapes)
