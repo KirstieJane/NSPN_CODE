@@ -52,7 +52,7 @@ def wrangle_text_files(data_dir, incl_excl, n_b0s, b0_order, sep_av, transform, 
     # If it already exists then don't spend the time re-doing everything
     if not os.path.exists(results_file):
     
-        print 'Combining {} ROI data'.format(roi)
+        print '    Combining {} ROI data'.format(roi_name)
         
         # Write all the necessary data into this results_file
         with open(results_file, 'w') as outfile:
@@ -87,7 +87,7 @@ def wrangle_text_files(data_dir, incl_excl, n_b0s, b0_order, sep_av, transform, 
                     # Then write everything out to the results_file
                     outfile.write('{} {} {} {} {} {}'.format(sub, loc, scan, fa, md, vol))
     else:
-        print '{} ROI data already combined'.format(roi)
+        print '    {} ROI data already combined'.format(roi_name)
         
     return results_file, results_dir
                 
