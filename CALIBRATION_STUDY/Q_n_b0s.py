@@ -43,7 +43,7 @@ def Q_n_b0s(data_dir, incl_excl_list, sep_av_list, transform_list, roi_list, ec_
             
             b0_orders = get_b0_orders(np.int(n_b0s))
 
-            b0_orders = [ order for order in b0_orders if 'B0_ORDER_{}'.format(ec_b0) in order ]
+            b0_orders = [ order for order in b0_orders if order[:2] == ec_b0 ]
             
             for b0_order in b0_orders:
             
@@ -58,9 +58,7 @@ def Q_n_b0s(data_dir, incl_excl_list, sep_av_list, transform_list, roi_list, ec_
                 for file in files:
                     data = read_in_data(file)
                     data_allorders_allb0s = combine_data(data_allorders_allb0s, data, dict)
-        
-        print data_allorders_allb0s
-        
+                
         # Name the results dir that this is going into:
         results_allorders_allb0s_dir = os.path.join(data_dir, 'RESULTS', incl_excl, 'ALL_B0S',
                                 'B0_'.format(ec_b0), sep_av, transform)
