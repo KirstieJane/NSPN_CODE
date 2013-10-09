@@ -70,7 +70,7 @@ colors, shapes = set_colors_shapes()
 
 #==============================================================================
 # And now get going:
-"""
+
 b0_orders = get_b0_orders(1)
     
 for incl_excl, sep_av, b0_order in it.product(incl_excl_list, sep_av_list, b0_orders):
@@ -95,7 +95,7 @@ for incl_excl, sep_av, n_b0s in it.product(incl_excl_list, sep_av_list, n_b0s_li
         '''
         run_roistats(data_dir, incl_excl, n_b0s, b0_order, sep_av, subs, locs, scans)
 
-"""
+
     
 for incl_excl, n_b0s, sep_av, transform, roi_name in it.product(incl_excl_list, n_b0s_list, sep_av_list, transform_list, roi_list):
     '''
