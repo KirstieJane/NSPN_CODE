@@ -131,4 +131,6 @@ for incl_excl, n_b0s, sep_av, transform, roi_name in it.product(incl_excl_list, 
     if not os.path.exists(results_allorders_dir):
         os.makedirs(results_allorders_dir)
 
-    plot_data(data_allorders, results_dir, roi_name, colors, shapes)
+    plot_data(data_allorders, results_allorders_dir, roi_name, colors, shapes)
+    
+    exit()
