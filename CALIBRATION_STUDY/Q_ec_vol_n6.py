@@ -29,6 +29,7 @@ def Q_ec_vol_n6(data_dir, incl_excl_list, sep_av_list, transform_list, roi_list,
     from combine_data import combine_data
     from get_b0_orders import get_b0_orders
     from plot_data import plot_data
+    from read_in_data import read_in_data
     #==========================================================================
     
     print '  Question: How does the choice of eddy correct volume affect the measurements?'
@@ -51,7 +52,7 @@ def Q_ec_vol_n6(data_dir, incl_excl_list, sep_av_list, transform_list, roi_list,
             
             # Read in every file and combine them
             for file in files:
-                data = np.genfromtxt(file, dtype=None, delimiter=' ', names=True)
+                data = read_in_data(file)
                 data_allorders = combine_data(data_allorders, data, dict)
             
         # Name the results dir that this is going into:
