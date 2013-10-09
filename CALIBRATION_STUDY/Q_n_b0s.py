@@ -61,7 +61,7 @@ def Q_n_b0s(data_dir, incl_excl_list, sep_av_list, transform_list, roi_list, ec_
                 
         # Name the results dir that this is going into:
         results_allorders_allb0s_dir = os.path.join(data_dir, 'RESULTS', incl_excl, 'ALL_B0S',
-                                'B0_'.format(ec_b0), sep_av, transform)
+                                'B0_{}'.format(ec_b0), sep_av, transform)
         
         # Now plot the data
         plot_data(data_allorders_allb0s, results_allorders_allb0s_dir, roi_name, colors, shapes)
