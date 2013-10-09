@@ -60,8 +60,8 @@ n_b0s_list = [ '1', '2', '3', '4', '5', '6' ]
 #ec_b0 = [ '00', '14', '27', '41', '54', '68' ]
 #b0_order = [ '00_14_27_41_54_68' ]
 sep_av_list = [ 'SEPARATE' ] 
-transform = [ 'MNI_DIFF_FA_DIRECT', 'MNI_DIFF_VIA_HIGHRES_LIN', 'MNI_DIFF_VIA_HIGHRES_NL_BBR' ]
-roi_name = [ 'lcing', 'rcing', 'wholebrain', 'bodycc' ]
+transform_list = [ 'MNI_DIFF_FA_DIRECT', 'MNI_DIFF_VIA_HIGHRES_LIN', 'MNI_DIFF_VIA_HIGHRES_NL_BBR' ]
+roi_list = [ 'lcing', 'rcing', 'wholebrain', 'bodycc' ]
 #==============================================================================
 
 #==============================================================================
@@ -93,7 +93,7 @@ for incl_excl, sep_av, n_b0s in it.product(incl_excl_list, sep_av_list, n_b0s_li
 
 """
     
-for incl_excl, n_b0s, sep_av, transform, roi_name in it.product(incl_excl, n_b0s, sep_av, transform, roi_name):
+for incl_excl, n_b0s, sep_av, transform, roi_name in it.product(incl_excl_list, n_b0s_list, sep_av_list, transform_list, roi_list):
     '''
     Loop through all the combinations of include/exclude volume 31,
         the number of b0s,
