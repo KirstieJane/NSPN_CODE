@@ -28,7 +28,7 @@ def combine_data(data_all, data_new, dict):
         
         # Add this column to the data_new recarray
         
-        data_new = rfn.append_fields(data_new, key, col, usemask=False, asrecarray=True)
+        data_new = rfn.append_fields(data_new, key, col, usemask=False, asrecarray=True, dtypes='S100')
 
     # If data_all exists, then join data_new to the end of it
     if not data_all == None:
