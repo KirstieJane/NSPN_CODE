@@ -22,6 +22,7 @@ def collapse_data(data_dir, incl_excl_list, n_b0s_list, sep_av_list, transform_l
     import numpy as np
     import numpy.lib.recfunctions as rfn
     from glob import glob
+    import itertools as it
     #------------------------------------------------------------------------------
     from combine_data import combine_data
     #==========================================================================
