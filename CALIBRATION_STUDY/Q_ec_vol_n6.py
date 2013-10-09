@@ -34,7 +34,7 @@ def Q_ec_vol_n6(data_dir, incl_excl_list, sep_av_list, transform_list, roi_list,
     print '  Question: How does the choice of eddy correct volume affect the measurements?'
 
     # Find all the results files in all the b0_order folders
-    for incl_excl, sep_av, transform, roi_name in it.product(incl_excl_list, n_b0s_list, sep_av_list, transform_list, roi_list):
+    for incl_excl, sep_av, transform, roi_name in it.product(incl_excl_list, sep_av_list, transform_list, roi_list):
 
         # Start off with an empty data array
         data_allorders = None
