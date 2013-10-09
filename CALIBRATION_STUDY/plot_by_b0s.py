@@ -39,14 +39,15 @@ def plot_by_b0s(data, output_name, colors, shapes, sub_ids, loc_ids, locs, roi_n
     # Loop through the three measures (FA, MD, VOL_VOX)
     for count, measure in enumerate(['fa', 'md', 'vol_vox']):
 
+        # First things first, we want to set up a new numpy array
+        # that will hold the mean values for each sub, loc and b0 so we
+        # can plot a line through them at the end
+        
+        mean_array = np.zeros([3,3,6])
+        
         # Now loop through the subjects
         for i, sub in enumerate(sub_ids):
 
-            # First things first, we want to set up a new numpy array
-            # that will hold the mean values for each location so we
-            # can plot a line through them at the end
-            
-            mean_array = np.zeros([3,6])
             
             for j, loc in enumerate(loc_ids):
 
@@ -61,12 +62,12 @@ def plot_by_b0s(data, output_name, colors, shapes, sub_ids, loc_ids, locs, roi_n
                     mask = ( data['sub'] == sub ) & ( data['loc_id']== loc ) & ( data['n_b0s'] == n_b0s )
 
                     # Find the number of data points you have for this sub at this location
-                    n = np.sum(mask)                    
+                    n = np.sum(mask)
                     
                     if n > 1:
                         # If you have more than one data point then we're going to plot
                         # the individual points (kinda small and a little transparent)
-                        ax[count].scatter(np.ones(n)*loc, data[measure][mask],
+                        ax[count].scatter(np.ones(n)*n_b0s, data[measure][mask],
                                                 c=c, edgecolor=c,
                                                 marker=m, s=20, alpha=0.5 )
                         
@@ -76,8 +77,8 @@ def plot_by_b0s(data, output_name, colors, shapes, sub_ids, loc_ids, locs, roi_n
                     # And for everyone we'll plot the average
                     # (which is just the data if you only have one point)
                     mean = np.average(data[measure][mask])
-                    mean_array[j,k] = mean # Update the mean_array for plotting later!
-                    ax[count].scatter(loc, mean,
+                    mean_array[i, j, k] = mean # Update the mean_array for plotting later!
+                    ax[count].scatter(n_b0s, mean,
                                         c=c, edgecolor=c,
                                         marker=m, s=50 )
                 
@@ -85,8 +86,8 @@ def plot_by_b0s(data, output_name, colors, shapes, sub_ids, loc_ids, locs, roi_n
             c=colors[3,i]
             
             for j in range(3):
-
-                ax[count].plot(range(1,7), mean_array[j,:], c=c, zorder=0)
+                
+                ax[count].plot(range(1,7), mean_array[i,j,:], c=c, zorder=0)
             
             # Set the y limits
             # This is to deal with very small numbers (the MaxNLocator gets all turned around!)
