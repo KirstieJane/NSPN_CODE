@@ -115,9 +115,9 @@ for incl_excl, n_b0s, sep_av, transform, roi_name in it.product(incl_excl_list, 
                                             b0_order, sep_av, transform,
                                             roi_name, subs, locs, scans)
         
-        data = read_in_data(results_file)
+        #data = read_in_data(results_file)
         
-        plot_data(data, results_dir, roi_name, colors, shapes)
+        #plot_data(data, results_dir, roi_name, colors, shapes)
 
         
 data_allorders, results_allorders_dir = collapse_data(data_dir, incl_excl_list, n_b0s_list, sep_av_list, transform_list, b0_orders)
