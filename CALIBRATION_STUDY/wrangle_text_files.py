@@ -47,38 +47,47 @@ def wrangle_text_files(data_dir, incl_excl, n_b0s, b0_order, sep_av, transform, 
     # Example results_file: bodycc_FA_MD_vol.txt
     results_file = os.path.join(results_dir, '{}_FA_MD_vol.txt'.format(roi_name))
     
-    # Write all the necessary data into this results_file
-    with open(results_file, 'w') as outfile:
-        # Start with the header
-        outfile.write('sub loc scan fa md vol_vox vol_mm3\n')
-
-        # Next loop over the subs, locations and scans
-        for sub, loc, scan in it.product(subs, locs, scans):
-            
-            # Create path to the correct mask dir
-            mask_dir = os.path.join( data_dir, sub, loc, scan,
-                                    incl_excl, 'B0S_{}'.format(n_b0s),
-                                    'B0_ORDER_{}'.format(b0_order),
-                                    sep_av, 'ROI_VALUES', transform )
+    print 'Results file: {}'.format(results_file.rsplit('/',6)[1:])
+    
+    # If it already exists then don't spend the time re-doing everything
+    if not os.path.exists(results_file):
+    
+        print 'Combining {} ROI data'.format(roi)
         
-            fa_filename = os.path.join(mask_dir, '{}_FA.txt'.format(roi_name))
-            md_filename = os.path.join(mask_dir, '{}_MD.txt'.format(roi_name))
-            vol_filename = os.path.join(mask_dir, '{}_vol.txt'.format(roi_name))
-    
-            # If the <roi>_fa.txt file exists then write all the data to the results file
-            if os.path.exists(fa_filename):
+        # Write all the necessary data into this results_file
+        with open(results_file, 'w') as outfile:
+            # Start with the header
+            outfile.write('sub loc scan fa md vol_vox vol_mm3\n')
+
+            # Next loop over the subs, locations and scans
+            for sub, loc, scan in it.product(subs, locs, scans):
                 
-                # First read the individual files into a variable
-                # Note that the end of lines are replaced for the first two (fa and md)
-                with open(fa_filename, 'r') as infile:
-                    fa = infile.read().replace(' \n', '')
-                with open(md_filename, 'r') as infile:
-                    md = infile.read().replace(' \n', '')
-                with open(vol_filename, 'r') as infile:
-                    vol = infile.read()
-                
-                # Then write everything out to the results_file
-                outfile.write('{} {} {} {} {} {}'.format(sub, loc, scan, fa, md, vol))
-    
+                # Create path to the correct mask dir
+                mask_dir = os.path.join( data_dir, sub, loc, scan,
+                                        incl_excl, 'B0S_{}'.format(n_b0s),
+                                        'B0_ORDER_{}'.format(b0_order),
+                                        sep_av, 'ROI_VALUES', transform )
+            
+                fa_filename = os.path.join(mask_dir, '{}_FA.txt'.format(roi_name))
+                md_filename = os.path.join(mask_dir, '{}_MD.txt'.format(roi_name))
+                vol_filename = os.path.join(mask_dir, '{}_vol.txt'.format(roi_name))
+        
+                # If the <roi>_fa.txt file exists then write all the data to the results file
+                if os.path.exists(fa_filename):
+                    
+                    # First read the individual files into a variable
+                    # Note that the end of lines are replaced for the first two (fa and md)
+                    with open(fa_filename, 'r') as infile:
+                        fa = infile.read().replace(' \n', '')
+                    with open(md_filename, 'r') as infile:
+                        md = infile.read().replace(' \n', '')
+                    with open(vol_filename, 'r') as infile:
+                        vol = infile.read()
+                    
+                    # Then write everything out to the results_file
+                    outfile.write('{} {} {} {} {} {}'.format(sub, loc, scan, fa, md, vol))
+    else:
+        print '{} ROI data already combined'.format(roi)
+        
     return results_file, results_dir
                 
