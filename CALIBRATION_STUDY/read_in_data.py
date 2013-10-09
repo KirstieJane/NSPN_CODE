@@ -16,6 +16,8 @@ def read_in_data(results_file):
     import numpy.lib.recfunctions as rfn
     #==========================================================================
     
+    print '  Reading in data'
+    
     data = np.genfromtxt(results_file, dtype=None, delimiter=' ', names=True)
 
     # Define the loc_ids variable

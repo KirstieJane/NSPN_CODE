@@ -106,6 +106,8 @@ for incl_excl, n_b0s, sep_av, transform, roi_name in it.product(incl_excl_list, 
 
     for b0_order in b0_orders:
     
+        print 'Combination: {} {} {} {} {} {}'.format(incl_excl, n_b0s, b0_order, sep_av, transform, roi_name)
+    
         results_file, results_dir = wrangle_text_files(data_dir, incl_excl, n_b0s,
                                             b0_order, sep_av, transform,
                                             roi_name, subs, locs, scans)

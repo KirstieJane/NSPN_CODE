@@ -47,7 +47,7 @@ def wrangle_text_files(data_dir, incl_excl, n_b0s, b0_order, sep_av, transform, 
     # Example results_file: bodycc_FA_MD_vol.txt
     results_file = os.path.join(results_dir, '{}_FA_MD_vol.txt'.format(roi_name))
     
-    print 'Results file: {}'.format(results_file.rsplit('/',6)[1:])
+    print '  Wrangling text files'
     
     # If it already exists then don't spend the time re-doing everything
     if not os.path.exists(results_file):
