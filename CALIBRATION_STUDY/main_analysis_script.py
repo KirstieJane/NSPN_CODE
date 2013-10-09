@@ -62,6 +62,7 @@ n_b0s_list = [ '1', '2', '3', '4', '5', '6' ]
 sep_av_list = [ 'SEPARATE' ] 
 transform_list = [ 'MNI_DIFF_FA_DIRECT', 'MNI_DIFF_VIA_HIGHRES_LIN', 'MNI_DIFF_VIA_HIGHRES_NL_BBR' ]
 roi_list = [ 'lcing', 'rcing', 'wholebrain', 'bodycc' ]
+data_allorders = None
 #==============================================================================
 
 #==============================================================================
@@ -118,4 +119,11 @@ for incl_excl, n_b0s, sep_av, transform, roi_name in it.product(incl_excl_list, 
         
         plot_data(data, results_dir, roi_name, colors, shapes)
 
-
+        data_allorders = combine_data(data_allorders, data, {'b0_order': b0_order})
+        
+    # Plot the data_allorders data
+    
+    results_allorders_dir = os.path.join(data_dir, 'RESULTS', incl_excl, 'B0S_{}'.format(n_b0s),
+                                'ALL_ORDERS', sep_av, transform)
+    
+    plot_data(data_allorders, results_dir, roi_name, colors, shapes)

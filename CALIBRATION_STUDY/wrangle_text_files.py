@@ -47,12 +47,10 @@ def wrangle_text_files(data_dir, incl_excl, n_b0s, b0_order, sep_av, transform, 
     # Example results_file: bodycc_FA_MD_vol.txt
     results_file = os.path.join(results_dir, '{}_FA_MD_vol.txt'.format(roi_name))
     
-    print '  Wrangling text files'
-    
     # If it already exists then don't spend the time re-doing everything
     if not os.path.exists(results_file):
     
-        print '    Combining {} ROI data'.format(roi_name)
+        print '  Wrangling text files'
         
         # Write all the necessary data into this results_file
         with open(results_file, 'w') as outfile:
@@ -87,7 +85,7 @@ def wrangle_text_files(data_dir, incl_excl, n_b0s, b0_order, sep_av, transform, 
                     # Then write everything out to the results_file
                     outfile.write('{} {} {} {} {} {}'.format(sub, loc, scan, fa, md, vol))
     else:
-        print '    {} ROI data already combined'.format(roi_name)
+        print '  Text files already wrangled'
         
     return results_file, results_dir
                 
