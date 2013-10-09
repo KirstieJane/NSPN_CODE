@@ -29,7 +29,6 @@ def Q_ec_vol_n6(data_dir, incl_excl_list, sep_av_list, transform_list, roi_list,
     from combine_data import combine_data
     from get_b0_orders import get_b0_orders
     from plot_data import plot_data
-    from Q_ec_vol_n6 import Q_ec_vol_n6
     #==========================================================================
     
     print '  Question: How does the choice of eddy correct volume affect the measurements?'
