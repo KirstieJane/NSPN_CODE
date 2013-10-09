@@ -64,6 +64,7 @@ sep_av_list = [ 'SEPARATE' ]
 transform_list = [ 'MNI_DIFF_FA_DIRECT', 'MNI_DIFF_VIA_HIGHRES_LIN', 'MNI_DIFF_VIA_HIGHRES_NL_BBR' ]
 roi_list = [ 'lcing', 'rcing', 'wholebrain', 'bodycc' ]
 data_allorders = None
+colors, shapes = set_colors_shapes()
 #==============================================================================
 
 #==============================================================================
@@ -116,23 +117,15 @@ for incl_excl, n_b0s, sep_av, transform, roi_name in it.product(incl_excl_list, 
         
         data = read_in_data(results_file)
         
-        colors, shapes = set_colors_shapes()
-        
         plot_data(data, results_dir, roi_name, colors, shapes)
 
-        data_allorders = combine_data(data_allorders, data, {'b0_order': b0_order})
         
-    # Plot the data_allorders data
-    
-    results_allorders_dir = os.path.join(data_dir, 'RESULTS', incl_excl, 'B0S_{}'.format(n_b0s),
-                                'ALL_ORDERS', sep_av, transform)
+data_allorders, results_allorders_dir = collapse_data(data_dir, incl_excl_list, n_b0s_list, sep_av_list, transform_list, b0_orders)
 
-    print results_allorders_dir
+print results_allorders_dir
     
-    # Make the directory if it doesn't yet exist
-    if not os.path.exists(results_allorders_dir):
-        os.makedirs(results_allorders_dir)
+# Make the directory if it doesn't yet exist
+if not os.path.exists(results_allorders_dir):
+   os.makedirs(results_allorders_dir)
 
-    plot_data(data_allorders, results_allorders_dir, roi_name, colors, shapes)
-    
-    exit()
+plot_data(data_allorders, results_allorders_dir, roi_name, colors, shapes)
