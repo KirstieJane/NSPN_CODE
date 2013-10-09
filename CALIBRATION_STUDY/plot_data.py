@@ -21,6 +21,10 @@ def plot_data(data, results_dir, roi_name, colors, shapes):
     from plot_by_locs import plot_by_locs
     #==========================================================================
     
+    # Make sure the results_dir exists
+    if not os.path.exists(results_dir):
+       os.makedirs(results_dir)
+
     output_name = os.path.join(results_dir, '{}_plot_by_locs.png'.format(roi_name))
 
     if not os.path.exists(output_name):
