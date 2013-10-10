@@ -44,6 +44,10 @@ def plot_data(data, results_dir, roi_name, colors, shapes):
         # List of locations
         locs = [ data['loc'][data['loc_id']==loc_id][0] for loc_id in loc_ids ]
         
+        # List of scans
+        scans = [ scan for scan in data['scan'] ]
+        scans = list(set(scans))
+        
         output_name = os.path.join(results_dir, '{}_plot_by_subs.png'.format(roi_name))
         
         plot_by_subs(data=data, output_name=output_name,
@@ -62,7 +66,7 @@ def plot_data(data, results_dir, roi_name, colors, shapes):
             
             plot_by_b0s(data=data, output_name=output_name,
                                     colors=colors, shapes=shapes,
-                                    sub_ids= sub_ids, loc_ids=loc_ids, locs=locs,
+                                    sub_ids= sub_ids, loc_ids=loc_ids, locs=locs, scans=scans,
                                     roi_name=roi_name, figsize=(15,5))
                                 
     else:

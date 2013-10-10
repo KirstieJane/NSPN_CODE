@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-def plot_by_b0s(data, output_name, colors, shapes, sub_ids, loc_ids, locs, roi_name, figsize=(15,5)):
+def plot_by_b0s(data, output_name, colors, shapes, sub_ids, loc_ids, locs, scans, roi_name, figsize=(15,5)):
     """
     Plot_by_b0s takes a data rec_array and loops through three measures:
         fa, md, and vol_vox and plots each on separate plots with the
@@ -43,11 +43,10 @@ def plot_by_b0s(data, output_name, colors, shapes, sub_ids, loc_ids, locs, roi_n
         # that will hold the mean values for each sub, loc and b0 so we
         # can plot a line through them at the end
         
-        mean_array = np.zeros([3,3,6])
+        mean_array = np.zeros([3,3,6,2])
         
         # Now loop through the subjects
         for i, sub in enumerate(sub_ids):
-
             
             for j, loc in enumerate(loc_ids):
 
@@ -57,37 +56,39 @@ def plot_by_b0s(data, output_name, colors, shapes, sub_ids, loc_ids, locs, roi_n
 
                 for k, n_b0s in enumerate(range(1,7)):
                 
-                    # Mask the data again so that you only have the values for
-                    # this number of b0s, for this sub and at this loc's numbers
-                    mask = ( data['sub'] == sub ) & ( data['loc_id']== loc ) & ( data['n_b0s'] == n_b0s )
+                    for l, scan in enumerate(scans):
+                        # Mask the data again so that you only have the values for
+                        # this number of b0s, for this sub and at this loc's numbers
+                        mask = ( data['sub'] == sub ) & ( data['loc_id']== loc ) & ( data['n_b0s'] == n_b0s ) & ( data['scan'] == scan )
 
-                    # Find the number of data points you have for this sub at this location
-                    n = np.sum(mask)
-                    
-                    if n > 1:
-                        # If you have more than one data point then we're going to plot
-                        # the individual points (kinda small and a little transparent)
-                        ax[count].scatter(np.ones(n)*n_b0s, data[measure][mask],
-                                                c=c, edgecolor=c,
-                                                marker=m, s=20, alpha=0.5 )
+                        # Find the number of data points you have for this sub at this location
+                        n = np.sum(mask)
                         
-                        # ... connect them with a line ...
-                        #ax[count].plot(np.ones(n)*loc, data[measure][mask], c=c)
-                
-                    # And for everyone we'll plot the average
-                    # (which is just the data if you only have one point)
-                    mean = np.average(data[measure][mask])
-                    mean_array[i, j, k] = mean # Update the mean_array for plotting later!
-                    ax[count].scatter(n_b0s, mean,
-                                        c=c, edgecolor=c,
-                                        marker=m, s=50 )
+                        if n > 1:
+                            # If you have more than one data point then we're going to plot
+                            # the individual points (kinda small and a little transparent)
+                            ax[count].scatter(np.ones(n)*n_b0s, data[measure][mask],
+                                                    c=c, edgecolor=c,
+                                                    marker=m, s=20, alpha=0.5 )
+                            
+                            # ... connect them with a line ...
+                            #ax[count].plot(np.ones(n)*loc, data[measure][mask], c=c)
+                    
+                        # And for everyone we'll plot the average
+                        # (which is just the data if you only have one point)
+                        mean = np.average(data[measure][mask])
+                        mean_array[i, j, k, l] = mean # Update the mean_array for plotting later!
+                        ax[count].scatter(n_b0s, mean,
+                                            c=c, edgecolor=c,
+                                            marker=m, s=50 )
                 
             # Now that we've filled up the mean_array let's plot it :)
             c=colors[3,i]
             
             for j in range(3):
+                for l in range(2):
                 
-                ax[count].plot(range(1,7), mean_array[i,j,:], c=c, zorder=0)
+                    ax[count].plot(range(1,7), mean_array[i,j,:,l], c=c, zorder=0)
             
             # Set the y limits
             # This is to deal with very small numbers (the MaxNLocator gets all turned around!)
