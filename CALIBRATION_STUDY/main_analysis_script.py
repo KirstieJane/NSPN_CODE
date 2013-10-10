@@ -71,7 +71,7 @@ colors, shapes = set_colors_shapes()
 
 #==============================================================================
 # And now get going:
-"""
+
 b0_orders = get_b0_orders(1)
     
 for incl_excl, sep_av, b0_order in it.product(incl_excl_list, sep_av_list, b0_orders):
@@ -125,7 +125,6 @@ for incl_excl, n_b0s, sep_av, transform, roi_name in it.product(incl_excl_list, 
 
 Q_ec_vol_n6(data_dir, incl_excl_list, sep_av_list, transform_list, roi_list, colors, shapes)
 
-"""
 # How does everything change with the different number of B0s?
 
 Q_n_b0s(data_dir, incl_excl_list, sep_av_list, transform_list, roi_list, ec_b0_list, colors, shapes)
