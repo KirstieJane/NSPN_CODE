@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-def plot_by_subs(data, output_name, colors, shapes, sub_ids, loc_ids, roi_name, figsize=(15,5)):
+def plot_by_subs(data, output_name, colors, shapes, sub_ids, loc_ids, scans, roi_name, figsize=(15,5)):
     """
     Plot_by_subs takes a data rec_array and loops through three measures:
         fa, md, and vol_vox and plots each on separate plots with the
@@ -45,28 +45,30 @@ def plot_by_subs(data, output_name, colors, shapes, sub_ids, loc_ids, roi_name, 
                 c=colors[j,i]
                 m=shapes[j]
                 
-                # Mask the data so you only have this sub at this loc's numbers
-                mask = ( data['sub'] == sub ) & ( data['loc_id']== loc )
+                for l, scan in enumerate(scans):
+                    # Mask the data so you only have this sub at this loc's numbers
+                    mask = ( data['sub'] == sub ) & ( data['loc_id']== loc ) & ( data['scan'] == scan )
 
-                # Find the number of data points you have for this sub at this location
-                n = np.sum(mask)
+                    # Find the number of data points you have for this sub at this location
+                    n = np.sum(mask)
 
-                if n > 1:
-                    # If you have more than one data point then we're going to plot
-                    # the individual points (kinda small and a little transparent)
-                    ax[count].scatter(np.ones(n)*sub, data[measure][mask],
-                                            c=c, edgecolor=c,
-                                            marker=m, s=20, alpha=0.5 )
+                    if n > 1:
+                        # If you have more than one data point then we're going to plot
+                        # the individual points (kinda small and a little transparent)
+                        ax[count].scatter(np.ones(n)*sub, data[measure][mask],
+                                                c=c, edgecolor=c,
+                                                marker=m, s=20, alpha=0.5 )
+                        
+                        # ... connect them with a line ...
+                        #ax[count].plot(np.ones(n)*sub, data[measure][mask], c=c)
                     
-                    # ... connect them with a line ...
-                    ax[count].plot(np.ones(n)*sub, data[measure][mask], c=c)
-                
-                # And for everyone we'll plot the average
-                # (which is just the data if you only have one point)
-                mean = np.average(data[measure][mask])
-                ax[count].scatter(sub, mean,
-                                    c=c, edgecolor=c,
-                                    marker=m, s=50 )
+                    if n> 0:
+                        # And for everyone we'll plot the average
+                        # (which is just the data if you only have one point)
+                        mean = np.average(data[measure][mask])
+                        ax[count].scatter(sub, mean,
+                                            c=c, edgecolor=c,
+                                            marker=m, s=50 )
                 
                 # Set the y limits
                 # This is to deal with very small numbers (the MaxNLocator gets all turned around!)

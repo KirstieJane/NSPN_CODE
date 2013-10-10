@@ -52,13 +52,14 @@ def plot_data(data, results_dir, roi_name, colors, shapes):
         
         plot_by_subs(data=data, output_name=output_name,
                                 colors=colors, shapes=shapes,
-                                sub_ids=sub_ids, loc_ids=loc_ids, roi_name=roi_name, figsize=(15,5))
+                                sub_ids=sub_ids, loc_ids=loc_ids, scans=scans,
+                                roi_name=roi_name, figsize=(15,5))
         
         output_name = os.path.join(results_dir, '{}_plot_by_locs.png'.format(roi_name))
         
         plot_by_locs(data=data, output_name=output_name,
                                 colors=colors, shapes=shapes,
-                                sub_ids= sub_ids, loc_ids=loc_ids, locs=locs,
+                                sub_ids= sub_ids, loc_ids=loc_ids, locs=locs, scans=scans,
                                 roi_name=roi_name, figsize=(15,5))
                                 
         if 'n_b0s' in data.dtype.names:

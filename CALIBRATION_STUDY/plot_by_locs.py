@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-def plot_by_locs(data, output_name, colors, shapes, sub_ids, loc_ids, locs, roi_name, figsize=(15,5)):
+def plot_by_locs(data, output_name, colors, shapes, sub_ids, loc_ids, locs, scans, roi_name, figsize=(15,5)):
     """
     Plot_by_locs takes a data rec_array and loops through three measures:
         fa, md, and vol_vox and plots each on separate plots with the
@@ -45,7 +45,7 @@ def plot_by_locs(data, output_name, colors, shapes, sub_ids, loc_ids, locs, roi_
             # that will hold the mean values for each location so we
             # can plot a line through them at the end
             
-            mean_array = np.zeros(3)
+            mean_array = np.zeros([3, 2])
             
             for j, loc in enumerate(loc_ids):
 
@@ -53,33 +53,37 @@ def plot_by_locs(data, output_name, colors, shapes, sub_ids, loc_ids, locs, roi_
                 c=colors[j,i]
                 m=shapes[j]
 
-                # Mask the data so you only have this sub at this loc's numbers
-                mask = ( data['sub'] == sub ) & ( data['loc_id']== loc )
+                for l, scan in enumerate(scans):
 
-                # Find the number of data points you have for this sub at this location
-                n = np.sum(mask)
+                    # Mask the data so you only have this sub at this loc's numbers
+                    mask = ( data['sub'] == sub ) & ( data['loc_id']== loc ) & ( data['scan'] == scan )
 
-                if n > 1:
-                    # If you have more than one data point then we're going to plot
-                    # the individual points (kinda small and a little transparent)
-                    ax[count].scatter(np.ones(n)*loc, data[measure][mask],
-                                            c=c, edgecolor=c,
-                                            marker=m, s=20, alpha=0.5 )
-                    
-                    # ... connect them with a line ...
-                    #ax[count].plot(np.ones(n)*loc, data[measure][mask], c=c)
+                    # Find the number of data points you have for this sub at this location
+                    n = np.sum(mask)
+
+                    if n > 1:
+                        # If you have more than one data point then we're going to plot
+                        # the individual points (kinda small and a little transparent)
+                        ax[count].scatter(np.ones(n)*loc, data[measure][mask],
+                                                c=c, edgecolor=c,
+                                                marker=m, s=20, alpha=0.5 )
+                        
+                        # ... connect them with a line ...
+                        #ax[count].plot(np.ones(n)*loc, data[measure][mask], c=c)
                 
-                # And for everyone we'll plot the average
-                # (which is just the data if you only have one point)
-                mean = np.average(data[measure][mask])
-                mean_array[j] = mean # Update the mean_array for plotting later!
-                ax[count].scatter(loc, mean,
-                                    c=c, edgecolor=c,
-                                    marker=m, s=50 )
+                    if n > 0:
+                        # And for everyone we'll plot the average
+                        # (which is just the data if you only have one point)
+                        mean = np.average(data[measure][mask])
+                        mean_array[j, l] = mean # Update the mean_array for plotting later!
+                        ax[count].scatter(loc, mean,
+                                            c=c, edgecolor=c,
+                                            marker=m, s=50 )
                 
             # Now that we've filled up the mean_array let's plot it :)
             c=colors[3,i]
-            ax[count].plot(loc_ids, mean_array, c=c, zorder=0)
+            for l in range(2):
+                ax[count].plot(loc_ids, mean_array[:,l], c=c, zorder=0)
             
             # Set the y limits
             # This is to deal with very small numbers (the MaxNLocator gets all turned around!)
