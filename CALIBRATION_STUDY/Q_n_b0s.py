@@ -65,3 +65,38 @@ def Q_n_b0s(data_dir, incl_excl_list, sep_av_list, transform_list, roi_list, ec_
         
         # Now plot the data
         plot_data(data_allorders_allb0s, results_allorders_allb0s_dir, roi_name, colors, shapes)
+        
+    # Now do the same thing, but with REALLY all the B0s
+    
+    # Find all the results files in all the b0_order folders
+    for incl_excl, sep_av, transform, roi_name in it.product(incl_excl_list, sep_av_list, transform_list, roi_list):
+
+        # Start off with an empty data array
+        data_allorders_allb0s = None
+        
+        for n_b0s in range(1,7):
+            
+            b0_orders = get_b0_orders(np.int(n_b0s))
+            
+            for b0_order in b0_orders:
+            
+                glob_string = os.path.join(data_dir, 'RESULTS', incl_excl, 'B0S_{}'.format(n_b0s),
+                                        'B0_ORDER_{}'.format(b0_order), sep_av, transform, '{}_FA_MD_vol.txt'.format(roi_name))
+
+                files = glob(glob_string)
+
+                dict = { 'b0_order': b0_order, 'n_b0s' : n_b0s }
+                
+                # Read in every file and combine them
+                for file in files:
+                    data = read_in_data(file)
+                    data_allorders_allb0s = combine_data(data_allorders_allb0s, data, dict)
+                
+        # Name the results dir that this is going into:
+        results_allorders_allb0s_dir = os.path.join(data_dir, 'RESULTS', incl_excl, 'ALL_B0S',
+                                'ALL_B0S', sep_av, transform)
+        
+        # Now plot the data
+        plot_data(data_allorders_allb0s, results_allorders_allb0s_dir, roi_name, colors, shapes)
+        
+        
