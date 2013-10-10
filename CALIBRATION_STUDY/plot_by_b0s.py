@@ -73,14 +73,15 @@ def plot_by_b0s(data, output_name, colors, shapes, sub_ids, loc_ids, locs, scans
                             
                             # ... connect them with a line ...
                             #ax[count].plot(np.ones(n)*loc, data[measure][mask], c=c)
-                    
-                        # And for everyone we'll plot the average
-                        # (which is just the data if you only have one point)
-                        mean = np.average(data[measure][mask])
-                        mean_array[i, j, k, l] = mean # Update the mean_array for plotting later!
-                        ax[count].scatter(n_b0s, mean,
-                                            c=c, edgecolor=c,
-                                            marker=m, s=50 )
+
+                        if n > 0:
+                            # And for everyone we'll plot the average
+                            # (which is just the data if you only have one point)
+                            mean = np.average(data[measure][mask])
+                            mean_array[i, j, k, l] = mean # Update the mean_array for plotting later!
+                            ax[count].scatter(n_b0s, mean,
+                                                c=c, edgecolor=c,
+                                                marker=m, s=50 )
                 
             # Now that we've filled up the mean_array let's plot it :)
             c=colors[3,i]
