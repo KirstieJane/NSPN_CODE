@@ -1,12 +1,16 @@
 #!/usr/bin/env python
 
-# Extract some freesurfer measures from the aseg.stats files
-# that are in the NSPN interim analysis directory, created by
-# Roger.
+'''
+Extract some measures from the stats files created by freesurfer.
 
-# Kirstie Whitaker
-# kw401@cam.ac.uk
-# 12th January 2014
+Note that this is designed to run within Kirstie's DTI processing pipeline
+That is, the subject "name" is SURF and it will be found in the HIGHRES
+directory.
+
+Kirstie Whitaker
+kw401@cam.ac.uk
+Started: 12th January 2014
+'''
 
 #==============================================================================
 # IMPORTS
@@ -34,11 +38,16 @@ import pandas as pd
 
     # print data.describe()
 
-# mri_annotation2label --sd `pwd` --subject SURF_R1 --hemi rh --lobesStrict SURF_R1/label/rh.lobesStrict
-
-# mris_anatomical_stats -a SURF_R1/label/rh.lobesStrict.annot -f SURF_R1/stats/rh.lobesStrict.stats SURF_R1 rh
-
-
+data_dir=/work/imagingG/NSPN/workspaces/kw401/UCHANGE/INTERIM_ANALYSIS/
+sublist=${data_dir}/sublist
+for sub in `cat ${sublist}`; do
+    highres_dir=${data_dir}/SUB_DATA/${sub}/HIGHRES/MRI0/
+    SUBJECTS_DIR=${highres_dir}
+    for hemi in lh rh; do
+        mri_annotation2label --subject SURF_R1 --hemi ${hemi} --lobesStrict label/rh.lobesStrict
+        mris_anatomical_stats -a label/rh.lobesStrict.annot -f stats/rh.lobesStrict.stats SURF_R1 rh
+    done
+done
 #==============================================================================
 # DEFINE SOME VARIABLES
 #------------------------------------------------------------------------------
@@ -56,7 +65,7 @@ with open(sublist_file, 'r') as sublist_fid:
     sublist = sublist_fid.read().split('\n')
 
 # Name the output file you're going to write to:
-output_file = os.path.join(data_dir, 'FS_SUMMARY', 'KW_freesurfer_volume_data_' + suffix + '.csv')
+output_file = os.path.join(data_dir, 'FS_SUMMARY', 'KW_freesurfer_volume_data_lobes.csv')
 if not os.path.isdir(os.path.dirname(output_file)):
     os.makedirs(os.path.dirname(output_file))
  
