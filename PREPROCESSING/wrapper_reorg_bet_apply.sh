@@ -31,9 +31,38 @@ MPM_preprocessed_dir=${study_dir}/MPM/
 current_data_dir=${study_dir}/dicom/MPM/
 
 ### ONE DAY THIS CODE DIRECTORY WILL ALL BE IN ONE SENSIBLE PLACE!!
-code_dir=${nspn_dir}/workspaces/kw401/UCHANGE/INTERIM_ANALYSIS/SCRIPTS/NSPN_PREPROCESSING/
-reorg_bet_apply_script=${code_dir}/reorg_bet_apply.sh
+code_dir=${nspn_dir}/workspaces/kw401/UCHANGE/INTERIM_ANALYSIS/SCRIPTS/
 
+#===================================================================
+# DOWNLOAD THE CODE
+
+# Create the SCRIPTS directory
+mkdir -p ${code_dir}
+
+# Download the code from GitHub
+rm -f ${code_dir}/FROM_GITHUB
+wget -O ${code_dir}/FROM_GITHUB https://github.com/HappyPenguin/NSPN_CODE/archive/master.zip --no-check-certificate
+
+# Unzip the FROM_GITHUB
+#+ -o option forces overwrite
+unzip -o ${code_dir}/FROM_GITHUB -d ${code_dir}/
+
+####
+# Make all files executable
+chmod +x ${code_dir}/NSPN_CODE-master/*
+chmod +x ${code_dir}/NSPN_CODE-master/*/*
+
+####
+# Convert all files from dos to unix
+dos2unix ${code_dir}/NSPN_CODE-master/*
+dos2unix ${code_dir}/NSPN_CODE-master/*/*
+
+# This is a really important step btw 
+#+ you get unintelligible error messages if you don't run it!
+
+#===================================================================
+# RUN THE CODE
+reorg_bet_apply_script=${code_dir}/NSPN_CODE-master/PREPROCESSING/reorg_bet_apply.sh
 
 for age_group_dir in `ls -d ${current_data_dir}/*`; do
     age_group=`basename ${age_group_dir}`

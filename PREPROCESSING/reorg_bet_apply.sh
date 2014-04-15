@@ -35,6 +35,7 @@ function usage {
     echo "    The new directory will strip strings from the start"
     echo "    of these file names such that all participants are"
     echo "    named in a standard way" 
+    exit
 }
 
 #===================================================================
@@ -50,7 +51,12 @@ calc_filename_list=(A MT MTR MTRdiff R1 R2s synt)
 # Check that the current directory exists
 if [[ ! -d ${current_dir} ]]; then
     echo "Current directory doesn't exist - please check!"
-    exit
+    usage
+fi
+
+# If no arguments are passed then just print the usage and exit
+if [[ $# == 0 ]]; then
+    usage
 fi
 
 # Make the target and bet directory if it doesn't yet exist
@@ -66,12 +72,12 @@ for filename in ${orig_filename_list[@]} ${calc_filename_list[@]}; do
     echo -n "${filename} "
 
     # Find the appropriate MPM output file in the current directory
-    mpm_file=(`ls -d ${current_dir}/*${orig_filename}.nii`)
+    mpm_file=(`ls -d ${current_dir}/*${filename}.nii`)
 
     fslreorient2std ${mpm_file} ${target_dir}/${filename}.nii.gz    
 done
 
-echo "Done!"
+echo "   Done!"
 
 #===================================================================
 # ONLY BRAIN EXTRACT THE PDw FILE
@@ -86,7 +92,7 @@ bet ${target_dir}/PDw.nii.gz ${bet_dir}/PDw_brain.nii.gz -A
 echo -n "Applying brain extraction "
 for filename in PDw ${calc_filename_list[@]}; do
 
-    echo -n "${calc_filename} "
+    echo -n "${filename} "
 
     fslmaths ${bet_dir}/PDw_brain.nii.gz \
                 -bin \
@@ -100,7 +106,7 @@ for filename in PDw ${calc_filename_list[@]}; do
                 
 done
 
-echo "Done!"
+echo "   Done!"
 
 #===================================================================
 # ALL DONE! CONGRATULATIONS.
