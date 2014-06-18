@@ -3,7 +3,7 @@
 # A little wrapper script that gets various files ready to run the calculate_connectivity_matrix code
 
 # USAGE
-wrapper_connectivity_setup.sh <parcellation_file> <dti_dir> <reg_dir> <surfer_dir>
+#wrapper_connectivity_setup.sh <parcellation_file> <dti_dir> <reg_dir> <surfer_dir>
 
 # INPUTS
 parcellation_file=$1
