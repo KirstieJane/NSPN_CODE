@@ -1,7 +1,10 @@
+#!/usr/bin/env python
+
 import os
 import numpy as np
 import scipy.io as sio
 from glob import glob
+import pandas as pd
 
 data_dir = glob(os.path.join('/work/imaging*/NSPN/workspaces/kw401/UCHANGE/INTERIM_ANALYSIS'))[0]
 
@@ -20,13 +23,15 @@ for mat_file in mat_files:
         
 '''
        
-mat = loadmat(os.path.join(data_dir, 'SUB_DATA', 'Meas_network_measures.mat')) # Load in the .mat file
+mat = sio.loadmat(os.path.join(data_dir, 'SUB_DATA', 'Meas_network_measures.mat')) # Load in the .mat file
 mdata = mat['Meas_network_measures']  # variable of interest in mat file
 mdtype = mdata.dtype  # dtypes of structures are "unsized objects"
 ndata = {n: mdata[n][0, 0] for n in mdtype.names} # get all the data from mdata
 columns = [n for n, v in ndata.iteritems() if v.size > 1 ]
 df = pd.DataFrame(np.concatenate([ndata[c] for c in columns], axis=1), columns=columns)
-df.describe()
+print df.describe()
+
+df.to_csv(os.path.join(data_dir, 'SUB_DATA', 'Meas_network_measures.csv')) # Save as CSV file
 
 '''
  'CE',
