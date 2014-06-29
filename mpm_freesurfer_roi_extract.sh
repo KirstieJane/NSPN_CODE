@@ -28,7 +28,7 @@ for mpm in MT R2s; do
     
     # Extract roi values
     #=== wmparc
-    if [[ -f ${surfer_dir}/stats/${mpm}_wmparc.stats ]]; then
+    if [[ ! -f ${surfer_dir}/stats/${mpm}_wmparc.stats ]]; then
         mri_segstats --i ${surfer_dir}/mri/${mpm}.mgz \
                      --seg ${surfer_dir}/mri/wmparc.mgz \
                      --ctab ${FREESURFER_HOME}/WMParcStatsLUT.txt \
@@ -37,7 +37,7 @@ for mpm in MT R2s; do
     fi
     
     #=== aseg
-    if [[ -f ${surfer_dir}/stats/${mpm}_aseg.stats ]]; then
+    if [[ ! -f ${surfer_dir}/stats/${mpm}_aseg.stats ]]; then
         mri_segstats --i ${surfer_dir}/mri/${mpm}.mgz \
                      --seg ${surfer_dir}/mri/aseg.mgz \
                      --ctab ${FREESURFER_HOME}/ASegStatsLUT.txt \
