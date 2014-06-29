@@ -13,29 +13,36 @@ surfer_dir=$2
 # Loop through the mpm outputs that you're interested in
 for mpm in MT R2s; do
 
-    # Convert the mpm nii file to mgz format
-    mri_convert ${mpm_dir}/${mpm}_head.nii.gz ${mpm_dir}/${mpm}_head.mgz
+    if [[ ! -f ${mpm_dir}/${mpm}_head.mgz ]]; then
+        # Convert the mpm nii file to mgz format
+        mri_convert ${mpm_dir}/${mpm}_head.nii.gz ${mpm_dir}/${mpm}_head.mgz
+    fi
     
-    # Align the mgz file to "freesurfer" anatomical space
-    mri_vol2vol --mov ${mpm_dir}/${mpm}_head.mgz \
-                --targ ${surfer_dir}/mri/T1.mgz \
-                --regheader \
-                --o ${surfer_dir}/mri/${mpm}.mgz --no-save-reg
-
+    if [[ ! -f ${surfer_dir}/mri/${mpm}.mgz ]]; then
+        # Align the mgz file to "freesurfer" anatomical space
+        mri_vol2vol --mov ${mpm_dir}/${mpm}_head.mgz \
+                    --targ ${surfer_dir}/mri/T1.mgz \
+                    --regheader \
+                    --o ${surfer_dir}/mri/${mpm}.mgz --no-save-reg
+    fi
+    
     # Extract roi values
     #=== wmparc
-    mri_segstats --i ${surfer_dir}/mri/${mpm}.mgz \
-                 --seg ${surfer_dir}/mri/wmparc.mgz \
-                 --ctab ${FREESURFER_HOME}/WMParcStatsLUT.txt \
-                 --sum ${surfer_dir}/stats/${mpm}_wmparc.stats \
-                 --pv ${surfer_dir}/mri/norm.mgz
-
+    if [[ -f ${surfer_dir}/stats/${mpm}_wmparc.stats ]]; then
+        mri_segstats --i ${surfer_dir}/mri/${mpm}.mgz \
+                     --seg ${surfer_dir}/mri/wmparc.mgz \
+                     --ctab ${FREESURFER_HOME}/WMParcStatsLUT.txt \
+                     --sum ${surfer_dir}/stats/${mpm}_wmparc.stats \
+                     --pv ${surfer_dir}/mri/norm.mgz
+    fi
+    
     #=== aseg
-    mri_segstats --i ${surfer_dir}/mri/${mpm}.mgz \
-                 --seg ${surfer_dir}/mri/aseg.mgz \
-                 --ctab ${FREESURFER_HOME}/ASegStatsLUT.txt \
-                 --sum ${surfer_dir}/stats/${mpm}_aseg.stats \
-                 --pv ${surfer_dir}/mri/norm.mgz
-                 
+    if [[ -f ${surfer_dir}/stats/${mpm}_aseg.stats ]]; then
+        mri_segstats --i ${surfer_dir}/mri/${mpm}.mgz \
+                     --seg ${surfer_dir}/mri/aseg.mgz \
+                     --ctab ${FREESURFER_HOME}/ASegStatsLUT.txt \
+                     --sum ${surfer_dir}/stats/${mpm}_aseg.stats \
+                     --pv ${surfer_dir}/mri/norm.mgz
+    fi
 done
 
