@@ -69,7 +69,7 @@ for measure in FA MD MO L1 L23 sse; do
     
     if [[ ! -f ${surfer_dir}/mri/${measure}.mgz ]]; then
 
-        mri_vol2vol --mov ${dti_dir}/FDT/${measure_file_dti} \
+        mri_vol2vol --mov ${measure_file_dti} \
                     --targ ${surfer_dir}/mri/T1.mgz \
                     --o ${surfer_dir}/mri/${measure}.mgz \
                     --reg ${reg_dir}/diffB0_TO_surf.dat \
