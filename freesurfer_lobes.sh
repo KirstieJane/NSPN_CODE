@@ -15,13 +15,14 @@ for hemi in lh rh; do
 done
 
 # Transform the surface annotation into a segmentation volume
+# and label the white matter up to 5mm beneath the lobes
 mri_aparc2aseg --s ${surf_sub} \
             --labelwm \
             --rip-unknown \
             --annot lobesStrict \
             --o ${surfer_dir}/mri/lobes+aseg.mgz
 
-# And extract some statistics :)
+# Extract some statistics :)
 mri_segstats --i ${surfer_dir}/mri/norm.mgz \
              --seg ${surfer_dir}/mri/lobes+aseg.mgz \
              --sum ${surfer_dir}/stats/lobes+aseg.stats \
