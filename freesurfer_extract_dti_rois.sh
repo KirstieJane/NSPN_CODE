@@ -4,15 +4,15 @@
 
 function usage {
 
-    echo "This code will register the DTI B0 file to freesurfer space,"
-    echo "apply this registration to the 5 DTI measures in the <dti_dir>/FDT folder"
-    echo "and then create the <measure>_wmparc.stats and <measure>_aseg.stats files"
-    echo ""
     echo "USAGE: freesurfer_extract_rois_DTI.sh <surfer_dir> <dti_dir> <reg_dir>"
     echo "surfer_dir is the directory that contains the output from recon-all"
     echo "dti_dir is the directory that is contains the output from dti_preprocessing"
     echo "reg_dir is the directory that contains registration matrices between"
     echo "DTI and freesurfer space"
+    echo ""
+    echo "DESCRIPTION: This code will register the DTI B0 file to freesurfer space,"
+    echo "apply this registration to the 5 DTI measures in the <dti_dir>/FDT folder"
+    echo "and then create the <measure>_wmparc.stats and <measure>_aseg.stats files"
     exit
 }
 
@@ -23,9 +23,9 @@ surfer_dir=$1
 dti_dir=$2
 reg_dir=$3
 
-for dir in surfer_dir dti_dir reg_dir; do
-    if [[ ! -d ${dir} ]]; then
-        echo "${dir} is not a directory, please check"
+for d in ${surfer_dir} ${dti_dir} ${reg_dir}; do
+    if [[ ! -d ${d} ]]; then
+        echo "${d} is not a directory, please check"
         print_usage=1
     fi
 done
