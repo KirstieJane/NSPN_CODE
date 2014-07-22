@@ -63,18 +63,22 @@ for measure in FA MD MO L1 L23 sse; do
     measure_file_dti=`ls -d ${dti_dir}/FDT/*_${measure}.nii.gz 2> /dev/null`
 
     if [[ ! -f ${measure_file_dti} ]]; then 
-        echo "<measure> file doesn't exist in dti_dir, please check"
+        echo "${measure} file doesn't exist in dti_dir, please check"
         usage
     fi
     
     if [[ ! -f ${surfer_dir}/mri/${measure}.mgz ]]; then
-
+        
+        echo "    Registering ${measure} file to freesurfer space"
         mri_vol2vol --mov ${measure_file_dti} \
                     --targ ${surfer_dir}/mri/T1.mgz \
                     --o ${surfer_dir}/mri/${measure}.mgz \
                     --reg ${reg_dir}/diffB0_TO_surf.dat \
                     --no-save-reg
-                    
+
+    else
+        echo "    ${measure} file already in freesurfer space"
+       
     fi
 done
     
