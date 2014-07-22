@@ -107,7 +107,7 @@ for measure in FA MD MO L1 L23 sse; do
         fi
         
         #=== lobes+aseg
-        if [[ ! -f ${surfer_dir}/stats/${mpm}_lobes+aseg.stats ]]; then
+        if [[ ! -f ${surfer_dir}/stats/${measure}_lobes+aseg.stats ]]; then
             mri_segstats --i ${surfer_dir}/mri/${mpm}.mgz \
                          --seg ${surfer_dir}/mri/lobes+aseg.mgz \
                          --ctab ${FREESURFER_HOME}/ASegStatsLUT.txt \
