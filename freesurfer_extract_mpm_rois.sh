@@ -23,7 +23,8 @@ for mpm in MT R2s; do
         mri_vol2vol --mov ${mpm_dir}/${mpm}_head.mgz \
                     --targ ${surfer_dir}/mri/T1.mgz \
                     --regheader \
-                    --o ${surfer_dir}/mri/${mpm}.mgz --no-save-reg
+                    --o ${surfer_dir}/mri/${mpm}.mgz \
+                    --no-save-reg
     fi
     
     # Extract roi values
