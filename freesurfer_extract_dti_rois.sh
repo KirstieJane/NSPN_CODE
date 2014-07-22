@@ -88,6 +88,7 @@ done
 for measure in FA MD MO L1 L23 sse; do
     if [[ -f ${surfer_dir}/mri/${measure}.mgz ]]; then
 
+        #=== wmparc
         if [[ ! -f ${surfer_dir}/stats/${measure}_wmparc.stats ]]; then
             mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
                          --seg ${surfer_dir}/mri/wmparc.mgz \
@@ -96,11 +97,21 @@ for measure in FA MD MO L1 L23 sse; do
                          --pv ${surfer_dir}/mri/norm.mgz
         fi
         
+        #=== aseg
         if [[ ! -f ${surfer_dir}/stats/${measure}_aseg.stats ]]; then
             mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
                          --seg ${surfer_dir}/mri/aseg.mgz \
                          --ctab ${FREESURFER_HOME}/ASegStatsLUT.txt \
                          --sum ${surfer_dir}/stats/${measure}_aseg.stats \
+                         --pv ${surfer_dir}/mri/norm.mgz
+        fi
+        
+        #=== lobes+aseg
+        if [[ ! -f ${surfer_dir}/stats/${measure}_lobes+aseg.stats ]]; then
+            mri_segstats --i ${surfer_dir}/mri/${mpm}.mgz \
+                         --seg ${surfer_dir}/mri/lobes+aseg.mgz \
+                         --ctab ${FREESURFER_HOME}/ASegStatsLUT.txt \
+                         --sum ${surfer_dir}/stats/${mpm}_lobes+aseg.stats \
                          --pv ${surfer_dir}/mri/norm.mgz
         fi
     else

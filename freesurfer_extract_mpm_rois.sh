@@ -23,7 +23,8 @@ for mpm in MT R2s; do
         mri_vol2vol --mov ${mpm_dir}/${mpm}_head.mgz \
                     --targ ${surfer_dir}/mri/T1.mgz \
                     --regheader \
-                    --o ${surfer_dir}/mri/${mpm}.mgz --no-save-reg
+                    --o ${surfer_dir}/mri/${mpm}.mgz \
+                    --no-save-reg
     fi
     
     # Extract roi values
@@ -44,5 +45,15 @@ for mpm in MT R2s; do
                      --sum ${surfer_dir}/stats/${mpm}_aseg.stats \
                      --pv ${surfer_dir}/mri/norm.mgz
     fi
+    
+    #=== lobes
+    if [[ ! -f ${surfer_dir}/stats/${mpm}_lobes+aseg.stats ]]; then
+        mri_segstats --i ${surfer_dir}/mri/${mpm}.mgz \
+                     --seg ${surfer_dir}/mri/lobes+aseg.mgz \
+                     --ctab ${FREESURFER_HOME}/ASegStatsLUT.txt \
+                     --sum ${surfer_dir}/stats/${mpm}_lobes+aseg.stats \
+                     --pv ${surfer_dir}/mri/norm.mgz
+    fi
+    
 done
 
