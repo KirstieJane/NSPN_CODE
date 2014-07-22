@@ -11,8 +11,8 @@ function usage {
     echo "DTI and freesurfer space"
     echo ""
     echo "DESCRIPTION: This code will register the DTI B0 file to freesurfer space,"
-    echo "apply this registration to the 5 DTI measures in the <dti_dir>/FDT folder"
-    echo "and then create the <measure>_wmparc.stats and <measure>_aseg.stats files"
+    echo "apply this registration to the DTI measures in the <dti_dir>/FDT folder"
+    echo "and then create the appropriate <measure>_wmparc.stats and <measure>_aseg.stats files"
     exit
 }
 
@@ -62,7 +62,7 @@ fi
 for measure in FA MD MO L1 L23 sse; do
     measure_file_dti=`ls -d ${dti_dir}/FDT/*_${measure}.nii.gz 2> /dev/null`
 
-    if [[ ! -f ${measure_file} ]]; then 
+    if [[ ! -f ${measure_file_dti} ]]; then 
         echo "<measure> file doesn't exist in dti_dir, please check"
         usage
     fi
