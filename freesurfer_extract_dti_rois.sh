@@ -68,10 +68,10 @@ for measure in FA MD MO L1 L23 sse; do
     
     # If the measure file has particularly small values
     # then multiply this file by 1000 first
-    for measure in MD L1 L23; do
+    if [[ "MD L1 L23" =~ ${measure} ]]; then
         fslmaths ${measure_file_dti} -mul 1000 ${measure_file_dti/.nii/_mul1000.nii}
         measure_file_dti=${measure_file_dti/.nii/_mul1000.nii}
-    done
+    fi
     
     # Now transform this file to freesurfer space
     if [[ ! -f ${surfer_dir}/mri/${measure}.mgz ]]; then
