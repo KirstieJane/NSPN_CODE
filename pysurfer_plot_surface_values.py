@@ -23,7 +23,7 @@ subject_id = "fsaverageSubP"
 hemi_list = [ "lh", "rh" ]
 surface_list = [ "inflated", "pial" ]
 
-measure_list = [ 'FA', 'MD' ]
+measure_list = [ 'FA' ]
 
 for hemi, surface, measure in it.product(hemi_list, surface_list, measure_list):
 
@@ -42,7 +42,7 @@ for hemi, surface, measure in it.product(hemi_list, surface_list, measure_list):
     """
     aparc_file = os.path.join(subjects_dir,
                               subject_id, "label",
-                              hemi + ".aparc.annot")
+                              hemi + ".500.aparc.annot")
                               
     labels, ctab, names = nib.freesurfer.read_annot(aparc_file)
 
@@ -50,17 +50,17 @@ for hemi, surface, measure in it.product(hemi_list, surface_list, measure_list):
     Read in the data
     """
     data_file = os.path.join(fs_rois_dir, 
-                                measure + '_wmparc_mean_behavmerge.csv')
+                                measure + '_500cortExpConsecWMoverlap_mean_behavmerge.csv')
     df = pd.read_csv(data_file)
     
     """
     Fill in the data for each region on the surface
     """
-    roi_data_mean = np.zeros(len(names))
-    roi_data_std = np.zeros(len(names))
-    roi_data_r = np.zeros(len(names))
-    roi_data_p = np.ones(len(names))
-    roi_data_m = np.ones(len(names))
+    roi_data_mean = np.ones(len(names))*-99
+    roi_data_std = np.ones(len(names))*-99
+    roi_data_r = np.ones(len(names))*-99
+    roi_data_p = np.ones(len(names))*-99
+    roi_data_m = np.ones(len(names))*-99
     
     for i, name in enumerate(names):
         wm_name = 'wm-' + hemi + '-' + name
@@ -86,13 +86,15 @@ for hemi, surface, measure in it.product(hemi_list, surface_list, measure_list):
     Display these values on the brain.
     """
     ### MEAN
-    min = roi_data_mean[roi_data_mean<>0].min()
-    max = roi_data_mean[roi_data_mean<>0].max()
-    print min, max
+    l = roi_data_mean[roi_data_mean>-99].min()
+    u = roi_data_mean[roi_data_mean>-99].max()
+    l = np.floor(l*20)/20.0
+    u = np.ceil(u*20)/20.0
+    
     brain.add_data(vtx_data_mean,
-                    roi_data_mean[roi_data_mean<>0].min(), 
-                    roi_data_mean[roi_data_mean<>0].max(),
-                    thresh = 0,
+                    l, 
+                    u,
+                    thresh = -98,
                     colormap="GnBu",
                     alpha=.8)
     
