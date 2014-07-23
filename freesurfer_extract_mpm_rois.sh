@@ -54,6 +54,25 @@ for mpm in MT R2s; do
                      --sum ${surfer_dir}/stats/${mpm}_lobes+aseg.stats \
                      --pv ${surfer_dir}/mri/norm.mgz
     fi
-    
+   
+    #=== 500.aparc_cortical_expanded_consecutive_WMoverlap
+    # Only run this if there is a 500 cortical parcellation
+    if [[ ! -f ${surfer_dir}/stats/${mpm}_500cortExpConsecWMoverlap.stats \
+            && -f ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive.nii.gz ]]; then
+        
+        # Create the overlap file if it doesn't already exist
+        if [[ ! -f ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive_WMoverlap.nii.gz ]]; then
+        
+            fslmaths ${surfer_dir}/parcellation/500.aparc_whiteMatter.nii.gz \
+                        -bin \
+                        -mul ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive.nii.gz \
+                        ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive_WMoverlap.nii.gz
+        fi
+        
+        mri_segstats --i ${surfer_dir}/mri/${mpm}.mgz \
+                     --seg ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive_WMoverlap.nii.gz \
+                     --sum ${surfer_dir}/stats/${mpm}_500cortExpConsecWMoverlap.stats \
+                     --pv ${surfer_dir}/mri/norm.mgz
+    fi   
 done
 

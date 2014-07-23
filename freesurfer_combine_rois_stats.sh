@@ -8,7 +8,7 @@ data_dir=$1
 mkdir -p ${data_dir}/FS_ROIS/
 
 # Loop through the various segmentations
-for seg in aseg wmparc lobes+aseg; do
+for seg in aseg wmparc lobes+aseg 500cortExpConsecWMoverlap ; do
 
     for measure in R1 MT R2s FA MD MO L1 L23 sse; do
     
