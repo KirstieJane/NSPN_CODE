@@ -25,10 +25,10 @@ file_list = file_list_mean + file_list_volume
 
 df_behav = pd.read_csv(behav_file)
 
-for f in mpm_file_list:
-    df_mpm = pd.read_csv(f)
-    if not df_mpm.columns[1] == 'occ':
-        df = df_behav.merge(df_mpm, on='nspn_id')
+for f in file_list:
+    df_meas = pd.read_csv(f)
+    if not df_meas.columns[1] == 'occ':
+        df = df_behav.merge(df_meas, on='nspn_id')
         df.sort('nspn_id', inplace=True)
         c_drop = [ x for x in df.columns if 'Measure' in x ][0]
         df.drop(c_drop, inplace=True, axis=1)
