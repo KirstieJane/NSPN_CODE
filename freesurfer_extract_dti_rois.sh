@@ -61,12 +61,19 @@ fi
 # then you have to make it
 for measure in FA MD MO L1 L23 sse; do
     measure_file_dti=`ls -d ${dti_dir}/FDT/*_${measure}.nii.gz 2> /dev/null`
-
     if [[ ! -f ${measure_file_dti} ]]; then 
         echo "${measure} file doesn't exist in dti_dir, please check"
         usage
     fi
     
+    # If the measure file has particularly small values
+    # then multiply this file by 1000 first
+    for measure in MD L1 L23; do
+        fslmaths ${measure_file_dti} -mul 1000 ${measure_file_dti/.nii/_mul1000.nii}
+        measure_file_dti=${measure_file_dti/.nii/_mul1000.nii}
+    done
+    
+    # Now transform this file to freesurfer space
     if [[ ! -f ${surfer_dir}/mri/${measure}.mgz ]]; then
         
         echo "    Registering ${measure} file to freesurfer space"
@@ -80,8 +87,16 @@ for measure in FA MD MO L1 L23 sse; do
         echo "    ${measure} file already in freesurfer space"
        
     fi
-done
     
+done
+
+
+#=============================================================================
+# MULTIPLY VERY SMALL VALUES BY 1000
+#=============================================================================
+# If the average value 
+
+
 #=============================================================================
 # EXTRACT THE STATS FROM THE SEGMENTATION FILES
 #=============================================================================    
