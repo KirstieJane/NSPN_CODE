@@ -117,6 +117,7 @@ for mpm in MT R2s PD; do
                     --o ${surfer_dir}/mri/${mpm}.mgz \
                     --no-save-reg
     fi
+done
     
 #=============================================================================
 # EXTRACT THE STATS FROM THE SEGMENTATION FILES
