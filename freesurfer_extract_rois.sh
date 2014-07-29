@@ -153,7 +153,7 @@ for measure in MT R2s PD FA MD MO L1 L23 sse; do
         #=== 500.aparc_cortical_expanded_consecutive_WMoverlap
         # Extract measures from the cortical regions in the 500 parcellation
         if [[ ! -f ${surfer_dir}/stats/${measure}_500cortConsec.stats 
-                && -f ${surfer_dir}/parcellation/500.aparc_cortical_consecutive.nii.gz]]; then
+                && -f ${surfer_dir}/parcellation/500.aparc_cortical_consecutive.nii.gz ]]; then
             mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
                          --seg ${surfer_dir}/parcellation/500.aparc_cortical_consecutive.nii.gz  \
                          --sum ${surfer_dir}/stats/${measure}_500cortConsec.stats \
