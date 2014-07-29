@@ -19,8 +19,8 @@ fs_rois_dir=sys.argv[1]
 # Get the full path to the behaviour csv file
 behav_file=sys.argv[2]
 
-file_list_mean = glob('*mean.csv')
-file_list_volume = (glob('*volume.csv'))
+file_list_mean = glob(os.path.join(fs_rois_dir, '*mean.csv'))
+file_list_volume = glob(os.path.join(fs_rois_dir, '*volume.csv'))
 file_list = file_list_mean + file_list_volume
 
 df_behav = pd.read_csv(behav_file)

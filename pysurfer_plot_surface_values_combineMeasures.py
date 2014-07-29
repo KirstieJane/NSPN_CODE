@@ -19,7 +19,7 @@ import matplotlib.image as mpimg
 import matplotlib.gridspec as gridspec
 
 
-def combine_pngs(measure, surface, stat, fs_rois_dir):
+def combine_pngs(measure1, measure2, surface, stat, fs_rois_dir):
 
     figsize = (4.5,4)
     fig = plt.figure(figsize = figsize, facecolor='white')
@@ -27,10 +27,10 @@ def combine_pngs(measure, surface, stat, fs_rois_dir):
     grid = gridspec.GridSpec(2, 2)
     grid.update(left=0, right=1, top=1, bottom = 0.08, wspace=0, hspace=0)
 
-    f_list = [ '_'.join([os.path.join(fs_rois_dir, measure), 'lh', surface, stat,       'lateral.png']),
-                '_'.join([os.path.join(fs_rois_dir, measure), 'rh', surface, stat, 'lateral.png']),
-                '_'.join([os.path.join(fs_rois_dir, measure), 'lh', surface, stat, 'medial.png']),
-                '_'.join([os.path.join(fs_rois_dir, measure), 'rh', surface, stat, 'medial.png']) ]
+    f_list = [ '_'.join([os.path.join(fs_rois_dir, measure1), 'lh', surface, stat,       measure2, 'lateral.png']),
+                '_'.join([os.path.join(fs_rois_dir, measure1), 'rh', surface, stat, measure2, 'lateral.png']),
+                '_'.join([os.path.join(fs_rois_dir, measure1), 'lh', surface, stat, measure2, 'medial.png']),
+                '_'.join([os.path.join(fs_rois_dir, measure1), 'rh', surface, stat, measure2, 'medial.png']) ]
 
                            
     for g_loc, f in zip(grid, f_list):
@@ -53,7 +53,8 @@ def combine_pngs(measure, surface, stat, fs_rois_dir):
     ax.imshow(img_cbar, interpolation='none')
     ax.set_axis_off()
     
-    filename = os.path.join(fs_rois_dir, '{}_{}_{}_combined.png'.format(measure, surface,stat))
+    filename = os.path.join(fs_rois_dir, '{}_{}_{}_{}_combined.png'.format(measure1,
+    surface,stat, measure2))
     print filename
     fig.savefig(filename, bbox_inches=0, dpi=300)
 
@@ -68,11 +69,12 @@ subject_id = "fsaverageSubP"
 hemi_list = [ "lh", "rh" ]
 surface_list = [ "inflated", "pial" ]
 
-measure_list = [ 'CT' ]
+measure_list = [ 'FA' ]
+measure2 = 'CT'
 
-for hemi, surface, measure in it.product(hemi_list, surface_list, measure_list):
+for hemi, surface, measure1 in it.product(hemi_list, surface_list, measure_list):
 
-    print hemi, surface, measure
+    print hemi, surface, measure1
     
     """
     Read in the standard parcellation
@@ -93,20 +95,23 @@ for hemi, surface, measure in it.product(hemi_list, surface_list, measure_list):
     """
     Read in the data
     """
-    data_file = os.path.join(fs_rois_dir, 
-                                measure + '_500cortExpConsecWMoverlap_mean_behavmerge.csv')
-    df = pd.read_csv(data_file)
-
+    data_file1 = os.path.join(fs_rois_dir, 
+                                measure1 + '_500cortExpConsecWMoverlap_mean_behavmerge.csv')
+    df1 = pd.read_csv(data_file1)
     
+    data_file2 = os.path.join(fs_rois_dir, 
+                                measure2 + '_500cortExpConsecWMoverlap_mean_behavmerge.csv')
+    df2 = pd.read_csv(data_file2)
     
     # RENAME THE COLUMNS SO THEY MATCH THE NAMES IN THE APARC FILE
     # NOTE: this really should be put into the behav merge code
     # rather than here!
-    colnames = df.columns
+    colnames = df1.columns
     seg_cols = [ x for x in colnames if 'Seg' in x ]
     
     for i, wm_name in enumerate(wm_names):
-        df[wm_name] = df[seg_cols[i+1]]
+        df1[wm_name] = df1[seg_cols[i+1]]
+        df2[wm_name] = df2[seg_cols[i+1]]
 
     """
     Fill in the data for each region on the surface
@@ -121,10 +126,11 @@ for hemi, surface, measure in it.product(hemi_list, surface_list, measure_list):
         #wm_name = 'wm-' + hemi + '-' + name
         wm_name = '{}_{}'.format(hemi, name)
  
-        if wm_name in df.columns:
-            roi_data_mean[i] = df[wm_name].mean()
-            roi_data_std[i] = df[wm_name].std()
-            m, c, r, p, sterr = linregress(df['age_scan'], df[wm_name])
+        if wm_name in df1.columns:
+            df_merge = df1.merge(df2, on='nspn_id')
+            roi_data_mean[i] = df1[wm_name].mean()
+            roi_data_std[i] = df1[wm_name].std()
+            m, c, r, p, sterr = linregress(df_merge[wm_name + '_x'], df_merge[wm_name + '_y'])
             roi_data_m[i] = m
             roi_data_r[i] = r
             roi_data_p[i] = 1 - p
@@ -142,30 +148,8 @@ for hemi, surface, measure in it.product(hemi_list, surface_list, measure_list):
     """
     Display these values on the brain.
     """
-    ### MEAN
-    brain = Brain(subject_id, hemi, surface,
-                  subjects_dir = subjects_dir,
-                  config_opts=dict(background="white"))
-
-    l = roi_data_mean[roi_data_mean>-99].min()
-    u = roi_data_mean[roi_data_mean>-99].max()
-    l = np.floor(l*20)/20.0
-    u = np.ceil(u*20)/20.0
     
-    brain.add_data(vtx_data_mean,
-                    1.9, 
-                    3.7,
-                    thresh = -98,
-                    colormap="jet",
-                    alpha=.8)
-    
-    views_list = [ 'medial', 'lateral' ]
-    prefix = '_'.join([measure, hemi, surface, 'mean'])
-    brain.save_imageset(prefix = os.path.join(fs_rois_dir, prefix),
-                        views = views_list, 
-                        colorbar = range(len(views_list)) )
-                        
-    ### PEARSON CORR w AGE
+    ### PEARSON CORR w MEASURE 2
     brain = Brain(subject_id, hemi, surface,
                   subjects_dir = subjects_dir,
                   config_opts=dict(background="white"))
@@ -189,41 +173,11 @@ for hemi, surface, measure in it.product(hemi_list, surface_list, measure_list):
                     alpha=.8)
     
     views_list = [ 'medial', 'lateral' ]
-    prefix = '_'.join([measure, hemi, surface, 'r'])
+    prefix = '_'.join([measure1, hemi, surface, 'r', measure2])
     brain.save_imageset(prefix = os.path.join(fs_rois_dir, prefix),
                         views = views_list, 
                         colorbar = range(len(views_list)) )
                         
-
-    ### SLOPE w AGE
-    brain = Brain(subject_id, hemi, surface,
-                  subjects_dir = subjects_dir,
-                  config_opts=dict(background="white"))
-
-    l = roi_data_m[roi_data_mean>-99].min()
-    u = roi_data_m[roi_data_mean>-99].max()
-    l = np.floor(l*200)/200.0
-    u = np.ceil(u*200)/200.0
-    
-    # Make sure the colorbar is centered
-    if l**2 < u **2:
-        l = u*-1
-    else:
-        u = l*-1
-    
-    brain.add_data(vtx_data_m,
-                    l, 
-                    u,
-                    thresh = -98,
-                    colormap="PuOr_r",
-                    alpha=.8)
-    
-    views_list = [ 'medial', 'lateral' ]
-    prefix = '_'.join([measure, hemi, surface, 'm'])
-    brain.save_imageset(prefix = os.path.join(fs_rois_dir, prefix),
-                        views = views_list, 
-                        colorbar = range(len(views_list)) )
-    
 
     ### SIGNIFICANCE w AGE
     brain = Brain(subject_id, hemi, surface,
@@ -243,13 +197,10 @@ for hemi, surface, measure in it.product(hemi_list, surface_list, measure_list):
                     alpha=.8)
     
     views_list = [ 'medial', 'lateral' ]
-    prefix = '_'.join([measure, hemi, surface, 'p'])
+    prefix = '_'.join([measure1, hemi, surface, 'p', measure2])
     brain.save_imageset(prefix = os.path.join(fs_rois_dir, prefix),
                         views = views_list, 
                         colorbar = range(len(views_list)) )
                        
-for measure, surface in it.product(measure_list, surface_list):
-    combine_pngs(measure, surface, 'mean', fs_rois_dir)
-    combine_pngs(measure, surface, 'r', fs_rois_dir)
-    combine_pngs(measure, surface, 'p', fs_rois_dir)
-    combine_pngs(measure, surface, 'm', fs_rois_dir)
+    combine_pngs(measure1, measure2, surface, 'r', fs_rois_dir)
+    combine_pngs(measure1, measure2, surface, 'p', fs_rois_dir)
