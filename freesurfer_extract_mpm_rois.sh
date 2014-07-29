@@ -50,7 +50,6 @@ for mpm in MT R2s; do
     if [[ ! -f ${surfer_dir}/stats/${mpm}_lobes+aseg.stats ]]; then
         mri_segstats --i ${surfer_dir}/mri/${mpm}.mgz \
                      --seg ${surfer_dir}/mri/lobes+aseg.mgz \
-                     --ctab ${FREESURFER_HOME}/ASegStatsLUT.txt \
                      --sum ${surfer_dir}/stats/${mpm}_lobes+aseg.stats \
                      --pv ${surfer_dir}/mri/norm.mgz
     fi
