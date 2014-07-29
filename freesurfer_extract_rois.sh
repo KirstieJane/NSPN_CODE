@@ -4,14 +4,13 @@
 
 function usage {
 
-    echo "USAGE: freesurfer_extract_rois_DTI.sh <surfer_dir> <dti_dir> <reg_dir>"
-    echo "surfer_dir is the directory that contains the output from recon-all"
-    echo "dti_dir is the directory that is contains the output from dti_preprocessing"
-    echo "reg_dir is the directory that contains registration matrices between"
-    echo "DTI and freesurfer space"
+    echo "USAGE: freesurfer_extract_rois_DTI.sh <data_dir> <sub>"
+    echo "Note that data dir expects to find SUB_DATA within it"
+    echo "and then the standard NSPN directory structure"
     echo ""
     echo "DESCRIPTION: This code will register the DTI B0 file to freesurfer space,"
-    echo "apply this registration to the DTI measures in the <dti_dir>/FDT folder"
+    echo "apply this registration to the DTI measures in the <dti_dir>/FDT folder,"
+    echo "transform the MPM files to freesurfer space," 
     echo "and then create the appropriate <measure>_wmparc.stats and <measure>_aseg.stats files"
     exit
 }
