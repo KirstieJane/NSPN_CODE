@@ -148,7 +148,12 @@ for measure in MT R2s PD FA MD MO L1 L23 sse; do
             mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
                          --seg ${surfer_dir}/mri/lobes+aseg.mgz \
                          --sum ${surfer_dir}/stats/${measure}_lobes+aseg.stats \
-                         --pv ${surfer_dir}/mri/norm.mgz
+                         --pv ${surfer_dir}/mri/norm.mgz \
+                         --id 1001 1003 1004 1005 1006 1007 \
+                              2001 2003 2004 2005 2006 2007 \
+                              3001 3003 3004 3005 3006 3007 \
+                              4001 4003 4004 4005 4006 4007
+        
         fi
         
         #=== 500.aparc_cortical_expanded_consecutive_WMoverlap
