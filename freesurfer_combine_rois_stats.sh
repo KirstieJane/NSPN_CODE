@@ -10,7 +10,7 @@ mkdir -p ${data_dir}/FS_ROIS/
 # Loop through the various segmentations
 for seg in aseg wmparc lobesStrict 500cortExpConsecWMoverlap 500cortConsec; do
 
-    for measure in R1 MT R2s FA MD MO L1 L23 sse; do
+    for measure in R1 MT R2s PDw FA MD MO L1 L23 sse; do
     
         # Find all the individual stats files for that segmentation
         inputs=(`ls -d ${data_dir}/SUB_DATA/*/SURFER/MRI0/stats/${measure}_${seg}.stats 2> /dev/null `)
@@ -49,13 +49,17 @@ for seg in aseg wmparc lobesStrict 500cortExpConsecWMoverlap 500cortConsec; do
 
             # And replace all '-' with '_' because statsmodels in python
             # likes that more :P
-            
-            
+            sed -i "s/-/_/g" ${data_dir}/FS_ROIS/${measure}_${seg}_mean.csv
+            sed -i "s/://g" ${data_dir}/FS_ROIS/${measure}_${seg}_mean.csv
+                        
             # Don't forget to paste the nspn_ids in for the volume file
             if [[ ${measure} == R1 ]]; then
                 paste -d , ${data_dir}/FS_ROIS/nspn_id_col \
                             ${data_dir}/FS_ROIS/${seg}_volume_temp.csv \
                                 > ${data_dir}/FS_ROIS/${seg}_volume.csv
+                # And replace '-' with '_'
+                sed -i "s/-/_/g" ${data_dir}/FS_ROIS/${seg}_volume.csv
+                sed -i "s/://g" ${data_dir}/FS_ROIS/${seg}_volume.csv
             fi
             
             # Remove the temporary files
@@ -66,4 +70,13 @@ for seg in aseg wmparc lobesStrict 500cortExpConsecWMoverlap 500cortConsec; do
             echo "    No input files for ${measure}_${seg}!"
         fi
     done
-done 
+done
+
+
+# You need to make a data dictionary for RedCap
+# It's really easy...
+for seg in aseg wmparc lobesStrict 500cortExpConsecWMoverlap 500cortConsec; do
+
+    for measure in R1 MT R2s PDw FA MD MO L1 L23 sse; do
+        
+        header
