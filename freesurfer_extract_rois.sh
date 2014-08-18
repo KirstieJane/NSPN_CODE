@@ -141,7 +141,7 @@ done
 # Specifically this will loop through the following segmentations:
 #     wmparc
 #     aseg
-#     lobes+aseg but only extract lobe values
+#     lobesStrict
 #     500.aparc_cortical_consecutive
 #     500.aparc_cortical_expanded_consecutive_WMoverlap
 #=============================================================================
@@ -167,11 +167,11 @@ for measure in MT R2s PDw FA MD MO L1 L23 sse; do
                          --pv ${surfer_dir}/mri/norm.mgz
         fi
         
-        #=== lobes+aseg
-        if [[ ! -f ${surfer_dir}/stats/${measure}_lobes+aseg.stats ]]; then
+        #=== lobesStrict
+        if [[ ! -f ${surfer_dir}/stats/${measure}_lobesStrict.stats ]]; then
             mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
                          --seg ${surfer_dir}/mri/lobes+aseg.mgz \
-                         --sum ${surfer_dir}/stats/${measure}_lobes+aseg.stats \
+                         --sum ${surfer_dir}/stats/${measure}_lobesStrict.stats \
                          --pv ${surfer_dir}/mri/norm.mgz \
                          --ctab ${lobes_ctab}
         

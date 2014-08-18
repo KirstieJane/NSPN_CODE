@@ -48,12 +48,12 @@ for mpm in MT R2s; do
                      --pv ${surfer_dir}/mri/norm.mgz
     fi
     
-    #=== lobes
-    if [[ ! -f ${surfer_dir}/stats/${mpm}_lobes+aseg.stats ]]; then
+    #=== lobesStrict
+    if [[ ! -f ${surfer_dir}/stats/${mpm}_lobesStrict.stats ]]; then
         mri_segstats --i ${surfer_dir}/mri/${mpm}.mgz \
                      --seg ${surfer_dir}/mri/lobes+aseg.mgz \
                      --ctab ${lobes_ctab} \
-                     --sum ${surfer_dir}/stats/${mpm}_lobes+aseg.stats \
+                     --sum ${surfer_dir}/stats/${mpm}_lobesStrict.stats \
                      --pv ${surfer_dir}/mri/norm.mgz
     fi
    
