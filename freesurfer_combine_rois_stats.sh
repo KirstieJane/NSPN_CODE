@@ -51,7 +51,7 @@ for seg in aseg wmparc lobesStrict 500cortExpConsecWMoverlap 500cortConsec; do
             # likes that more :P
             sed -i "s/-/_/g" ${data_dir}/FS_ROIS/${measure}_${seg}_mean.csv
             sed -i "s/://g" ${data_dir}/FS_ROIS/${measure}_${seg}_mean.csv
-                        
+                                    
             # Don't forget to paste the nspn_ids in for the volume file
             if [[ ${measure} == R1 ]]; then
                 paste -d , ${data_dir}/FS_ROIS/nspn_id_col \
