@@ -23,12 +23,12 @@
 3006    wm-lh-perietal                      35  235 245 0
 3007    wm-lh-insula                        75  35  115 0
 
-4001    wm-lh-frontal                       230 155 215 0
-4003    wm-lh-cingulate                     155 230 255 0
-4004    wm-lh-occipital                     135 185 205 0
-4005    wm-lh-temporal                      35  235 155 0
-4006    wm-lh-perietal                      35  235 245 0
-4007    wm-lh-insula                        75  35  115 0
+4001    wm-rh-frontal                       230 155 215 0
+4003    wm-rh-cingulate                     155 230 255 0
+4004    wm-rh-occipital                     135 185 205 0
+4005    wm-rh-temporal                      35  235 155 0
+4006    wm-rh-perietal                      35  235 245 0
+4007    wm-rh-insula                        75  35  115 0
 
 5001    Left-UnsegmentedWhiteMatter         20  30  40  0
 5002    Right-UnsegmentedWhiteMatter        20  30  40  0
