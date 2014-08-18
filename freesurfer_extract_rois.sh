@@ -30,6 +30,8 @@ function usage {
 data_dir=$1
 sub=$2
 
+lobes_ctab=`dirname ${0}`/LobesStrictLUT.txt
+
 if [[ ! -d ${data_dir} ]]; then
     echo "${data_dir} is not a directory, please check"
     print_usage=1
@@ -116,7 +118,7 @@ for mpm in MT R2s PDw; do
 
     # If the measure file has particularly small values
     # then multiply this file by 1000 first
-    if [[ "MT R2s" =~ ${mpm} ]]; then
+    if [[ "R2s" =~ ${mpm} ]]; then
         if [[ ! -f ${mpm_file/.nii/_mul1000.nii} ]]; then
             fslmaths ${mpm_file} -mul 1000 ${mpm_file/.nii/_mul1000.nii}
         fi
@@ -171,10 +173,7 @@ for measure in MT R2s PDw FA MD MO L1 L23 sse; do
                          --seg ${surfer_dir}/mri/lobes+aseg.mgz \
                          --sum ${surfer_dir}/stats/${measure}_lobes+aseg.stats \
                          --pv ${surfer_dir}/mri/norm.mgz \
-                         --id 1001 1003 1004 1005 1006 1007 \
-                              2001 2003 2004 2005 2006 2007 \
-                              3001 3003 3004 3005 3006 3007 \
-                              4001 4003 4004 4005 4006 4007
+                         --ctab ${lobes_ctab}
         
         fi
         

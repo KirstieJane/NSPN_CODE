@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This code takes the MT, PD and R2* files from the mpm_dir,
+# This code takes the MT, PDw and R2* files from the mpm_dir,
 # converts them to freesurfer space (in the surfer_dir) and then
 # extracts a bunch of different values from each of them
 
@@ -10,6 +10,8 @@
 mpm_dir=$1
 surfer_dir=$2
 
+lobes_ctab=`dirname ${0}`/LobesStrictLUT.txt
+                     
 # Loop through the mpm outputs that you're interested in
 for mpm in MT R2s; do
 
@@ -50,6 +52,7 @@ for mpm in MT R2s; do
     if [[ ! -f ${surfer_dir}/stats/${mpm}_lobes+aseg.stats ]]; then
         mri_segstats --i ${surfer_dir}/mri/${mpm}.mgz \
                      --seg ${surfer_dir}/mri/lobes+aseg.mgz \
+                     --ctab ${lobes_ctab} \
                      --sum ${surfer_dir}/stats/${mpm}_lobes+aseg.stats \
                      --pv ${surfer_dir}/mri/norm.mgz
     fi

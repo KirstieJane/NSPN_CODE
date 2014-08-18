@@ -23,6 +23,8 @@ surfer_dir=$1
 dti_dir=$2
 reg_dir=$3
 
+lobes_ctab=`dirname ${0}`/LobesStrictLUT.txt
+
 for d in ${surfer_dir} ${dti_dir} ${reg_dir}; do
     if [[ ! -d ${d} ]]; then
         echo "${d} is not a directory, please check"
@@ -122,7 +124,8 @@ for measure in FA MD MO L1 L23 sse; do
             mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
                          --seg ${surfer_dir}/mri/lobes+aseg.mgz \
                          --sum ${surfer_dir}/stats/${measure}_lobes+aseg.stats \
-                         --pv ${surfer_dir}/mri/norm.mgz
+                         --pv ${surfer_dir}/mri/norm.mgz \
+                         --ctab ${lobes_ctab}
         fi
         
         #=== 500.aparc_cortical_expanded_consecutive_WMoverlap
