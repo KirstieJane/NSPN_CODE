@@ -54,16 +54,4 @@ if [[ ! -f ${surfer_dir}/mri/lobes+aseg.mgz ]]; then
                 --o ${surfer_dir}/mri/lobes+aseg.mgz
 fi
 
-#=============================================================================
-# EXTRACT STATISTICS
-#=============================================================================
-# Extract some statistics :)
-if [[ ! -f ${surfer_dir}/stats/lobesStrict.stats ]]; then
-    mri_segstats --i ${surfer_dir}/mri/norm.mgz \
-                 --seg ${surfer_dir}/mri/lobes+aseg.mgz \
-                 --sum ${surfer_dir}/stats/lobesStrict.stats \
-                 --pv ${surfer_dir}/mri/norm.mgz \
-                 --ctab ${lobes_ctab}
-
-fi
 
