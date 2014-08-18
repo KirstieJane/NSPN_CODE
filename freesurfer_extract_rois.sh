@@ -113,12 +113,12 @@ done
 # If the measure file doesn't exist yet in the <surfer_dir>/mri folder
 # then you have to make it
 # Loop through the mpm outputs that you're interested in
-for mpm in MT R2s PDw; do
+for mpm in R1 MT R2s PDw; do
     mpm_file=`ls -d ${mpm_dir}/${mpm}_head.nii.gz 2> /dev/null`
 
     # If the measure file has particularly small values
     # then multiply this file by 1000 first
-    if [[ "R2s" =~ ${mpm} ]]; then
+    if [[ ${mpm} == "R2s" ]]; then
         if [[ ! -f ${mpm_file/.nii/_mul1000.nii} ]]; then
             fslmaths ${mpm_file} -mul 1000 ${mpm_file/.nii/_mul1000.nii}
         fi
@@ -146,7 +146,7 @@ done
 #     500.aparc_cortical_expanded_consecutive_WMoverlap
 #=============================================================================
   
-for measure in MT R2s PDw FA MD MO L1 L23 sse; do
+for measure in R1 MT R2s PDw FA MD MO L1 L23 sse; do
     if [[ -f ${surfer_dir}/mri/${measure}.mgz ]]; then
 
         #=== wmparc

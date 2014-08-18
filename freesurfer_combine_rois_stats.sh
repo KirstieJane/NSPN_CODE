@@ -8,18 +8,12 @@ data_dir=$1
 mkdir -p ${data_dir}/FS_ROIS/
 
 # Loop through the various segmentations
-for seg in aseg wmparc lobes+aseg 500cortExpConsecWMoverlap ; do
+for seg in aseg wmparc lobesStrict 500cortExpConsecWMoverlap ; do
 
     for measure in R1 MT R2s FA MD MO L1 L23 sse; do
     
-        if [[ ${measure} == R1 ]]; then
-            # Find all the stats files for the original segmentation
-            # which was created based on the MPM R1 scans
-            inputs=(`ls -d ${data_dir}/SUB_DATA/*/SURFER/MRI0/stats/${seg}.stats`)        
-        else
-            # Find all the individual stats files for that segmentation
-            inputs=(`ls -d ${data_dir}/SUB_DATA/*/SURFER/MRI0/stats/${measure}_${seg}.stats`)
-        fi
+        # Find all the individual stats files for that segmentation
+        inputs=(`ls -d ${data_dir}/SUB_DATA/*/SURFER/MRI0/stats/${measure}_${seg}.stats`)
     
         if [[ ${measure} == R1 ]]; then
             # Write out the volume for each segment
@@ -39,11 +33,12 @@ for seg in aseg wmparc lobes+aseg 500cortExpConsecWMoverlap ; do
                         --common-segs \
                         --meas mean
                     
-        # Create the first column of nspn_ids
-        echo "nspn_id" > ${data_dir}/FS_ROIS/nspn_id_col
+        # Create the first two columns:
+        # nspn_id and occ (which is always 0 at the moment)
+        echo "nspn_id,occ" > ${data_dir}/FS_ROIS/nspn_id_col
         for sub in ${inputs[@]}; do
             sub=${sub/${data_dir}/}
-            echo ${sub:10:5} >> ${data_dir}/FS_ROIS/nspn_id_col
+            echo ${sub:10:5},0 >> ${data_dir}/FS_ROIS/nspn_id_col
         done
     
         # Now paste the data together

@@ -8,7 +8,7 @@
 # READ IN COMMAND LINE ARGUMENTS
 #=============================================================================
 surfer_dir=$1
-ctab=$2
+
 
 #=============================================================================
 # CHECK THE INPUTS
@@ -18,17 +18,13 @@ if [[ -d ${surfer_dir} ]]; then
     exit
 fi
 
-if [[ -f ${ctab} ]]; then
-    echo "color look up table doesn't exist - CHECK ${ctab}"
-    exit
-fi
-
 #=============================================================================
 # DEFINE VARIABLES
 #=============================================================================
 # Set the subjects dir and subject id variables
 SUBJECTS_DIR=${surfer_dir}/../
 surf_sub=`basename ${surfer_dir}`
+lobes_ctab=`dirname ${0}`/LobesStrictLUT.txt
 
 #=============================================================================
 # COMBINE LABELS
@@ -67,7 +63,7 @@ if [[ ! -f ${surfer_dir}/stats/lobesStrict.stats ]]; then
                  --seg ${surfer_dir}/mri/lobes+aseg.mgz \
                  --sum ${surfer_dir}/stats/lobesStrict.stats \
                  --pv ${surfer_dir}/mri/norm.mgz \
-                 --ctab ${ctab}
+                 --ctab ${lobes_ctab}
 
 fi
 
