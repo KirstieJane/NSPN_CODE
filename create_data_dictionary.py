@@ -2,6 +2,8 @@
 
 import sys
 import os
+import numpy as np
+
 
 data_dir = sys.argv[1]
 
@@ -15,8 +17,11 @@ header='Variable / Field Name,Form Name,Section Header,Field Type,Field Label,"C
 with open(output_name, 'w') as f:
     f.write(header)
 
-for seg in seg_list:
-    for measure in measure_list:
+for measure in measure_list:
+
+    for seg in seg_list:
+
+        data_upload_file = os.path.join(data_dir, 'data_upload_{}_{}.csv'.format(measure, seg))
                 
         fname = os.path.join(data_dir, '{}_{}_mean.csv'.format(measure, seg) )
 
@@ -30,6 +35,7 @@ for seg in seg_list:
             names = [ x.replace('-', '_') for x in names ]
             names = [ '{}_{}_{}'.format(measure.lower(), seg.lower(), x) for x in names ]
 
+            # Append these names to the data dictionary file
             form_name = '{}_{}_stats'.format(measure.lower(), seg.lower())
             data_dict_list = [ '{},{},,text,{},,,number,,,,,,,,,'.format(x, form_name, y) for (x,y) in zip(names, names_list) ] 
 
@@ -37,4 +43,29 @@ for seg in seg_list:
                 for x in data_dict_list:
                     f.write('{}\n'.format(x))
                 
+            # Append the data to the data upload file
+            with open(fname) as f:
+                data = f.readlines()
+            data = [ x.strip('\n') for x in data ]
+            np_data = np.array([ x.split(',') for x in data[1:]])
+            np_data = np.hstack([np.array(names)[:, None], np_data.T])
+
+            upload_data = np.copy(np_data)
+
+            np.savetxt(data_upload_file, upload_data, fmt='%s', delimiter=",")
+
+            n_subs = upload_data.shape[1]-1
+            data_header_list = [ 'id_nspn' ] + list(upload_data[0,1:]) + [ '\nredcap_event_name' ] + ['baseline_assessmen_arm_1'] * n_subs
+
+            data_header = ','.join(data_header_list)
+
+            data_footer_list = [ '{}_complete'.format(form_name) ] + ['1'] * n_subs
+            data_footer = ','.join(data_footer_list)
+
+            with open(data_upload_file, 'r+') as f:
+                data = f.read()
+                f.seek(0)
+                f.write(data_header + '\n')
+                f.write(data)
+                f.write(data_footer)
 # The end
