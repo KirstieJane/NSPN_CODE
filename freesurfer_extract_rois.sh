@@ -1,17 +1,26 @@
 #!/bin/bash
 
-# Extract values from a freesurfer segmentation file
+#==============================================================================
+# Extract DTI and MPM measures from freesurfer ROIs
+# Created by Kirstie Whitaker
+# Contact kw401@cam.ac.uk
+#==============================================================================
+
+#==============================================================================
+# Define the usage function
+#==============================================================================
 
 function usage {
 
-    echo "USAGE: freesurfer_extract_rois_DTI.sh <data_dir> <sub>"
+    echo "USAGE: freesurfer_extract_rois_DTI.sh <data_dir> <subid>"
     echo "Note that data dir expects to find SUB_DATA within it"
     echo "and then the standard NSPN directory structure"
     echo ""
     echo "DESCRIPTION: This code will register the DTI B0 file to freesurfer space,"
     echo "apply this registration to the DTI measures in the <dti_dir>/FDT folder,"
     echo "transform the MPM files to freesurfer space," 
-    echo "and then create the appropriate <measure>_wmparc.stats and <measure>_aseg.stats files"
+    echo "and then create the appropriate <measure>_wmparc.stats and "
+    echo "<measure>_aseg.stats files for each subject separately"
     exit
 }
 
@@ -102,16 +111,21 @@ done
 # If the measure file doesn't exist yet in the <surfer_dir>/mri folder
 # then you have to make it
 # Loop through the mpm outputs that you're interested in
-for mpm in MT R2s PD; do
+for mpm in MT R2s PDw; do
+    mpm_file=`ls -d ${mpm_dir}/${mpm}_head.nii.gz 2> /dev/null`
 
-    if [[ ! -f ${mpm_dir}/${mpm}_head.mgz ]]; then
-        # Convert the mpm nii file to mgz format
-        mri_convert ${mpm_dir}/${mpm}_head.nii.gz ${mpm_dir}/${mpm}_head.mgz
+    # If the measure file has particularly small values
+    # then multiply this file by 1000 first
+    if [[ "MT R2s" =~ ${mpm} ]]; then
+        if [[ ! -f ${mpm_file/.nii/_mul1000.nii} ]]; then
+            fslmaths ${mpm_file} -mul 1000 ${mpm_file/.nii/_mul1000.nii}
+        fi
+        mpm_file=${mpm_file/.nii/_mul1000.nii}
     fi
     
     if [[ ! -f ${surfer_dir}/mri/${mpm}.mgz ]]; then
         # Align the mgz file to "freesurfer" anatomical space
-        mri_vol2vol --mov ${mpm_dir}/${mpm}_head.mgz \
+        mri_vol2vol --mov ${mpm_file} \
                     --targ ${surfer_dir}/mri/T1.mgz \
                     --regheader \
                     --o ${surfer_dir}/mri/${mpm}.mgz \
@@ -121,8 +135,16 @@ done
     
 #=============================================================================
 # EXTRACT THE STATS FROM THE SEGMENTATION FILES
-#=============================================================================    
-for measure in MT R2s PD FA MD MO L1 L23 sse; do
+#=============================================================================
+# Specifically this will loop through the following segmentations:
+#     wmparc
+#     aseg
+#     lobes+aseg but only extract lobe values
+#     500.aparc_cortical_consecutive
+#     500.aparc_cortical_expanded_consecutive_WMoverlap
+#=============================================================================
+  
+for measure in MT R2s PDs FA MD MO L1 L23 sse; do
     if [[ -f ${surfer_dir}/mri/${measure}.mgz ]]; then
 
         #=== wmparc
@@ -156,7 +178,7 @@ for measure in MT R2s PD FA MD MO L1 L23 sse; do
         
         fi
         
-        #=== 500.aparc_cortical_expanded_consecutive_WMoverlap
+        #=== 500.aparc_cortical_consecutive.nii.gz
         # Extract measures from the cortical regions in the 500 parcellation
         if [[ ! -f ${surfer_dir}/stats/${measure}_500cortConsec.stats 
                 && -f ${surfer_dir}/parcellation/500.aparc_cortical_consecutive.nii.gz ]]; then

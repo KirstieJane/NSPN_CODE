@@ -16,7 +16,6 @@ for hemi in lh rh; do
     fi
 done
 
-
 # Transform the surface annotation into a segmentation volume
 # and label the white matter up to 5mm beneath the lobes
 if [[ ! -f ${surfer_dir}/mri/lobes+aseg.mgz ]]; then
