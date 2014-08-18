@@ -71,12 +71,3 @@ for seg in aseg wmparc lobesStrict 500cortExpConsecWMoverlap 500cortConsec; do
         fi
     done
 done
-
-
-# You need to make a data dictionary for RedCap
-# It's really easy...
-for seg in aseg wmparc lobesStrict 500cortExpConsecWMoverlap 500cortConsec; do
-
-    for measure in R1 MT R2s PDw FA MD MO L1 L23 sse; do
-        
-        header
