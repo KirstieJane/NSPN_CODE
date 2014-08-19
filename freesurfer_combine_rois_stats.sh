@@ -50,6 +50,7 @@ for seg in aseg wmparc lobesStrict 500cortExpConsecWMoverlap 500cortConsec; do
             # And replace all '-' with '_' because statsmodels in python
             # likes that more :P
             sed -i "s/-/_/g" ${data_dir}/FS_ROIS/${measure}_${seg}_mean.csv
+            sed -i "s/_0/-0/g" ${data_dir}/FS_ROIS/${measure}_${seg}_mean.csv
             sed -i "s/://g" ${data_dir}/FS_ROIS/${measure}_${seg}_mean.csv
                                     
             # Don't forget to paste the nspn_ids in for the volume file
