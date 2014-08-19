@@ -10,7 +10,7 @@ mkdir -p ${data_dir}/FS_ROIS/
 # Loop through the various segmentations
 for seg in aseg wmparc lobesStrict 500cortExpConsecWMoverlap 500cortConsec; do
 
-    for measure in R1 MT R2s PDw FA MD MO L1 L23 sse; do
+    for measure in R1 MT R2s A FA MD MO L1 L23 sse; do
     
         # Find all the individual stats files for that segmentation
         inputs=(`ls -d ${data_dir}/SUB_DATA/*/SURFER/MRI0/stats/${measure}_${seg}.stats 2> /dev/null `)

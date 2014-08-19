@@ -113,7 +113,7 @@ done
 # If the measure file doesn't exist yet in the <surfer_dir>/mri folder
 # then you have to make it
 # Loop through the mpm outputs that you're interested in
-for mpm in R1 MT R2s PDw; do
+for mpm in R1 MT R2s A; do
     mpm_file=`ls -d ${mpm_dir}/${mpm}_head.nii.gz 2> /dev/null`
 
     # If the measure file has particularly small values
