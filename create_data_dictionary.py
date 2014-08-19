@@ -55,9 +55,11 @@ for measure in measure_list:
             np.savetxt(data_upload_file, upload_data, fmt='%s', delimiter=",")
 
             n_subs = upload_data.shape[1]-1
-            data_header_list = [ 'id_nspn' ] + list(upload_data[0,1:]) + [ '\nredcap_event_name' ] + ['baseline_assessmen_arm_1'] * n_subs
+            data_header_list_1 = [ 'id_nspn' ] + list(upload_data[0,1:])
+            data_header_list_2 = [ 'redcap_event_name' ] + ['baseline_assessmen_arm_1'] * n_subs
 
-            data_header = ','.join(data_header_list)
+            data_header_1 = ','.join(data_header_list_1)
+            data_header_2 = ','.join(data_header_list_2)
 
             data_footer_list = [ '{}_complete'.format(form_name) ] + ['1'] * n_subs
             data_footer = ','.join(data_footer_list)
@@ -65,7 +67,8 @@ for measure in measure_list:
             with open(data_upload_file, 'r+') as f:
                 data = f.read()
                 f.seek(0)
-                f.write(data_header + '\n')
+                f.write(data_header_1 + '\n')
+                f.write(data_header_2 + '\n')
                 f.write(data)
                 f.write(data_footer)
 # The end
