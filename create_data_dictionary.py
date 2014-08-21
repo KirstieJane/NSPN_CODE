@@ -7,7 +7,7 @@ import numpy as np
 
 data_dir = sys.argv[1]
 
-measure_list = [ 'R1', 'MT', 'R2s', 'PDw', 'FA', 'MD', 'MO', 'L1', 'L23', 'sse', 'volume' ]
+measure_list = [ 'A', 'R1', 'MT', 'R2s', 'PDw', 'FA', 'MD', 'MO', 'L1', 'L23', 'sse', 'volume' ]
 
 seg_list = [ 'aseg', 'wmparc', 'lobesStrict', '500cortExpConsecWMoverlap', '500cortConsec' ]
 
