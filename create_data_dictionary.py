@@ -7,9 +7,9 @@ import numpy as np
 
 data_dir = sys.argv[1]
 
-measure_list = [ 'R1', 'MT', 'R2s', 'PDw', 'FA', 'MD', 'MO', 'L1', 'L23', 'sse' ]
+measure_list = [ 'R1', 'MT', 'R2s', 'PDw', 'FA', 'MD', 'MO', 'L1', 'L23', 'sse', 'volume' ]
 
-seg_list = [ 'aseg', 'wmparc', 'lobesStrict', '500cortExpConsecWMoverlap', '500cortConsec']
+seg_list = [ 'aseg', 'wmparc', 'lobesStrict', '500cortExpConsecWMoverlap', '500cortConsec' ]
 
 output_name = os.path.join(data_dir, 'data_dict.csv')
 header='Variable / Field Name,Form Name,Section Header,Field Type,Field Label,"Choices, Calculations, OR Slider Labels",Field Note,Text Validation Type OR Show Slider Number,Text Validation Min,Text Validation Max,Identifier?,Branching Logic (Show field only if...),Required Field?,Custom Alignment,Question Number (surveys only),Matrix Group Name,Matrix Ranking?\nid_nspn,nspn_id_form,,text,NSPN ID,,,,,,,,,,,,\n'
@@ -24,6 +24,8 @@ for measure in measure_list:
         data_upload_file = os.path.join(data_dir, 'data_upload_{}_{}.csv'.format(measure, seg))
                 
         fname = os.path.join(data_dir, '{}_{}_mean.csv'.format(measure, seg) )
+        if measure == 'volume':
+            fname = os.path.join(data_dir, '{}_volume.csv'.format(seg) )
 
         if os.path.isfile(fname):
             with open(fname) as f:
