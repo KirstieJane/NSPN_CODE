@@ -90,7 +90,7 @@ for region in `cat  ${surfer_dir}/probtrackx/seeds_targets_list.txt`; do
                      -l \
                      --xfm=${surfer_dir}/dmri/xfms/anatorig2diff.bbr.mat " \
                             >> ${surfer_dir}/probtrackx/commands_dir/${sub}_${region_name}.sh
-                            
+    chmod +x ${surfer_dir}/probtrackx/commands_dir/${sub}_${region_name}.sh
 done # Close region loop
 
 #======================================================
