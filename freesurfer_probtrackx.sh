@@ -28,13 +28,13 @@ for sub in `cat ${data_dir}/sublist`; do
             if [[ ! -f ${surfer_dir}/probtrackx/seeds_targets/${hemi}.${label}.gii ]]; then
                 echo "converting $label to $vol"
                 mri_label2vol --label ${surfer_dir}/probtrackx/seeds_targets/${hemi}.${label}.label \
-                                --temp ${surfer_dir}/dlabel/anat_brain_mask.nii.gz \
+                                --temp ${surfer_dir}/dlabel/anat/anat_brain_mask.nii.gz \
                                 --o ${surfer_dir}/probtrackx/seeds_targets/${hemi}.${label}.gii \
                                 --identity \
                                 --fillthresh 0.5
                                 
                 mri_label2vol --label ${surfer_dir}/probtrackx/seeds_targets/${hemi}.${label}.label \
-                                --temp ${surfer_dir}/dlabel/anat_brain_mask.nii.gz \
+                                --temp ${surfer_dir}/dlabel/anat/anat_brain_mask.nii.gz \
                                 --o ${surfer_dir}/probtrackx/seeds_targets/${hemi}.${label}.nii.gz \
                                 --identity \
                                 --fillthresh 0.5
