@@ -3,7 +3,7 @@
 #======================================================
 # USAGE: freesurfer_probtrackx <data_dir> <subid>
 #======================================================
-def usage {
+function usage {
     echo "USAGE: freesurfer_probtrackx <data_dir> <subid>"
     exit
 }
