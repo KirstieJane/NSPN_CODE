@@ -91,11 +91,11 @@ done
 #======================================================
 # Create the probtrackx command for each seed
 #======================================================
-mkdir -p ${surfer_dir}/probtrackx/commands_dir/
+mkdir -p ${data_dir}/probtrackx_commands_dir/
 
 for label in `cat  ${surfer_dir}/probtrackx/seeds_targets_list_gii.txt`; do
     label_name=`basename ${label} .gii`
-    echo "#!/bin/bash" > ${data_dir}/probtrackx/commands_dir/${sub}_${label_name}.sh
+    echo "#!/bin/bash" > ${data_dir}/probtrackx_commands_dir/${sub}_${label_name}.sh
     echo "probtrackx -s ${surfer_dir}/dmri.bedpostX/merged \
                      -m ${surfer_dir}/dmri.bedpostX/nodif_brain_mask \
                      -x ${label} \
@@ -107,7 +107,6 @@ for label in `cat  ${surfer_dir}/probtrackx/seeds_targets_list_gii.txt`; do
                      --targetmasks=${surfer_dir}/probtrackx/seeds_targets_list_gii \
                      --waypoints=${surfer_dir}/anatorig/White-Matter++.nii.gz \
                      -l \
-                     --onewaycondition \
                      --omatrix1 \
                      --xfm=${surfer_dir}/dmri/xfms/anatorig2diff.bbr.mat \
                      --meshspace=freesurfer " >> ${data_dir}/probtrackx/commands_dir/${sub}_${label_name}.sh
