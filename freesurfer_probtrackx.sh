@@ -49,7 +49,7 @@ rm -rf ${surfer_dir}/probtrackx/seeds_targets_list.txt
 
 mkdir -p ${surfer_dir}/probtrackx/seeds_targets_500cortExpConsecWMoverlap/
 
-i=0
+i=1
 while [[ ${i} -le 308 ]]; do
     
     # If the region hasn't yet been created on its own then do that now
