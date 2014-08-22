@@ -97,7 +97,7 @@ done # Close region loop
 # Run the scripts!
 #======================================================
 
-scripts_dir=`dirname ${0}`
+scripts_dir=`dirname ${0}`/../
 
 if [[ -f ${scripts_dir}/WRAPPERS/SubmitAllScriptsInDirectory.sh ]]; then
     ${scripts_dir}/WRAPPERS/SubmitAllScriptsInDirectory.sh ${surfer_dir}/probtrackx/commands_dir/
