@@ -70,13 +70,13 @@ done
 #======================================================
 # Create the probtrackx command for each seed
 #======================================================
-mkdir -p ${surfer_dir}/probtrackx_commands_dir/
+mkdir -p ${surfer_dir}/probtrackx/commands_dir/
 
 for region in `cat  ${surfer_dir}/probtrackx/seeds_targets_list.txt`; do
 
     region_name=`basename ${region} .nii.gz`
 
-    echo "#!/bin/bash" > ${surfer_dir}/probtrackx_commands_dir/${sub}_${region_name}.sh
+    echo "#!/bin/bash" > ${surfer_dir}/probtrackx/commands_dir/${sub}_${region_name}.sh
     echo "probtrackx -s ${surfer_dir}/dmri.bedpostX/merged \
                      -m ${surfer_dir}/dmri.bedpostX/nodif_brain_mask \
                      -x ${region} \
@@ -89,7 +89,7 @@ for region in `cat  ${surfer_dir}/probtrackx/seeds_targets_list.txt`; do
                      --waypoints=${surfer_dir}/dlabel/anatorig/White-Matter++.nii.gz \
                      -l \
                      --xfm=${surfer_dir}/dmri/xfms/anatorig2diff.bbr.mat " \
-                            >> ${surfer_dir}/probtrackx_commands_dir/${sub}_${region_name}.sh
+                            >> ${surfer_dir}/probtrackx/commands_dir/${sub}_${region_name}.sh
                             
 done # Close region loop
 
@@ -97,9 +97,12 @@ done # Close region loop
 # Run the scripts!
 #======================================================
 
-for script in `ls -d ${surfer_dir}/probtrackx_commands_dir/*sh`; do
-    chmod +x ${script}
-    ${script}
-done
+scripts_dir=`dirname ${0}`
 
+if [[ -f ${scripts_dir}/WRAPPERS/SubmitAllScriptsInDirectory.sh ]]; then
+    ${scripts_dir}/WRAPPERS/SubmitAllScriptsInDirectory.sh ${surfer_dir}/probtrackx/commands_dir/
+else
+    echo "======= Can't find SubmitAllScripts wrapper! ======="
+    echo "= You'll have to submit these manually             ="
+fi
 #=============================================================================
