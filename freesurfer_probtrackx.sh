@@ -85,7 +85,7 @@ for region in `cat  ${surfer_dir}/probtrackx/seeds_targets_list.txt`; do
                      --opd \
                      --os2t \
                      --s2tastext \
-                     --targetmasks=${surfer_dir}/probtrackx/seeds_targets_list_nii.txt \
+                     --targetmasks=${surfer_dir}/probtrackx/seeds_targets_list.txt \
                      --waypoints=${surfer_dir}/dlabel/anatorig/White-Matter++.nii.gz \
                      -l \
                      --xfm=${surfer_dir}/dmri/xfms/anatorig2diff.bbr.mat " \
