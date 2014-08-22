@@ -3,8 +3,10 @@
 #======================================================
 # USAGE: freesurfer_probtrackx <data_dir> <subid>
 #======================================================
-
-
+def usage {
+    echo "USAGE: freesurfer_probtrackx <data_dir> <subid>"
+    exit
+}
 #======================================================
 # READ IN COMMAND LINE ARGUMENTS
 #======================================================
@@ -26,8 +28,7 @@ if [[ -z ${sub} ]]; then
 fi
 
 if [[ ${print_usage} == 1 ]]; then
-    echo "USAGE: freesurfer_probtrackx <data_dir> <subid>"
-    exit
+    usage
 fi
 
 #======================================================
@@ -36,79 +37,69 @@ fi
 surfer_dir=${data_dir}/SUB_DATA/${sub}/SURFER/MRI0/
 export SUBJECTS_DIR=`dirname ${surfer_dir}`
 
-label_list=(`dirname ${0}`/destrieux_labels_order.txt)
-labels=(`cat ${label_list}`)
-
-
-#======================================================
-# AND GET GOING
-#======================================================
-
-mkdir -p ${surfer_dir}/probtrackx/seeds_targets/
-
-# CREATE INDIVIDUAL LABELS FOR THE ANNOTATION FILE
-# In this example we're looking at the aparc.a2009s scheme
-for hemi in lh rh; do
-    for label in ${labels[@]}; do
-        if [[ ! -f ${surfer_dir}/probtrackx/seeds_targets/${hemi}.${label}.label ]]; then
-            mri_annotation2label --subject MRI0 \
-                                    --hemi ${hemi} \
-                                    --annotation ${surfer_dir}/label/${hemi}.aparc.a2009s.annot \
-                                    --outdir ${surfer_dir}/probtrackx/seeds_targets/ \
-                                    --surface white
-        fi
-        
-        if [[ ! -f ${surfer_dir}/probtrackx/seeds_targets/${hemi}.${label}.gii ]]; then
-            echo "converting $label to $vol"
-            mri_label2vol --label ${surfer_dir}/probtrackx/seeds_targets/${hemi}.${label}.label \
-                            --temp ${surfer_dir}/dlabel/anat/anat_brain_mask.nii.gz \
-                            --o ${surfer_dir}/probtrackx/seeds_targets/${hemi}.${label}.gii \
-                            --identity \
-                            --fillthresh 0.5
-                            
-            mri_label2vol --label ${surfer_dir}/probtrackx/seeds_targets/${hemi}.${label}.label \
-                            --temp ${surfer_dir}/dlabel/anat/anat_brain_mask.nii.gz \
-                            --o ${surfer_dir}/probtrackx/seeds_targets/${hemi}.${label}.nii.gz \
-                            --identity \
-                            --fillthresh 0.5
-        fi
-    done # Close label list
-done # Close hemi loop
+#label_list=(`dirname ${0}`/destrieux_labels_order.txt)
+#labels=(`cat ${label_list}`)
 
 #======================================================
-# Make the seeds_targets.txt file for each individual
+# Split up the input parcellation scheme and 
+# make the seeds_targets.txt file for each individual
 #======================================================
-rm -rf ${surfer_dir}/probtrackx/seeds_targets_list_gii.txt
-rm -rf ${surfer_dir}/probtrackx/seeds_targets_list_nii.txt
 
-for hemi in lh rh; do
-    for label in ${labels[@]}; do
-        echo ${surfer_dir}/probtrackx/seeds_targets/${hemi}.${label}.gii >> ${surfer_dir}/probtrackx/seeds_targets_list_gii.txt
-        echo ${surfer_dir}/probtrackx/seeds_targets/${hemi}.${label}.nii.gz >> ${surfer_dir}/probtrackx/seeds_targets_list_nii.txt
-    done
-done
+rm -rf ${surfer_dir}/probtrackx/seeds_targets_list.txt
+
+mkdir -p ${surfer_dir}/probtrackx/seeds_targets_500cortExpConsecWMoverlap/
+
+i=0
+while [[ ${i} -le 308 ]]; do
+    
+    # If the region hasn't yet been created on its own then do that now
+    if [[ ! -f ${surfer_dir}/probtrackx/seeds_targets_500cortExpConsecWMoverlap/Seg`printf %04d $i`.nii.gz ]]; then
+        fslmaths ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive_WMoverlap.nii.gz \
+                        -thr ${i} \
+                        -uthr ${i} \
+                        -bin \
+                        ${surfer_dir}/probtrackx/seeds_targets_500cortExpConsecWMoverlap/Seg`printf %04d $i`.nii.gz
+    fi
+
+    # Always write the region to the seeds_targets_list file
+    echo ${surfer_dir}/probtrackx/seeds_targets_500cortExpConsecWMoverlap/Seg`printf %04d $i`.nii.gz \
+                            >> ${surfer_dir}/probtrackx/seeds_targets_list.txt
+    let i=${i}+1
+done                    
 
 #======================================================
 # Create the probtrackx command for each seed
 #======================================================
-mkdir -p ${data_dir}/probtrackx_commands_dir/
+mkdir -p ${surfer_dir}/probtrackx_commands_dir/
 
-for label in `cat  ${surfer_dir}/probtrackx/seeds_targets_list_gii.txt`; do
-    label_name=`basename ${label} .gii`
-    echo "#!/bin/bash" > ${data_dir}/probtrackx_commands_dir/${sub}_${label_name}.sh
+for region in `cat  ${surfer_dir}/probtrackx/seeds_targets_list.txt`; do
+
+    region_name=`basename ${region} .nii.gz`
+
+    echo "#!/bin/bash" > ${surfer_dir}/probtrackx_commands_dir/${sub}_${region_name}.sh
     echo "probtrackx -s ${surfer_dir}/dmri.bedpostX/merged \
                      -m ${surfer_dir}/dmri.bedpostX/nodif_brain_mask \
-                     -x ${label} \
-                     --dir=${surfer_dir}/probtrackx/${label_name}/ \
+                     -x ${region} \
+                     --dir=${surfer_dir}/probtrackx/${region_name}/ \
                      --forcedir \
                      --opd \
                      --os2t \
                      --s2tastext \
-                     --targetmasks=${surfer_dir}/probtrackx/seeds_targets_list_gii \
-                     --waypoints=${surfer_dir}/anatorig/White-Matter++.nii.gz \
+                     --targetmasks=${surfer_dir}/probtrackx/seeds_targets_list_nii.txt \
+                     --waypoints=${surfer_dir}/dlabel/anatorig/White-Matter++.nii.gz \
                      -l \
-                     --omatrix1 \
-                     --xfm=${surfer_dir}/dmri/xfms/anatorig2diff.bbr.mat \
-                     --meshspace=freesurfer " >> ${data_dir}/probtrackx/commands_dir/${sub}_${label_name}.sh
+                     --xfm=${surfer_dir}/dmri/xfms/anatorig2diff.bbr.mat " \
+                            >> ${surfer_dir}/probtrackx_commands_dir/${sub}_${region_name}.sh
+                            
+done # Close region loop
 
-done # Close label loop
+#======================================================
+# Run the scripts!
+#======================================================
+
+for script in `ls -d ${surfer_dir}/probtrackx_commands_dir/*sh`; do
+    chmod +x ${script}
+    ${script}
+done
+
+#=============================================================================
