@@ -16,7 +16,7 @@ for sub in `cat ${data_dir}/sublist`; do
     # CREATE INDIVIDUAL LABELS FOR THE ANNOTATION FILE
     # In this example we're looking at the aparc.a2009s scheme
     for hemi in lh rh; do
-        for label in ${labels[@]}
+        for label in ${labels[@]}; do
             if [[ ! -f ${surfer_dir}/probtrackx/seeds_targets/${hemi}.${label}.label ]]; then
                 mri_annotation2label --subject MRI0 \
                                         --hemi ${hemi} \
