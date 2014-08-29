@@ -72,7 +72,7 @@ surface_list = [ "inflated", "pial" ]
 measure_list = [ 'FA' ]
 measure2 = 'CT'
 
-for measure in measure_list:
+for measure1 in measure_list:
     for hemi, surface in it.product(hemi_list, surface_list):
 
         print hemi, surface, measure1
