@@ -72,9 +72,10 @@ if not os.path.isfile(outfile_prob):
         s_data = data.sum(axis=0)
         sum_matrix[i,:] = s_data
     
+    prob_matrix = mean_matrix / 5000.0
+    
     np.savetxt(outfile_mean, mean_matrix, fmt='%10.10f')
-    np.savetxt(outfile_prob, mean_matrix/5000.0, fmt='%10.10f')
-
+    np.savetxt(outfile_prob, prob_matrix, fmt='%10.10f')
     np.savetxt(outfile_sum, sum_matrix, fmt='%10.10f')
 
 else:
