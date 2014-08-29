@@ -59,6 +59,7 @@ matrix_file_list.sort()
 
 outfile_mean = os.path.join(data_dir, 'SUB_DATA', subid, 'SURFER', 'MRI0', 'probtrackx', 'mean_connectivity.txt')
 outfile_sum = os.path.join(data_dir, 'SUB_DATA', subid, 'SURFER', 'MRI0', 'probtrackx', 'sum_connectivity.txt')
+outfile_prob = os.path.join(data_dir, 'SUB_DATA', subid, 'SURFER', 'MRI0', 'probtrackx', 'prob_connectivity.txt')
 
 if not os.path.isfile(outfile_mean):
     mean_matrix = np.zeros([308, 308])
@@ -72,6 +73,7 @@ if not os.path.isfile(outfile_mean):
         sum_matrix[i,:] = s_data
     
     np.savetxt(outfile_mean, mean_matrix, fmt='%10.10f')
+    np.savetxt(outfile_prob, mean_matrix/5000.0, fmt='%10.10f')
 
     np.savetxt(outfile_sum, sum_matrix, fmt='%10.10f')
 
