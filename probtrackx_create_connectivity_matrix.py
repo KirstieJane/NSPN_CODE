@@ -93,7 +93,7 @@ figfile_prob = os.path.join(data_dir, 'SUB_DATA', subid, 'SURFER', 'MRI0', 'prob
 
 save_png(mean_matrix, figfile_mean)
 save_png(sum_matrix, figfile_sum)
-save_png(prob_matrix, figfile_sum)
+save_png(prob_matrix, figfile_prob)
 
 #=============================================================================
 # THE END
