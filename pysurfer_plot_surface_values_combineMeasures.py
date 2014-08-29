@@ -75,7 +75,7 @@ measure2 = 'CT'
 for measure in measure_list:
     for hemi, surface in it.product(hemi_list, surface_list):
 
-    print hemi, surface, measure1
+        print hemi, surface, measure1
     
         """
         Read in the standard parcellation
