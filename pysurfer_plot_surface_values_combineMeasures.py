@@ -72,135 +72,136 @@ surface_list = [ "inflated", "pial" ]
 measure_list = [ 'FA' ]
 measure2 = 'CT'
 
-for hemi, surface, measure1 in it.product(hemi_list, surface_list, measure_list):
+for measure in measure_list:
+    for hemi, surface in it.product(hemi_list, surface_list):
 
     print hemi, surface, measure1
     
-    """
-    Read in the standard parcellation
-    Of course you'll have to change this when you're looping through different files!
-    """
-    aparc_file = os.path.join(subjects_dir,
-                              subject_id, "label",
-                              hemi + ".500.aparc.annot")
-                              
-    aparc_names_file =  os.path.join(subjects_dir,
-                              subject_id, "parcellation",
-                              "500.names.txt")
-                              
-    wm_names = [line.strip() for line in open(aparc_names_file)]
-    wm_names = wm_names[41::]
-    labels, ctab, names = nib.freesurfer.read_annot(aparc_file)
-    
-    """
-    Read in the data
-    """
-    data_file1 = os.path.join(fs_rois_dir, 
-                                measure1 + '_500cortExpConsecWMoverlap_mean_behavmerge.csv')
-    df1 = pd.read_csv(data_file1)
-    
-    data_file2 = os.path.join(fs_rois_dir, 
-                                measure2 + '_500cortExpConsecWMoverlap_mean_behavmerge.csv')
-    df2 = pd.read_csv(data_file2)
-    
-    # RENAME THE COLUMNS SO THEY MATCH THE NAMES IN THE APARC FILE
-    # NOTE: this really should be put into the behav merge code
-    # rather than here!
-    colnames = df1.columns
-    seg_cols = [ x for x in colnames if 'Seg' in x ]
-    
-    for i, wm_name in enumerate(wm_names):
-        df1[wm_name] = df1[seg_cols[i+1]]
-        df2[wm_name] = df2[seg_cols[i+1]]
-
-    """
-    Fill in the data for each region on the surface
-    """
-    roi_data_mean = np.ones(len(names))*-99
-    roi_data_std = np.ones(len(names))*-99
-    roi_data_r = np.ones(len(names))*-99
-    roi_data_p = np.ones(len(names))*-99
-    roi_data_m = np.ones(len(names))*-99
+        """
+        Read in the standard parcellation
+        Of course you'll have to change this when you're looping through different files!
+        """
+        aparc_file = os.path.join(subjects_dir,
+                                  subject_id, "label",
+                                  hemi + ".500.aparc.annot")
+                                  
+        aparc_names_file =  os.path.join(subjects_dir,
+                                  subject_id, "parcellation",
+                                  "500.names.txt")
+                                  
+        wm_names = [line.strip() for line in open(aparc_names_file)]
+        wm_names = wm_names[41::]
+        labels, ctab, names = nib.freesurfer.read_annot(aparc_file)
         
-    for i, name in enumerate(names):
-        #wm_name = 'wm-' + hemi + '-' + name
-        wm_name = '{}_{}'.format(hemi, name)
- 
-        if wm_name in df1.columns:
-            df_merge = df1.merge(df2, on='nspn_id')
-            roi_data_mean[i] = df1[wm_name].mean()
-            roi_data_std[i] = df1[wm_name].std()
-            m, c, r, p, sterr = linregress(df_merge[wm_name + '_x'], df_merge[wm_name + '_y'])
-            roi_data_m[i] = m
-            roi_data_r[i] = r
-            roi_data_p[i] = 1 - p
+        """
+        Read in the data
+        """
+        data_file1 = os.path.join(fs_rois_dir, 
+                                    measure1 + '_500cortExpConsecWMoverlap_mean_behavmerge.csv')
+        df1 = pd.read_csv(data_file1)
+        
+        data_file2 = os.path.join(fs_rois_dir, 
+                                    measure2 + '_500cortExpConsecWMoverlap_mean_behavmerge.csv')
+        df2 = pd.read_csv(data_file2)
+        
+        # RENAME THE COLUMNS SO THEY MATCH THE NAMES IN THE APARC FILE
+        # NOTE: this really should be put into the behav merge code
+        # rather than here!
+        colnames = df1.columns
+        seg_cols = [ x for x in colnames if 'Seg' in x ]
+        
+        for i, wm_name in enumerate(wm_names):
+            df1[wm_name] = df1[seg_cols[i+1]]
+            df2[wm_name] = df2[seg_cols[i+1]]
 
-    
-    """
-    Make a vector containing the data point at each vertex.
-    """
-    vtx_data_mean = roi_data_mean[labels]
-    vtx_data_std = roi_data_std[labels]
-    vtx_data_r = roi_data_r[labels]
-    vtx_data_p = roi_data_p[labels]
-    vtx_data_m = roi_data_m[labels]
+        """
+        Fill in the data for each region on the surface
+        """
+        roi_data_mean = np.ones(len(names))*-99
+        roi_data_std = np.ones(len(names))*-99
+        roi_data_r = np.ones(len(names))*-99
+        roi_data_p = np.ones(len(names))*-99
+        roi_data_m = np.ones(len(names))*-99
+            
+        for i, name in enumerate(names):
+            #wm_name = 'wm-' + hemi + '-' + name
+            wm_name = '{}_{}'.format(hemi, name)
+     
+            if wm_name in df1.columns:
+                df_merge = df1.merge(df2, on='nspn_id')
+                roi_data_mean[i] = df1[wm_name].mean()
+                roi_data_std[i] = df1[wm_name].std()
+                m, c, r, p, sterr = linregress(df_merge[wm_name + '_x'], df_merge[wm_name + '_y'])
+                roi_data_m[i] = m
+                roi_data_r[i] = r
+                roi_data_p[i] = 1 - p
 
-    """
-    Display these values on the brain.
-    """
-    
-    ### PEARSON CORR w MEASURE 2
-    brain = Brain(subject_id, hemi, surface,
-                  subjects_dir = subjects_dir,
-                  config_opts=dict(background="white"))
+        
+        """
+        Make a vector containing the data point at each vertex.
+        """
+        vtx_data_mean = roi_data_mean[labels]
+        vtx_data_std = roi_data_std[labels]
+        vtx_data_r = roi_data_r[labels]
+        vtx_data_p = roi_data_p[labels]
+        vtx_data_m = roi_data_m[labels]
 
-    l = roi_data_r[roi_data_mean>-99].min()
-    u = roi_data_r[roi_data_mean>-99].max()
-    l = np.floor(l*20)/20.0
-    u = np.ceil(u*20)/20.0
-    
-    # Make sure the colorbar is centered
-    if l**2 < u **2:
-        l = u*-1
-    else:
-        u = l*-1
-    
-    brain.add_data(vtx_data_r,
-                    -0.35, 
-                    0.35,
-                    thresh = -98,
-                    colormap="RdBu_r",
-                    alpha=.8)
-    
-    views_list = [ 'medial', 'lateral' ]
-    prefix = '_'.join([measure1, hemi, surface, 'r', measure2])
-    brain.save_imageset(prefix = os.path.join(fs_rois_dir, prefix),
-                        views = views_list, 
-                        colorbar = range(len(views_list)) )
-                        
+        """
+        Display these values on the brain.
+        """
+        
+        ### PEARSON CORR w MEASURE 2
+        brain = Brain(subject_id, hemi, surface,
+                      subjects_dir = subjects_dir,
+                      config_opts=dict(background="white"))
 
-    ### SIGNIFICANCE w AGE
-    brain = Brain(subject_id, hemi, surface,
-                  subjects_dir = subjects_dir,
-                  config_opts=dict(background="white"))
+        l = roi_data_r[roi_data_mean>-99].min()
+        u = roi_data_r[roi_data_mean>-99].max()
+        l = np.floor(l*20)/20.0
+        u = np.ceil(u*20)/20.0
+        
+        # Make sure the colorbar is centered
+        if l**2 < u **2:
+            l = u*-1
+        else:
+            u = l*-1
+        
+        brain.add_data(vtx_data_r,
+                        -0.35, 
+                        0.35,
+                        thresh = -98,
+                        colormap="RdBu_r",
+                        alpha=.8)
+        
+        views_list = [ 'medial', 'lateral' ]
+        prefix = '_'.join([measure1, hemi, surface, 'r', measure2])
+        brain.save_imageset(prefix = os.path.join(fs_rois_dir, prefix),
+                            views = views_list, 
+                            colorbar = range(len(views_list)) )
+                            
 
-    l = roi_data_p[roi_data_mean>-99].min()
-    u = roi_data_p[roi_data_mean>-99].max()
-    l = np.floor(l*20)/20.0
-    u = np.ceil(u*20)/20.0
-    
-    brain.add_data(vtx_data_p,
-                    0.95, 
-                    1.0,
-                    thresh = 0.95,
-                    colormap="autumn",
-                    alpha=.8)
-    
-    views_list = [ 'medial', 'lateral' ]
-    prefix = '_'.join([measure1, hemi, surface, 'p', measure2])
-    brain.save_imageset(prefix = os.path.join(fs_rois_dir, prefix),
-                        views = views_list, 
-                        colorbar = range(len(views_list)) )
-                       
+        ### SIGNIFICANCE w AGE
+        brain = Brain(subject_id, hemi, surface,
+                      subjects_dir = subjects_dir,
+                      config_opts=dict(background="white"))
+
+        l = roi_data_p[roi_data_mean>-99].min()
+        u = roi_data_p[roi_data_mean>-99].max()
+        l = np.floor(l*20)/20.0
+        u = np.ceil(u*20)/20.0
+        
+        brain.add_data(vtx_data_p,
+                        0.95, 
+                        1.0,
+                        thresh = 0.95,
+                        colormap="autumn",
+                        alpha=.8)
+        
+        views_list = [ 'medial', 'lateral' ]
+        prefix = '_'.join([measure1, hemi, surface, 'p', measure2])
+        brain.save_imageset(prefix = os.path.join(fs_rois_dir, prefix),
+                            views = views_list, 
+                            colorbar = range(len(views_list)) )
+                           
     combine_pngs(measure1, measure2, surface, 'r', fs_rois_dir)
     combine_pngs(measure1, measure2, surface, 'p', fs_rois_dir)
