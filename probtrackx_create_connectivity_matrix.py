@@ -61,7 +61,7 @@ outfile_mean = os.path.join(data_dir, 'SUB_DATA', subid, 'SURFER', 'MRI0', 'prob
 outfile_sum = os.path.join(data_dir, 'SUB_DATA', subid, 'SURFER', 'MRI0', 'probtrackx', 'sum_connectivity.txt')
 outfile_prob = os.path.join(data_dir, 'SUB_DATA', subid, 'SURFER', 'MRI0', 'probtrackx', 'prob_connectivity.txt')
 
-if not os.path.isfile(outfile_mean):
+if not os.path.isfile(outfile_prob):
     mean_matrix = np.zeros([308, 308])
     sum_matrix = np.zeros([308, 308])
 
@@ -80,6 +80,7 @@ if not os.path.isfile(outfile_mean):
 else:
     mean_matrix = np.loadtxt(outfile_mean)
     sum_matrix = np.loadtxt(outfile_sum)
+    prob_matrix = np.loadtxt(outfile_prob)
     
 #=============================================================================
 # MAKE A NICE PICTURE
