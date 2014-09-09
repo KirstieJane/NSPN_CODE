@@ -1,12 +1,42 @@
 #!/bin/bash
 
-# freesurfer_combine_rois_stats.sh <data_dir>
+#==============================================================================
+# Combine stats measures of surface parcellations and segmentations for
+# NSPN MPM and DTI data for all subjects
+# Created by Kirstie Whitaker
+# Contact kw401@cam.ac.uk
+#==============================================================================
+
+#==============================================================================
+# USAGE: freesurfer_combine_rois_stats.sh <data_dir>
+#==============================================================================
+function usage {
+
+    echo "USAGE: freesurfer_combine_rois_stats.sh <data_dir>"
+    echo "Note that data dir expects to find SUB_DATA within it"
+    echo "and then the standard NSPN directory structure"
+    echo ""
+    echo "DESCRIPTION: This code looks for the output of freesurfer_extract_rois.sh"
+    echo "in each subject's directory and then combines that information together"
+    echo "in the FS_ROIS folder within DATA_DIR"
+    exit
+}
+
+#=============================================================================
+# READ IN COMMAND LINE ARGUMENTS
+#=============================================================================
 
 data_dir=$1
 
-# Write out the various freesurfer information
+#=============================================================================
+# GET STARTED
+#=============================================================================
+
 mkdir -p ${data_dir}/FS_ROIS/
 
+#=============================================================================
+# SEGMENTATIONS
+#=============================================================================
 # Loop through the various segmentations
 for seg in aseg wmparc lobesStrict 500cortExpConsecWMoverlap 500cortConsec; do
 
@@ -72,3 +102,59 @@ for seg in aseg wmparc lobesStrict 500cortExpConsecWMoverlap 500cortConsec; do
         fi
     done
 done
+
+#=============================================================================
+# PARCELLATIONS
+#=============================================================================
+# Loop through the various parcellations
+
+subjects=(`ls -d ${data_dir}/SUB_DATA/*/SURFER/MRI0/ 2> /dev/null`)
+
+for parc in aparc 500.aparc lobesStrict; do
+
+    for measure in area volume thickness meancurv gauscurv foldind curvind; do
+    
+        for hemi in lh rh; do
+        
+            # Combine stats for all subjects for each measure and for each 
+            # hemisphere separately
+            aparcstats2table --hemi ${hemi} \
+                                --subjects ${subjects[@]} \
+                                --parc ${parc} \
+                                --meas ${measure} \
+                                -d comma \
+                                --common-parcs \
+                                -t ${data_dir}/FS_ROIS/${parc}_${measure}_${hemi}_temp.csv 
+        done
+        
+        # Create the first two columns:
+        # nspn_id and occ (which is always 0 at the moment)
+        echo "nspn_id,occ" > ${data_dir}/FS_ROIS/nspn_id_col
+        for sub in ${subjects[@]}; do
+            sub=${sub/${data_dir}/}
+            echo ${sub:10:5},0 >> ${data_dir}/FS_ROIS/nspn_id_col
+        done
+        
+        # Now paste the data together
+        paste -d , ${data_dir}/FS_ROIS/nspn_id_col \
+                ${data_dir}/FS_ROIS/${parc}_${measure}_lh_temp.csv \
+                ${data_dir}/FS_ROIS/${parc}_${measure}_rh_temp.csv \
+                    > ${data_dir}/FS_ROIS/${parc}_${measure}.csv
+        
+        # And replace all '-' with '_' because statsmodels in python
+        # likes that more :P
+        sed -i "s/-/_/g" ${data_dir}/FS_ROIS/${parc}_${measure}.csv
+        sed -i "s/_0/-0/g" ${data_dir}/FS_ROIS/${parc}_${measure}.csv
+        sed -i "s/://g" ${data_dir}/FS_ROIS/${parc}_${measure}.csv
+                                
+        # Remove the temporary files
+        rm ${data_dir}/FS_ROIS/*temp.csv
+        rm ${data_dir}/FS_ROIS/nspn_id_col
+        
+        # NOTE - need to drop the columns that are called ${hemi}.${parc}.${measure}
+        # left in for now because it'll be easier to drop them at the combined stage
+        
+    done
+done
+
+
