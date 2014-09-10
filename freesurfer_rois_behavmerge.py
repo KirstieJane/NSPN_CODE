@@ -61,6 +61,6 @@ for f in file_list:
     if c_drop:
         df.drop(c_drop, inplace=True, axis=1)
     f_out = f.replace('.', '')
-    f_out = f_out.replace('_csv', '_behavmerge.csv')
+    f_out = f_out.replace('csv', '_behavmerge.csv')
     df.to_csv(f_out)
     

@@ -145,15 +145,17 @@ for fname in file_list:
         if 'volume' in fname:
             measure = 'volume'
             seg = fbasename.split('_')[1]
+            seg = seg.replace('.', '')
         else:
             measure = fbasename.split('_')[1]
             seg = fbasename.split('_')[2]
+            seg = seg.replace('.', '')
             
     elif 'PARC' in fname:
         prefix = 'PARC'
         measure = fbasename.split('_')[2]
         seg = fbasename.split('_')[1]
-
+        seg = seg.replace('.', '')
     else:
         continue
         
