@@ -153,7 +153,7 @@ for fname in file_list:
         seg = fname.split('_')[1]
 
     else:
-        break
+        continue
         
     names = [ '{}_{}_{}_{}'.format(prefix.lower(), measure.lower(), seg.lower(), x) for x in names ]
     
