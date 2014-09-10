@@ -147,12 +147,14 @@ for fname in file_list:
         else:
             measure = fname.split('_')[1]
             seg = fname.split('_')[2]
-    if 'PARC' in fname:
+    elif 'PARC' in fname:
         prefix = 'PARC'
         measure = fname.split('_')[2]
         seg = fname.split('_')[1]
 
-    continue
+    else:
+        continue
+        
     names = [ '{}_{}_{}_{}'.format(prefix.lower(), measure.lower(), seg.lower(), x) for x in names ]
     
     #-----------------------------------------------------------------
