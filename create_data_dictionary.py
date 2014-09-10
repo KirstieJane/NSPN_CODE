@@ -152,6 +152,7 @@ for fname in file_list:
         measure = fname.split('_')[2]
         seg = fname.split('_')[1]
 
+    continue
     names = [ '{}_{}_{}_{}'.format(prefix.lower(), measure.lower(), seg.lower(), x) for x in names ]
     
     #-----------------------------------------------------------------
