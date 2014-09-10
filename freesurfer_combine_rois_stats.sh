@@ -130,8 +130,8 @@ for parc in aparc 500.aparc lobesStrict; do
                                 --common-parcs \
                                 -t ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temptemp.csv 
                                 
-            # Drop the 3rd column because it isn't necessary
-            cut -d, -f-0,2- ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temptemp.csv \
+            # Drop the first column because it isn't necessary
+            cut -d, -f2- ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temptemp.csv \
                     > ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temp.csv 
            
         done
