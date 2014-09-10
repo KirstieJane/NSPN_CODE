@@ -62,5 +62,5 @@ for f in file_list:
         df.drop(c_drop, inplace=True, axis=1)
     f_out = f.replace('.', '')
     f_out = f_out.replace('csv', '_behavmerge.csv')
-    df.to_csv(f_out,float_format='%.8f')
+    df.to_csv(f_out,float_format='%.5f')
     
