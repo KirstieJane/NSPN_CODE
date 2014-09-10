@@ -139,18 +139,19 @@ for fname in file_list:
     #-----------------------------------------------------------------
     # Now add the appropriate prefix to the name
     # so that there aren't any duplicates in the data dictionary
+    fbasename = os.path.basename(fname).strip('.csv')
     if 'SEG' in fname:
         prefix = 'SEG'
         if 'volume' in fname:
             measure = 'volume'
-            seg = os.path.basename(fname).rsplit('_')[1]
+            seg = fbasename.split('_')[1]
         else:
-            measure = os.path.basename(fname).split('_')[1]
-            seg = os.path.basename(fname).split('_')[2]
+            measure = fbasename.split('_')[1]
+            seg = fbasename.split('_')[2]
     elif 'PARC' in fname:
         prefix = 'PARC'
-        measure = os.path.basename(fname).split('_')[2]
-        seg = os.path.basename(fname).split('_')[1]
+        measure = fbasename.split('_')[2]
+        seg = fbasename.split('_')[1]
 
     else:
         continue
