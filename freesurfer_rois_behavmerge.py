@@ -40,25 +40,10 @@ if not os.path.isfile(behav_file):
 df_behav = pd.read_csv(behav_file)
     
 #=============================================================================
-# MERGE SEGMENTATION VALUES
+# MERGE MEASURES WITH BEHAV VALUES
 #=============================================================================
-file_list_mean = glob(os.path.join(fs_rois_dir, '*mean.csv'))
-file_list_volume = glob(os.path.join(fs_rois_dir, '*volume.csv'))
-file_list = file_list_mean + file_list_volume
-
-for f in file_list:
-    print f
-    df_meas = pd.read_csv(f)
-    df = df_behav.merge(df_meas, on=['nspn_id', 'occ'])
-    df.sort('nspn_id', inplace=True)
-    c_drop = [ x for x in df.columns if 'Measure' in x ][0]
-    df.drop(c_drop, inplace=True, axis=1)
-    df.to_csv(f.replace('.csv', '_behavmerge.csv'))
-
-#=============================================================================
-# MERGE SURFACE PARCELLATION VALUES
-#=============================================================================
-measure_list = [ 'area', 'volume', 'thickness', 
+measure_list = [ 'mean', 'area', 
+                    'volume', 'thickness', 
                     'meancurv', 'gauscurv', 
                     'foldind', 'curvind' ]
 
@@ -67,9 +52,15 @@ for measure in meaure_list:
     file_list += glob(os.path.join(fs_rois_dir, '*{}.csv'.format(measure)))
 
 for f in file_list:
+    print f
     df_meas = pd.read_csv(f)
     df = df_behav.merge(df_meas, on=['nspn_id', 'occ'])
     df.sort('nspn_id', inplace=True)
-    c_drop = [ x for x in df.columns if '.' in x ][0]
-    df.drop(c_drop, inplace=True, axis=1)
-    df.to_csv(f.replace('.csv', '_behavmerge.csv'))
+    c_drop = [ x for x in df.columns if 'Measure' in x ]
+    c_drop = [ x for x in df.columns if '.' in x ]
+    if c_drop:
+        df.drop(c_drop, inplace=True, axis=1)
+    f_out = f.replace('.', '_')
+    f_out = f_out.replace('_csv', '_behavmerge.csv')
+    df.to_csv(f_out)
+    
