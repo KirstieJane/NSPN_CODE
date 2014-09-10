@@ -5,7 +5,7 @@ import os
 import numpy as np
 from glob import glob
 
-data_dir = sys.argv[1]
+fs_rois_dir = sys.argv[1]
 
 seg_measure_list = [ 'A', 'R1', 'MT', 'R2s', 
                     'PDw', 'FA', 'MD', 
@@ -20,7 +20,7 @@ parc_measure_list = [ 'area', 'volume', 'thickness',
 # SETUP OUTPUT FILE
 #=============================================================================
 # Define the output name
-output_name = os.path.join(data_dir, 'data_dict.csv')
+output_name = os.path.join(fs_rois_dir, 'data_dict.csv')
 
 # Write the header into the output file
 header='Variable / Field Name,Form Name,Section Header,Field Type,Field Label,"Choices, Calculations, OR Slider Labels",Field Note,Text Validation Type OR Show Slider Number,Text Validation Min,Text Validation Max,Identifier?,Branching Logic (Show field only if...),Required Field?,Custom Alignment,Question Number (surveys only),Matrix Group Name,Matrix Ranking?\nid_nspn,nspn_id_form,,text,NSPN ID,,,,,,,,,,,,\n'
@@ -32,11 +32,11 @@ with open(output_name, 'w') as f:
 #=============================================================================
 # CREATE LISTS OF ALL SEGMENTATIONS AND ALL PARCELLATIONS
 #=============================================================================
-seg_list = glob(os.path.join(data_dir, 'SEG*mean.csv'))
+seg_list = glob(os.path.join(fs_rois_dir, 'SEG*mean.csv'))
 seg_list = [ x.rsplit('_',2)[1] for x in seg_list ]
 seg_list = list(set(seg_list))
 
-parc_list = glob(os.path.join(data_dir, 'PARC_*area.csv'))
+parc_list = glob(os.path.join(fs_rois_dir, 'PARC_*area.csv'))
 parc_list = [ x.rsplit('_',2)[1] for x in parc_list ]
 parc_list = list(set(parc_list))
 '''
@@ -49,12 +49,12 @@ for measure in seg_measure_list:
 
     for seg in seg_list:
 
-        fname = os.path.join(data_dir, 'SEG_{}_{}_mean.csv'.format(measure, seg) )
+        fname = os.path.join(fs_rois_dir, 'SEG_{}_{}_mean.csv'.format(measure, seg) )
         
-        data_upload_file = os.path.join(data_dir, 'data_upload_SEG_{}_{}.csv'.format(measure, seg))
+        data_upload_file = os.path.join(fs_rois_dir, 'data_upload_SEG_{}_{}.csv'.format(measure, seg))
                 
         if measure == 'volume':
-            fname = os.path.join(data_dir, 'SEG_{}_volume.csv'.format(seg) )
+            fname = os.path.join(fs_rois_dir, 'SEG_{}_volume.csv'.format(seg) )
 
         if os.path.isfile(fname):
             with open(fname) as f:
@@ -173,7 +173,7 @@ for fname in file_list:
 
     upload_data = np.copy(np_data)
 
-    data_upload_file = os.path.join(data_dir, 'data_upload_{}_{}_{}.csv'.format(prefix, measure, seg))
+    data_upload_file = os.path.join(fs_rois_dir, 'data_upload_{}_{}_{}.csv'.format(prefix, measure, seg))
     np.savetxt(data_upload_file, upload_data, fmt='%s', delimiter=",")
     
     #-----------------------------------------------------------------
