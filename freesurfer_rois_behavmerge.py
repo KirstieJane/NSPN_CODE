@@ -60,7 +60,7 @@ for f in file_list:
     c_drop += [ x for x in df.columns if '.' in x ]
     if c_drop:
         df.drop(c_drop, inplace=True, axis=1)
-    f_out = f.replace('.', '_')
+    f_out = f.replace('.', '')
     f_out = f_out.replace('_csv', '_behavmerge.csv')
     df.to_csv(f_out)
     
