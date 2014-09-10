@@ -48,7 +48,7 @@ measure_list = [ 'mean', 'area',
                     'foldind', 'curvind' ]
 
 file_list = []
-for measure in meaure_list:
+for measure in measure_list:
     file_list += glob(os.path.join(fs_rois_dir, '*{}.csv'.format(measure)))
 
 for f in file_list:
