@@ -153,13 +153,14 @@ for fname in file_list:
         seg = fname.split('_')[1]
 
     else:
-        continue
+        break
         
     names = [ '{}_{}_{}_{}'.format(prefix.lower(), measure.lower(), seg.lower(), x) for x in names ]
     
     #-----------------------------------------------------------------
     # Append these names to the data dictionary file
     form_name = '{}_{}_{}_stats'.format(prefix.lower(), measure.lower(), seg.lower())
+    print form_name
     data_dict_list = [ '{},{},,text,{},,,number,,,,,,,,,'.format(x, form_name, y) for (x,y) in zip(names, names_list) ] 
 
     with open(output_name, 'a') as f:
@@ -177,6 +178,7 @@ for fname in file_list:
     upload_data = np.copy(np_data)
 
     data_upload_file = os.path.join(fs_rois_dir, 'data_upload_{}_{}_{}.csv'.format(prefix, measure, seg))
+    print data_upload_file
     np.savetxt(data_upload_file, upload_data, fmt='%s', delimiter=",")
     
     #-----------------------------------------------------------------
