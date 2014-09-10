@@ -151,15 +151,18 @@ for fname in file_list:
             seg = fbasename.split('_')[2]
             seg = seg.replace('.', '')
             
+        names = [ '{}_{}_{}_{}'.format(prefix.lower(), measure.lower(), seg.lower(), x) for x in names ]
+
     elif 'PARC' in fname:
         prefix = 'PARC'
         measure = fbasename.split('_')[2]
         seg = fbasename.split('_')[1]
         seg = seg.replace('.', '')
+        
+        names = [ '{}_{}_{}'.format(prefix.lower(), seg.lower(), x) for x in names ]
     else:
         continue
         
-    names = [ '{}_{}_{}_{}'.format(prefix.lower(), measure.lower(), seg.lower(), x) for x in names ]
     
     #-----------------------------------------------------------------
     # Append these names to the data dictionary file
