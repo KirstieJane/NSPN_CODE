@@ -200,19 +200,19 @@ for occ in 0; do
             
             #=== 500.aparc_cortical_consecutive.nii.gz
             # Extract measures from the cortical regions in the 500 parcellation
-            if [[ ! -f ${surfer_dir}/stats/${measure}_500cortConsec.stats 
-                    && -f ${surfer_dir}/parcellation/500.aparc_cortical_consecutive.nii.gz ]]; then
+#            if [[ ! -f ${surfer_dir}/stats/${measure}_500cortConsec.stats 
+#                    && -f ${surfer_dir}/parcellation/500.aparc_cortical_consecutive.nii.gz ]]; then
                 mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
                              --seg ${surfer_dir}/parcellation/500.aparc_cortical_consecutive.nii.gz  \
                              --sum ${surfer_dir}/stats/${measure}_500cortConsec.stats \
                              --pv ${surfer_dir}/mri/norm.mgz \
                              --ctab ${parc500_ctab}
-            fi
+#            fi
             
             #=== 500.aparc_cortical_expanded_consecutive_WMoverlap
             # Only run this if there is a 500 cortical parcellation
-            if [[ ! -f ${surfer_dir}/stats/${measure}_500cortExpConsecWMoverlap.stats \
-                    && -f ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive.nii.gz ]]; then
+#            if [[ ! -f ${surfer_dir}/stats/${measure}_500cortExpConsecWMoverlap.stats \
+#                    && -f ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive.nii.gz ]]; then
                 
                 # Create the overlap file if it doesn't already exist
                 if [[ ! -f ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive_WMoverlap.nii.gz ]]; then
@@ -230,7 +230,7 @@ for occ in 0; do
                              --ctab ${parc500_ctab}
 
 
-            fi
+#            fi
             
         else
             echo "${measure} file not transformed to Freesurfer space"
