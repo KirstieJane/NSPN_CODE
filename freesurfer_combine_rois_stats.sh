@@ -51,7 +51,7 @@ for seg in aseg wmparc lobesStrict 500cortExpConsecWMoverlap 500cortConsec; do
                 # Note that we aren't going to do this again - once is enough
                 # it doesn't change!
                 asegstats2table --inputs ${inputs[@]} \
-                                -t ${data_dir}/FS_ROIS/${seg}_volume_temp.csv \
+                                -t ${data_dir}/FS_ROIS/SEG_${seg}_volume_temp.csv \
                                 -d comma \
                                 --common-segs \
                                 --meas volume
@@ -59,7 +59,7 @@ for seg in aseg wmparc lobesStrict 500cortExpConsecWMoverlap 500cortConsec; do
         
             # Now write out the mean value for the measure
             asegstats2table --inputs ${inputs[@]} \
-                            -t ${data_dir}/FS_ROIS/${measure}_${seg}_mean_temp.csv \
+                            -t ${data_dir}/FS_ROIS/SEG_${measure}_${seg}_mean_temp.csv \
                             -d comma \
                             --common-segs \
                             --meas mean
@@ -74,23 +74,23 @@ for seg in aseg wmparc lobesStrict 500cortExpConsecWMoverlap 500cortConsec; do
         
             # Now paste the data together
             paste -d , ${data_dir}/FS_ROIS/nspn_id_col \
-                        ${data_dir}/FS_ROIS/${measure}_${seg}_mean_temp.csv \
-                            > ${data_dir}/FS_ROIS/${measure}_${seg}_mean.csv
+                        ${data_dir}/FS_ROIS/SEG_${measure}_${seg}_mean_temp.csv \
+                            > ${data_dir}/FS_ROIS/SEG_${measure}_${seg}_mean.csv
 
             # And replace all '-' with '_' because statsmodels in python
             # likes that more :P
-            sed -i "s/-/_/g" ${data_dir}/FS_ROIS/${measure}_${seg}_mean.csv
-            sed -i "s/_0/-0/g" ${data_dir}/FS_ROIS/${measure}_${seg}_mean.csv
-            sed -i "s/://g" ${data_dir}/FS_ROIS/${measure}_${seg}_mean.csv
+            sed -i "s/-/_/g" ${data_dir}/FS_ROIS/SEG_${measure}_${seg}_mean.csv
+            sed -i "s/_0/-0/g" ${data_dir}/FS_ROIS/SEG_${measure}_${seg}_mean.csv
+            sed -i "s/://g" ${data_dir}/FS_ROIS/SEG_${measure}_${seg}_mean.csv
                                     
             # Don't forget to paste the nspn_ids in for the volume file
             if [[ ${measure} == R1 ]]; then
                 paste -d , ${data_dir}/FS_ROIS/nspn_id_col \
-                            ${data_dir}/FS_ROIS/${seg}_volume_temp.csv \
-                                > ${data_dir}/FS_ROIS/${seg}_volume.csv
+                            ${data_dir}/FS_ROIS/SEG_${seg}_volume_temp.csv \
+                                > ${data_dir}/FS_ROIS/SEG_${seg}_volume.csv
                 # And replace '-' with '_'
-                sed -i "s/-/_/g" ${data_dir}/FS_ROIS/${seg}_volume.csv
-                sed -i "s/://g" ${data_dir}/FS_ROIS/${seg}_volume.csv
+                sed -i "s/-/_/g" ${data_dir}/FS_ROIS/SEG_${seg}_volume.csv
+                sed -i "s/://g" ${data_dir}/FS_ROIS/SEG_${seg}_volume.csv
             fi
             
             # Remove the temporary files
@@ -124,7 +124,7 @@ for parc in aparc 500.aparc lobesStrict; do
                                 --meas ${measure} \
                                 -d comma \
                                 --common-parcs \
-                                -t ${data_dir}/FS_ROIS/${parc}_${measure}_${hemi}_temp.csv 
+                                -t ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temp.csv 
         done
         
         # Create the first two columns:
@@ -137,15 +137,15 @@ for parc in aparc 500.aparc lobesStrict; do
         
         # Now paste the data together
         paste -d , ${data_dir}/FS_ROIS/nspn_id_col \
-                ${data_dir}/FS_ROIS/${parc}_${measure}_lh_temp.csv \
-                ${data_dir}/FS_ROIS/${parc}_${measure}_rh_temp.csv \
-                    > ${data_dir}/FS_ROIS/${parc}_${measure}.csv
+                ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_lh_temp.csv \
+                ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_rh_temp.csv \
+                    > ${data_dir}/FS_ROIS/PARC_${parc}_${measure}.csv
         
         # And replace all '-' with '_' because statsmodels in python
         # likes that more :P
-        sed -i "s/-/_/g" ${data_dir}/FS_ROIS/${parc}_${measure}.csv
-        sed -i "s/_0/-0/g" ${data_dir}/FS_ROIS/${parc}_${measure}.csv
-        sed -i "s/://g" ${data_dir}/FS_ROIS/${parc}_${measure}.csv
+        sed -i "s/-/_/g" ${data_dir}/FS_ROIS/PARC_${parc}_${measure}.csv
+        sed -i "s/_0/-0/g" ${data_dir}/FS_ROIS/PARC_${parc}_${measure}.csv
+        sed -i "s/://g" ${data_dir}/FS_ROIS/PARC_${parc}_${measure}.csv
                                 
         # Remove the temporary files
         rm ${data_dir}/FS_ROIS/*temp.csv
