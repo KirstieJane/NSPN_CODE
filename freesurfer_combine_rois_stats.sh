@@ -28,7 +28,7 @@ function usage {
 
 data_dir=$1
 
-if [[ ! -d data_dir ]]; then
+if [[ ! -d ${data_dir} ]]; then
     usage
 fi
     
