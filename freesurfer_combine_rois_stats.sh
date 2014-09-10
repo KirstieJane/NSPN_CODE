@@ -132,8 +132,6 @@ for parc in aparc 500.aparc lobesStrict; do
            
         done
         
-        
-        
         # Create the first two columns:
         # nspn_id and occ (which is always 0 at the moment)
         echo "nspn_id,occ" > ${data_dir}/FS_ROIS/nspn_id_col
@@ -157,10 +155,7 @@ for parc in aparc 500.aparc lobesStrict; do
         # Remove the temporary files
         rm ${data_dir}/FS_ROIS/*temp.csv
         rm ${data_dir}/FS_ROIS/nspn_id_col
-        
-        # NOTE - need to drop the columns that are called ${hemi}.${parc}.${measure}
-        # left in for now because it'll be easier to drop them at the combined stage
-        
+
     done
 done
 
