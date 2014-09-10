@@ -124,8 +124,15 @@ for parc in aparc 500.aparc lobesStrict; do
                                 --meas ${measure} \
                                 -d comma \
                                 --common-parcs \
-                                -t ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temp.csv 
+                                -t ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temptemp.csv 
+                                
+            # Drop the 3rd column because it isn't necessary
+            cut -d, -f-2,4- ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temptemp.csv \
+                    > ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temp.csv 
+           
         done
+        
+        
         
         # Create the first two columns:
         # nspn_id and occ (which is always 0 at the moment)
