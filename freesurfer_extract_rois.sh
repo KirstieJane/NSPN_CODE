@@ -36,6 +36,7 @@ sub=$2
 # Fine if you download the git repository but not fine 
 # if you've only take the script itself!
 lobes_ctab=`dirname ${0}`/LobesStrictLUT.txt
+parc500_ctab=`dirname ${0}`/parc500LUT.txt
 
 if [[ ! -d ${data_dir} ]]; then
     echo "${data_dir} is not a directory, please check"
@@ -182,9 +183,9 @@ for occ in 0; do
             if [[ ! -f ${surfer_dir}/stats/${measure}_aseg.stats ]]; then
                 mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
                              --seg ${surfer_dir}/mri/aseg.mgz \
-                             --ctab ${FREESURFER_HOME}/ASegStatsLUT.txt \
                              --sum ${surfer_dir}/stats/${measure}_aseg.stats \
-                             --pv ${surfer_dir}/mri/norm.mgz
+                             --pv ${surfer_dir}/mri/norm.mgz \
+                             --ctab ${FREESURFER_HOME}/ASegStatsLUT.txt 
             fi
             
             #=== lobesStrict
@@ -204,7 +205,8 @@ for occ in 0; do
                 mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
                              --seg ${surfer_dir}/parcellation/500.aparc_cortical_consecutive.nii.gz  \
                              --sum ${surfer_dir}/stats/${measure}_500cortConsec.stats \
-                             --pv ${surfer_dir}/mri/norm.mgz
+                             --pv ${surfer_dir}/mri/norm.mgz \
+                             --ctab ${parc500_ctab}
             fi
             
             #=== 500.aparc_cortical_expanded_consecutive_WMoverlap
@@ -224,7 +226,9 @@ for occ in 0; do
                 mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
                              --seg ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive_WMoverlap.nii.gz \
                              --sum ${surfer_dir}/stats/${measure}_500cortExpConsecWMoverlap.stats \
-                             --pv ${surfer_dir}/mri/norm.mgz
+                             --pv ${surfer_dir}/mri/norm.mgz \
+                             --ctab ${parc500_ctab}
+
 
             fi
             
