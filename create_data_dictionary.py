@@ -143,14 +143,14 @@ for fname in file_list:
         prefix = 'SEG'
         if 'volume' in fname:
             measure = 'volume'
-            seg = fname.split('_')[1]
+            seg = os.path.basename(fname).rsplit('_')[1]
         else:
-            measure = fname.split('_')[1]
-            seg = fname.split('_')[2]
+            measure = os.path.basename(fname).split('_')[1]
+            seg = os.path.basename(fname).split('_')[2]
     elif 'PARC' in fname:
         prefix = 'PARC'
-        measure = fname.split('_')[2]
-        seg = fname.split('_')[1]
+        measure = os.path.basename(fname).split('_')[2]
+        seg = os.path.basename(fname).split('_')[1]
 
     else:
         continue
