@@ -47,6 +47,7 @@ file_list_volume = glob(os.path.join(fs_rois_dir, '*volume.csv'))
 file_list = file_list_mean + file_list_volume
 
 for f in file_list:
+    print f
     df_meas = pd.read_csv(f)
     df = df_behav.merge(df_meas, on=['nspn_id', 'occ'])
     df.sort('nspn_id', inplace=True)
