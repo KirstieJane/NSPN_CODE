@@ -121,7 +121,7 @@ measure_list = [ 'mean', 'area',
 
 file_list = []
 for measure in measure_list:
-    file_list = glob(os.path.join(fs_rois_dir, '*{}.csv'.format(measure)))
+    file_list += glob(os.path.join(fs_rois_dir, '*{}.csv'.format(measure)))
 
 # Now loop through all those files
 for fname in file_list:
@@ -148,6 +148,7 @@ for fname in file_list:
         else:
             measure = fbasename.split('_')[1]
             seg = fbasename.split('_')[2]
+            
     elif 'PARC' in fname:
         prefix = 'PARC'
         measure = fbasename.split('_')[2]
