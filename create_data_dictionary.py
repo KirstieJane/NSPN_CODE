@@ -3,7 +3,7 @@
 import sys
 import os
 import numpy as np
-
+from glob import glob
 
 data_dir = sys.argv[1]
 
