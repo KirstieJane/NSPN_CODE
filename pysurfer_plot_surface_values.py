@@ -50,15 +50,15 @@ def setup_argparser():
                             metavar='data_dir',
                             help='data directory')
                           
-    parser.add_argument(dest='measure', 
-                            type=str,
-                            metavar='measure',
-                            help='Measure eg: MT_mean, FA_r etc')
-                            
     parser.add_argument(dest='roi_file', 
                             type=str,
                             metavar='roi_file',
                             help='roi file containing list of measure values - one for each region - csv format')
+                            
+    parser.add_argument(dest='measure_name', 
+                            type=str,
+                            metavar='measure_name',
+                            help='Measure name eg: MT_mean, FA_r etc')
                             
     parser.add_argument('--fsaverageid',
                             type=str,
@@ -82,12 +82,17 @@ def setup_argparser():
                             type=str,
                             metavar='cmap',
                             help='colormap',
-                            default='RdBu')
+                            default='RdBu_r')
     
+    parser.add_argument('-s', '--surface',
+                            type=str,
+                            metavar='surface',
+                            help='surface - one of "pial", "inflated" or "both"',
+                            default='both')
+                            
     arguments = parser.parse_args()
     
     return arguments, parser
-
 
 #------------------------------------------------------------------------------
 def plot_surface(vtx_data, subject_id, hemi, surface, subjects_dir, output_dir, prefix, l, u, cmap):
@@ -168,7 +173,7 @@ def combine_pngs(measure, surface, output_dir):
     ax.set_axis_off()
     
     # Save the figure
-    filename = os.path.join(fs_rois_dir, '{}_{}_{}_combined.png'.format(measure, surface,stat))
+    filename = os.path.join(output_dir, '{}_{}_combined.png'.format(measure, surface))
     print filename
     fig.savefig(filename, bbox_inches=0, dpi=300)
 
@@ -186,12 +191,22 @@ roi_data_file = arguments.roi_file
 l = arguments.lower
 u = arguments.upper
 cmap = arguments.cmap
+surface = arguments.surface
 
 subjects_dir = os.path.join(data_dir ,'SUB_DATA')
 fs_rois_dir = os.path.join(data_dir, 'FS_ROIS')
 
+if surface == both:
+    surface_list = [ "inflated", "pial" ]
+elif surface == 'inflated':
+    surface_list = [ "inflated" ]
+elif surface == 'pial':
+    surface_list = [ "pial" ]
+else:
+    parser.print_help()
+    sys.exit()
+    
 hemi_list = [ "lh", "rh" ]
-surface_list = [ "inflated", "pial" ]
 views_list = [ 'medial', 'lateral' ]
 
 seg = '500cortConsec'
