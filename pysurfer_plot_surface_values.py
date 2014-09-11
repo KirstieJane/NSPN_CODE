@@ -66,6 +66,17 @@ def setup_argparser():
                             help='FSaverage subject id',
                             default='fsaverageSubP')
                             
+    parser.add_argument('-c', '--cmap',
+                            type=str,
+                            metavar='cmap',
+                            help='colormap',
+                            default='RdBu_r')
+                            
+    parser.add_argument('--center',
+                            action='store_true',
+                            metavar='center',
+                            help='center the color bar around 0')
+                            
     parser.add_argument('-l', '--lower',
                             type=float,
                             metavar='lowerthr',
@@ -78,11 +89,6 @@ def setup_argparser():
                             help='upper limit for colorbar',
                             default=None)
                             
-    parser.add_argument('-c', '--cmap',
-                            type=str,
-                            metavar='cmap',
-                            help='colormap',
-                            default='RdBu_r')
     
     parser.add_argument('-s', '--surface',
                             type=str,
@@ -95,7 +101,7 @@ def setup_argparser():
     return arguments, parser
 
 #------------------------------------------------------------------------------
-def plot_surface(vtx_data, subject_id, hemi, surface, subjects_dir, output_dir, prefix, l, u, cmap):
+def plot_surface(vtx_data, subject_id, hemi, surface, subjects_dir, output_dir, prefix, l, u, cmap, center):
     # Open up a brain in pysurfer
     brain = Brain(subject_id, hemi, surface,
                   subjects_dir = subjects_dir,
@@ -112,11 +118,12 @@ def plot_surface(vtx_data, subject_id, hemi, surface, subjects_dir, output_dir, 
     l = np.floor(l*20)/20.0
     u = np.ceil(u*20)/20.0
     
-    # Make sure the colorbar is centered
-    if l**2 < u **2:
-        l = u*-1
-    else:
-        u = l*-1
+    if center:
+        # Make sure the colorbar is centered
+        if l**2 < u **2:
+            l = u*-1
+        else:
+            u = l*-1
     
     # Add your data to the brain
     brain.add_data(vtx_data,
@@ -193,6 +200,7 @@ roi_data_file = arguments.roi_file
 l = arguments.lower
 u = arguments.upper
 cmap = arguments.cmap
+center = arguments.center
 surface = arguments.surface
 
 subjects_dir = os.path.join(data_dir ,'SUB_DATA')
