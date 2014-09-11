@@ -74,7 +74,6 @@ def setup_argparser():
                             
     parser.add_argument('--center',
                             action='store_true',
-                            metavar='center',
                             help='center the color bar around 0')
                             
     parser.add_argument('-l', '--lower',
