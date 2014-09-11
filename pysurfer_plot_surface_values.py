@@ -200,11 +200,12 @@ fs_rois_dir = os.path.join(data_dir, 'FS_ROIS')
 
 if surface == 'both':
     surface_list = [ "inflated", "pial" ]
-elif surface == 'inflate':
+elif surface == 'inflated':
     surface_list = [ "inflated" ]
 elif surface == 'pial':
     surface_list = [ "pial" ]
 else:
+    print "Do not recognise surface. Check {}".format(surface)
     parser.print_help()
     sys.exit()
     
