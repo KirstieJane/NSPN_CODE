@@ -280,7 +280,7 @@ for hemi, surface in it.product(hemi_list, surface_list):
     plot_surface(vtx_data, subject_id, hemi,
                      surface, subjects_dir, 
                      output_dir, prefix,
-                     l, u, cmap)
+                     l, u, cmap, center)
 
 #============================================================================= 
 # COMBINE THE IMAGES
