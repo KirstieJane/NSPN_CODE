@@ -157,9 +157,9 @@ def combine_pngs(measure, surface, output_dir):
         # NOTE: this can change depending on which system you've made the 
         # images on originally - it's a bug that needs to be sorted out!
         if 'lateral' in f:
-            img_cropped = img[35:600,:,:]
+            img_cropped = img[75:589,55:(-50),:]
         else:
-            img_cropped = img[35:600,:,:]
+            img_cropped = img[45:600,25:(-25),:]
         ax.imshow(img_cropped, interpolation='none')
         ax.set_axis_off()
 
