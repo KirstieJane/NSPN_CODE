@@ -69,12 +69,13 @@ subject_id = "fsaverageSubP"
 hemi_list = [ "lh", "rh" ]
 surface_list = [ "inflated", "pial" ]
 
-measure_list = [ 'FA' ]
+parc_list = [ "500cortConsec", "500cortExpConsecWMoverlap" ]
+
+measure_list = [ 'MT', 'MD', 'FA' ]
 measure2 = 'CT'
 
-for measure1 in measure_list:
-    for hemi, surface in it.product(hemi_list, surface_list):
-
+for measure1, parc, surface in it.product(measure_list, parc_list, surface_list):
+    for hemi in hemi_list:
         print hemi, surface, measure1
     
         """
@@ -82,13 +83,13 @@ for measure1 in measure_list:
         Of course you'll have to change this when you're looping through different files!
         """
         aparc_file = os.path.join(subjects_dir,
-                                  subject_id, "label",
-                                  hemi + ".500.aparc.annot")
-                                  
+                                subject_id, "label",
+                                hemi + ".500.aparc.annot")
+                                
         aparc_names_file =  os.path.join(subjects_dir,
-                                  subject_id, "parcellation",
-                                  "500.names.txt")
-                                  
+                                subject_id, "parcellation",
+                                "500.names.txt")
+                                
         wm_names = [line.strip() for line in open(aparc_names_file)]
         wm_names = wm_names[41::]
         labels, ctab, names = nib.freesurfer.read_annot(aparc_file)
@@ -97,11 +98,11 @@ for measure1 in measure_list:
         Read in the data
         """
         data_file1 = os.path.join(fs_rois_dir, 
-                                    measure1 + '_500cortExpConsecWMoverlap_mean_behavmerge.csv')
+                                    measure1 + '_' + parc + '_mean_behavmerge.csv')
         df1 = pd.read_csv(data_file1)
         
         data_file2 = os.path.join(fs_rois_dir, 
-                                    measure2 + '_500cortExpConsecWMoverlap_mean_behavmerge.csv')
+                                    measure2 + '_' + parc + '_mean_behavmerge.csv')
         df2 = pd.read_csv(data_file2)
         
         # RENAME THE COLUMNS SO THEY MATCH THE NAMES IN THE APARC FILE
@@ -126,7 +127,7 @@ for measure1 in measure_list:
         for i, name in enumerate(names):
             #wm_name = 'wm-' + hemi + '-' + name
             wm_name = '{}_{}'.format(hemi, name)
-     
+    
             if wm_name in df1.columns:
                 df_merge = df1.merge(df2, on='nspn_id')
                 roi_data_mean[i] = df1[wm_name].mean()
@@ -152,8 +153,8 @@ for measure1 in measure_list:
         
         ### PEARSON CORR w MEASURE 2
         brain = Brain(subject_id, hemi, surface,
-                      subjects_dir = subjects_dir,
-                      config_opts=dict(background="white"))
+                    subjects_dir = subjects_dir,
+                    config_opts=dict(background="white"))
 
         l = roi_data_r[roi_data_mean>-99].min()
         u = roi_data_r[roi_data_mean>-99].max()
@@ -175,15 +176,15 @@ for measure1 in measure_list:
         
         views_list = [ 'medial', 'lateral' ]
         prefix = '_'.join([measure1, hemi, surface, 'r', measure2])
-        brain.save_imageset(prefix = os.path.join(fs_rois_dir, prefix),
+        brain.save_imageset(prefix = os.path.join(fs_rois_dir, parc, prefix),
                             views = views_list, 
                             colorbar = range(len(views_list)) )
                             
 
         ### SIGNIFICANCE w AGE
         brain = Brain(subject_id, hemi, surface,
-                      subjects_dir = subjects_dir,
-                      config_opts=dict(background="white"))
+                    subjects_dir = subjects_dir,
+                    config_opts=dict(background="white"))
 
         l = roi_data_p[roi_data_mean>-99].min()
         u = roi_data_p[roi_data_mean>-99].max()
@@ -199,9 +200,9 @@ for measure1 in measure_list:
         
         views_list = [ 'medial', 'lateral' ]
         prefix = '_'.join([measure1, hemi, surface, 'p', measure2])
-        brain.save_imageset(prefix = os.path.join(fs_rois_dir, prefix),
+        brain.save_imageset(prefix = os.path.join(fs_rois_dir, parc, prefix),
                             views = views_list, 
                             colorbar = range(len(views_list)) )
-                           
-    combine_pngs(measure1, measure2, surface, 'r', fs_rois_dir)
-    combine_pngs(measure1, measure2, surface, 'p', fs_rois_dir)
+                        
+    combine_pngs(measure1, measure2, surface, 'r', os.path.join(fs_rois_dir, parc))
+    combine_pngs(measure1, measure2, surface, 'p', os.path.join(fs_rois_dir, parc))
