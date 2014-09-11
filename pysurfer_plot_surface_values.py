@@ -198,7 +198,7 @@ fs_rois_dir = os.path.join(data_dir, 'FS_ROIS')
 
 if surface == 'both':
     surface_list = [ "inflated", "pial" ]
-elif surface == 'inflate
+elif surface == 'inflate':
     surface_list = [ "inflated" ]
 elif surface == 'pial':
     surface_list = [ "pial" ]
