@@ -185,7 +185,7 @@ def combine_pngs(measure, surface, output_dir):
 arguments, parser = setup_argparser()
 
 data_dir = arguments.data_dir
-measure = arguments.measure
+measure = arguments.measure_name
 subject_id = arguments.fsaverageid
 roi_data_file = arguments.roi_file
 l = arguments.lower
