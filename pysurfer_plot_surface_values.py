@@ -99,7 +99,9 @@ def plot_surface(vtx_data, subject_id, hemi, surface, subjects_dir, output_dir, 
     # Open up a brain in pysurfer
     brain = Brain(subject_id, hemi, surface,
                   subjects_dir = subjects_dir,
-                  config_opts=dict(background="white"))
+                  config_opts=dict(background="white",
+                                   height=665,
+                                   width=800))
 
     # Figure out the min and max for the color bar
     if l == None:
@@ -155,9 +157,9 @@ def combine_pngs(measure, surface, output_dir):
         # NOTE: this can change depending on which system you've made the 
         # images on originally - it's a bug that needs to be sorted out!
         if 'lateral' in f:
-            img_cropped = img[100:700,:,:]
+            img_cropped = img[35:600,:,:]
         else:
-            img_cropped = img[100:700,:,:]
+            img_cropped = img[35:600,:,:]
         ax.imshow(img_cropped, interpolation='none')
         ax.set_axis_off()
 
@@ -168,7 +170,7 @@ def combine_pngs(measure, surface, output_dir):
     ax = plt.Subplot(fig, grid_cbar[0])
     fig.add_subplot(ax)
     img = mpimg.imread(f)
-    img_cbar = img[720:,:]
+    img_cbar = img[600:,:]
     ax.imshow(img_cbar, interpolation='none')
     ax.set_axis_off()
     
