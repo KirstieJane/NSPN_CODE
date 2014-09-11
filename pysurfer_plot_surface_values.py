@@ -137,7 +137,7 @@ def combine_pngs(measure, surface, output_dir):
     '''
     Find four images and combine them into one nice picture
     '''
-    figsize = (4.5,4)
+    figsize = (5,4)
     fig = plt.figure(figsize = figsize, facecolor='white')
 
     grid = gridspec.GridSpec(2, 2)
@@ -279,5 +279,4 @@ for hemi, surface in it.product(hemi_list, surface_list):
 # COMBINE THE IMAGES
 #============================================================================= 
 for surface in surface_list:
-    combine_pngs(measure, surface, output_dir)
     combine_pngs(measure, surface, output_dir)
