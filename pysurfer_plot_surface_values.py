@@ -198,7 +198,7 @@ fs_rois_dir = os.path.join(data_dir, 'FS_ROIS')
 
 if surface == 'both':
     surface_list = [ "inflated", "pial" ]
-elif surface == 'inflated':
+elif surface == 'inflate
     surface_list = [ "inflated" ]
 elif surface == 'pial':
     surface_list = [ "pial" ]
@@ -220,8 +220,21 @@ if not os.path.isdir(data_dir):
 #=============================================================================
 # READ IN THE MEASURE DATA
 #=============================================================================
-roi_data = np.loadtxt(roi_data_file)
-    
+# Read in aparc names file
+aparc_names_file =  os.path.join(subjects_dir,
+                          subject_id, "parcellation",
+                          "500.names.txt")
+                          
+# Read in the names from the aparc names file 
+# dropping the first 41 ################# BUUUUUG - needs to be fixed
+aparc_names = [line.strip() for line in open(aparc_names_file)]
+aparc_names = aparc_names[41::]
+
+# Read in the data and match it up with the names
+df = pd.read_csv(roi_data_file, index_col=False, header=None)
+df = df.T
+df.columns = aparc_names
+
 output_dir = os.path.join(fs_rois_dir, seg)
 if not os.path.isdir(output_dir):
     os.mkdir(output_dir)
@@ -235,19 +248,21 @@ for hemi, surface in it.product(hemi_list, surface_list):
                           subject_id, "label",
                           hemi + ".500.aparc.annot")
 
-    # Read in aparc names file
-    aparc_names_file =  os.path.join(subjects_dir,
-                              subject_id, "parcellation",
-                              "500.names.txt")
-                              
-    # Read in the names from the aparc names file 
-    # dropping the first 41 ################# BUUUUUG - needs to be fixed
-    aparc_names = [line.strip() for line in open(aparc_names_file)]
-    aparc_names = aparc_names[41::]
     
     # Use nibabel to merge together the aparc_names and the aparc_file
     labels, ctab, names = nib.freesurfer.read_annot(aparc_file)
 
+    # Create an empty roi_data array
+    roi_data = np.ones(len(names))*-99
+
+    # Loop through the names and if they are in the data frame
+    # for this hemisphere then add that value to the roi_data array
+    for i, name in enumerate(names):
+        roi_name = '{}_{}'.format(hemi, name)
+
+        if roi_name in df.columns:
+            roi_data[i] = df[roi_name]
+            
     # Make a vector containing the data point at each vertex.
     vtx_data = roi_data[labels]
     
