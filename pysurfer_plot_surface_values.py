@@ -196,7 +196,7 @@ surface = arguments.surface
 subjects_dir = os.path.join(data_dir ,'SUB_DATA')
 fs_rois_dir = os.path.join(data_dir, 'FS_ROIS')
 
-if surface == both:
+if surface == 'both':
     surface_list = [ "inflated", "pial" ]
 elif surface == 'inflated':
     surface_list = [ "inflated" ]
