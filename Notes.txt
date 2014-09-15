@@ -1,0 +1,16 @@
+How similar are the connections within in a region -- is taking a mean the right idea? How do these compare across regions? violin plot sorted by median - plot every 20? histogram? across people? across region?
+
+Make average - no need to threshold beforehand etc - so actually easier than you think - just add together!
+
+Make deterministic into probabilities
+
+Make some repeat analyses
+
+Binarized measures like slide 74 for fMRI
+
+WEIGHTED
+
+Negative values? Threshold (at 0? at different levels?)
+
+whole brain probabilistic tractography pubmed search
+
