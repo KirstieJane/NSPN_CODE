@@ -55,11 +55,6 @@ def setup_argparser():
                             metavar='roi_file',
                             help='roi file containing list of measure values - one for each region - csv format')
                             
-    parser.add_argument(dest='measure_name', 
-                            type=str,
-                            metavar='measure_name',
-                            help='Measure name eg: MT_mean, FA_r etc')
-                            
     parser.add_argument('--fsaverageid',
                             type=str,
                             metavar='fsaverage_id',
@@ -193,7 +188,6 @@ def combine_pngs(measure, surface, output_dir):
 arguments, parser = setup_argparser()
 
 data_dir = arguments.data_dir
-measure = arguments.measure_name
 subject_id = arguments.fsaverageid
 roi_data_file = arguments.roi_file
 l = arguments.lower
@@ -204,6 +198,9 @@ surface = arguments.surface
 
 subjects_dir = os.path.join(data_dir ,'SUB_DATA')
 fs_rois_dir = os.path.join(data_dir, 'FS_ROIS')
+
+measure = os.path.basename(roi_data_file)
+measure = os.path.splitext(measure)[0]
 
 if surface == 'both':
     surface_list = [ "inflated", "pial" ]
@@ -245,7 +242,7 @@ df = pd.read_csv(roi_data_file, index_col=False, header=None)
 df = df.T
 df.columns = aparc_names
 
-output_dir = os.path.join(fs_rois_dir, seg)
+output_dir = os.path.join(os.path.dirname(roi_data_file), 'PNGS')
 if not os.path.isdir(output_dir):
     os.mkdir(output_dir)
 
