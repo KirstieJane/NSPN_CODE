@@ -71,12 +71,18 @@ def setup_argparser():
                             action='store_true',
                             help='center the color bar around 0')
                             
+    parser.add_argument('-t', '--thresh',
+                            type=float,
+                            metavar='thresh',
+                            help='mask values below this value',
+                            default=-98)
+                            
     parser.add_argument('-l', '--lower',
                             type=float,
                             metavar='lowerthr',
                             help='lower limit for colorbar',
                             default=None)
-                            
+
     parser.add_argument('-u', '--upper',
                             type=float,
                             metavar='upperthr',
@@ -95,7 +101,7 @@ def setup_argparser():
     return arguments, parser
 
 #------------------------------------------------------------------------------
-def plot_surface(vtx_data, subject_id, hemi, surface, subjects_dir, output_dir, prefix, l, u, cmap, center):
+def plot_surface(vtx_data, subject_id, hemi, surface, subjects_dir, output_dir, prefix, l, u, cmap, center, thresh):
     # Open up a brain in pysurfer
     brain = Brain(subject_id, hemi, surface,
                   subjects_dir = subjects_dir,
@@ -123,7 +129,7 @@ def plot_surface(vtx_data, subject_id, hemi, surface, subjects_dir, output_dir, 
     brain.add_data(vtx_data,
                     l, 
                     u,
-                    thresh = -98,
+                    thresh = thresh,
                     colormap=cmap,
                     alpha=.8)
     
@@ -195,6 +201,7 @@ u = arguments.upper
 cmap = arguments.cmap
 center = arguments.center
 surface = arguments.surface
+thresh = arguments.thresh
 
 subjects_dir = os.path.join(data_dir ,'SUB_DATA')
 fs_rois_dir = os.path.join(data_dir, 'FS_ROIS')
@@ -277,7 +284,8 @@ for hemi, surface in it.product(hemi_list, surface_list):
     plot_surface(vtx_data, subject_id, hemi,
                      surface, subjects_dir, 
                      output_dir, prefix,
-                     l, u, cmap, center)
+                     l, u, cmap, center,
+                     thresh)
 
 #============================================================================= 
 # COMBINE THE IMAGES
