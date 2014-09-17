@@ -112,11 +112,10 @@ def plot_surface(vtx_data, subject_id, hemi, surface, subjects_dir, output_dir, 
     # Figure out the min and max for the color bar
     if l == None:
         l = roi_data[roi_data>-99].min()
+        l = np.floor(l*20)/20.0
     if u == None:
         u = roi_data[roi_data>-99].max()
-        
-    l = np.floor(l*20)/20.0
-    u = np.ceil(u*20)/20.0
+        u = np.ceil(u*20)/20.0
     
     if center:
         # Make sure the colorbar is centered
