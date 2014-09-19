@@ -13,7 +13,7 @@ surfer_dir=$1
 #=============================================================================
 # CHECK THE INPUTS
 #=============================================================================
-if [[ -d ${surfer_dir} ]]; then
+if [[ ! -d ${surfer_dir} ]]; then
     echo "Surf dir doesn't exist - CHECK ${surfer_dir}"
     exit
 fi
