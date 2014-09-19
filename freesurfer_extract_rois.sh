@@ -13,7 +13,7 @@
 
 function usage {
 
-    echo "USAGE: freesurfer_extract_rois_DTI.sh <data_dir> <subid>"
+    echo "USAGE: freesurfer_extract_rois.sh <data_dir> <subid>"
     echo "Note that data dir expects to find SUB_DATA within it"
     echo "and then the standard NSPN directory structure"
     echo ""
