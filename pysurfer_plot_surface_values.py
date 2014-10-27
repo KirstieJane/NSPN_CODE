@@ -18,7 +18,7 @@ from glob import glob
 
 import pandas as pd
 import nibabel as nib
-from surfer import Brain
+from surfer import Brain, io
 
 import itertools as it
 from scipy.stats.stats import linregress
@@ -45,21 +45,27 @@ def setup_argparser():
     
     # Now add the arguments
     # Required argument: dti_dir
-    parser.add_argument(dest='data_dir', 
+    parser.add_argument(dest='output directory', 
                             type=str,
-                            metavar='data_dir',
-                            help='data directory')
+                            metavar='output_dir',
+                            help='output directory')
                           
-    parser.add_argument(dest='roi_file', 
+    parser.add_argument(dest='overlay_file', 
                             type=str,
-                            metavar='roi_file',
-                            help='roi file containing list of measure values - one for each region - csv format')
+                            metavar='overlay_file',
+                            help='overlay file in with the hemisphere in the first two letters')
                             
-    parser.add_argument('--fsaverageid',
+    parser.add_argument('--subject_id',
                             type=str,
-                            metavar='fsaverage_id',
-                            help='FSaverage subject id',
-                            default='fsaverageSubP')
+                            metavar='subject id',
+                            help='freesurfer subject id',
+                            default='fsaverage')
+                            
+    parser.add_argument('-sd', '--subjects_dir',
+                            type=str,
+                            metavar='subjects_dir',
+                            help='freesurfer subjects dir',
+                            default=os.environ["SUBJECTS_DIR"])
                             
     parser.add_argument('-c', '--cmap',
                             type=str,
@@ -101,7 +107,7 @@ def setup_argparser():
     return arguments, parser
 
 #------------------------------------------------------------------------------
-def plot_surface(vtx_data, subject_id, hemi, surface, subjects_dir, output_dir, prefix, l, u, cmap, center, thresh):
+def plot_surface(vtx_data, subject_id, subjects_dir, hemi, surface, output_dir, prefix, l, u, cmap, center, thresh):
     # Open up a brain in pysurfer
     brain = Brain(subject_id, hemi, surface,
                   subjects_dir = subjects_dir,
@@ -192,21 +198,16 @@ def combine_pngs(measure, surface, output_dir):
 # Read in the arguments from argparse
 arguments, parser = setup_argparser()
 
-data_dir = arguments.data_dir
-subject_id = arguments.fsaverageid
-roi_data_file = arguments.roi_file
+overlay_file = arguments.overlay_file
+output_dir = arguments.output_dir
+subject_id = arguments.subject_id
+subjects_dir = arguments.subjects_dir
 l = arguments.lower
 u = arguments.upper
 cmap = arguments.cmap
 center = arguments.center
 surface = arguments.surface
 thresh = arguments.thresh
-
-subjects_dir = os.path.join(data_dir ,'SUB_DATA')
-fs_rois_dir = os.path.join(data_dir, 'FS_ROIS')
-
-measure = os.path.basename(roi_data_file)
-measure = os.path.splitext(measure)[0]
 
 if surface == 'both':
     surface_list = [ "inflated", "pial" ]
@@ -222,66 +223,32 @@ else:
 hemi_list = [ "lh", "rh" ]
 views_list = [ 'medial', 'lateral' ]
 
-seg = '500cortConsec'
-
 # Check that the inputs exist:
-if not os.path.isdir(data_dir):
-    print "Data directory doesn't exist"
-    sys.exit()
-    
+for hemi in hemi_list:
+    f = hemi + overlay_file[2:]    
+    if not os.path.isfile(f):
+        print "{} overlay file doesn't exist".format(hemi)
+        sys.exit()
 
-#=============================================================================
-# READ IN THE MEASURE DATA
-#=============================================================================
-# Read in aparc names file
-aparc_names_file =  os.path.join(subjects_dir,
-                          subject_id, "parcellation",
-                          "500.names.txt")
-                          
-# Read in the names from the aparc names file 
-# dropping the first 41 ################# BUUUUUG - needs to be fixed
-aparc_names = [line.strip() for line in open(aparc_names_file)]
-aparc_names = aparc_names[41::]
-
-# Read in the data and match it up with the names
-df = pd.read_csv(roi_data_file, index_col=False, header=None)
-df = df.T
-df.columns = aparc_names
-
-output_dir = os.path.join(os.path.dirname(roi_data_file), 'PNGS')
+# Make the output directory if it doesn't already exist    
 if not os.path.isdir(output_dir):
     os.mkdir(output_dir)
 
-for hemi, surface in it.product(hemi_list, surface_list):
 
-    prefix = '_'.join([measure, hemi, surface])
+#=============================================================================
+# OVERLAY THE DATA
+#=============================================================================
+for hemi, surface_view in it.product(hemi_list, surface_view_list):
+
+    prefix = '_'.join([hemi, surface_view])
     
-    # Read in aparc annot file
-    aparc_file = os.path.join(subjects_dir,
-                          subject_id, "label",
-                          hemi + ".500.aparc.annot")
-
-    
-    # Use nibabel to merge together the aparc_names and the aparc_file
-    labels, ctab, names = nib.freesurfer.read_annot(aparc_file)
-
-    # Create an empty roi_data array
-    roi_data = np.ones(len(names))*-99
-
-    # Loop through the names and if they are in the data frame
-    # for this hemisphere then add that value to the roi_data array
-    for i, name in enumerate(names):
-        roi_name = '{}_{}'.format(hemi, name)
-
-        if roi_name in df.columns:
-            roi_data[i] = df[roi_name]
-            
-    # Make a vector containing the data point at each vertex.
-    vtx_data = roi_data[labels]
+    f = hemi + overlay_file[2:]
+        
+    vtx_data = io.read_scalar_data(f)
     
     # Show this data on a brain
-    plot_surface(vtx_data, subject_id, hemi,
-                     surface, subjects_dir, 
+    plot_surface(vtx_data, subject_id, subjects_dir,
+                     hemi, surface, 
                      output_dir, prefix,
                      l, u, cmap, center,
                      thresh)
