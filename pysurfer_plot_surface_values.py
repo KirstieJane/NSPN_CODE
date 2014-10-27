@@ -163,7 +163,7 @@ def combine_pngs(surface, output_dir):
     grid.update(left=0, right=1, top=1, bottom = 0.08, wspace=0, hspace=0)
 
     f_list = [ os.path.join(output_dir, '_'.join(['lh', surface, 'lateral.png'])),
-               os.path.join(output_dir, '_'.join(['rh', surface, 'lateral.png']),
+               os.path.join(output_dir, '_'.join(['rh', surface, 'lateral.png'])),
                os.path.join(output_dir, '_'.join(['lh', surface, 'medial.png'])),
                os.path.join(output_dir, '_'.join(['rh', surface, 'medial.png'])) ]
 
