@@ -141,7 +141,6 @@ def plot_surface(vtx_data, subject_id, subjects_dir, hemi, surface, output_dir, 
                     l, 
                     u,
                     thresh = thresh,
-                    
                     colormap=cmap,
                     alpha=.8)
     
@@ -264,7 +263,7 @@ for hemi, surface in it.product(hemi_list, surface_list):
     mask = np.zeros_like(vtx_data)
     mask[cortex_data] = 1
     
-    vtx_data[vtx_data == 0] = -99
+    vtx_data[mask == 0] = -99
     
     # Show this data on a brain
     plot_surface(vtx_data, subject_id, subjects_dir,
