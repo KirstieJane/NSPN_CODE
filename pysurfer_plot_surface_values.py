@@ -256,7 +256,7 @@ for hemi, surface in it.product(hemi_list, surface_list):
     vtx_data = io.read_scalar_data(f)
     
     # Read in the cortex label
-    label_f = os.path.join(subjects_dir, subject_id, 'label', hemi + 'cortex.label')
+    label_f = os.path.join(subjects_dir, subject_id, 'label', hemi + '.cortex.label')
         
     cortex_data = io.read_label(label_f)
     
