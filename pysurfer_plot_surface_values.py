@@ -45,16 +45,16 @@ def setup_argparser():
     
     # Now add the arguments
     # Required argument: dti_dir
-    parser.add_argument(dest='output directory', 
-                            type=str,
-                            metavar='output_dir',
-                            help='output directory')
-                          
     parser.add_argument(dest='overlay_file', 
                             type=str,
                             metavar='overlay_file',
                             help='overlay file in with the hemisphere in the first two letters')
                             
+    parser.add_argument(dest='output_dir', 
+                            type=str,
+                            metavar='output_dir',
+                            help='output directory')
+                          
     parser.add_argument('--subject_id',
                             type=str,
                             metavar='subject id',
