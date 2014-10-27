@@ -83,6 +83,12 @@ def setup_argparser():
                             help='mask values below this value',
                             default=-98)
                             
+    parser.add_argument('-m', '--mask',
+                            type=float,
+                            metavar='mask',
+                            help='mask values that are exactly this value',
+                            default=0)
+                            
     parser.add_argument('-l', '--lower',
                             type=float,
                             metavar='lowerthr',
@@ -107,7 +113,7 @@ def setup_argparser():
     return arguments, parser
 
 #------------------------------------------------------------------------------
-def plot_surface(vtx_data, subject_id, subjects_dir, hemi, surface, output_dir, prefix, l, u, cmap, center, thresh):
+def plot_surface(vtx_data, subject_id, subjects_dir, hemi, surface, output_dir, prefix, l, u, cmap, center, thresh, mask):
     # Open up a brain in pysurfer
     brain = Brain(subject_id, hemi, surface,
                   subjects_dir = subjects_dir,
@@ -135,6 +141,7 @@ def plot_surface(vtx_data, subject_id, subjects_dir, hemi, surface, output_dir, 
                     l, 
                     u,
                     thresh = thresh,
+                    
                     colormap=cmap,
                     alpha=.8)
     
@@ -155,10 +162,10 @@ def combine_pngs(surface, output_dir):
     grid = gridspec.GridSpec(2, 2)
     grid.update(left=0, right=1, top=1, bottom = 0.08, wspace=0, hspace=0)
 
-    f_list = [ '_'.join([output_dir, 'lh', surface, 'lateral.png']),
-               '_'.join([output_dir, 'rh', surface, 'lateral.png']),
-               '_'.join([output_dir, 'lh', surface, 'medial.png']),
-               '_'.join([output_dir, 'rh', surface, 'medial.png']) ]
+    f_list = [ os.path.join(output_dir, '_'.join(['lh', surface, 'lateral.png'])),
+               os.path.join(output_dir, '_'.join(['rh', surface, 'lateral.png']),
+               os.path.join(output_dir, '_'.join(['lh', surface, 'medial.png'])),
+               os.path.join(output_dir, '_'.join(['rh', surface, 'medial.png'])) ]
 
     # Plot each figure in turn
     for g_loc, f in zip(grid, f_list):
@@ -208,6 +215,7 @@ cmap = arguments.cmap
 center = arguments.center
 surface = arguments.surface
 thresh = arguments.thresh
+mask = arguments.mask
 
 if surface == 'both':
     surface_list = [ "inflated", "pial" ]
@@ -245,6 +253,8 @@ for hemi, surface in it.product(hemi_list, surface_list):
     f = os.path.join(os.path.dirname(overlay_file), hemi + os.path.basename(overlay_file)[2:])
         
     vtx_data = io.read_scalar_data(f)
+    
+    vtx_data[vtx_data == mask] = -99
     
     # Show this data on a brain
     plot_surface(vtx_data, subject_id, subjects_dir,
