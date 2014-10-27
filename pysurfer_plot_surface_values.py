@@ -238,9 +238,9 @@ if not os.path.isdir(output_dir):
 #=============================================================================
 # OVERLAY THE DATA
 #=============================================================================
-for hemi, surface_view in it.product(hemi_list, surface_view_list):
+for hemi, surface in it.product(hemi_list, surface_list):
 
-    prefix = '_'.join([hemi, surface_view])
+    prefix = '_'.join([hemi, surface])
     
     f = hemi + overlay_file[2:]
         
