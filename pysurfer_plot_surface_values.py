@@ -242,7 +242,7 @@ for hemi, surface in it.product(hemi_list, surface_list):
 
     prefix = '_'.join([hemi, surface])
     
-    f = hemi + overlay_file[2:]
+    f = os.path.join(os.path.dirname(overlay_file), hemi + os.path.basename(overlay_file)[2:])
         
     vtx_data = io.read_scalar_data(f)
     
