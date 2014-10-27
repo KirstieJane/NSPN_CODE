@@ -123,10 +123,10 @@ def plot_surface(vtx_data, subject_id, subjects_dir, hemi, surface, output_dir, 
 
     # Figure out the min and max for the color bar
     if l == None:
-        l = vtx_data.min()
+        l = vtx_data[vtx_data>-99].min()
         l = np.floor(l*20)/20.0
     if u == None:
-        u = vtx_data.max()
+        u = vtx_data[vtx_data>-99].max()
         u = np.ceil(u*20)/20.0
     
     if center:
@@ -250,11 +250,21 @@ for hemi, surface in it.product(hemi_list, surface_list):
 
     prefix = '_'.join([hemi, surface])
     
+    # Read in the overlay data
     f = os.path.join(os.path.dirname(overlay_file), hemi + os.path.basename(overlay_file)[2:])
         
     vtx_data = io.read_scalar_data(f)
     
-    vtx_data[vtx_data == mask] = -99
+    # Read in the cortex label
+    label_f = os.path.join(subjects_dir, subject_id, 'label', hemi + 'cortex.label')
+        
+    cortex_data = io.read_label(label_f)
+    
+    # Create a mask of 1s where there is cortex and 0s on the medial wall
+    mask = np.zeros_like(vtx_data)
+    mask[cortex_data] = 1
+    
+    vtx_data[vtx_data == 0] = -99
     
     # Show this data on a brain
     plot_surface(vtx_data, subject_id, subjects_dir,
