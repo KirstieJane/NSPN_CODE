@@ -225,7 +225,7 @@ views_list = [ 'medial', 'lateral' ]
 
 # Check that the inputs exist:
 for hemi in hemi_list:
-    f = hemi + overlay_file[2:]    
+    f = os.path.join(os.path.dirname(overlay_file), hemi + os.path.basename(overlay_file)[2:])
     if not os.path.isfile(f):
         print "{} overlay file doesn't exist".format(hemi)
         sys.exit()
