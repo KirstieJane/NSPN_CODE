@@ -113,7 +113,7 @@ def setup_argparser():
     return arguments, parser
 
 #------------------------------------------------------------------------------
-def plot_surface(vtx_data, subject_id, subjects_dir, hemi, surface, output_dir, prefix, l, u, cmap, center, thresh, mask):
+def plot_surface(vtx_data, subject_id, subjects_dir, hemi, surface, output_dir, prefix, l, u, cmap, center, thresh):
     # Open up a brain in pysurfer
     brain = Brain(subject_id, hemi, surface,
                   subjects_dir = subjects_dir,
