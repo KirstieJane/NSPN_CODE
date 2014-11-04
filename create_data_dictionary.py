@@ -177,6 +177,8 @@ for fname in file_list:
     with open(fname) as f:
         data = f.readlines()
     data = [ x.strip('\n') for x in data ]
+    data = [ x.replace('_', '-') for x in data ]
+
     np_data = np.array([ x.split(',') for x in data[1:]])
     np_data = np.hstack([np.array(names)[:, None], np_data.T])
 
