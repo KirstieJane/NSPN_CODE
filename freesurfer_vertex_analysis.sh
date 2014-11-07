@@ -25,6 +25,7 @@ function usage {
     echo "    fsgd is the freesurfer group descriptor file - must end is .fsgd"
     echo "    contrast file contains the contrast of interest - must end in .mtx"
     echo "    measure is whatever surface measure you're interested in - eg: thickness"
+    
 }
 
 #=============================================================================
@@ -67,9 +68,8 @@ if [[ -z ${measure} ]]; then
     measure=thickness
 fi
 
-
 if [[ ${print_usage} == 1 ]]; then
-    usage()
+    usage
 fi
 
 #=============================================================================
