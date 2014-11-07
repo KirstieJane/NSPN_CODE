@@ -16,18 +16,6 @@
 #=============================================================================
 
 #=============================================================================
-# Define usage function
-#=============================================================================
-usage {
-
-    echo "freesurfer_vertex_analysis.sh <data_dir> <fsgd> <contrast>"
-    echo "    data_dir is wherever you want to save your output"
-    echo "    fsgd is the freesurfer group descriptor file - must end is .fsgd"
-    echo "    contrast file contains the contrast of interest - must end in .mtx"
-
-}
-
-#=============================================================================
 # Read in command line arguments
 #=============================================================================
 
@@ -39,29 +27,6 @@ fsgd=$2
 
 # contrast file contains your contrast of interest - must end in .mtx
 contrast_file=$3
-
-
-#=============================================================================
-# Check that the files all exist etc
-#=============================================================================
-if [[ ! -d ${data_dir} ]]; then
-    echo "DATA DIRECTORY does not exist. Check ${data_dir}"
-    print_usage=1
-fi
-
-if [[ ! -d ${fsgd} ]]; then
-    echo "FS GROUP DESCRIPTOR FILE does not exist. Check ${fsgd}"
-    print_usage=1
-fi
-
-if [[ ! -f ${contrast_file} ]]; then
-    echo "CONTRAST FILE does not exist. Check ${contrast_file}"
-    print_usage=1
-fi
-
-if [[ ${print_usage} == 1 ]]; then
-    usage()
-fi
 
 #=============================================================================
 # Define a couple of variables
