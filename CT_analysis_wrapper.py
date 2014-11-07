@@ -43,7 +43,7 @@ for measure in parc_measure_list:
     
     data_cols = [ x.replace('_{}'.format(measure), '') for x in df.columns ]
     df.columns = data_cols
-    
+        
     roi_data_mean = np.ones(len(aparc_names))*-99
     roi_data_std = np.ones(len(aparc_names))*-99
     roi_data_r = np.ones(len(aparc_names))*-99
@@ -78,6 +78,10 @@ for measure in parc_measure_list:
     np.savetxt(os.path.join(fs_rois_dir, parc, '_'.join(['PARC', measure, 'age', 'p.txt'])), 
                         roi_data_p,
                         fmt='%.6f')
+                        
+    df[aparc_names].corr().to_csv(os.path.join(fs_rois_dir, parc, '_'.join(['PARC', measure, 'corrMat.txt'])),
+                                    header=False, index=False)
+
 
 ##### CORR PARCS WITH EACH OTHER #####
 for measure1, measure2 in it.combinations(parc_measure_list,2):
@@ -167,6 +171,8 @@ for measure in seg_measure_list:
     np.savetxt(os.path.join(fs_rois_dir, parc, '_'.join(['SEG', measure, 'age', 'p.txt'])), 
                         roi_data_p,
                         fmt='%.6f')
+    df[aparc_names].corr().to_csv(os.path.join(fs_rois_dir, parc, '_'.join(['SEG', measure, 'corrMat.txt'])),
+                                    header=False, index=False)
 
 ##### CORR SEGS WITH EACH OTHER #####
 for measure1, measure2 in it.combinations(seg_measure_list,2):
