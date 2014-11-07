@@ -13,15 +13,10 @@ import os
 import sys
 import argparse
 import numpy as np
-import scipy.io as sio
-from glob import glob
 
-import pandas as pd
-import nibabel as nib
 from surfer import Brain, io
 
 import itertools as it
-from scipy.stats.stats import linregress
 
 import matplotlib.pylab as plt
 import matplotlib.image as mpimg
