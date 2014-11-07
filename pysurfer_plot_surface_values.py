@@ -288,7 +288,7 @@ for hemi in hemi_list:
 
     # Define the name for the overlay surface file
     overlay_fname = os.path.join(os.path.dirname(overlay_file), hemi + os.path.basename(overlay_file)[2:])
-            
+    
     # Define the name for the cortex label file
     cortex_fname = os.path.join(subjects_dir, subject_id, 'label', hemi + '.cortex.label')
     
@@ -309,7 +309,7 @@ for hemi, surface in it.product(hemi_list, surface_list):
     prefix = '_'.join([hemi, surface])
     
     # Show this data on a brain
-    plot_surface(vtx_data, subject_id, subjects_dir,
+    plot_surface(vtx_data_dict[hemi], subject_id, subjects_dir,
                      hemi, surface, 
                      output_dir, prefix,
                      l, u, cmap, center,
