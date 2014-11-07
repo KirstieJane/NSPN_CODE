@@ -25,7 +25,7 @@ function usage {
     echo "    fsgd is the freesurfer group descriptor file - must end is .fsgd"
     echo "    contrast file contains the contrast of interest - must end in .mtx"
     echo "    measure is whatever surface measure you're interested in - eg: thickness"
-    
+    exit
 }
 
 #=============================================================================
@@ -53,7 +53,7 @@ if [[ ! -d ${analysis_dir} ]]; then
     print_usage=1
 fi
 
-if [[ ! -d ${fsgd} ]]; then
+if [[ ! -f ${fsgd} ]]; then
     echo "FS GROUP DESCRIPTOR FILE does not exist. Check ${fsgd}"
     print_usage=1
 fi
