@@ -99,7 +99,7 @@ for hemi in lh rh; do
           --fsgd ${fsgd}      `# Freesurfer group descriptor file` \
           --target fsaverage  `# Target file to which all inputs will be aligned` \
           --hemi ${hemi}      `# Hemisphere` \
-          --meas ${measure}    `# Surface measure to be represented in target space` \
+          --meas ${measure}   `# Surface measure to be represented in target space` \
           --fwhm ${fwhm}      `# Smooth after registration to fsaverage with a gaussian kernel of ${fwhm} mm` \
           --out ${analysis_dir}/${hemi}.${analysis_name}.${measure}.00.mgh
           
