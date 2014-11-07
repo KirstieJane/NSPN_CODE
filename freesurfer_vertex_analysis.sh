@@ -18,7 +18,7 @@
 #=============================================================================
 # Define usage function
 #=============================================================================
-usage {
+function usage {
 
     echo "freesurfer_vertex_analysis.sh <analysis_dir> <fsgd> <contrast> <measure>"
     echo "    analysis_dir is wherever you want to save your output"
