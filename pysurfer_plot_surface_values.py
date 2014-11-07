@@ -113,6 +113,52 @@ def setup_argparser():
     return arguments, parser
 
 #------------------------------------------------------------------------------
+def mask_vtx_data(overlay_fname, cortex_fname):
+
+    vtx_data = io.read_scalar_data(overlay_fname)
+    cortex_data = io.read_label(cortex_fname)
+
+    # Create a mask of 1s where there is cortex and 0s on the medial wall
+    mask = np.zeros_like(vtx_data)
+    mask[cortex_data] = 1
+    
+    # Set all values that are not in cortex to -99
+    vtx_data[mask == 0] = -99
+
+    return vtx_data
+
+#------------------------------------------------------------------------------
+def calc_range(vtx_data_left, vtx_data_right, thresh, l, u):
+    '''
+    This is an important step to ensure that the colorbar is exactly
+    the same for the right and left hemispheres.
+    '''
+    if l == None:
+        # Figure out the min and max for each hemisphere
+        l_l = vtx_data_left[vtx_data_left>=thresh].min()
+        l_r = vtx_data_right[vtx_data_right>=thresh].min()
+        
+        # Take the smallest of these two
+        l = np.min(l_l, l_r)
+    
+        # And round to a nice number
+        l = np.floor(l*20)/20.0
+        
+    if u == None:
+        # Figure out the min and max for each hemisphere
+        u_l = vtx_data_left[vtx_data_left>=thresh].max()
+        u_r = vtx_data_right[vtx_data_right>=thresh].max()
+        
+        # Take the largest of these two
+        u = np.max(u_l, u_r)
+    
+        # And round to a nice number
+        u = np.ceil(u*20)/20.0
+    
+    # Return the lower and upper bounds
+    return l, u
+    
+#------------------------------------------------------------------------------
 def plot_surface(vtx_data, subject_id, subjects_dir, hemi, surface, output_dir, prefix, l, u, cmap, center, thresh):
     # Open up a brain in pysurfer
     brain = Brain(subject_id, hemi, surface,
@@ -121,14 +167,6 @@ def plot_surface(vtx_data, subject_id, subjects_dir, hemi, surface, output_dir, 
                                    height=665,
                                    width=800))
 
-    # Figure out the min and max for the color bar
-    if l == None:
-        l = vtx_data[vtx_data>-99].min()
-        l = np.floor(l*20)/20.0
-    if u == None:
-        u = vtx_data[vtx_data>-99].max()
-        u = np.ceil(u*20)/20.0
-    
     if center:
         # Make sure the colorbar is centered
         if l**2 < u **2:
@@ -243,27 +281,37 @@ if not os.path.isdir(output_dir):
 
 
 #=============================================================================
-# OVERLAY THE DATA
+# READ IN THE VERTEX DATA 
 #=============================================================================
+    
+# Create a vertex data dictionary that will contain the data
+# for left and right hemispheres
+vtx_data_dict = {}
+
+# Read in the left and right hemisphere surfaces
+for hemi in hemi_list:
+
+    # Define the name for the overlay surface file
+    overlay_fname = os.path.join(os.path.dirname(overlay_file), hemi + os.path.basename(overlay_file)[2:])
+            
+    # Define the name for the cortex label file
+    cortex_fname = os.path.join(subjects_dir, subject_id, 'label', hemi + '.cortex.label')
+    
+    # Read the data in and mask it so that non-cortex is -99
+    vtx_data_dict[hemi] = mask_vtx_data(overlay_fname, cortex_fname)
+    
+#============================================================================= 
+# CALCULATE THE COLOR BAR RANGE
+#============================================================================= 
+# Calculate the lower and upper values if they haven't been defined:
+l, u = calc_range(vtx_data_dict['lh'], vtx_data_dict['rh'], thresh, l, u)
+
+#============================================================================= 
+# MAKE THE INDIVIDUAL PICTURES
+#============================================================================= 
 for hemi, surface in it.product(hemi_list, surface_list):
 
     prefix = '_'.join([hemi, surface])
-    
-    # Read in the overlay data
-    f = os.path.join(os.path.dirname(overlay_file), hemi + os.path.basename(overlay_file)[2:])
-        
-    vtx_data = io.read_scalar_data(f)
-    
-    # Read in the cortex label
-    label_f = os.path.join(subjects_dir, subject_id, 'label', hemi + '.cortex.label')
-        
-    cortex_data = io.read_label(label_f)
-    
-    # Create a mask of 1s where there is cortex and 0s on the medial wall
-    mask = np.zeros_like(vtx_data)
-    mask[cortex_data] = 1
-    
-    vtx_data[mask == 0] = -99
     
     # Show this data on a brain
     plot_surface(vtx_data, subject_id, subjects_dir,
