@@ -4,11 +4,11 @@
 # Created by Kirstie Whitaker on 27th October 2014
 # Contact kw401@cam.ac.uk
 #
-# This code completes analysis of cortical thickness (at a variety of
-# smoothing kernels) of subjects defined in the fsgd file
+# This code completes analysis of any surface measure at a variety of
+# smoothing kernels of subjects defined in the fsgd file
 #
 #-----------------------------------------------------------------------------
-# USAGE: freesurfer_vertex_analysis.sh <analysis_dir> <fsgd> <contrast>
+# USAGE: freesurfer_vertex_analysis.sh <analysis_dir> <fsgd> <contrast> <measure>
 #
 # Note that this code assumes that recon-all has been run for all subjects
 # in the fsgd file and that the appropriate SUBJECTS_DIR has already been set
@@ -93,15 +93,15 @@ for hemi in lh rh; do
 
     # Process the individual data as defined in the fsgd unless it's already
     # been completed
-    if [[ ! -f ${analysis_dir}/${hemi}.${analysis_name}.thickness.00.mgh ]]; then
+    if [[ ! -f ${analysis_dir}/${hemi}.${analysis_name}.${measure}.00.mgh ]]; then
     
         mris_preproc \
           --fsgd ${fsgd}      `# Freesurfer group descriptor file` \
           --target fsaverage  `# Target file to which all inputs will be aligned` \
           --hemi ${hemi}      `# Hemisphere` \
-          --meas thickness    `# Surface measure to be represented in target space` \
+          --meas ${measure}    `# Surface measure to be represented in target space` \
           --fwhm ${fwhm}      `# Smooth after registration to fsaverage with a gaussian kernel of ${fwhm} mm` \
-          --out ${analysis_dir}/${hemi}.${analysis_name}.thickness.00.mgh
+          --out ${analysis_dir}/${hemi}.${analysis_name}.${measure}.00.mgh
           
     fi
     
@@ -110,30 +110,30 @@ for hemi in lh rh; do
     
         # Because all these analyses are going to get messy we should create
         # an appropriately named directory
-        glm_dir=${analysis_dir}/GLM.${hemi}.${analysis_name}.thickness.${fwhm}
+        glm_dir=${analysis_dir}/GLM.${hemi}.${analysis_name}.${measure}.${fwhm}
         
         mkdir -p ${glm_dir}
         
-        if [[ ! -f ${glm_dir}/${hemi}.${analysis_name}.thickness.${fwhm}.mgh ]]; then
+        if [[ ! -f ${glm_dir}/${hemi}.${analysis_name}.${measure}.${fwhm}.mgh ]]; then
         
             mri_surf2surf \
               --hemi ${hemi}  `# Hemisphere` \
               --s fsaverage   `# Source and target subject are the same` \
               --fwhm ${fwhm}  `# Smooth surface to full width half maximum of (eg) 10` \
               --cortex        `# Only smooth vertices that are within the cortex label` \
-              --sval ${analysis_dir}/${hemi}.${analysis_name}.thickness.00.mgh \
+              --sval ${analysis_dir}/${hemi}.${analysis_name}.${measure}.00.mgh \
                               `# Input surface file` \
-              --tval ${glm_dir}/${hemi}.${analysis_name}.thickness.${fwhm}.mgh \
+              --tval ${glm_dir}/${hemi}.${analysis_name}.${measure}.${fwhm}.mgh \
                               `# Output surface file - will be same dimensions as the input file`
                               
         fi
         
         # Calculate the mean across all subjects for visualisation purposes
         
-        if [[ ! -f ${glm_dir}/${hemi}.${analysis_name}.thickness.${fwhm}.MEAN.mgh ]]; then
+        if [[ ! -f ${glm_dir}/${hemi}.${analysis_name}.${measure}.${fwhm}.MEAN.mgh ]]; then
             
-            mri_concat ${glm_dir}/${hemi}.${analysis_name}.thickness.${fwhm}.mgh \
-                        --o ${glm_dir}/${hemi}.${analysis_name}.thickness.${fwhm}.MEAN.mgh \
+            mri_concat ${glm_dir}/${hemi}.${analysis_name}.${measure}.${fwhm}.mgh \
+                        --o ${glm_dir}/${hemi}.${analysis_name}.${measure}.${fwhm}.MEAN.mgh \
                         --mean
                         
         fi
@@ -143,7 +143,7 @@ for hemi in lh rh; do
         if [[ ! -f ${glm_dir}/${contrast_name}/sig.mgh ]]; then
         
             mri_glmfit \
-                --y ${glm_dir}/${hemi}.${analysis_name}.thickness.${fwhm}.mgh \
+                --y ${glm_dir}/${hemi}.${analysis_name}.${measure}.${fwhm}.mgh \
                                      `# Input surface data` \
                 --fsgd ${fsgd}       `# Freesurfer group descriptor file` \
                              dods    `# dods stands for different offset different slope - usually the right choice` \
