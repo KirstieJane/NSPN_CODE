@@ -274,7 +274,7 @@ for hemi in hemi_list:
 
 # Make the output directory if it doesn't already exist    
 if not os.path.isdir(output_dir):
-    os.mkdirs(output_dir)
+    os.makedirs(output_dir)
 
 
 #=============================================================================
