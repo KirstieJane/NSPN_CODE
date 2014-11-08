@@ -134,7 +134,7 @@ def calc_range(vtx_data_left, vtx_data_right, thresh, l, u):
         l_r = vtx_data_right[vtx_data_right>=thresh].min()
         
         # Take the smallest of these two
-        l = np.min(l_l, l_r)
+        l = np.min([l_l, l_r])
     
         # And round to a nice number
         l = np.floor(l*20)/20.0
@@ -145,7 +145,7 @@ def calc_range(vtx_data_left, vtx_data_right, thresh, l, u):
         u_r = vtx_data_right[vtx_data_right>=thresh].max()
         
         # Take the largest of these two
-        u = np.max(u_l, u_r)
+        u = np.max([u_l, u_r])
     
         # And round to a nice number
         u = np.ceil(u*20)/20.0
