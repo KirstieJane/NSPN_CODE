@@ -48,11 +48,6 @@ measure=$4
 #=============================================================================
 # Check that the files all exist etc
 #=============================================================================
-if [[ ! -d ${analysis_dir} ]]; then
-    echo "ANALYSIS DIRECTORY does not exist. Check ${analysis_dir}"
-    print_usage=1
-fi
-
 if [[ ! -f ${fsgd} ]]; then
     echo "FS GROUP DESCRIPTOR FILE does not exist. Check ${fsgd}"
     print_usage=1
