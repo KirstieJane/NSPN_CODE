@@ -265,7 +265,9 @@ views_list = [ 'medial', 'lateral' ]
 
 # Check that the inputs exist:
 for hemi in hemi_list:
-    f = os.path.join(os.path.dirname(overlay_file), hemi + os.path.basename(overlay_file)[2:])
+    #f = os.path.join(os.path.dirname(overlay_file), hemi + os.path.basename(overlay_file)[2:])
+    f = overlay_file.replace('.lh.', '.{}.'.format(hemi)).replace('.rh.', '.{}.'.format(hemi))
+    
     if not os.path.isfile(f):
         print "{} overlay file doesn't exist".format(hemi)
         sys.exit()
@@ -287,7 +289,7 @@ vtx_data_dict = {}
 for hemi in hemi_list:
 
     # Define the name for the overlay surface file
-    overlay_fname = os.path.join(os.path.dirname(overlay_file), hemi + os.path.basename(overlay_file)[2:])
+    overlay_fname = overlay_file.replace('.lh.', '.{}.'.format(hemi)).replace('.rh.', '.{}.'.format(hemi))
     
     # Define the name for the cortex label file
     cortex_fname = os.path.join(subjects_dir, subject_id, 'label', hemi + '.cortex.label')
