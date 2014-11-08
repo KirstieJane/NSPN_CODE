@@ -43,7 +43,7 @@ contrast_file=$3
 
 # measure is whatever surface measure you're interested in - eg: thickness
 measure=$4
-
+measure_name=${measure%.*}
 
 #=============================================================================
 # Check that the files all exist etc
@@ -61,6 +61,7 @@ fi
 if [[ -z ${measure} ]]; then
     echo "MEASURE not set - assuming thickness"
     measure=thickness
+    measure_name=${measure%.*}
 fi
 
 if [[ ${print_usage} == 1 ]]; then
@@ -88,7 +89,7 @@ for hemi in lh rh; do
 
     # Process the individual data as defined in the fsgd unless it's already
     # been completed
-    if [[ ! -f ${analysis_dir}/${hemi}.${analysis_name}.${measure}.00.mgh ]]; then
+    if [[ ! -f ${analysis_dir}/${hemi}.${analysis_name}.${measure_name}.00.mgh ]]; then
     
         mris_preproc \
           --fsgd ${fsgd}      `# Freesurfer group descriptor file` \
@@ -96,7 +97,7 @@ for hemi in lh rh; do
           --hemi ${hemi}      `# Hemisphere` \
           --meas ${measure}   `# Surface measure to be represented in target space` \
           --fwhm 0            `# Smooth after registration to fsaverage with a gaussian kernel of ${fwhm} mm` \
-          --out ${analysis_dir}/${hemi}.${analysis_name}.${measure}.00.mgh
+          --out ${analysis_dir}/${hemi}.${analysis_name}.${measure_name}.00.mgh
           
     fi
     
@@ -105,30 +106,30 @@ for hemi in lh rh; do
     
         # Because all these analyses are going to get messy we should create
         # an appropriately named directory
-        glm_dir=${analysis_dir}/GLM.${hemi}.${analysis_name}.${measure}.${fwhm}
+        glm_dir=${analysis_dir}/GLM.${hemi}.${analysis_name}.${measure_name}.${fwhm}
         
         mkdir -p ${glm_dir}
         
-        if [[ ! -f ${glm_dir}/${hemi}.${analysis_name}.${measure}.${fwhm}.mgh ]]; then
+        if [[ ! -f ${glm_dir}/${hemi}.${analysis_name}.${measure_name}.${fwhm}.mgh ]]; then
         
             mri_surf2surf \
               --hemi ${hemi}  `# Hemisphere` \
               --s fsaverage   `# Source and target subject are the same` \
               --fwhm ${fwhm}  `# Smooth surface to full width half maximum of (eg) 10` \
               --cortex        `# Only smooth vertices that are within the cortex label` \
-              --sval ${analysis_dir}/${hemi}.${analysis_name}.${measure}.00.mgh \
+              --sval ${analysis_dir}/${hemi}.${analysis_name}.${measure_name}.00.mgh \
                               `# Input surface file` \
-              --tval ${glm_dir}/${hemi}.${analysis_name}.${measure}.${fwhm}.mgh \
+              --tval ${glm_dir}/${hemi}.${analysis_name}.${measure_name}.${fwhm}.mgh \
                               `# Output surface file - will be same dimensions as the input file`
                               
         fi
         
         # Calculate the mean across all subjects for visualisation purposes
         
-        if [[ ! -f ${glm_dir}/${hemi}.${analysis_name}.${measure}.${fwhm}.MEAN.mgh ]]; then
+        if [[ ! -f ${glm_dir}/${hemi}.${analysis_name}.${measure_name}.${fwhm}.MEAN.mgh ]]; then
             
-            mri_concat ${glm_dir}/${hemi}.${analysis_name}.${measure}.${fwhm}.mgh \
-                        --o ${glm_dir}/${hemi}.${analysis_name}.${measure}.${fwhm}.MEAN.mgh \
+            mri_concat ${glm_dir}/${hemi}.${analysis_name}.${measure_name}.${fwhm}.mgh \
+                        --o ${glm_dir}/${hemi}.${analysis_name}.${measure_name}.${fwhm}.MEAN.mgh \
                         --mean
                         
         fi
@@ -138,7 +139,7 @@ for hemi in lh rh; do
         if [[ ! -f ${glm_dir}/${contrast_name}/sig.mgh ]]; then
         
             mri_glmfit \
-                --y ${glm_dir}/${hemi}.${analysis_name}.${measure}.${fwhm}.mgh \
+                --y ${glm_dir}/${hemi}.${analysis_name}.${measure_name}.${fwhm}.mgh \
                                      `# Input surface data` \
                 --fsgd ${fsgd}       `# Freesurfer group descriptor file` \
                              dods    `# dods stands for different offset different slope - usually the right choice` \
