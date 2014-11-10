@@ -167,7 +167,12 @@ for hemi in lh rh; do
                     ${direction}         `# Consider positive or negative results separately` \
                     --cwp 0.05           `# Keep clusters that have p < 0.05` \
                     --2spaces            `# Correct for the fact that you have two hemispheres` 
-                    
+                                        
+            mris_calc -o ${glm_dir}/${contrast_name}/gamma_thr20.pos.sig.cluster.mgh \
+                        ${glm_dir}/${contrast_name}/gamma.mgh \
+                        masked \
+                        ${glm_dir}/${contrast_name}/cache.th20.pos.sig.cluster.mgh
+                        
             done # Close the direction loop
             
         fi
