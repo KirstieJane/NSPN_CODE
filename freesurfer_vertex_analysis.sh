@@ -159,14 +159,14 @@ for hemi in lh rh; do
 
         # And finally calculate cluster correction for the p values
         
-        if [[ ! -f ${glm_dir}/${contrast_name}/cache.th20.neg.sig.cluster.mgh ]]; then
+        # Calculate both positive and negative findings
         
-            # Calculate both positive and negative findings
+        for direction in pos neg; do 
+        
+            for thresh in 1.3 2; do
             
-            for direction in pos neg; do 
-            
-                for thresh in 1.3 2; do
-                
+                if [[ ! -f ${glm_dir}/${contrast_name}/cache.th${thresh/.}.${direction}.sig.cluster.mgh ]]; then
+        
                     # Here we're using a cached simulation
                     # see the documentation to run a permutation test
                     mri_glmfit-sim \
@@ -181,12 +181,12 @@ for hemi in lh rh; do
                                 masked \
                                 ${glm_dir}/${contrast_name}/cache.th${thresh/.}.${direction}.sig.cluster.mgh
 
-                done # Close the thresh loop
-                                
-            done # Close the direction loop
-            
-        fi
-        
+                fi
+                
+            done # Close the thresh loop
+                            
+        done # Close the direction loop
+                    
     done # Close fwhm loop
 done # Close hemi loop
 
