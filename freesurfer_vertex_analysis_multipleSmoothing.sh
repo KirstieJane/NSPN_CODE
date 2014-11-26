@@ -4,14 +4,8 @@
 # Created by Kirstie Whitaker on 27th October 2014
 # Contact kw401@cam.ac.uk
 #
-# Edited on 26th November 2014 to limit smoothing kernels to 10mm and 15mm
-#
-# This code completes analysis of any surface measure at 10mm and 15mm
-# smoothing kernels of subjects defined in the fsgd file.
-#
-# It corrects for multiple comparisons at p < 0.05 for both the cluster 
-# forming and cluster testing thresholds as well as cluster forming p < 0.01
-# and cluster testing p < 0.05.
+# This code completes analysis of any surface measure at a variety of
+# smoothing kernels of subjects defined in the fsgd file
 #
 #-----------------------------------------------------------------------------
 # USAGE: freesurfer_vertex_analysis.sh <analysis_dir> <fsgd> <contrast> <measure>
@@ -108,7 +102,7 @@ for hemi in lh rh; do
     fi
     
     # Smooth the data at a variety of gaussian kernel sizes
-    for fwhm in 10 15; do
+    for fwhm in 00 05 10 15; do
     
         # Because all these analyses are going to get messy we should create
         # an appropriately named directory
@@ -164,25 +158,21 @@ for hemi in lh rh; do
             # Calculate both positive and negative findings
             
             for direction in pos neg; do 
-            
-                for thresh in 1.3 2; do
                 
-                    # Here we're using a cached simulation
-                    # see the documentation to run a permutation test
-                    mri_glmfit-sim \
-                        --glmdir ${glm_dir}  `# GLM directory - contains the output of the glm fit` \
-                        --cache ${thresh}    `# Set the cluster forming threshold of -log10(p) [ 2 <--> 0.01; 3 <--> 0.001 etc ]` \
-                        ${direction}         `# Consider positive or negative results separately` \
-                        --cwp 0.05           `# Keep clusters that have p < 0.05` \
-                        --2spaces            `# Correct for the fact that you have two hemispheres` 
-                                            
-                    mris_calc -o ${glm_dir}/${contrast_name}/gamma_th${thresh/.}.${direction}.sig.cluster.mgh \
-                                ${glm_dir}/${contrast_name}/gamma.mgh \
-                                masked \
-                                ${glm_dir}/${contrast_name}/cache.th${thresh/.}.${direction}.sig.cluster.mgh
-
-                done # Close the thresh loop
-                                
+                # Here we're using a cached simulation
+                # see the documentation to run a permutation test
+                mri_glmfit-sim \
+                    --glmdir ${glm_dir}  `# GLM directory - contains the output of the glm fit` \
+                    --cache 2            `# Set the cluster forming threshold of -log10(p) [ 2 <--> 0.01; 3 <--> 0.001 etc ]` \
+                    ${direction}         `# Consider positive or negative results separately` \
+                    --cwp 0.05           `# Keep clusters that have p < 0.05` \
+                    --2spaces            `# Correct for the fact that you have two hemispheres` 
+                                        
+            mris_calc -o ${glm_dir}/${contrast_name}/gamma_thr20.pos.sig.cluster.mgh \
+                        ${glm_dir}/${contrast_name}/gamma.mgh \
+                        masked \
+                        ${glm_dir}/${contrast_name}/cache.th20.pos.sig.cluster.mgh
+                        
             done # Close the direction loop
             
         fi
