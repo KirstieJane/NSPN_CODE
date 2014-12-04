@@ -295,7 +295,7 @@ for hemi in hemi_list:
     cortex_fname = os.path.join(subjects_dir, subject_id, 'label', hemi + '.cortex.label')
     
     # Read the data in and mask it so that non-cortex is -99
-    vtx_data_dict[hemi] = mask_vtx_data(overlay_fname, cortex_fname)
+    vtx_data_dict[hemi] = mask_vtx_data(overlay_fname, cortex_fname, thresh)
     
 #============================================================================= 
 # CALCULATE THE COLOR BAR RANGE
