@@ -289,7 +289,7 @@ vtx_data_dict = {}
 for hemi in hemi_list:
 
     # Define the name for the overlay surface file
-    overlay_fname = overlay_file.replace('lh.', '.{}.'.format(hemi)).replace('rh.', '.{}.'.format(hemi))
+    overlay_fname = overlay_file.replace('lh.', '{}.'.format(hemi)).replace('rh.', '{}.'.format(hemi))
     
     # Define the name for the cortex label file
     cortex_fname = os.path.join(subjects_dir, subject_id, 'label', hemi + '.cortex.label')
