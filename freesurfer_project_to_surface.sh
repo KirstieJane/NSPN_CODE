@@ -79,6 +79,7 @@ for hemi in lh rh; do
         
             mri_vol2surf --mov ${input_vol} \
                             --o ${sub_dir}/surf/${hemi}.${measure_name}_projfrac${frac}.mgh \
+                            --regheader \
                             --projfrac ${frac} \
                             --interp nearest \
                             --surf white \
@@ -93,6 +94,7 @@ for hemi in lh rh; do
         
             mri_vol2surf --mov ${input_vol} \
                             --o ${sub_dir}/surf/${hemi}.${measure_name}_projdist${dist}.mgh \
+                            --regheader \
                             --projdist ${dist} \
                             --interp nearest \
                             --surf pial \
