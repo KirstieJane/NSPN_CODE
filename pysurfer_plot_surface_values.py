@@ -108,7 +108,7 @@ def setup_argparser():
     return arguments, parser
 
 #------------------------------------------------------------------------------
-def mask_vtx_data(overlay_fname, cortex_fname):
+def mask_vtx_data(overlay_fname, cortex_fname, thresh):
 
     vtx_data = io.read_scalar_data(overlay_fname)
     cortex_data = io.read_label(cortex_fname)
@@ -117,8 +117,8 @@ def mask_vtx_data(overlay_fname, cortex_fname):
     mask = np.zeros_like(vtx_data)
     mask[cortex_data] = 1
     
-    # Set all values that are not in cortex to -99
-    vtx_data[mask == 0] = -99
+    # Set all values that are not in cortex to thresh-1
+    vtx_data[mask == 0] = thresh-1
 
     return vtx_data
 
