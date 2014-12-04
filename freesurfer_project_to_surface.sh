@@ -58,7 +58,8 @@ fi
 # Define a couple of variables
 #=============================================================================
 # Set the freesurfer SUBJECTS_DIR environmental variable
-export SUBJECTS_DIR=`dirname ${subject_dir}`
+export SUBJECTS_DIR=`dirname ${sub_dir}`
+sub=`basename ${sub_dir}`
 
 # Figure out the measure name from the input volume
 measure_name=`basename ${input_vol} .mgz`
@@ -79,7 +80,7 @@ for hemi in lh rh; do
         
             mri_vol2surf --mov ${input_vol} \
                             --o ${sub_dir}/surf/${hemi}.${measure_name}_projfrac${frac}.mgh \
-                            --regheader \
+                            --regheader ${sub} \
                             --projfrac ${frac} \
                             --interp nearest \
                             --surf white \
@@ -94,7 +95,7 @@ for hemi in lh rh; do
         
             mri_vol2surf --mov ${input_vol} \
                             --o ${sub_dir}/surf/${hemi}.${measure_name}_projdist${dist}.mgh \
-                            --regheader \
+                            --regheader ${sub} \
                             --projdist ${dist} \
                             --interp nearest \
                             --surf pial \
