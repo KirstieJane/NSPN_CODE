@@ -91,7 +91,7 @@ for hemi in lh rh; do
     
     for dist in `seq -f %+02.2f -5 0.2 0`; do
 
-        if [[ ! -f ${hemi}.${measure_name}_projdist${abs}.mgh ]]; then
+        if [[ ! -f ${hemi}.${measure_name}_projdist${dist}.mgh ]]; then
         
             mri_vol2surf --mov ${input_vol} \
                             --o ${sub_dir}/surf/${hemi}.${measure_name}_projdist${dist}.mgh \
