@@ -63,7 +63,7 @@ fi
 # START A LOOP OVER TIMEPOINTS
 #=============================================================================
 
-for occ in 0; do
+for occ in 0 1; do
 
 #=============================================================================
 # SET A COUPLE OF USEFUL VARIABLES
@@ -251,6 +251,7 @@ for occ in 0; do
         # Loop over parcellations
         for parc in aparc 500.aparc lobesStrict; do
 
+            # First extract just the thickness & curvature values
             if [[ ! -f ${surfer_dir}/stats/${hemi}.${parc}.stats \
                     && -f ${surfer_dir}/label/${hemi}.${parc}.annot ]]; then
                 mris_anatomical_stats -a ${surfer_dir}/label/${hemi}.${parc}.annot \
@@ -259,6 +260,66 @@ for occ in 0; do
                                         ${hemi}
             fi
             
+            # Next loop through all the different MPM and DTI files
+            for measure in R1 MT R2s A FA MD MO L1 L23 sse; do
+
+                # Loop through a bunch of different fractional depths 
+                # from the white matter surface
+                for frac in `seq -f %+02.2f -1 0.05 1`; do
+
+                    # Project the values to the surface
+                    if [[ ! -f ${hemi}.${measure}_projfrac${frac/.}.mgh ]]; then
+                    
+                        mri_vol2surf --mov ${surfer_dir}/mri/${measure}.mgz \
+                                        --o ${surfer_dir}/surf/${hemi}.${measure}_projfrac${frac}.mgh \
+                                        --regheader ${surf_sub} \
+                                        --projfrac ${frac} \
+                                        --interp nearest \
+                                        --surf white \
+                                        --hemi ${hemi} 
+                    fi
+
+                    # Calculate the stats
+                    if [[ ! -f ${surfer_dir}/stats/${hemi}.${parc}.${measure}_projfrac${frac}.stats \
+                                && -f ${surfer_dir}/label/${hemi}.${parc}.annot ]]; then
+                                
+                        mris_anatomical_stats -a ${surfer_dir}/label/${hemi}.${parc}.annot \
+                                                -t ${surfer_dir}/surf/${hemi}.${measure}_projfrac${frac}.mgh \
+                                                -f ${surfer_dir}/stats/${hemi}.${parc}.${measure}_projfrac${frac}.stats \
+                                                ${surf_sub} \
+                                                ${hemi}
+                    fi
+            
+                done # Close the fraction of cortical thickness loop
+    
+                # Now loop through the different absolute depths
+                for dist in `seq -f %+02.2f -5 0.2 0`; do
+
+                    if [[ ! -f ${hemi}.${measure}_projdist${dist}.mgh ]]; then
+                    
+                        mri_vol2surf --mov ${surfer_dir}/mri/${measure}.mgz \
+                                        --o ${surfer_dir}/surf/${hemi}.${measure}_projdist${dist}.mgh \
+                                        --regheader ${surf_sub} \
+                                        --projdist ${dist} \
+                                        --interp nearest \
+                                        --surf pial \
+                                        --hemi ${hemi} 
+                    
+                    fi
+
+                    # Calculate the stats
+                    if [[ ! -f ${surfer_dir}/stats/${hemi}.${parc}.${measure}_projdis${dist}.stats \
+                                && -f ${surfer_dir}/label/${hemi}.${parc}.annot ]]; then
+                                
+                        mris_anatomical_stats -a ${surfer_dir}/label/${hemi}.${parc}.annot \
+                                                -t ${surfer_dir}/surf/${hemi}.${measure}_projdist${dist}.mgh \
+                                                -f ${surfer_dir}/stats/${hemi}.${parc}.${measure}_projdist${dist}.stats \
+                                                ${surf_sub} \
+                                                ${hemi}
+                    fi
+                    
+                done # Close the absolute distance loop
+            done # Close the measure loop
         done # Close parcellation loop
     done # Close hemi loop
 
