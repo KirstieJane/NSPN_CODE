@@ -118,7 +118,7 @@ for hemi in lh rh; do
     fi
     
     # Smooth the data at a variety of gaussian kernel sizes
-    for fwhm in 0 10 15; do
+    for fwhm in 10 15; do
     
         # Because all these analyses are going to get messy we should create
         # an appropriately named directory
