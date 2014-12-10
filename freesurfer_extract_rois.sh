@@ -269,7 +269,7 @@ for occ in 0 1; do
                 for frac in `seq -f %+02.2f -1 0.05 1`; do
 
                     # Project the values to the surface
-                    if [[ ! -f ${hemi}.${measure}_projfrac${frac/.}.mgh ]]; then
+                    if [[ ! -f ${surfer_dir}/surf/${hemi}.${measure}_projfrac${frac/.}.mgh ]]; then
                     
                         mri_vol2surf --mov ${surfer_dir}/mri/${measure}.mgz \
                                         --o ${surfer_dir}/surf/${hemi}.${measure}_projfrac${frac}.mgh \
@@ -296,7 +296,7 @@ for occ in 0 1; do
                 # Now loop through the different absolute depths
                 for dist in `seq -f %+02.2f -5 0.2 0`; do
 
-                    if [[ ! -f ${hemi}.${measure}_projdist${dist}.mgh ]]; then
+                    if [[ ! -f ${surfer_dir}/surf/${hemi}.${measure}_projdist${dist}.mgh ]]; then
                     
                         mri_vol2surf --mov ${surfer_dir}/mri/${measure}.mgz \
                                         --o ${surfer_dir}/surf/${hemi}.${measure}_projdist${dist}.mgh \
