@@ -51,7 +51,7 @@ export SUBJECTS_DIR=`dirname ${surfer_dir}`
 #======================================================
 
 if [[ ! -f ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive_WMoverlap.nii.gz ]]; then
-    ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive.nii.gz \
+    fslmaths ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive.nii.gz \
         -sub ${surfer_dir}/parcellation/500.aparc_cortical_consecutive.nii.gz \
         ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive_WMoverlap.nii.gz
 fi
