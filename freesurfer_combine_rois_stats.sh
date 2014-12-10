@@ -161,6 +161,8 @@ for parc in aparc 500.aparc lobesStrict; do
         rm ${data_dir}/FS_ROIS/*temp.csv
         rm ${data_dir}/FS_ROIS/nspn_id_col
 
+    done # Close the measure loop
+    
     # Next extract "thickness" values from the projected maps
     #for measure in R1 MT R2s A FA MD MO L1 L23 sse; do
     for measure in MT; do
@@ -208,7 +210,7 @@ for parc in aparc 500.aparc lobesStrict; do
             # Remove the temporary files
             rm ${data_dir}/FS_ROIS/*temp.csv
             rm ${data_dir}/FS_ROIS/nspn_id_col
-            
+        
         done # Close frac loop
     done # Close measure loop
 done # Close parc loop
