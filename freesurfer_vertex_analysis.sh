@@ -54,7 +54,7 @@ measure_name=${measure%.*}
 
 # dods_doss is which of different onset different slope (DODS)
 # or different onset same slope (DOSS) you'd like to run
-dods_doss=$4
+dods_doss=$5
 
 #=============================================================================
 # Check that the files all exist etc
