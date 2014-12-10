@@ -130,7 +130,7 @@ for parc in aparc 500.aparc lobesStrict; do
                                 -d comma \
                                 --common-parcs \
                                 --skip \
-                                -t ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temp.csv 
+                                -t ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temptemp.csv 
                                 
             # Drop the first column because it isn't necessary
             cut -d, -f2- ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temptemp.csv \
@@ -144,7 +144,8 @@ for parc in aparc 500.aparc lobesStrict; do
         sed -i "s|${data_dir}/SUB_DATA/||g" ${data_dir}/FS_ROIS/nspn_id_col
         sed -i "s|/SURFER/MRI||g" ${data_dir}/FS_ROIS/nspn_id_col
         sed -i "s|/||g" ${data_dir}/FS_ROIS/nspn_id_col
-        
+        sed -i "s|${hemi}.${parc}.${measure}|nspn_id,col" ${data_dir}/FS_ROIS/nspn_id_col
+
         # Now paste the data together
         paste -d , ${data_dir}/FS_ROIS/nspn_id_col \
                 ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_lh_temp.csv \
