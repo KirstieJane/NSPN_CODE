@@ -26,11 +26,12 @@
 #=============================================================================
 function usage {
 
-    echo "freesurfer_vertex_analysis.sh <analysis_dir> <fsgd> <contrast> <measure>"
+    echo "freesurfer_vertex_analysis.sh <analysis_dir> <fsgd> <contrast> <measure> <dods_doss>"
     echo "    analysis_dir is wherever you want to save your output"
     echo "    fsgd is the freesurfer group descriptor file - must end is .fsgd"
     echo "    contrast file contains the contrast of interest - must end in .mtx"
     echo "    measure is whatever surface measure you're interested in - eg: thickness"
+    echo "    dods_doss is one of dods and doss depending on whether you model interactions"
     exit
 }
 
@@ -51,6 +52,10 @@ contrast_file=$3
 measure=$4
 measure_name=${measure%.*}
 
+# dods_doss is which of different onset different slope (DODS)
+# or different onset same slope (DOSS) you'd like to run
+dods_doss=$4
+
 #=============================================================================
 # Check that the files all exist etc
 #=============================================================================
@@ -68,6 +73,11 @@ if [[ -z ${measure} ]]; then
     echo "MEASURE not set - assuming thickness"
     measure=thickness
     measure_name=${measure%.*}
+fi
+
+if [[ -z ${dods_doss} ]]; then
+    echo "DODS DOSS not set - assuming different onset different slope"
+    dods_doss=dods
 fi
 
 if [[ ${print_usage} == 1 ]]; then
@@ -108,7 +118,7 @@ for hemi in lh rh; do
     fi
     
     # Smooth the data at a variety of gaussian kernel sizes
-    for fwhm in 10 15; do
+    for fwhm in 0 10 15; do
     
         # Because all these analyses are going to get messy we should create
         # an appropriately named directory
@@ -148,7 +158,7 @@ for hemi in lh rh; do
                 --y ${glm_dir}/${hemi}.${analysis_name}.${measure_name}.${fwhm}.mgh \
                                      `# Input surface data` \
                 --fsgd ${fsgd}       `# Freesurfer group descriptor file` \
-                             dods    `# dods stands for different offset different slope - usually the right choice` \
+                     ${dods_doss}    `# dods stands for different offset different slope - usually the right choice` \
                 --C ${contrast_file}      `# Contrast file` \
                 --surf fsaverage     `# Common space surface file` \
                             ${hemi}  `# Hemisphere` \
