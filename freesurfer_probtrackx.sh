@@ -12,6 +12,7 @@ function usage {
 #======================================================
 data_dir=$1
 sub=$2
+occ=$3
 
 #======================================================
 # CHECK THE COMMAND LINE ARGUMENTS
@@ -27,6 +28,11 @@ if [[ -z ${sub} ]]; then
     print_usage=1
 fi
 
+if [[ -z ${occ} ]]; then
+    echo "OCC is blank assuming occ == 0"
+    occ=0
+fi
+
 if [[ ${print_usage} == 1 ]]; then
     usage
 fi
@@ -34,11 +40,21 @@ fi
 #======================================================
 # DEFINE SOME USEFUL VARIABLES
 #======================================================
-surfer_dir=${data_dir}/SUB_DATA/${sub}/SURFER/MRI0/
+surfer_dir=${data_dir}/SUB_DATA/${sub}/SURFER/MRI${occ}/
 export SUBJECTS_DIR=`dirname ${surfer_dir}`
 
-#label_list=(`dirname ${0}`/destrieux_labels_order.txt)
-#labels=(`cat ${label_list}`)
+#======================================================
+# Create the seed mask by subtracting the cortical
+# parcellation from the expanded parcellation
+# for each 
+# individual
+#======================================================
+
+if [[ ! -f ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive_WMoverlap.nii.gz ]]; then
+    ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive.nii.gz \
+        -sub ${surfer_dir}/parcellation/500.aparc_cortical_consecutive.nii.gz \
+        ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive_WMoverlap.nii.gz
+fi
 
 #======================================================
 # Split up the input parcellation scheme and 
