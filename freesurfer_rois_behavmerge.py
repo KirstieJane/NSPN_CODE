@@ -53,6 +53,7 @@ for measure in measure_list:
 
 file_list += glob(os.path.join(fs_rois_dir, '*proj??????.??.csv'))
 
+print file_list
     
 for f in file_list:
     print f
@@ -60,7 +61,7 @@ for f in file_list:
     df = df_behav.merge(df_meas, on=['nspn_id', 'occ'])
     df.sort('nspn_id', inplace=True)
     c_drop = [ x for x in df.columns if 'Measure' in x ]
-    c_drop += [ x for x in df.columns if '.' in x ]
+    #c_drop += [ x for x in df.columns if '.' in x ]
     if c_drop:
         df.drop(c_drop, inplace=True, axis=1)
     f_out = f.replace('.', '')
