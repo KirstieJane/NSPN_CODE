@@ -151,13 +151,13 @@ def residuals(x, y):
     
 def plot_modules(G, 
                  G_edge,
-                 cost_mod=20,
+                 axial_pos,
+                 coronal_pos,
+                 sagittal_pos,
+                     cost_mod=20,
                      cost_edge=2,
                      cmap_name='jet',
                      title='',
-                     axial_pos,
-                     coronal_pos,
-                     sagittal_pos,
                      integer_adjust=3,
                      fractional_adjust=2.5):
     
