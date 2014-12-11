@@ -269,6 +269,7 @@ def create_mat(df, aparc_names, covar):
     covar needs to be either a column in df OR a 
     list of columns
     '''
+    import numpy as np
     
     mat_corr = df[aparc_names].corr().iloc[:,:]
 
