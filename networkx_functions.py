@@ -284,7 +284,7 @@ def create_mat(df, aparc_names, covar):
     
     if len(covar) > 1:
         x = np.vstack([df[covar]])
-    elif len(covar) == 1:
+    else len(covar) == 1:
         x = df[covar]
 
     triu_i, triu_j = np.triu_indices(len(aparc_names))
@@ -292,8 +292,8 @@ def create_mat(df, aparc_names, covar):
         if i%20 == 0 and j == len(aparc_names)-1:
             print 'Processing row {}'.format(i)
         
-        res_i = residuals(x, df[aparc_names[i]])
-        res_j = residuals(x, df[aparc_names[j]])
+        res_i = residuals(x.T, df[aparc_names[i]])
+        res_j = residuals(x.T, df[aparc_names[j]])
         mat_corr_covar[i, j] = pearsonr(res_i, res_j)[0]
 
     mat_corr = mat_corr * mat_corr.T
