@@ -276,7 +276,8 @@ def create_mat(df, aparc_names, covar):
     list of columns
     '''
     import numpy as np
-    
+    from scipy.stats import pearsonr
+
     mat_corr = df[aparc_names].corr().iloc[:,:]
 
     mat_corr_covar = np.ones_like(mat_corr)
