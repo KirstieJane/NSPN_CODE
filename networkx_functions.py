@@ -40,6 +40,10 @@ def sort_partition(partition, axial_pos):
     
     
 def graph_at_cost(M, cost):
+    
+    import numpy as np
+    import networkx as nx
+    
     # Make a copy of the matrix
     thr_M = np.copy(M)
 
