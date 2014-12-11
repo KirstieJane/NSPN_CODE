@@ -141,6 +141,8 @@ def residuals(x, y):
     values. These can then be used to calculate
     partial correlation values
     '''
+    import numpy as np
+    
     if len(x.shape) == 1:
         x = x[np.newaxis, :]
     A = np.vstack([x, np.ones(x.shape[-1])]).T
