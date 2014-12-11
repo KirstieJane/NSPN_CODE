@@ -155,9 +155,9 @@ def plot_modules(G,
                      cost_edge=2,
                      cmap_name='jet',
                      title='',
-                     axial_pos=axial_pos,
-                     coronal_pos=coronal_pos,
-                     sagittal_pos=sagittal_pos,
+                     axial_pos,
+                     coronal_pos,
+                     sagittal_pos,
                      integer_adjust=3,
                      fractional_adjust=2.5):
     
