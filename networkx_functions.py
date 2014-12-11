@@ -154,12 +154,12 @@ def plot_modules(G,
                  axial_pos,
                  coronal_pos,
                  sagittal_pos,
-                     cost_mod=20,
-                     cost_edge=2,
-                     cmap_name='jet',
-                     title='',
-                     integer_adjust=3,
-                     fractional_adjust=2.5):
+                 cost_mod=20,
+                 cost_edge=2,
+                 cmap_name='jet',
+                 title='',
+                 integer_adjust=3,
+                 fractional_adjust=2.5):
     
     # Save the colormap
     cmap = plt.get_cmap(cmap_name)
@@ -262,48 +262,34 @@ def plot_modules(G,
     return fig
     
     
-def create_mat(df, aparc_names):
+def create_mat(df, aparc_names, covar):
+    '''
+    df contains the data you're going to correlate
+    aparc_names are all the regions you care about
+    covar needs to be either a column in df OR a 
+    list of columns
+    '''
+    
     mat_corr = df[aparc_names].corr().iloc[:,:]
 
-    mat_corr_covar_ones = np.ones_like(mat_corr)
-    mat_corr_covar_age = np.ones_like(mat_corr)
-    mat_corr_covar_male = np.ones_like(mat_corr)
-    mat_corr_covar_age_male = np.ones_like(mat_corr)
-
-    df['ones'] = df['age_scan'] * 0 + 1
+    mat_corr_covar = np.ones_like(mat_corr)
     
+    if len(covar) > 1:
+        x = np.vstack([df[covar]])
+    elif len(covar) == 1:
+        x = df[covar]
+
     triu_i, triu_j = np.triu_indices(len(aparc_names))
     for i, j in zip(triu_i, triu_j):
         if i%20 == 0 and j == len(aparc_names)-1:
             print 'Processing row {}'.format(i)
-        # Only regress constant
-        res_i = residuals(df['ones'], df[aparc_names[i]])
-        res_j = residuals(df['ones'], df[aparc_names[j]])
-        mat_corr_covar_ones[i, j] = pearsonr(res_i, res_j)[0]
-
-        # Only regress age
-        res_i = residuals(df['age_scan'], df[aparc_names[i]])
-        res_j = residuals(df['age_scan'], df[aparc_names[j]])
-        mat_corr_covar_age[i, j] = pearsonr(res_i, res_j)[0]
-
-        # Only regress age
-        res_i = residuals(df['male'], df[aparc_names[i]])
-        res_j = residuals(df['male'], df[aparc_names[j]])
-        mat_corr_covar_male[i, j] = pearsonr(res_i, res_j)[0]
-
-        # Only regress age
-        x = np.vstack([df['age_scan'], df['male']])
-        res_i = residuals(x, df[aparc_names[i]])
-        res_j = residuals(x, df[aparc_names[j]])
-        mat_corr_covar_age_male[i, j] = pearsonr(res_i, res_j)[0]
+        
+            res_i = residuals(x, df[aparc_names[i]])
+            res_j = residuals(x, df[aparc_names[j]])
+            mat_corr_covar_ones[i, j] = pearsonr(res_i, res_j)[0]
 
     mat_corr = mat_corr * mat_corr.T
-    mat_corr_covar_ones = mat_corr_covar_ones * mat_corr_covar_ones.T
-    mat_corr_covar_age = mat_corr_covar_age * mat_corr_covar_age.T
-    mat_corr_covar_male = mat_corr_covar_male * mat_corr_covar_male.T
-    mat_corr_covar_age_male = mat_corr_covar_age_male * mat_corr_covar_age_male.T
+    mat_corr_covar = mat_corr_covar * mat_corr_covar.T
     
-    return mat_corr, mat_corr_covar_ones, mat_corr_covar_age, mat_corr_covar_male, mat_corr_covar_age_male
+    return mat_corr, mat_corr_covar
     
-    
-
