@@ -144,7 +144,7 @@ for parc in aparc 500.aparc lobesStrict; do
         sed -i "s|${data_dir}/SUB_DATA/||g" ${data_dir}/FS_ROIS/nspn_id_col
         sed -i "s|/SURFER/MRI||g" ${data_dir}/FS_ROIS/nspn_id_col
         sed -i "s|/||g" ${data_dir}/FS_ROIS/nspn_id_col
-        sed -i "s|${hemi}.${parc}.${measure}|nspn_id,col|g" ${data_dir}/FS_ROIS/nspn_id_col
+        sed -i "s|${hemi}.${parc}.${measure}|nspn_id,occ|g" ${data_dir}/FS_ROIS/nspn_id_col
 
         # Now paste the data together
         paste -d , ${data_dir}/FS_ROIS/nspn_id_col \
@@ -195,7 +195,7 @@ for parc in aparc 500.aparc lobesStrict; do
             sed -i "s|${data_dir}/SUB_DATA/||g" ${data_dir}/FS_ROIS/nspn_id_col
             sed -i "s|/SURFER/MRI|,|g" ${data_dir}/FS_ROIS/nspn_id_col
             sed -i "s|/||g" ${data_dir}/FS_ROIS/nspn_id_col
-            sed -i "s|${hemi}.${parc}.${measure}_projfrac${frac}.thickness|nspn_id,col|g" ${data_dir}/FS_ROIS/nspn_id_col
+            sed -i "s|${hemi}.${parc}.${measure}_projfrac${frac}.thickness|nspn_id,occ|g" ${data_dir}/FS_ROIS/nspn_id_col
             
             # Now paste the data together
             paste -d , ${data_dir}/FS_ROIS/nspn_id_col \
