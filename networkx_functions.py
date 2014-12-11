@@ -5,6 +5,7 @@
 # Copied over from KW's ipython notebook on 11th December 2014
 
 def save_mat(M, M_text_name):
+    import numpy as np
     # Save the matrix as a text file
     np.savetxt(M_text_name,
                    M,
