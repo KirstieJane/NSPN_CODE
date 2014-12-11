@@ -294,7 +294,7 @@ def create_mat(df, aparc_names, covar):
         
             res_i = residuals(x, df[aparc_names[i]])
             res_j = residuals(x, df[aparc_names[j]])
-            mat_corr_covar_ones[i, j] = pearsonr(res_i, res_j)[0]
+            mat_corr_covar[i, j] = pearsonr(res_i, res_j)[0]
 
     mat_corr = mat_corr * mat_corr.T
     mat_corr_covar = mat_corr_covar * mat_corr_covar.T
