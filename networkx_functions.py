@@ -284,7 +284,7 @@ def create_mat(df, aparc_names, covar):
     
     if len(covar) > 1:
         x = np.vstack([df[covar]])
-    else len(covar) == 1:
+    else:
         x = df[covar]
 
     triu_i, triu_j = np.triu_indices(len(aparc_names))
