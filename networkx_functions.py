@@ -15,6 +15,8 @@ def save_mat(M, M_text_name):
                    
 def sort_partition(partition, axial_pos):
     
+    import numpy as np
+    
     average_y_list = []
     
     module_list = set(partition.values())
