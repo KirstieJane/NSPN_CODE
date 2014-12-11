@@ -172,6 +172,11 @@ def plot_modules(G,
                  integer_adjust=3,
                  fractional_adjust=2.5):
     
+    import matplotlib.pylab as plt
+    import numpy as np
+    import networkx as nx
+    import community
+    
     # Save the colormap
     cmap = plt.get_cmap(cmap_name)
 
@@ -306,3 +311,42 @@ def create_mat(df, aparc_names, covar):
     
     return mat_corr, mat_corr_covar
     
+    
+def assign_node_attr(G, centroids, aparc_names):
+
+    # Assign names and x,y,z coordinates to the nodes
+    for i, node in enumerate(G.nodes()):
+        G.node[node]['x'] = centroids[i, 0]
+        G.node[node]['y'] = centroids[i, 1]
+        G.node[node]['z'] = centroids[i, 2]
+        G.node[node]['name_500'] = aparc_names[i]
+        G.node[node]['name_DK'] = aparc_names[i].rsplit('_',1)[0]
+        G.node[node]['hemi'] = aparc_names[i].split('_',1)[0]
+
+    # Set a counter for the interhemispheric edges
+    interhem_count=0
+    
+    # Loop through the edges
+    for node1, node2 in G.edges():
+        
+        # If the two hemispheres are the same then interhem == 0
+        if G.node[node1]['hemi'] == G.node[node2]['hemi']:
+
+            G.edge[node1][node2]['interhem'] = 0
+            
+        # If the two hemispheres are different then interhem == 1
+        else:
+            
+            G.edge[node1][node2]['interhem'] = 1
+            interhem_count +=1
+
+    # Now we want to map this back to each node
+    
+            
+            
+    # Assign a graph attribute of the proportion of edges that are interhemispheric
+    G.graph['interhem_proportion'] = interhem_count*100.0/len(G.edges())
+    
+    # Save this back to the graph_dict
+    # (otherwise all is lost!)
+    graph_dict['{}_covar_{}_{}_COST_{:02.0f}'.format(measure, covars, group, cost)] = G
