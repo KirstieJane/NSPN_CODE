@@ -51,6 +51,9 @@ file_list = []
 for measure in measure_list:
     file_list += glob(os.path.join(fs_rois_dir, '*{}.csv'.format(measure)))
 
+file_list += glob(os.path.join(fs_rois_dir, '*proj??????.??.csv'))
+
+    
 for f in file_list:
     print f
     df_meas = pd.read_csv(f)
@@ -64,3 +67,4 @@ for f in file_list:
     f_out = f_out.replace('csv', '_behavmerge.csv')
     df.to_csv(f_out,float_format='%.5f')
     
+#
