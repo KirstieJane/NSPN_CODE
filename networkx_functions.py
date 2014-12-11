@@ -125,6 +125,9 @@ def threshold_matrix(M, cost):
     
     
 def partial_r(x, y, covars):
+
+    import numpy as np
+    
     res_i = residuals(covars, x)
     res_j = residuals(covars, y)
     part_r = pearsonr(res_i, res_j)[0]
