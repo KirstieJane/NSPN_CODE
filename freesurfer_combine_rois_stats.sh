@@ -142,7 +142,7 @@ for parc in aparc 500.aparc lobesStrict; do
         done
         
         sed -i "s|${data_dir}/SUB_DATA/||g" ${data_dir}/FS_ROIS/nspn_id_col
-        sed -i "s|/SURFER/MRI||g" ${data_dir}/FS_ROIS/nspn_id_col
+        sed -i "s|/SURFER/MRI|,|g" ${data_dir}/FS_ROIS/nspn_id_col
         sed -i "s|/||g" ${data_dir}/FS_ROIS/nspn_id_col
         sed -i "s|${hemi}.${parc}.${measure}|nspn_id,occ|g" ${data_dir}/FS_ROIS/nspn_id_col
 
