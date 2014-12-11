@@ -269,7 +269,7 @@ for occ in 0 1; do
                 for frac in `seq -f %+02.2f -1 0.05 1`; do
 
                     # Project the values to the surface
-                    if [[ ! -f ${surfer_dir}/surf/${hemi}.${measure}_projfrac${frac/.}.mgh ]]; then
+                    if [[ ! -f ${surfer_dir}/surf/${hemi}.${measure}_projfrac${frac}.mgh ]]; then
                     
                         mri_vol2surf --mov ${surfer_dir}/mri/${measure}.mgz \
                                         --o ${surfer_dir}/surf/${hemi}.${measure}_projfrac${frac}.mgh \
