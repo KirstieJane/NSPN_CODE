@@ -95,6 +95,22 @@ def graph_at_cost(M, cost):
     return mst
 
     
+def full_graph(M):
+    
+    import numpy as np
+    import networkx as nx
+    
+    # Make a copy of the matrix
+    thr_M = np.copy(M)
+
+    # Set all diagonal values to 0
+    thr_M[np.diag_indices_from(thr_M)] = 0
+
+    # Read this full matrix into a graph G
+    G = nx.from_numpy_matrix(thr_M)
+    
+    return G
+
     
 def threshold_matrix(M, cost):
     '''
@@ -160,6 +176,42 @@ def residuals(x, y):
     pre = np.sum(m * x.T, axis=1) + c
     res = y - pre
     return res
+    
+    
+def calc_modularity(G):
+    
+    import numpy as np
+    import networkx as nx
+    import community
+    
+    # Binarize both of the graphs
+    for u,v,d in G.edges(data=True):
+        d['weight']=1
+            
+    # Compute the best partition based on the threshold you've specified in cost
+    partition = community.best_partition(G)
+
+    modularity = community.modularity(partition, G)    
+    
+    return modularity
+
+def calc_clustering(G):
+    
+    import numpy as np
+    import networkx as nx
+    import community
+    
+    # Binarize both of the graphs
+    for u,v,d in G.edges(data=True):
+        d['weight']=1
+            
+    # Compute the best partition based on the threshold you've specified in cost
+    partition = community.best_partition(G)
+
+    modularity = community.modularity(partition, G)    
+    
+    return modularity
+    
     
     
 def plot_modules(G, 
