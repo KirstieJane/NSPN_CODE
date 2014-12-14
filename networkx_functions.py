@@ -111,7 +111,7 @@ def full_graph(M):
     
     return G
 
-    
+        
 def threshold_matrix(M, cost):
     '''
     M is the full association matrix.
@@ -211,7 +211,6 @@ def calc_clustering(G):
     modularity = community.modularity(partition, G)    
     
     return modularity
-    
     
     
 def plot_modules(G, 
