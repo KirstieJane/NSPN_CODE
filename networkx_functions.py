@@ -331,7 +331,7 @@ def plot_modules(G,
     return fig
     
     
-def create_mat(df, aparc_names, covar):
+def create_mat(df, aparc_names, covar, demean=False):
     '''
     df contains the data you're going to correlate
     aparc_names are all the regions you care about
@@ -355,9 +355,14 @@ def create_mat(df, aparc_names, covar):
         if i%20 == 0 and j == len(aparc_names)-1:
             print 'Processing row {}'.format(i)
         
-        res_i = residuals(x.T, df[aparc_names[i]])
-        res_j = residuals(x.T, df[aparc_names[j]])
-        mat_corr_covar[i, j] = pearsonr(res_i, res_j)[0]
+        if demean:
+            res_i = residuals(x.T, df[aparc_names[i]] - df[aparc_names].mean(axis=1).values)
+            res_j = residuals(x.T, df[aparc_names[j]] - df[aparc_names].mean(axis=1).values)
+            mat_corr_covar[i, j] = pearsonr(res_i, res_j)[0]        
+        else:
+            res_i = residuals(x.T, df[aparc_names[i]])
+            res_j = residuals(x.T, df[aparc_names[j]])
+            mat_corr_covar[i, j] = pearsonr(res_i, res_j)[0]
 
     mat_corr = mat_corr * mat_corr.T
     mat_corr_covar = mat_corr_covar * mat_corr_covar.T
