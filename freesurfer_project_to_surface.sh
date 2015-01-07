@@ -34,7 +34,7 @@ function usage {
 sub_dir=$1
 
 # input_vol is the volume in <subject_dir>/mri that you want to project
-# to the surface
+# to the surface (for example: MT.mgz)
 input_vol=$2
 
 #=============================================================================
@@ -76,9 +76,9 @@ for hemi in lh rh; do
 
     # Measure at 10 fractional depths between the grey and white matter boundary
     # and the pial surface
-    for frac in `seq -f %+02.2f -1 0.1 1`; do
+    for frac in `seq -f %+02.2f 0 0.1 1`; do
 
-        if [[ ! -f ${hemi}.${measure_name}_projfrac${frac/.}.mgh ]]; then
+        if [[ ! -f ${sub_dir}/surf/${hemi}.${measure_name}_projfrac${frac/.}.mgh ]]; then
         
             mri_vol2surf --mov ${input_vol} \
                             --o ${sub_dir}/surf/${hemi}.${measure_name}_projfrac${frac}.mgh \
@@ -95,7 +95,7 @@ for hemi in lh rh; do
     # by 0.2mm for each step
     for dist in `seq -f %+02.2f -5 0.2 0`; do
 
-        if [[ ! -f ${hemi}.${measure_name}_projdist${dist}.mgh ]]; then
+        if [[ ! -f ${sub_dir}/surf/${hemi}.${measure_name}_projdist${dist}.mgh ]]; then
         
             mri_vol2surf --mov ${input_vol} \
                             --o ${sub_dir}/surf/${hemi}.${measure_name}_projdist${dist}.mgh \
@@ -113,7 +113,7 @@ for hemi in lh rh; do
     # boundary and descending by 0.2mm into white matter for each step
     for dist in `seq -f %+02.2f -2 0.2 0`; do
     
-            if [[ ! -f ${hemi}.${measure_name}_projdist${dist}_fromBoundary.mgh ]]; then
+        if [[ ! -f ${sub_dir}/surf/${hemi}.${measure_name}_projdist${dist}_fromBoundary.mgh ]]; then
         
             mri_vol2surf --mov ${input_vol} \
                             --o ${sub_dir}/surf/${hemi}.${measure_name}_projdist${dist}_fromBoundary.mgh \
@@ -124,5 +124,7 @@ for hemi in lh rh; do
                             --hemi ${hemi} 
                             
         fi
-    
+        
+    done # Close the absolute distance from the boundary loop
+
 done # Close the hemi loop
