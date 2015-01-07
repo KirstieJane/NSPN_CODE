@@ -74,6 +74,8 @@ measure_name=`basename ${input_vol} .mgz`
 # Process for each hemisphere separately
 for hemi in lh rh; do
 
+    # Measure at 10 fractional depths between the grey and white matter boundary
+    # and the pial surface
     for frac in `seq -f %+02.2f -1 0.1 1`; do
 
         if [[ ! -f ${hemi}.${measure_name}_projfrac${frac/.}.mgh ]]; then
@@ -89,6 +91,8 @@ for hemi in lh rh; do
 
     done # Close the fraction of cortical thickness loop
     
+    # Measure at 25 different depths starting from the pial surface and descending
+    # by 0.2mm for each step
     for dist in `seq -f %+02.2f -5 0.2 0`; do
 
         if [[ ! -f ${hemi}.${measure_name}_projdist${dist}.mgh ]]; then
@@ -104,5 +108,21 @@ for hemi in lh rh; do
         fi
         
     done # Close the absolute distance loop
+    
+    # Measure at 10 different depths starting from the grey/white matter
+    # boundary and descending by 0.2mm into white matter for each step
+    for dist in `seq -f %+02.2f -2 0.2 0`; do
+    
+            if [[ ! -f ${hemi}.${measure_name}_projdist${dist}_fromBoundary.mgh ]]; then
+        
+            mri_vol2surf --mov ${input_vol} \
+                            --o ${sub_dir}/surf/${hemi}.${measure_name}_projdist${dist}_fromBoundary.mgh \
+                            --regheader ${sub} \
+                            --projdist ${dist} \
+                            --interp nearest \
+                            --surf white \
+                            --hemi ${hemi} 
+                            
+        fi
     
 done # Close the hemi loop
