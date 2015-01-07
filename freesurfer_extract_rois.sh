@@ -294,6 +294,7 @@ for occ in 0 1; do
                 done # Close the fraction of cortical thickness loop
     
                 # Now loop through the different absolute depths
+                # **from the pial surface**
                 for dist in `seq -f %+02.2f -5 0.2 0`; do
 
                     if [[ ! -f ${surfer_dir}/surf/${hemi}.${measure}_projdist${dist}.mgh ]]; then
@@ -309,7 +310,7 @@ for occ in 0 1; do
                     fi
 
                     # Calculate the stats
-                    if [[ ! -f ${surfer_dir}/stats/${hemi}.${parc}.${measure}_projdis${dist}.stats \
+                    if [[ ! -f ${surfer_dir}/stats/${hemi}.${parc}.${measure}_projdist${dist}.stats \
                                 && -f ${surfer_dir}/label/${hemi}.${parc}.annot ]]; then
                                 
                         mris_anatomical_stats -a ${surfer_dir}/label/${hemi}.${parc}.annot \
@@ -320,6 +321,34 @@ for occ in 0 1; do
                     fi
                     
                 done # Close the absolute distance loop
+                
+                # Now loop through the different absolute depths
+                # **from the grey/white matter boundary**
+                for dist in `seq -f %+02.2f -2 0.2 0`; do
+
+                    if [[ ! -f ${surfer_dir}/surf/${hemi}.${measure}_projdist${dist}_fromBoundary.mgh ]]; then
+                    
+                        mri_vol2surf --mov ${surfer_dir}/mri/${measure}.mgz \
+                                        --o ${surfer_dir}/surf/${hemi}.${measure}_projdist${dist}_fromBoundary.mgh \
+                                        --regheader ${surf_sub} \
+                                        --projdist ${dist} \
+                                        --interp nearest \
+                                        --surf white \
+                                        --hemi ${hemi} 
+                    
+                    fi
+
+                    # Calculate the stats
+                    if [[ ! -f ${surfer_dir}/stats/${hemi}.${parc}.${measure}_projdist${dist}_fromBoundary.stats \
+                                && -f ${surfer_dir}/label/${hemi}.${parc}.annot ]]; then
+                                
+                        mris_anatomical_stats -a ${surfer_dir}/label/${hemi}.${parc}.annot \
+                                                -t ${surfer_dir}/surf/${hemi}.${measure}_projdist${dist}_fromBoundary.mgh \
+                                                -f ${surfer_dir}/stats/${hemi}.${parc}.${measure}_projdist${dist}_fromBoundary.stats \
+                                                ${surf_sub} \
+                                                ${hemi}
+                    fi
+                done # Close the absolute distance **from boundary** loop
             done # Close the measure loop
         done # Close parcellation loop
     done # Close hemi loop
