@@ -21,7 +21,7 @@ from matplotlib.colors import LogNorm
 
 def usage():
     import sys
-    print "USAGE: probtrackx_create_connectivity_matrix.py <data_dir> <subid>"
+    print "USAGE: probtrackx_create_connectivity_matrix.py <data_dir> <subid> <occ>"
     sys.exit()
    
 def save_png(M, M_name):
@@ -45,21 +45,30 @@ def save_png(M, M_name):
 
 data_dir=sys.argv[1]
 subid = sys.argv[2]
+occ = sys.argv[3]
 
-if not os.path.isdir(os.path.join(data_dir, 'SUB_DATA', subid)):
-    print '{} does not exist'.format(os.path.join(data_dir, 'SUB_DATA', subid))
+probtrackx_dir = os.path.join(data_dir, 
+                                'SUB_DATA', 
+                                subid, 
+                                'SURFER', 
+                                'MRI{}'.format(occ), 
+                                'probtrackx')
+                                
+if not os.path.isdir(probtrackx_dir):
+    print '{} does not exist'.format(probtrackx_dir)
     usage
-
+                                
 #=============================================================================
 # FIND ALL THE TEXT FILES AND COMBINE
 #=============================================================================
 
-matrix_file_list =  glob(os.path.join(data_dir, 'SUB_DATA', subid, 'SURFER', 'MRI0', 'probtrackx', 'Seg*/matrix_seeds_to_all_targets'))
+matrix_file_list =  glob(os.path.join(probtrackx_dir, 'Seg*/matrix_seeds_to_all_targets'))
+
 matrix_file_list.sort()
 
-outfile_mean = os.path.join(data_dir, 'SUB_DATA', subid, 'SURFER', 'MRI0', 'probtrackx', 'mean_connectivity.txt')
-outfile_sum = os.path.join(data_dir, 'SUB_DATA', subid, 'SURFER', 'MRI0', 'probtrackx', 'sum_connectivity.txt')
-outfile_prob = os.path.join(data_dir, 'SUB_DATA', subid, 'SURFER', 'MRI0', 'probtrackx', 'prob_connectivity.txt')
+outfile_mean = os.path.join(probtrackx_dir, 'mean_connectivity.txt')
+outfile_sum = os.path.join(probtrackx_dir, 'sum_connectivity.txt')
+outfile_prob = os.path.join(probtrackx_dir, 'prob_connectivity.txt')
 
 if not os.path.isfile(outfile_prob):
     mean_matrix = np.zeros([308, 308])
@@ -87,9 +96,9 @@ else:
 # MAKE A NICE PICTURE
 #=============================================================================
 
-figfile_mean = os.path.join(data_dir, 'SUB_DATA', subid, 'SURFER', 'MRI0', 'probtrackx', 'mean_connectivity.png')
-figfile_sum = os.path.join(data_dir, 'SUB_DATA', subid, 'SURFER', 'MRI0', 'probtrackx', 'sum_connectivity.png')
-figfile_prob = os.path.join(data_dir, 'SUB_DATA', subid, 'SURFER', 'MRI0', 'probtrackx', 'prob_connectivity.png')
+figfile_mean = os.path.join(probtrackx_dir, 'mean_connectivity.png')
+figfile_sum = os.path.join(probtrackx_dir, 'sum_connectivity.png')
+figfile_prob = os.path.join(probtrackx_dir, 'prob_connectivity.png')
 
 save_png(mean_matrix, figfile_mean)
 save_png(sum_matrix, figfile_sum)
