@@ -52,6 +52,7 @@ for measure in measure_list:
     file_list += glob(os.path.join(fs_rois_dir, '*{}.csv'.format(measure)))
 
 file_list += glob(os.path.join(fs_rois_dir, '*proj??????.??.csv'))
+file_list += glob(os.path.join(fs_rois_dir, '*proj??????.??_fromBoundary.csv'))
     
 for f in file_list:
     print f
