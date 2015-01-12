@@ -247,6 +247,8 @@ def read_in_df(data_file):
     
     df['Global'] = df[aparc_names].mean(axis=1)
     
+    df = df[df.occ==0]
+    
     return df
 
 
