@@ -214,6 +214,53 @@ for parc in aparc 500.aparc lobesStrict; do
             rm ${data_dir}/FS_ROIS/nspn_id_col
         
         done # Close frac loop
+        
+        for dist in `seq -f %+02.2f 0 -0.2 -2`; do
+        
+            for hemi in lh rh; do
+
+                # Combine stats for all subjects for each measure and for each 
+                # hemisphere separately
+                aparcstats2table --hemi ${hemi} \
+                                    --subjects ${subjects[@]} \
+                                    --parc ${parc}.${measure}_projdist${dist}_fromBoundary \
+                                    --meas thickness \
+                                    -d comma \
+                                    --common-parcs \
+                                    --skip \
+                                    -t ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_projdist${dist}_fromBoundary_${hemi}_temptemp.csv 
+                                    
+                # Drop the first column because it isn't necessary
+                cut -d, -f2- ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_projdist${dist}_fromBoundary_${hemi}_temptemp.csv \
+                        > ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_projdist${dist}_fromBoundary_${hemi}_temp.csv 
+                
+                # But save it for later!
+                cut -d, -f1 ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_projdist${dist}_fromBoundary_${hemi}_temptemp.csv \
+                        > ${data_dir}/FS_ROIS/nspn_id_col
+            done
+            
+            sed -i "s|${data_dir}/SUB_DATA/||g" ${data_dir}/FS_ROIS/nspn_id_col
+            sed -i "s|/SURFER/MRI|,|g" ${data_dir}/FS_ROIS/nspn_id_col
+            sed -i "s|/||g" ${data_dir}/FS_ROIS/nspn_id_col
+            sed -i "s|${hemi}.${parc}.${measure}_projdist${dist}_fromBoundary.thickness|nspn_id,occ|g" ${data_dir}/FS_ROIS/nspn_id_col
+            
+            # Now paste the data together
+            paste -d , ${data_dir}/FS_ROIS/nspn_id_col \
+                    ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_projdist${dist}_fromBoundary_lh_temp.csv \
+                    ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_projdist${dist}_fromBoundary_rh_temp.csv \
+                        > ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_projdist${dist}_fromBoundary.csv
+            
+            # And replace all '-' with '_' because statsmodels in python
+            # likes that more :P
+            sed -i "s/-/_/g" ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_projdist${dist}_fromBoundary.csv
+            sed -i "s/_0/-0/g" ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_projdist${dist}_fromBoundary.csv
+            sed -i "s/://g" ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_projdist${dist}_fromBoundary.csv
+            
+            # Remove the temporary files
+            rm ${data_dir}/FS_ROIS/*temp.csv
+            rm ${data_dir}/FS_ROIS/nspn_id_col
+        
+        done # Close dist loop
     done # Close measure loop
 done # Close parc loop
 

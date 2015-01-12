@@ -77,6 +77,13 @@ for occ in 0 1; do
     surf_sub=`basename ${surfer_dir}`
 
 #=============================================================================
+# DON'T BOTHER IF THERE'S NO DATA!
+#=============================================================================
+    if [[ ! -f ${surfer_dir}/${surfer_dir}/mri/T1.mgz ]]; then
+        break
+    fi
+    
+#=============================================================================
 # REGISTER B0 TO FREESURFER SPACE
 #=============================================================================
     # The first step is ensuring that the dti_ec (B0) file
@@ -135,24 +142,26 @@ for occ in 0 1; do
 
     # Loop through the mpm outputs that you're interested in
     for mpm in R1 MT R2s A; do
-        mpm_file=`ls -d ${mpm_dir}/${mpm}_head.nii.gz 2> /dev/null`
+        mpm_file=${mpm_dir}/${mpm}_head.nii.gz
 
-        # If the measure file has particularly small values
-        # then multiply this file by 1000 first
-        if [[ ${mpm} == "R2s" ]]; then
-            if [[ ! -f ${mpm_file/.nii/_mul1000.nii} ]]; then
-                fslmaths ${mpm_file} -mul 1000 ${mpm_file/.nii/_mul1000.nii}
+        if [[ -f ${mpm_file} ]]; then
+            # If the measure file has particularly small values
+            # then multiply this file by 1000 first
+            if [[ ${mpm} == "R2s" ]]; then
+                if [[ ! -f ${mpm_file/.nii/_mul1000.nii} ]]; then
+                    fslmaths ${mpm_file} -mul 1000 ${mpm_file/.nii/_mul1000.nii}
+                fi
+                mpm_file=${mpm_file/.nii/_mul1000.nii}
             fi
-            mpm_file=${mpm_file/.nii/_mul1000.nii}
-        fi
-        
-        if [[ ! -f ${surfer_dir}/mri/${mpm}.mgz ]]; then
-            # Align the mgz file to "freesurfer" anatomical space
-            mri_vol2vol --mov ${mpm_file} \
-                        --targ ${surfer_dir}/mri/T1.mgz \
-                        --regheader \
-                        --o ${surfer_dir}/mri/${mpm}.mgz \
-                        --no-save-reg
+            
+            if [[ ! -f ${surfer_dir}/mri/${mpm}.mgz ]]; then
+                # Align the mgz file to "freesurfer" anatomical space
+                mri_vol2vol --mov ${mpm_file} \
+                            --targ ${surfer_dir}/mri/T1.mgz \
+                            --regheader \
+                            --o ${surfer_dir}/mri/${mpm}.mgz \
+                            --no-save-reg
+            fi
         fi
     done
         
@@ -167,75 +176,73 @@ for occ in 0 1; do
 #     500.aparc_cortical_expanded_consecutive_WMoverlap
 #=============================================================================
   
-    # for measure in R1 MT R2s A FA MD MO L1 L23 sse; do
-        # if [[ -f ${surfer_dir}/mri/${measure}.mgz ]]; then
+    for measure in R1 MT R2s A FA MD MO L1 L23 sse; do
+        if [[ -f ${surfer_dir}/mri/${measure}.mgz ]]; then
 
-            # #=== wmparc
-            # if [[ ! -f ${surfer_dir}/stats/${measure}_wmparc.stats ]]; then
-                # mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
-                             # --seg ${surfer_dir}/mri/wmparc.mgz \
-                             # --ctab ${FREESURFER_HOME}/WMParcStatsLUT.txt \
-                             # --sum ${surfer_dir}/stats/${measure}_wmparc.stats \
-                             # --pv ${surfer_dir}/mri/norm.mgz
-            # fi
+            #=== wmparc
+            if [[ ! -f ${surfer_dir}/stats/${measure}_wmparc.stats ]]; then
+                mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
+                             --seg ${surfer_dir}/mri/wmparc.mgz \
+                             --ctab ${FREESURFER_HOME}/WMParcStatsLUT.txt \
+                             --sum ${surfer_dir}/stats/${measure}_wmparc.stats \
+                             --pv ${surfer_dir}/mri/norm.mgz
+            fi
             
-            # #=== aseg
-            # if [[ ! -f ${surfer_dir}/stats/${measure}_aseg.stats ]]; then
-                # mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
-                             # --seg ${surfer_dir}/mri/aseg.mgz \
-                             # --sum ${surfer_dir}/stats/${measure}_aseg.stats \
-                             # --pv ${surfer_dir}/mri/norm.mgz \
-                             # --ctab ${FREESURFER_HOME}/ASegStatsLUT.txt 
-            # fi
+            #=== aseg
+            if [[ ! -f ${surfer_dir}/stats/${measure}_aseg.stats ]]; then
+                mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
+                             --seg ${surfer_dir}/mri/aseg.mgz \
+                             --sum ${surfer_dir}/stats/${measure}_aseg.stats \
+                             --pv ${surfer_dir}/mri/norm.mgz \
+                             --ctab ${FREESURFER_HOME}/ASegStatsLUT.txt 
+            fi
             
-            # #=== lobesStrict
-            # if [[ ! -f ${surfer_dir}/stats/${measure}_lobesStrict.stats ]]; then
-                # mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
-                             # --seg ${surfer_dir}/mri/lobes+aseg.mgz \
-                             # --sum ${surfer_dir}/stats/${measure}_lobesStrict.stats \
-                             # --pv ${surfer_dir}/mri/norm.mgz \
-                             # --ctab ${lobes_ctab}
+            #=== lobesStrict
+            if [[ ! -f ${surfer_dir}/stats/${measure}_lobesStrict.stats ]]; then
+                mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
+                             --seg ${surfer_dir}/mri/lobes+aseg.mgz \
+                             --sum ${surfer_dir}/stats/${measure}_lobesStrict.stats \
+                             --pv ${surfer_dir}/mri/norm.mgz \
+                             --ctab ${lobes_ctab}
             
-            # fi
+            fi
             
-            # #=== 500.aparc_cortical_consecutive.nii.gz
-            # # Extract measures from the cortical regions in the 500 parcellation
-            # if [[ ! -f ${surfer_dir}/stats/${measure}_500cortConsec.stats 
-                    # && -f ${surfer_dir}/parcellation/500.aparc_cortical_consecutive.nii.gz ]]; then
-                # mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
-                             # --seg ${surfer_dir}/parcellation/500.aparc_cortical_consecutive.nii.gz  \
-                             # --sum ${surfer_dir}/stats/${measure}_500cortConsec.stats \
-                             # --pv ${surfer_dir}/mri/norm.mgz \
-                             # --ctab ${parc500_ctab}
-            # fi
+            #=== 500.aparc_cortical_consecutive.nii.gz
+            # Extract measures from the cortical regions in the 500 parcellation
+            if [[ ! -f ${surfer_dir}/stats/${measure}_500cortConsec.stats 
+                    && -f ${surfer_dir}/parcellation/500.aparc_cortical_consecutive.nii.gz ]]; then
+                mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
+                             --seg ${surfer_dir}/parcellation/500.aparc_cortical_consecutive.nii.gz  \
+                             --sum ${surfer_dir}/stats/${measure}_500cortConsec.stats \
+                             --pv ${surfer_dir}/mri/norm.mgz \
+                             --ctab ${parc500_ctab}
+            fi
             
-            # #=== 500.aparc_cortical_expanded_consecutive_WMoverlap
-            # # Only run this if there is a 500 cortical parcellation
-            # if [[ ! -f ${surfer_dir}/stats/${measure}_500cortExpConsecWMoverlap.stats \
-                    # && -f ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive.nii.gz ]]; then
+            #=== 500.aparc_cortical_expanded_consecutive_WMoverlap
+            # Only run this if there is a 500 cortical parcellation
+            if [[ ! -f ${surfer_dir}/stats/${measure}_500cortExpConsecWMoverlap.stats \
+                    && -f ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive.nii.gz ]]; then
                 
-                # # Create the overlap file if it doesn't already exist
-                # if [[ ! -f ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive_WMoverlap.nii.gz ]]; then
+                # Create the overlap file if it doesn't already exist
+                if [[ ! -f ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive_WMoverlap.nii.gz ]]; then
                 
-                    # fslmaths ${surfer_dir}/parcellation/500.aparc_whiteMatter.nii.gz \
-                                # -bin \
-                                # -mul ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive.nii.gz \
-                                # ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive_WMoverlap.nii.gz
-                # fi
+                    fslmaths ${surfer_dir}/parcellation/500.aparc_whiteMatter.nii.gz \
+                                -bin \
+                                -mul ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive.nii.gz \
+                                ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive_WMoverlap.nii.gz
+                fi
                 
-                # mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
-                             # --seg ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive_WMoverlap.nii.gz \
-                             # --sum ${surfer_dir}/stats/${measure}_500cortExpConsecWMoverlap.stats \
-                             # --pv ${surfer_dir}/mri/norm.mgz \
-                             # --ctab ${parc500_ctab}
-
-
-            # fi
+                mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
+                             --seg ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive_WMoverlap.nii.gz \
+                             --sum ${surfer_dir}/stats/${measure}_500cortExpConsecWMoverlap.stats \
+                             --pv ${surfer_dir}/mri/norm.mgz \
+                             --ctab ${parc500_ctab}
+            fi
             
-        # else
-            # echo "${measure} file not transformed to Freesurfer space"
-        # fi
-    # done
+        else
+            echo "${measure} file not transformed to Freesurfer space"
+        fi
+    done
     
 #=============================================================================
 # EXTRACT THE STATS FROM THE SURFACE PARCELLATION FILES
