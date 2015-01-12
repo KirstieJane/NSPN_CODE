@@ -147,7 +147,7 @@ for occ in 0 1; do
         if [[ -f ${mpm_file} ]]; then
             # If the measure file has particularly small values
             # then multiply this file by 1000 first
-            if [[ ${mpm} == "R2s" ]]; then
+            if [[ ${mpm} == "R2s" || ${mpm} == "MT" ]]; then
                 if [[ ! -f ${mpm_file/.nii/_mul1000.nii} ]]; then
                     fslmaths ${mpm_file} -mul 1000 ${mpm_file/.nii/_mul1000.nii}
                 fi
