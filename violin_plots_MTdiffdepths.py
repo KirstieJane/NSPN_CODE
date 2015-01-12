@@ -1030,12 +1030,12 @@ for i in np.arange(-20,-201,-20):
     wm_mt_data_file = os.path.join(data_dir, 'PARC_500aparc_MT_projdist{:+04.0f}_fromBoundary_behavmerge.csv'.format(i))
     df = read_in_df(wm_mt_data_file)
     df_list += [df]
-    labels_list += ['{:2.0f}mm'.format(i*-1)]
+    labels_list += ['{:2.2f}mm'.format(i/100*-1)]
 
     color_list += [scalarMap.to_rgba(df['Global'].mean())]
     
 #    
-for n, i in enumerate(np.arange(100,-1,-10) + np.arange(-20,-201,-20)):
+for n, i in enumerate(np.hstack([np.arange(100,-1,-10), np.arange(-20,-201,-20)])):
     if i > -1:
         figure_name = os.path.join(figures_dir, 'Global_MT_DifferentDepths_Pialto{:+04.0f}percent.png'.format(i))
     else:
