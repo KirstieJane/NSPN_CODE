@@ -1,10 +1,10 @@
 #!/bin/bash
 
 #======================================================
-# USAGE: freesurfer_probtrackx <data_dir> <subid>
+# USAGE: freesurfer_probtrackx <data_dir> <subid> <occ>
 #======================================================
 function usage {
-    echo "USAGE: freesurfer_probtrackx <data_dir> <subid>"
+    echo "USAGE: freesurfer_probtrackx <data_dir> <subid> <occ>"
     exit
 }
 #======================================================
