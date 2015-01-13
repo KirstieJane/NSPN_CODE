@@ -249,6 +249,7 @@ def read_in_df(data_file):
     
     df = df[df.occ==0]
     
+    df['Global'][df.Global < 100] = df['Global']*1000
     return df
 
 
