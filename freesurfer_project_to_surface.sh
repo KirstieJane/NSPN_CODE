@@ -51,7 +51,7 @@ if [[ ! -d /${sub_dir} ]]; then
 fi
 
 if [[ ! -f ${input_vol} ]]; then
-    if [[ ! -f ${input_vol}.mgz ]]; do
+    if [[ ! -f ${input_vol}.mgz ]]; then
         echo "INPUT VOLUME does not exist. Check ${input_vol}"
         print_usage=1
     else
