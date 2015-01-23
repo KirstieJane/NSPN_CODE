@@ -87,7 +87,7 @@ for hemi in lh rh; do
     # and the pial surface
     for frac in `seq -f %+02.2f 0 0.1 1`; do
 
-        if [[ ! -f ${sub_dir}/surf/${hemi}.${measure_name}_projfrac${frac/.}.mgh ]]; then
+        if [[ ! -f ${sub_dir}/surf/${hemi}.${measure_name}_projfrac${frac}.mgh ]]; then
         
             mri_vol2surf --mov ${input_vol} \
                             --o ${sub_dir}/surf/${hemi}.${measure_name}_projfrac${frac}.mgh \
