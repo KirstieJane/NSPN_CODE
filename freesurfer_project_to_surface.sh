@@ -35,19 +35,28 @@ sub_dir=$1
 
 # input_vol is the volume in <subject_dir>/mri that you want to project
 # to the surface (for example: MT.mgz)
-input_vol=$2
+input_vol_name=$2
+input_vol=${sub_dir}/mri/${input_vol_name}
 
 #=============================================================================
 # Check that the files all exist etc
 #=============================================================================
-if [[ ! -d ${sub_dir} ]]; then
-    echo "SUBJECT DIRECTORY does not exist. Check ${sub_dir}"
-    print_usage=1
+if [[ ! -d /${sub_dir} ]]; then
+    if [[ -d ${sub_dir} ]]; then
+        sub_dir=`pwd`/${sub_dir}
+    else
+        echo "SUBJECT DIRECTORY does not exist. Check ${sub_dir}"
+        print_usage=1
+    fi
 fi
 
 if [[ ! -f ${input_vol} ]]; then
-    echo "INPUT VOLUME does not exist. Check ${input_vol}"
-    print_usage=1
+    if [[ ! -f ${input_vol}.mgz ]]; do
+        echo "INPUT VOLUME does not exist. Check ${input_vol}"
+        print_usage=1
+    else
+        input_vol=${input_vol}.mgz
+    fi
 fi
 
 if [[ ${print_usage} == 1 ]]; then
