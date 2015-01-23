@@ -18,9 +18,13 @@ occ=$3
 # CHECK THE COMMAND LINE ARGUMENTS
 #======================================================
 
-if [[ ! -d ${data_dir} ]]; then
-    echo "DATA DIR doesn't exist - check ${data_dir}"
-    print_usage=1
+if [[ ! -d /${data_dir} ]]; then
+    if [[ ! -d ${data_dir} ]]; then
+        echo "DATA DIR doesn't exist - check ${data_dir}"
+        print_usage=1
+    else
+        data_dir=`pwd`/${data_dir}
+    fi
 fi
 
 if [[ -z ${sub} ]]; then
@@ -70,6 +74,7 @@ while [[ ${i} -le 308 ]]; do
     
     # If the region hasn't yet been created on its own then do that now
     if [[ ! -f ${surfer_dir}/probtrackx/seeds_targets_500cortExpConsecWMoverlap/Seg`printf %04d $i`.nii.gz ]]; then
+        echo ${i}
         fslmaths ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive_WMoverlap.nii.gz \
                         -thr ${i} \
                         -uthr ${i} \
