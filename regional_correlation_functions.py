@@ -11,12 +11,14 @@ def regional_linregress(df, x, aparc_names):
                            through as dependent variables for the regression
                            
     RETURNS:
-        m_array -------- numpy array containing slopes for each region
-        r_array -------- numpy array containing pearson r values for each region
-        p_array -------- numpy array containing raw p values for each region
-        p_fdr_array ---- numpy array containing fdr corrected p values for each region
-        p_fdr_mask ----- numpy boolean array containing True where alternate hypothesis
-                           is accepted, otherwise False
+        m_array -------------- numpy array containing slopes for each region
+        r_array -------------- numpy array containing pearson r values for each region
+        p_array -------------- numpy array containing raw p values for each region
+        p_fdr_array ---------- numpy array containing fdr corrected p values for each region
+        m_masked_array ------- numpy array containing the slope values for regions which
+                                 are indivudially significant otherwise -99 markers
+        m_fdr_masked_array --- numpy array containing the slope values for regions which
+                                 pass fdr correction otherwise -99 markers
     '''
     
     # Import what you need
@@ -40,13 +42,16 @@ def regional_linregress(df, x, aparc_names):
         r_array[i] = r    
         p_array[i] = p
         
-    # Calculate the fdr p values
-    p_fdr_array = fdr(p_array)[1]
-    p_fdr_mask = fdr(p_array)[0]
+    # Create two masked versions of the slope array
+    m_masked_array = np.copy(m_array)
+    m_masked_array[p_array>0.05] = -99
+    
+    m_fdr_masked_array = np.copy(m_array)
+    m_fdr_masked_array[p_fdr_array>0.05] = -99
     
     # Return the arrays
-    return m_array, r_array, p_array, p_fdr_array, p_fdr_mask
-    
+    return m_array, r_array, p_array, p_fdr_array, m_masked_array, m_fdr_masked_array
+        
     
 def regional_linregress_byregion(df_x, df_y, aparc_names):
     '''
@@ -59,12 +64,14 @@ def regional_linregress_byregion(df_x, df_y, aparc_names):
                              to loop though and conduct pairwise regressions
                            
     RETURNS:
-        m_array -------- numpy array containing slopes for each region
-        r_array -------- numpy array containing pearson r values for each region
-        p_array -------- numpy array containing raw p values for each region
-        p_fdr_array ---- numpy array containing fdr corrected p values for each region
-        p_fdr_mask ----- numpy boolean array containing True where alternate hypothesis
-                           is accepted, otherwise False
+        m_array -------------- numpy array containing slopes for each region
+        r_array -------------- numpy array containing pearson r values for each region
+        p_array -------------- numpy array containing raw p values for each region
+        p_fdr_array ---------- numpy array containing fdr corrected p values for each region
+        m_masked_array ------- numpy array containing the slope values for regions which
+                                 are indivudially significant otherwise -99 markers
+        m_fdr_masked_array --- numpy array containing the slope values for regions which
+                                 pass fdr correction otherwise -99 markers
     '''
     
     # Import what you need
@@ -92,6 +99,13 @@ def regional_linregress_byregion(df_x, df_y, aparc_names):
     p_fdr_array = fdr(p_array)[1]
     p_fdr_mask = fdr(p_array)[0]
     
+    # Create two masked versions of the slope array
+    m_masked_array = np.copy(m_array)
+    m_masked_array[p_array>0.05] = -99
+    
+    m_fdr_masked_array = np.copy(m_array)
+    m_fdr_masked_array[p_fdr_array>0.05] = -99
+    
     # Return the arrays
-    return m_array, r_array, p_array, p_fdr_array, p_fdr_mask
+    return m_array, r_array, p_array, p_fdr_array, m_masked_array, m_fdr_masked_array
     
