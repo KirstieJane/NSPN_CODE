@@ -42,6 +42,10 @@ def regional_linregress(df, x, aparc_names):
         r_array[i] = r    
         p_array[i] = p
         
+    # Calculate the fdr p values
+    p_fdr_array = fdr(p_array)[1]
+    p_fdr_mask = fdr(p_array)[0]
+    
     # Create two masked versions of the slope array
     m_masked_array = np.copy(m_array)
     m_masked_array[p_array>0.05] = -99
