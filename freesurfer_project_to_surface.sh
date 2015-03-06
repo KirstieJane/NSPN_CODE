@@ -136,4 +136,4 @@ for hemi in lh rh; do
         
     done # Close the absolute distance from the boundary loop
 
-done # Close the hemi loop
+done # Close the hemi loopp
