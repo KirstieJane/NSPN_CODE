@@ -165,8 +165,8 @@ for parc in aparc 500.aparc lobesStrict; do
     done # Close the measure loop
     
     # Next extract "thickness" values from the projected maps
-    #for measure in R1 MT R2s A FA MD MO L1 L23 sse; do
-    for measure in MT; do
+    for measure in R1 MT R2s A FA MD MO L1 L23 sse; do
+    #for measure in MT; do
             
         for frac in `seq -f %+02.2f -1 0.05 1`; do
         
