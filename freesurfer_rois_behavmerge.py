@@ -53,18 +53,25 @@ for measure in measure_list:
 
 file_list += glob(os.path.join(fs_rois_dir, '*proj??????.??.csv'))
 file_list += glob(os.path.join(fs_rois_dir, '*proj??????.??_fromBoundary.csv'))
-    
+
 for f in file_list:
     print f
     df_meas = pd.read_csv(f)
-    df = df_behav.merge(df_meas, on=['nspn_id', 'occ'])
-    df.sort('nspn_id', inplace=True)
-    c_drop = [ x for x in df.columns if 'Measure' in x ]
-    #c_drop += [ x for x in df.columns if '.' in x ]
-    if c_drop:
-        df.drop(c_drop, inplace=True, axis=1)
-    f_out = f.replace('.', '')
-    f_out = f_out.replace('csv', '_behavmerge.csv')
-    df.to_csv(f_out,float_format='%.5f')
-    
+    if 'nspn_id' in df_meas.colums:
+        df = df_behav.merge(df_meas, on=['nspn_id', 'occ'])
+        df.sort('nspn_id', inplace=True)
+        c_drop = [ x for x in df.columns if 'Measure' in x ]
+        #c_drop += [ x for x in df.columns if '.' in x ]
+        if c_drop:
+            df.drop(c_drop, inplace=True, axis=1)
+        f_out = f.replace('.', '')
+        f_out = f_out.replace('csv', '_behavmerge.csv')
+        df.to_csv(f_out,float_format='%.5f')
+        
+        if 'MT' in f:
+            df_edit = pd.read_csv(f_out)
+            for col in df_edit.columns:
+                df_edit[col][df_edit[col]<10] = df_edit[col][df_edit[col]<10]*1000
+            df_edit.to_csv(f_out)
+
 #

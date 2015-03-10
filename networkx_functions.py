@@ -194,7 +194,8 @@ def calc_modularity(G):
     modularity = community.modularity(partition, G)    
     
     return modularity
-
+    
+ 
 def calc_clustering(G):
     
     import numpy as np
@@ -399,12 +400,13 @@ def assign_node_attr(G, centroids, aparc_names):
             interhem_count +=1
 
     # Now we want to map this back to each node
+    for i, node in enumerate(G.nodes()):
+        G.node[node]['interhem_proportion'] = 
     
-            
-            
     # Assign a graph attribute of the proportion of edges that are interhemispheric
     G.graph['interhem_proportion'] = interhem_count*100.0/len(G.edges())
     
     # Save this back to the graph_dict
     # (otherwise all is lost!)
     graph_dict['{}_covar_{}_{}_COST_{:02.0f}'.format(measure, covars, group, cost)] = G
+    
