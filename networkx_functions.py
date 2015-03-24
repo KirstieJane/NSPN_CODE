@@ -410,3 +410,31 @@ def assign_node_attr(G, centroids, aparc_names):
     # (otherwise all is lost!)
     graph_dict['{}_covar_{}_{}_COST_{:02.0f}'.format(measure, covars, group, cost)] = G
     
+    
+def rich_club(G, n=10):
+    import networkx as nx
+    
+    # First, calculate the rich club coefficient for the regular graph
+    rc = nx.rich_club_coefficient(G, normalized=False)
+    
+    # Then calculate 10 different random graphs and their 
+    # rich club coefficients
+    rc_rand = np.ones([len(rc.values()), n])
+    
+    for i in range(n):
+        print i
+        # Copy the graph
+        R = G.copy()
+        # Calculate the number of edges and set a constant
+        # as suggested in the nx documentation
+        E = R.number_of_edges()
+        Q = 10
+        
+        # Now swap some edges in order to preserve the degree distribution
+        nx.double_edge_swap(R,Q*E,max_tries=Q*E*10)
+        
+        # And calculate the rich club coefficient
+        rc_rand_dict = nx.rich_club_coefficient(R, normalized=False)
+        rc_rand[:, i] = rc_rand_dict.values()
+        
+    return rc, rc_rand
