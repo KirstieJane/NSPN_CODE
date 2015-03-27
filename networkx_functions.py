@@ -431,6 +431,7 @@ def create_mat(df, aparc_names, covar, demean=False):
     
 def assign_node_attr(G, centroids, aparc_names):
 
+    
     # Assign names and x,y,z coordinates to the nodes
     for i, node in enumerate(G.nodes()):
         G.node[node]['x'] = centroids[i, 0]
@@ -459,7 +460,7 @@ def assign_node_attr(G, centroids, aparc_names):
 
     # Now we want to map this back to each node
     for i, node in enumerate(G.nodes()):
-        G.node[node]['interhem_proportion'] = 
+        G.node[node]['interhem_proportion'] = interhem_count
     
     # Assign a graph attribute of the proportion of edges that are interhemispheric
     G.graph['interhem_proportion'] = interhem_count*100.0/len(G.edges())
