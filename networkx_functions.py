@@ -204,6 +204,8 @@ def calc_efficiency(G):
     
 def participation_coefficient(G):
     '''
+    HEAVILY STOLEN FROM https://github.com/mb3152/brain-graphs
+    
     Computes the participation coefficient for each node (Guimera et al. 2005).
     ------
     Inputs
@@ -219,6 +221,11 @@ def participation_coefficient(G):
     import numpy as np
     import community as community
     
+    # Binarize both of the graphs
+    for u,v,d in G.edges(data=True):
+        d['weight']=1
+
+    # Calculate the best modular partition
     partition = community.best_partition(G)
 
     # Reverse the dictionary because the output of Louvain is "backwards"
@@ -240,6 +247,10 @@ def participation_coefficient(G):
     # Loop through modules
     for m in partition.keys():
         
+        # Print a little note to the screen because it can take a long
+        # time to run this code
+        print 'Calculating pc for nodes in module {} of {}'.format(m, len(partition.keys()))
+        
         # Get the set of nodes in this module
         mod_list = set(partition[m])
         
@@ -249,8 +260,6 @@ def participation_coefficient(G):
         # Loop through each node (source node) in this module
         for source in mod_list:
         
-            print source
-            
             # Calculate the degree for the source node
             degree = float(nx.degree(G=G, nbunch=source))
             
