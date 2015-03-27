@@ -37,9 +37,7 @@ def sort_partition(partition, axial_pos):
     # Now sort the module_list and return it
     module_list = [ mod for (av_y, mod) in sorted(zip(average_y_list, module_list))]
 
-    return module_list
-    
-    
+    return module_list    
     
 def graph_at_cost(M, cost):
     
@@ -195,23 +193,83 @@ def calc_modularity(G):
     
     return modularity
     
- 
-def calc_clustering(G):
+def calc_efficiency(G): 
+    E=0.0
+    for node in G:
+        path_length=nx.single_source_shortest_path_length(G, node)
+        E += 1.0/sum(path_length.values())
+
+    return E
     
-    import numpy as np
-    import networkx as nx
-    import community
     
-    # Binarize both of the graphs
-    for u,v,d in G.edges(data=True):
-        d['weight']=1
-            
-    # Compute the best partition based on the threshold you've specified in cost
+def participation_coefficient(G):
+    '''
+    Computes the participation coefficient for each node (Guimera et al. 2005).
+    ------
+    Inputs
+    ------
+    graph = Networkx graph
+    ------
+    Output
+    ------
+    Dictionary of the participation coefficient for each node.
+    '''
     partition = community.best_partition(G)
 
-    modularity = community.modularity(partition, G)    
+    # Reverse the dictionary because the output of Louvain is "backwards"
+    # meaning it saves the module per node, rather than the nodes in each
+    # module
+    new_part = {}
+    for m,n in zip(partition.values(),partition.keys()):
+        try:
+            new_part[m].append(n)
+        except KeyError:
+            new_part[m] = [n]
+    partition = new_part
+
+    # Create an empty dictionary for the participation
+    # coefficients
+    pc_dict = {}
+    all_nodes = set(G.nodes())
     
-    return modularity
+    # Loop through modules
+    for m in partition.keys():
+        
+        # Get the set of nodes in this module
+        mod_list = set(partition[m])
+        
+        # Get the set of nodes outside this module
+        between_mod_list = list(set.difference(all_nodes, mod_list))
+
+        # Loop through each node (source node) in this module
+        for source in mod_list:
+        
+            print source
+            
+            # Calculate the degree for the source node
+            degree = float(nx.degree(G=G, nbunch=source))
+            
+            # Calculate the number of these connections
+            # that are to nodes in *other* modules
+            count = 0
+            for target in between_mod_list:
+                
+                # If the edge is in there then increase the counter by 1
+                if (source, target) in G.edges() or (target, source) in G.edges():
+                    count += 1
+            
+            # This gives you the between module degree
+            bm_degree = float(count)
+            if bm_degree == 0.0:
+                pc = 0.0
+            else:
+                # The participation coeficient is 1 - the square of 
+                # the ratio of the between module degree and the total degree
+                pc = 1 - ((float(bm_degree) / float(degree))**2)
+                
+            # Save the participation coefficient to the dictionary
+            pc_dict[source] = pc
+    return pc_dict
     
     
 def plot_modules(G, 
@@ -283,7 +341,7 @@ def plot_modules(G,
                                     node_size = integer_adjust + fractional_adjust * np.array(G.degree().values()),
                                     node_color = cmap(i / size),
                                     ax = ax_list[2])
-        # Sprint layout
+        # Spring layout
         nx.draw_networkx_nodes(G, spring_pos,
                                     list_nodes,
                                     node_size = integer_adjust + fractional_adjust * np.array(G.degree().values()),
@@ -411,30 +469,157 @@ def assign_node_attr(G, centroids, aparc_names):
     graph_dict['{}_covar_{}_{}_COST_{:02.0f}'.format(measure, covars, group, cost)] = G
     
     
-def rich_club(G, n=10):
+def rich_club(G, R_list=None, n=10):
+    '''
+    This calculates the rich club coefficient for each degree
+    value in the graph (G).
+    
+    Inputs:
+        G ------ networkx graph
+        R_list - list of random graphs with matched degree distribution
+                   if R_list is None then a random graph is calculated
+                   within the code
+                   if len(R_list) is less than n then the remaining random graphs
+                   are calculated within the code
+                 Default R_list = None 
+        n ------ number of random graphs for which to calculate rich club
+                   coefficients
+                 Default n = 10
+           
+    Returns:
+        rc ------ dictionary of rich club coefficients for the real graph
+        rc_rand - array of rich club coefficients for the n random graphs
+    '''
+    # Import the modules you'll need
     import networkx as nx
+    import numpy as np
     
     # First, calculate the rich club coefficient for the regular graph
-    rc = nx.rich_club_coefficient(G, normalized=False)
+    rc_dict = nx.rich_club_coefficient(G, normalized=False)
     
-    # Then calculate 10 different random graphs and their 
+    # Save the degrees as a numpy array
+    deg = np.array(rc_dict.keys())
+    
+    # Save the rich club coefficients as a numpy array
+    rc = np.array(rc_dict.values())
+    
+    # Calculate n different random graphs and their 
     # rich club coefficients
-    rc_rand = np.ones([len(rc.values()), n])
+    
+    # Start by creating an empty array that will hold
+    # the n random graphs' rich club coefficients
+    rc_rand = np.ones([len(rc), n])
     
     for i in range(n):
-        print i
-        # Copy the graph
-        R = G.copy()
-        # Calculate the number of edges and set a constant
-        # as suggested in the nx documentation
-        E = R.number_of_edges()
-        Q = 10
-        
-        # Now swap some edges in order to preserve the degree distribution
-        nx.double_edge_swap(R,Q*E,max_tries=Q*E*10)
-        
-        # And calculate the rich club coefficient
+        # If you haven't already calculated random graphs
+        # or you haven't given this function as many random
+        # graphs as it is expecting then calculate a random
+        # graph here
+        if not R_list or len(R_list) <= i:
+            R = random_graph(G)
+        # Otherwise just use the one you already made
+        else:
+            R = R_list[i]
+            
+        # Calculate the rich club coefficient
         rc_rand_dict = nx.rich_club_coefficient(R, normalized=False)
+        
+        # And save the values to the numpy array you created earlier
         rc_rand[:, i] = rc_rand_dict.values()
         
-    return rc, rc_rand
+    return deg, rc, rc_rand
+
+def random_graph(G, Q=10):
+    '''
+    Create a random graph that preserves degree distribution
+    by swapping pairs of edges (double edge swap).
+    Q is the factor 
+    Inputs:
+        G: networkx graph
+        Q: constant that determines how many swaps to conduct
+           for every edge in the graph
+           Default Q =10
+
+    Returns:
+        R: networkx graph
+    '''
+    # Copy the graph
+    R = G.copy()
+    
+    # Calculate the number of edges and set a constant
+    # as suggested in the nx documentation
+    E = R.number_of_edges()
+    
+    # Now swap some edges in order to preserve the degree distribution
+    print 'Creating random graph - may take a little while!'
+    nx.double_edge_swap(R,Q*E,max_tries=Q*E*10)
+    
+    return R
+    
+
+
+def calculate_network_measures(G, R_list=None, n=10):
+    '''
+    A wrapper function that calls a bunch of useful functions
+    and reports a plethora of network measures for the real graph
+    G, and for n random graphs that are matched on degree distribution
+    (unless otherwise stated)
+    '''
+    #==== SET UP ======================
+    # Start by creating n random graphs
+    for i in range(n):
+        # If you haven't already calculated random graphs
+        # or you haven't given this function as many random
+        # graphs as it is expecting then calculate a random
+        # graph here
+        if not R_list or len(R_list) <= i:
+            R_list += [ random_graph(G) ]
+
+    #==== MEASURES ====================
+    measures_dict = {}
+    
+    #---- Clustering coefficient ------
+    measures_dict['C'] = nx.average_clustering(G)
+    rand_array = np.ones(n)
+    for i in range(n):
+        rand_array[i] = nx.average_clustering(R_list[i])
+    measures_dict['C_rand'] = rand_array
+    
+    #---- Shortest path length --------
+    measures_dict['L'] = nx.average_shortest_path_length(G)
+    rand_array = np.ones(n)
+    for i in range(n):
+        rand_array[i] = nx.average_shortest_path_length(R_list[i])
+    measures_dict['L_rand'] = rand_array
+    
+    #---- Assortativity ---------------
+    measures_dict['a'] = np.mean(nx.degree_assortativity_coefficient(G))
+    rand_array = np.ones(n)
+    for i in range(n):
+        rand_array[i] = np.mean(nx.degree_assortativity_coefficient(R_list[i]))
+    measures_dict['a_rand'] = rand_array
+
+    #---- Modularity ------------------
+    measures_dict['M'] = calc_modularity(G)
+    rand_array = np.ones(n)
+    for i in range(n):
+        rand_array[i] = calc_modularity(R_list[i])
+    measures_dict['M_rand'] = rand_array
+    
+    #---- Efficiency ------------------
+    measures_dict['E'] = calc_efficiency(G)
+    rand_array = np.ones(n)
+    for i in range(n):
+        rand_array[i] = calc_efficiency(R_list[i])
+    measures_dict['E_rand'] = rand_array
+     
+    #---- Small world -----------------
+    sigma_array = np.ones(n)
+    for i in range(n):
+        sigma_array[i] = ( ( measures_dict['C'] / measures_dict['C_rand'][i] )
+                            / ( measures_dict['L'] / measures_dict['L_rand'][i] ) )
+    measures_dict['sigma'] = sigma_array
+    measures_dict['sigma_rand'] = 1.0
+
+    return measures_dict
+
