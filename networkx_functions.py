@@ -214,6 +214,11 @@ def participation_coefficient(G):
     ------
     Dictionary of the participation coefficient for each node.
     '''
+    # Import the modules you'll need
+    import networkx as nx
+    import numpy as np
+    import community as community
+    
     partition = community.best_partition(G)
 
     # Reverse the dictionary because the output of Louvain is "backwards"
