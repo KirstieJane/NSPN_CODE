@@ -269,7 +269,7 @@ def participation_coefficient(G):
             for target in between_mod_list:
                 
                 # If the edge is in there then increase the counter by 1
-                if (source, target) in G.edges() or (target, source) in G.edges():
+                if (source, target) in G.edges():
                     count += 1
             
             # This gives you the between module degree
