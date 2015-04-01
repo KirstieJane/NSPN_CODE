@@ -7,6 +7,7 @@ import seaborn as sns
 import matplotlib.pylab as plt
 import numpy as np
 import networkx as nx
+import pandas as pd
 
 
 def plot_rich_club(rc, rc_rand, ax=None, figure_name=None, x_max=200, y_max=1.2, color=sns.color_palette()[0]):
@@ -337,8 +338,6 @@ def pretty_scatter(x, y, x_label='x', y_label='y', x_max=None, x_min=None, y_max
         
     # Create the linear regression plot
     ax = sns.regplot(x_label, y_label, df, ci=95, ax=ax, color=color)
-
-    g.fig.set_figure(fig)
     
     # Fix the x and y axis limits
     if np.isscalar(x_max) and np.isscalar(x_min):
@@ -391,6 +390,139 @@ def degree_r_values(graph_dict, y):
     
     return r_array, p_array
         
+def create_violin_labels():
+    '''
+    A little function to create a labels list for the MT depth
+    violin plots
+    '''
+    # Create an empty list for the names
+    labels_list = []
+    
+    # Create a list of all the depths you care about
+    depth_list = np.hstack([np.arange(100,-1,-10), np.arange(-20, -101, -20)])
+
+    # Loop through all the depths
+    for i in depth_list:
+        
+        # Fill in the appropriate label
+        if i == 100:
+            labels_list += ["Pial"]
+        elif i == 0:
+            labels_list += ["GM/WM"]
+        elif i > 0: 
+            labels_list += ['{:2.0f}%'.format(i - 100.0)]
+        else: 
+            labels_list += ['{:2.1f}mm'.format(i/-100.0)]
+
+    return labels_list
+
+def create_violin_data(measure_dict, measure='all_slope_age', cmap='RdBu_r', cmap_min=-7, cmap_max=7):
+    '''
+    A little function to create a the data frame list
+    for the MT depth violin plots
+    
+    INPUTS:
+        measure_dict --- dictionary containing measure values
+        measure -------- one of 'mean'
+                                'std'
+                                'all_slope_age'
+                                'all_slope_ct'
+                             default = 'all_slope_age'
+        colormap ------- matplotlib colormap
+                             default = 'RdBu_r'
+    '''
+    # Create an empty data frame for the data 
+    # and an empty list for the associated colors
+    df =  pd.DataFrame({'index' : range(308)})
+    color_list = []
+    
+    # Set up the color mapping
+    cm = plt.get_cmap(cmap)
+    cNorm  = mpl.colors.Normalize(vmin=cmap_min, vmax=cmap_max)            #### THIS PROBABLY NEEDS ADJUSTING!
+    scalarMap = mpl.cm.ScalarMappable(norm=cNorm, cmap=cm)
+
+    # Create a list of all the depths you care about
+    depth_list = np.hstack([np.arange(100,-1,-10), np.arange(-20, -101, -20)])
+    
+    # Loop through all the depths
+    for i in depth_list:
+        
+        # Fill in the appropriate data
+        if i >= 0:
+            m_array = measure_dict['MT_projfrac{:+04.0f}_{}'.format(i, measure)]
+        else:
+            m_array = measure_dict['MT_projdist{:+04.0f}_{}'.format(i, measure)]
+
+        df['{}'.format(i)] = m_array/1000.0
+
+        color_list += [scalarMap.to_rgba(np.mean(m_array))]
+
+    return df, color_list
+
+
+def violin_mt_depths(measure_dict, measure='all_slope_age', cmap='PRGn', cmap_min=-7, cmap_max=7, y_max=None, y_min=None, figure_name=None, ax=None, figure=None):
+    '''
+    INPUTS:
+        data_dir --------- where the PARC_*_behavmerge.csv files are saved
+        measure_dict
+    '''
+    
+    # Import what you need
+    import matplotlib.pylab as plt
+    import seaborn as sns
+    
+    # Set the seaborn context and style
+    sns.set(style="white")
+    sns.set_context("poster", font_scale=2)
+    
+    # Get the data, colors and labels
+    df, color_list = create_violin_data(measure_dict, measure=measure, 
+                                                cmap=cmap, cmap_min=cmap_min, cmap_max=cmap_max)
+    
+    labels_list = create_violin_labels()
+        
+    # Create the figure if you need to
+    if not ax:
+        # Create a figure
+        fig, ax = plt.subplots(figsize=(10, 6))
+    else:
+        fig = figure
+        
+    # Create the box plot
+    ##### You could change this here to a violin plot if you wanted to...
+    ax = sns.boxplot(df[df.columns[1:]], color=color_list, names=labels_list)
+    
+    # Fix the y axis limits
+    if np.isscalar(y_max) and np.isscalar(y_min):
+        ax.set_ylim((y_min, y_max))
+    
+    ax.ticklabel_format(axis='y', style='sci', scilimits=(-3,3))
+
+    # Make sure there aren't too many bins!
+    ax.locator_params(axis='y', nbins=4)
+    
+    # Re-do the tick labels so that they're rotated
+    ax.set_xticklabels(labels_list, rotation=90)
+
+    # Put a line at the grey white matter boundary
+    # and another at y=0
+    ax.axvline(11, linewidth=0.5, color='black', linestyle='--')
+    ax.axhline(0, linewidth=0.5, color='black', linestyle='-')
+
+    # Despine because we all agree it looks better that way
+    sns.despine()
+    
+    if figure_name:
+        # Do the tight layout because, again, it looks better!
+        fig.tight_layout()
+    
+        # And save the figure
+        fig.savefig(figure_name, bbox_inches=0, dpi=100)
+        plt.close(fig)
+    
+    else:
+        return ax
+
 def figure_1(graph_dict, figures_dir, n=10):
 
     big_fig, ax_list = plt.subplots(4,4, figsize=(40, 25.2), facecolor='white', sharey='row')
@@ -486,7 +618,115 @@ def figure_1(graph_dict, figures_dir, n=10):
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
     
     plt.close()
-        
+
+def figure_2(ct_data_file, mt_data_file, measure_dict):
+
+    big_fig, ax_list = plt.subplots(3,3, figsize=(30, 18), facecolor='white')
+    
+    #==== CORRELATE GLOBAL CT WITH AGE =============================
+    figure_name = os.path.join(figures_dir, 
+                                    'Global_CT_corr_Age.png'.format(measure))
+
+    df_ct = read_in_df(ct_data_file)
+    
+    color=sns.color_palette('RdBu_r', 10)[1]
+    
+    pretty_scatter(df_ct['age_scan'], df_ct['Global'], 
+                    x_label='Age (years)', y_label='Cortical Thickness (mm)', 
+                    x_max=25, x_min=14, 
+                    y_max=3.0, y_min=2.4, 
+                    figure_name=figure_name,
+                    color=color)
+                            
+    ax_list[0, 0] = pretty_scatter(df_ct['age_scan'], df_ct['Global'], 
+                    x_label='Age (years)', y_label='Cortical Thickness (mm)', 
+                    x_max=25, x_min=14, 
+                    y_max=3.0, y_min=2.4, 
+                    color=color,
+                    ax=ax_list[0, 0],
+                    figure=big_fig)
+    
+                        
+    #==== CORRELATE GLOBAL MT(70) WITH AGE =============================
+    figure_name = os.path.join(figures_dir, 
+                                    'Global_MT_projfrac+030_corr_Age.png')
+
+    df_mt = read_in_df(mt_data_file)
+    
+    color=sns.color_palette('PRGn', 10)[1]
+
+    pretty_scatter(df_mt['age_scan'], df_mt['Global']/1000, 
+                    x_label='Age (years)', y_label='Magnetisation Transfer', 
+                    x_max=25, x_min=14, 
+                    y_max=1.05, y_min=0.8, 
+                    figure_name=figure_name,
+                    color=color)
+                            
+    ax_list[1, 0] = pretty_scatter(df_mt['age_scan'], df_mt['Global']/1000, 
+                    x_label='Age (years)', y_label='Magnetisation Transfer', 
+                    x_max=25, x_min=14, 
+                    y_max=1.05, y_min=0.8, 
+                    figure_name=figure_name,
+                    color=color,
+                    ax=ax_list[1, 0],
+                    figure=big_fig)
+
+    #==== CORRELATE GLOBAL MT(70) WITH CT =============================
+    figure_name = os.path.join(figures_dir, 
+                                    'Global_MT_projfrac+030_corr_CT.png')
+
+    df_mt = read_in_df(mt_data_file)
+    
+    color=sns.color_palette('PRGn_r', 10)[1]
+
+    pretty_scatter(df_ct['Global'], df_mt['Global']/1000, 
+                    x_label='Cortical Thickness (mm)', y_label='Magnetisation Transfer', 
+                    x_max=30, x_min=2.4, 
+                    y_max=1.05, y_min=0.8, 
+                    figure_name=figure_name,
+                    color=color)
+                            
+    ax_list[2, 0] = pretty_scatter(df_ct['Global'], df_mt['Global']/1000, 
+                    x_label='Cortical Thickness (mm)', y_label='Magnetisation Transfer', 
+                    x_max=3.0, x_min=2.4, 
+                    y_max=1.05, y_min=0.8, 
+                    color=color,
+                    ax=ax_list[2, 0],
+                    figure=big_fig)
+                    
+    #==== SHOW CORR WITH AGE AT DIFFERENT DEPTHS ======================
+    figure_name = os.path.join(figures_dir, 
+                                    'MT_projfrac+030_corr_Age_DifferentDepths.png')
+    
+    violin_mt_depths(measure_dict,
+                        measure='all_slope_age',
+                        cmap='PRGn',
+                        y_max=0.015, y_min=-0.010, 
+                        figure_name=figure_name)
+                        
+    ax_list[1, 2] = violin_mt_depths(measure_dict,
+                                        measure='all_slope_age',
+                                        y_max=0.015, y_min=-0.010, 
+                                        ax=ax_list[1, 2],
+                                        figure=big_fig)
+                    
+    #==== SHOW CORR WITH CT AT DIFFERENT DEPTHS ======================
+    ax_list[2, 2] = violin_mt_depths(measure_dict,
+                                        measure='all_slope_ct',
+                                        y_max=0.015, y_min=-0.010, 
+                                        ax=ax_list[2, 2],
+                                        figure=big_fig)
+
+    # Nice tight layout
+    big_fig.tight_layout()
+    
+    # Save the figure
+    filename = os.path.join(figures_dir, 'Figure2.png')
+    big_fig.savefig(filename, bbox_inches=0, dpi=100)
+    
+    plt.close()
+
+    
 def figure_3(graph_dict, pc_dict, measures_dict, figures_dir):
 
     import matplotlib.pylab as plt
@@ -577,6 +817,7 @@ def figure_3(graph_dict, pc_dict, measures_dict, figures_dir):
                     color='k',
                     ax=ax_list[0, 1],
                     figure=big_fig)
+        
         
     #==== CORRELATE PARTICIPATION COEFFS WITH CHANGE IN MT30 WITH AGE =============================
     figure_name = os.path.join(figures_dir, 
