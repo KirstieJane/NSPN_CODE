@@ -120,7 +120,6 @@ def plot_degree_dist(G, ax=None, figure_name=None, x_max=200, y_max=0.1, color=s
     
     else:
         return ax
-
     
 def plot_network_measures(measures_dict, ax=None, figure_name=None, y_max=2.5, y_min=-0.5, color=sns.color_palette()[0]):
     '''
@@ -307,7 +306,86 @@ def plot_sagittal_network(G,
     else:
         return ax
 
+def pretty_scatter(x, y, x_label='x', y_label='y', x_max=None, x_min=None, y_max=None, y_min=None, figure_name=None, ax=None, figure=None, color=sns.color_palette()[0]):
+    '''
+    This function creates a scatter plot with a regression line
+    for the y variable against the degrees of graph G
+    '''
+    # Import what you need
+    import matplotlib.pylab as plt
+    import seaborn as sns
+    
+    # Set the seaborn context and style
+    sns.set(style="white")
+    sns.set_context("poster", font_scale=2)
 
+    # Load the data into a data frame
+    df =  pd.DataFrame({x_label : x,
+                        y_label : y})
+        
+    # Create the figure if you need to
+    if not ax:
+        # Create a figure
+        fig, ax = plt.subplots(figsize=(10, 6))
+    else:
+        fig = figure
+        
+    # Create the linear regression plot
+    ax = sns.regplot(x_label, y_label, df, ci=95, ax=ax, color=color)
+
+    g.fig.set_figure(fig)
+    
+    # Fix the x and y axis limits
+    if np.isscalar(x_max) and np.isscalar(x_min):
+        ax.set_xlim((x_min, x_max))
+    if np.isscalar(y_max) and np.isscalar(y_min):
+        ax.set_ylim((y_min, y_max))
+    
+    ax.ticklabel_format(axis='y', style='sci', scilimits=(-3,3))
+
+    # Make sure there aren't too many bins!
+    ax.locator_params(axis='y', nbins=4)
+    
+    # Put a line at y = 0
+    ax.axhline(0, linewidth=0.5, color='black', linestyle='--')
+
+    # Despine because we all agree it looks better that way
+    sns.despine()
+    
+    if figure_name:
+        # Do the tight layout because, again, it looks better!
+        fig.tight_layout()
+    
+        # And save the figure
+        fig.savefig(figure_name, bbox_inches=0, dpi=100)
+        plt.close(fig)
+    
+    else:
+        return ax
+        
+
+def degree_r_values(graph_dict, y):
+    
+    r_array = np.ones([30])
+    p_array = np.ones([30])
+    
+    cost_list = range(1,31)
+    
+    for i, cost in enumerate(cost_list):
+        measure = 'CT'
+        covars = 'ones'
+        group = 'all'
+        cost = np.float(cost)
+        
+        key = '{}_covar_{}_{}_COST_{:02.0f}'.format(measure, covars, group, cost)
+        
+        G = graph_dict[key]
+        
+        degrees = np.array(G.degree().values())
+        (r_array[i], p_array[i]) = pearsonr(degrees, y)
+    
+    return r_array, p_array
+        
 def figure_1(graph_dict, figures_dir, n=10):
 
     big_fig, ax_list = plt.subplots(4,4, figsize=(40, 25.2), facecolor='white', sharey='row')
@@ -404,3 +482,167 @@ def figure_1(graph_dict, figures_dir, n=10):
     
     plt.close()
         
+def figure_3(graph_dict, pc_dict, measures_dict, figures_dir):
+
+    big_fig, ax_list = plt.subplots(2,3, figsize=(30, 12), facecolor='white')
+    
+    cost = 10    
+    covars = 'ones'
+    group = 'all'
+    cost = np.float(cost)
+    measure = 'CT'
+
+    key = '{}_covar_{}_{}_COST_{:02.0f}'.format(measure, covars, group, cost)
+
+    G = graph_dict[key]    
+    pc = np.array(pc_dict[key].values())
+    degrees = np.array(G.degree().values())
+    
+    #==== CORRELATE DEGREES WITH CHANGE IN CT WITH AGE =============================
+    figure_name = os.path.join(figures_dir, 
+                                    '{}_covar_{}_{}_corrDegreesSlopeCTAge_COST_{:02.0f}.png'.format(measure,
+                                                                                                covars, 
+                                                                                                group.upper(), 
+                                                                                                cost))
+    pretty_scatter(degrees, measure_dict['CT_all_slope_age'], 
+                    x_label='Degree', y_label='Slope CT with age', 
+                    x_max=100, x_min=0, 
+                    y_max=0.05, y_min=-0.1, 
+                    figure_name=figure_name,
+                    color='k')
+                            
+    ax_list[0, 0] = pretty_scatter(degrees, measure_dict['CT_all_slope_age'], 
+                    x_label='Degree', y_label='Slope CT with age', 
+                    x_max=100, x_min=0, 
+                    y_max=0.05, y_min=-0.1, 
+                    color='k',
+                    ax=ax_list[0, 0],
+                    figure=big_fig)
+    
+    ax_list[0,0].text(0, 1, 
+                        'B', 
+                        horizontalalignment='center',
+                        verticalalignment='top',
+                        fontsize=80,
+                        transform=ax.transAxes,
+                        weight='bold')
+
+    #==== CORRELATE PARTICIPATION COEFFS WITH CHANGE IN CT WITH AGE =============================
+    figure_name = os.path.join(figures_dir, 
+                                    '{}_covar_{}_{}_corrPCSlopeCTAge_COST_{:02.0f}.png'.format(measure,
+                                                                                                covars, 
+                                                                                                group.upper(), 
+                                                                                                cost))
+    pretty_scatter(pc[pc>0], measure_dict['CT_all_slope_age'][pc>0], 
+                    x_label='Participation Coefficient', y_label='Slope CT with age', 
+                    x_max=1, x_min=0, 
+                    y_max=0.05, y_min=-0.1, 
+                    figure_name=figure_name,
+                    color='k')
+                            
+    ax_list[1, 0] = pretty_scatter(pc[pc>0], measure_dict['CT_all_slope_age'][pc>0], 
+                    x_label='Participation Coefficient', y_label='Slope CT with age', 
+                    x_max=1, x_min=0, 
+                    y_max=0.05, y_min=-0.1, 
+                    color='k',
+                    ax=ax_list[1, 0],
+                    figure=big_fig)
+                    
+    #==== CORRELATE DEGREES WITH CHANGE IN MT30 WITH AGE =============================
+    figure_name = os.path.join(figures_dir, 
+                                    '{}_covar_{}_{}_corrDegreesSlopeMT+030Age_COST_{:02.0f}.png'.format(measure,
+                                                                                                covars, 
+                                                                                                group.upper(), 
+                                                                                                cost))
+    pretty_scatter(degrees, measure_dict['MT_projfrac+030_all_slope_age'], 
+                    x_label='Degree', y_label='Slope MT(70%) with age', 
+                    x_max=100, x_min=0, 
+                    y_max=20, y_min=-10, 
+                    figure_name=figure_name,
+                    color='k')
+                            
+    ax_list[0, 1] = pretty_scatter(degrees, measure_dict['MT_projfrac+030_all_slope_age'], 
+                    x_label='Degree', y_label='Slope MT(70%) with age', 
+                    x_max=100, x_min=0, 
+                    y_max=20, y_min=-10, 
+                    color='k',
+                    ax=ax_list[0, 1],
+                    figure=big_fig)
+        
+    #==== CORRELATE PARTICIPATION COEFFS WITH CHANGE IN MT30 WITH AGE =============================
+    figure_name = os.path.join(figures_dir, 
+                                    '{}_covar_{}_{}_corrPCSlopeMT+030Age_COST_{:02.0f}.png'.format(measure,
+                                                                                                covars, 
+                                                                                                group.upper(), 
+                                                                                                cost))
+    pretty_scatter(pc[pc>0], measure_dict['MT_projfrac+030_all_slope_age'][pc>0], 
+                    x_label='Participation Coefficient', y_label='Slope MT(70%) with age', 
+                    x_max=1, x_min=0, 
+                    y_max=20, y_min=-10, 
+                    figure_name=figure_name,
+                    color='k')
+                            
+    ax_list[1, 1] = pretty_scatter(pc[pc>0], measure_dict['MT_projfrac+030_all_slope_age'][pc>0], 
+                    x_label='Participation Coefficient', y_label='Slope MT(70%) with age', 
+                    x_max=1, x_min=0, 
+                    y_max=20, y_min=-10, 
+                    color='k',
+                    ax=ax_list[1, 1],
+                    figure=big_fig)
+                    
+    #==== CORRELATE DEGREES WITH CHANGE IN MT30 WITH CT =============================
+    figure_name = os.path.join(figures_dir, 
+                                    '{}_covar_{}_{}_corrDegreesSlopeMT+030CT_COST_{:02.0f}.png'.format(measure,
+                                                                                                covars, 
+                                                                                                group.upper(), 
+                                                                                                cost))
+    pretty_scatter(degrees, measure_dict['MT_projfrac+030_all_slope_ct'], 
+                    x_label='Degree', y_label='Slope MT(70%) with CT', 
+                    x_max=100, x_min=0, 
+                    y_max=0.005, y_min=-0.005, 
+                    figure_name=figure_name,
+                    color='k')
+                            
+    ax_list[0, 2] = pretty_scatter(degrees, measure_dict['MT_projfrac+030_all_slope_ct'], 
+                    x_label='Degree', y_label='Slope MT(70%) with CT', 
+                    x_max=100, x_min=0, 
+                    y_max=0.005, y_min=-0.005, 
+                    color='k',
+                    ax=ax_list[0, 2],
+                    figure=big_fig)
+        
+    #==== CORRELATE PARTICIPATION COEFFS WITH CHANGE IN MT30 WITH AGE =============================
+    figure_name = os.path.join(figures_dir, 
+                                    '{}_covar_{}_{}_corrPCSlopeMT+030Age_COST_{:02.0f}.png'.format(measure,
+                                                                                                covars, 
+                                                                                                group.upper(), 
+                                                                                                cost))
+    pretty_scatter(pc[pc>0], measure_dict['MT_projfrac+030_all_slope_ct'][pc>0], 
+                    x_label='Participation Coefficient', y_label='Slope MT(70%) with ct', 
+                    x_max=1, x_min=0, 
+                    y_max=0.005, y_min=-0.005, 
+                    figure_name=figure_name,
+                    color='k')
+                            
+    ax_list[1, 2] = pretty_scatter(pc[pc>0], measure_dict['MT_projfrac+030_all_slope_ct'][pc>0], 
+                    x_label='Participation Coefficient', y_label='Slope MT(70%) with CT', 
+                    x_max=1, x_min=0, 
+                    y_max=0.005, y_min=-0.005, 
+                    color='k',
+                    ax=ax_list[1, 2],
+                    figure=big_fig)
+
+    # RAAAANDOMLY - and I don't know why this is happening
+    # set the x limits for the very last plot to those of the one
+    # next to it - HMMMMMM
+    #ax_list[3,i].set_xlim( ax_list[3,i-1].get_xlim() )
+    
+    # Nice tight layout
+    big_fig.tight_layout()
+    
+    # Save the figure
+    filename = os.path.join(figures_dir, 'Figure3.png')
+    big_fig.savefig(filename, bbox_inches=0, dpi=100)
+    
+    plt.close()
+    

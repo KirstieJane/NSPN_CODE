@@ -194,6 +194,9 @@ def calc_modularity(G):
     return modularity
     
 def calc_efficiency(G): 
+
+    import networkx as nx
+    
     E=0.0
     for node in G:
         path_length=nx.single_source_shortest_path_length(G, node)
@@ -558,6 +561,8 @@ def random_graph(G, Q=10):
     Returns:
         R: networkx graph
     '''
+    
+    import networkx as nx
     # Copy the graph
     R = G.copy()
     
@@ -580,6 +585,8 @@ def calculate_network_measures(G, R_list=None, n=10):
     G, and for n random graphs that are matched on degree distribution
     (unless otherwise stated)
     '''
+    import networkx as nx
+    
     #==== SET UP ======================
     # Start by creating n random graphs
     for i in range(n):
