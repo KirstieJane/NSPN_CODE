@@ -486,6 +486,10 @@ def figure_1(graph_dict, figures_dir, n=10):
         
 def figure_3(graph_dict, pc_dict, measures_dict, figures_dir):
 
+    import matplotlib.pylab as plt
+    import numpy as np
+    import networkx as nx
+    
     big_fig, ax_list = plt.subplots(2,3, figsize=(30, 12), facecolor='white')
     
     cost = 10    
