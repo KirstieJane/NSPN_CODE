@@ -4,6 +4,9 @@
 This code makes the figures for the manuscript "
 '''
 import seaborn as sns
+import matplotlib.pylab as plt
+import numpy as np
+import networkx as nx
 
 
 def plot_rich_club(rc, rc_rand, ax=None, figure_name=None, x_max=200, y_max=1.2, color=sns.color_palette()[0]):
