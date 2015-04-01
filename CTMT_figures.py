@@ -8,6 +8,8 @@ import matplotlib.pylab as plt
 import numpy as np
 import networkx as nx
 import pandas as pd
+import matplotlib as mpl
+import os
 
 
 def plot_rich_club(rc, rc_rand, ax=None, figure_name=None, x_max=200, y_max=1.2, color=sns.color_palette()[0]):
@@ -431,6 +433,8 @@ def create_violin_data(measure_dict, measure='all_slope_age', cmap='RdBu_r', cma
         colormap ------- matplotlib colormap
                              default = 'RdBu_r'
     '''
+    import matplotlib as mpl
+    
     # Create an empty data frame for the data 
     # and an empty list for the associated colors
     df =  pd.DataFrame({'index' : range(308)})
@@ -645,7 +649,6 @@ def figure_2(ct_data_file, mt_data_file, measure_dict):
                     color=color,
                     ax=ax_list[0, 0],
                     figure=big_fig)
-    
                         
     #==== CORRELATE GLOBAL MT(70) WITH AGE =============================
     figure_name = os.path.join(figures_dir, 
@@ -693,7 +696,8 @@ def figure_2(ct_data_file, mt_data_file, measure_dict):
                     color=color,
                     ax=ax_list[2, 0],
                     figure=big_fig)
-                    
+    
+    
     #==== SHOW CORR WITH AGE AT DIFFERENT DEPTHS ======================
     figure_name = os.path.join(figures_dir, 
                                     'MT_projfrac+030_corr_Age_DifferentDepths.png')
@@ -709,11 +713,20 @@ def figure_2(ct_data_file, mt_data_file, measure_dict):
                                         y_max=0.015, y_min=-0.010, 
                                         ax=ax_list[1, 2],
                                         figure=big_fig)
-                    
+    
     #==== SHOW CORR WITH CT AT DIFFERENT DEPTHS ======================
+    figure_name = os.path.join(figures_dir, 
+                                    'MT_projfrac+030_corr_CT_DifferentDepths.png')
+    
+    violin_mt_depths(measure_dict,
+                        measure='all_slope_ct',
+                        cmap='PRGn',
+                        y_max=0.015, y_min=-0.010, 
+                        figure_name=figure_name)
+
     ax_list[2, 2] = violin_mt_depths(measure_dict,
                                         measure='all_slope_ct',
-                                        y_max=0.015, y_min=-0.010, 
+                                        y_max=0.015, y_min=-0.010,
                                         ax=ax_list[2, 2],
                                         figure=big_fig)
 
