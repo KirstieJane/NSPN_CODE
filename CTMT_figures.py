@@ -334,7 +334,7 @@ def pretty_scatter(x, y, x_label='x', y_label='y', x_max=None, x_min=None, y_max
     # Create the figure if you need to
     if not ax:
         # Create a figure
-        fig, ax = plt.subplots(figsize=(10, 6))
+        fig, ax = plt.subplots(figsize=(10, 10))
     else:
         fig = figure
         
@@ -488,7 +488,7 @@ def violin_mt_depths(measure_dict, measure='all_slope_age', cmap='PRGn', cmap_mi
     # Create the figure if you need to
     if not ax:
         # Create a figure
-        fig, ax = plt.subplots(figsize=(10, 6))
+        fig, ax = plt.subplots(figsize=(10, 10))
     else:
         fig = figure
         
@@ -623,7 +623,7 @@ def figure_1(graph_dict, figures_dir, n=10):
     
     plt.close()
 
-def figure_2(ct_data_file, mt_data_file, measure_dict):
+def figure_2(ct_data_file, mt_data_file, measure_dict, figures_dir):
 
     big_fig, ax_list = plt.subplots(3,3, figsize=(30, 18), facecolor='white')
     
@@ -656,7 +656,7 @@ def figure_2(ct_data_file, mt_data_file, measure_dict):
 
     df_mt = read_in_df(mt_data_file)
     
-    color=sns.color_palette('PRGn', 10)[1]
+    color=sns.color_palette('PRGn_r', 10)[1]
 
     pretty_scatter(df_mt['age_scan'], df_mt['Global']/1000, 
                     x_label='Age (years)', y_label='Magnetisation Transfer', 
@@ -669,7 +669,6 @@ def figure_2(ct_data_file, mt_data_file, measure_dict):
                     x_label='Age (years)', y_label='Magnetisation Transfer', 
                     x_max=25, x_min=14, 
                     y_max=1.05, y_min=0.8, 
-                    figure_name=figure_name,
                     color=color,
                     ax=ax_list[1, 0],
                     figure=big_fig)
@@ -680,7 +679,7 @@ def figure_2(ct_data_file, mt_data_file, measure_dict):
 
     df_mt = read_in_df(mt_data_file)
     
-    color=sns.color_palette('PRGn_r', 10)[1]
+    color=sns.color_palette('PRGn', 10)[1]
 
     pretty_scatter(df_ct['Global'], df_mt['Global']/1000, 
                     x_label='Cortical Thickness (mm)', y_label='Magnetisation Transfer', 
@@ -708,10 +707,10 @@ def figure_2(ct_data_file, mt_data_file, measure_dict):
                         y_max=0.015, y_min=-0.010, 
                         figure_name=figure_name)
                         
-    ax_list[1, 2] = violin_mt_depths(measure_dict,
+    ax_list[2, 1] = violin_mt_depths(measure_dict,
                                         measure='all_slope_age',
                                         y_max=0.015, y_min=-0.010, 
-                                        ax=ax_list[1, 2],
+                                        ax=ax_list[2, 1],
                                         figure=big_fig)
     
     #==== SHOW CORR WITH CT AT DIFFERENT DEPTHS ======================
@@ -721,12 +720,19 @@ def figure_2(ct_data_file, mt_data_file, measure_dict):
     violin_mt_depths(measure_dict,
                         measure='all_slope_ct',
                         cmap='PRGn',
-                        y_max=0.015, y_min=-0.010, 
+                        y_min=-0.000007,
+                        y_max=0.000003,
+                        cmap_min=-0.003,
+                        cmap_max=0.003,
                         figure_name=figure_name)
 
     ax_list[2, 2] = violin_mt_depths(measure_dict,
                                         measure='all_slope_ct',
-                                        y_max=0.015, y_min=-0.010,
+                                        cmap='PRGn',
+                                        y_min=-0.000007,
+                                        y_max=0.000003,
+                                        cmap_min=-0.003,
+                                        cmap_max=0.003,
                                         ax=ax_list[2, 2],
                                         figure=big_fig)
 
