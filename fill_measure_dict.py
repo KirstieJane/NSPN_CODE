@@ -128,14 +128,15 @@ for filename, measure_name in zip(filename_list, measure_name_list):
     measure_dict['{}_all_slope_age_m_fdr_mask'.format(measure_name)] = m_fdr_mask_array
 
     # CORR W CT
-    (m_array, r_array, 
-        p_array, p_fdr_array,
-        m_mask_array, m_fdr_mask_array) = regional_linregress_byregion(df, df_ct[df_ct['nspn_id']==[df['nspn_id']]], aparc_names)
+    if not measure_name == 'CT':
+        (m_array, r_array, 
+            p_array, p_fdr_array,
+            m_mask_array, m_fdr_mask_array) = regional_linregress_byregion(df, df_ct, aparc_names)
 
-    measure_dict['{}_all_slope_ct'.format(measure_name)] = m_array
-    measure_dict['{}_all_slope_ct_r'.format(measure_name)] = r_array
-    measure_dict['{}_all_slope_ct_p'.format(measure_name)] = p_array
-    measure_dict['{}_all_slope_ct_p_fdr'.format(measure_name)] = p_fdr_array
-    measure_dict['{}_all_slope_ct_m_mask'.format(measure_name)] = m_mask_array
-    measure_dict['{}_all_slope_ct_m_fdr_mask'.format(measure_name)] = m_fdr_mask_array
+        measure_dict['{}_all_slope_ct'.format(measure_name)] = m_array
+        measure_dict['{}_all_slope_ct_r'.format(measure_name)] = r_array
+        measure_dict['{}_all_slope_ct_p'.format(measure_name)] = p_array
+        measure_dict['{}_all_slope_ct_p_fdr'.format(measure_name)] = p_fdr_array
+        measure_dict['{}_all_slope_ct_m_mask'.format(measure_name)] = m_mask_array
+        measure_dict['{}_all_slope_ct_m_fdr_mask'.format(measure_name)] = m_fdr_mask_array
 
