@@ -3,6 +3,7 @@
 import numpy as np
 import pandas as pd
 import os 
+import sys
 
 def read_in_df(data_file):
     df = pd.read_csv(data_file, sep=',')
@@ -30,6 +31,8 @@ def read_in_df(data_file):
 # Import some useful functions
 #=============================================================================
 study_dir = os.path.join('/home', 'kw401', 'UCHANGE', 'INTERIM_ANALYSES')
+if not os.path.isdir(study_dir):
+    study_dir = os.path.join('/scratch', 'kw401', 'UCHANGE_INTERIM')
 scripts_dir = os.path.join(study_dir, 'SCRIPTS')
 sys.path.append(os.path.join(scripts_dir, 'NSPN_CODE'))
 from regional_correlation_functions import *
