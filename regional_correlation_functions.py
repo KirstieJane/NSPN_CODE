@@ -22,7 +22,7 @@ def regional_linregress(df, x, aparc_names):
     '''
     
     # Import what you need
-    from scikits.statsmodels.sandbox.stats.multicomp import fdrcorrection0 as fdr
+    from statsmodels.sandbox.stats.multicomp import fdrcorrection0 as fdr
     import numpy as np
     from scipy.stats import linregress
     
@@ -79,7 +79,7 @@ def regional_linregress_byregion(df_x, df_y, aparc_names):
     '''
     
     # Import what you need
-    from scikits.statsmodels.sandbox.stats.multicomp import fdrcorrection0 as fdr
+    from statsmodels.sandbox.stats.multicomp import fdrcorrection0 as fdr
     import numpy as np
     from scipy.stats import linregress
     
