@@ -418,7 +418,7 @@ def create_violin_labels():
 
     return labels_list
 
-def create_violin_data(measure_dict, measure='all_slope_age', cmap='RdBu_r', cmap_min=-7, cmap_max=7):
+def create_violin_data(measure_dict, map='MT', measure='all_slope_age', cmap='RdBu_r', cmap_min=-7, cmap_max=7):
     '''
     A little function to create a the data frame list
     for the MT depth violin plots
@@ -453,9 +453,9 @@ def create_violin_data(measure_dict, measure='all_slope_age', cmap='RdBu_r', cma
         
         # Fill in the appropriate data
         if i >= 0:
-            m_array = measure_dict['MT_projfrac{:+04.0f}_{}'.format(i, measure)]
+            m_array = measure_dict['{}_projfrac{:+04.0f}_{}'.format(map, i, measure)]
         else:
-            m_array = measure_dict['MT_projdist{:+04.0f}_{}'.format(i, measure)]
+            m_array = measure_dict['{}_projdist{:+04.0f}_{}'.format(map, i, measure)]
 
         df['{}'.format(i)] = m_array/1000.0
 
@@ -464,7 +464,7 @@ def create_violin_data(measure_dict, measure='all_slope_age', cmap='RdBu_r', cma
     return df, color_list
 
 
-def violin_mt_depths(measure_dict, measure='all_slope_age', cmap='PRGn', cmap_min=-7, cmap_max=7, y_max=None, y_min=None, figure_name=None, ax=None, figure=None):
+def violin_mt_depths(measure_dict, map='MT', measure='all_slope_age', cmap='PRGn', cmap_min=-7, cmap_max=7, y_max=None, y_min=None, figure_name=None, ax=None, figure=None):
     '''
     INPUTS:
         data_dir --------- where the PARC_*_behavmerge.csv files are saved
@@ -480,7 +480,7 @@ def violin_mt_depths(measure_dict, measure='all_slope_age', cmap='PRGn', cmap_mi
     sns.set_context("poster", font_scale=2)
     
     # Get the data, colors and labels
-    df, color_list = create_violin_data(measure_dict, measure=measure, 
+    df, color_list = create_violin_data(measure_dict, map=map, measure=measure, 
                                                 cmap=cmap, cmap_min=cmap_min, cmap_max=cmap_max)
     
     labels_list = create_violin_labels()
@@ -915,3 +915,29 @@ def figure_3(graph_dict, pc_dict, measures_dict, figures_dir):
     
     plt.close()
     
+    
+def partial_volume_fig(measure_dict, figures_dir):
+
+    big_fig, ax_list = plt.subplots(1,2, figsize=(10, 20), facecolor='white')
+        
+    #==== SHOW MEAN MT AT DIFFERENT DEPTHS ======================                            
+    ax_list[0, 0] = violin_mt_depths(measure_dict,
+                                        map='MT',
+                                        measure='all_mean',
+                                        ax=ax_list[0, 0],
+                                        figure=big_fig)
+                                        
+    ax_list[0, 1] = violin_mt_depths(measure_dict,
+                                        map='synthetic',
+                                        measure='all_mean',
+                                        ax=ax_list[0, 1],
+                                        figure=big_fig)
+    
+    # Nice tight layout
+    big_fig.tight_layout()
+    
+    # Save the figure
+    filename = os.path.join(figures_dir, 'PartialVolumeFig.png')
+    big_fig.savefig(filename, bbox_inches=0, dpi=100)
+    
+    plt.close()
