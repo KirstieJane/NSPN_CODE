@@ -57,7 +57,7 @@ file_list += glob(os.path.join(fs_rois_dir, '*proj??????.??_fromBoundary.csv'))
 for f in file_list:
     print f
     df_meas = pd.read_csv(f)
-    if 'nspn_id' in df_meas.colums:
+    if 'nspn_id' in df_meas.columns:
         df = df_behav.merge(df_meas, on=['nspn_id', 'occ'])
         df.sort('nspn_id', inplace=True)
         c_drop = [ x for x in df.columns if 'Measure' in x ]
