@@ -42,8 +42,9 @@ mkdir -p ${data_dir}/FS_ROIS/
 # SEGMENTATIONS
 #=============================================================================
 # Loop through the various segmentations
-for seg in aseg wmparc lobesStrict 500cortExpConsecWMoverlap 500cortConsec; do
-
+#for seg in aseg wmparc lobesStrict 500cortExpConsecWMoverlap 500cortConsec; do
+for seg in aseg
+    
     for measure in R1 MT R2s A FA MD MO L1 L23 sse; do
     
         # Find all the individual stats files for that segmentation
@@ -165,8 +166,8 @@ for parc in aparc 500.aparc lobesStrict; do
     done # Close the measure loop
     
     # Next extract "thickness" values from the projected maps
-    for measure in R1 MT R2s A FA MD MO L1 L23 sse synthetic; do
-    #for measure in MT; do
+    #for measure in R1 MT R2s A FA MD MO L1 L23 sse synthetic; do
+    for measure in synthetic; do
             
         for frac in `seq -f %+02.2f -1 0.05 1`; do
         
