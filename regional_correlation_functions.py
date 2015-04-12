@@ -91,10 +91,12 @@ def regional_linregress_byregion(df_x, df_y, aparc_names):
     p_array = np.ones(len(aparc_names))
     r_array = np.ones(len(aparc_names))
 
+    df = df_x.merge(df_y, on='nspn_id')
+    
     # Loop through all the regions and record m, p and r for each region
     for i, roi in enumerate(aparc_names):
-        m, c, r, p, std_err = linregress(df_x[roi].values,
-                                            df_y[roi].values)
+        m, c, r, p, std_err = linregress(df['{}_x'.format(roi)].values,
+                                            df['{}_y'.format(roi)].values)
         m_array[i] = m
         r_array[i] = r    
         p_array[i] = p

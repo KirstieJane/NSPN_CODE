@@ -130,7 +130,7 @@ for filename, measure_name in zip(filename_list, measure_name_list):
     # CORR W CT
     (m_array, r_array, 
         p_array, p_fdr_array,
-        m_mask_array, m_fdr_mask_array) = regional_linregress_byregion(df, df_ct, aparc_names)
+        m_mask_array, m_fdr_mask_array) = regional_linregress_byregion(df, df_ct[df_ct['nspn_id']==[df['nspn_id']]], aparc_names)
 
     measure_dict['{}_all_slope_ct'.format(measure_name)] = m_array
     measure_dict['{}_all_slope_ct_r'.format(measure_name)] = r_array
