@@ -89,12 +89,12 @@ for i in np.arange(-20,-101,-20):
     
     # MT
     filename_list += [ os.path.join(data_dir, 
-                       'PARC_500aparc_MT_projdist{:+04.0f}_behavmerge.csv'.format(i)) ]
+                       'PARC_500aparc_MT_projdist{:+04.0f}_fromBoundary_behavmerge.csv'.format(i)) ]
     measure_name_list += [ 'MT_projdist{:+04.0f}'.format(i) ]
     
     # Synthetic
     filename_list += [ os.path.join(data_dir, 
-                       'PARC_500aparc_synthetic_projdist{:+04.0f}_behavmerge.csv'.format(i)) ]
+                       'PARC_500aparc_synthetic_projdist{:+04.0f}_fromBoundary_behavmerge.csv'.format(i)) ]
     measure_name_list += [ 'synthetic_projdist{:+04.0f}'.format(i) ]
 
 #=============================================================================
