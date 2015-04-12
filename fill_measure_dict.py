@@ -68,20 +68,31 @@ measure_name_list = []
 filename_list += [ os.path.join(data_dir, 'PARC_500aparc_thickness_behavmerge.csv') ]
 measure_name_list += [ 'CT' ]
 
-### MT FRACTIONAL DEPTHS
+### FRACTIONAL DEPTHS
 for i in np.arange(0.0,110,10):
     
+    # MT
     filename_list += [ os.path.join(data_dir, 
                        'PARC_500aparc_MT_projfrac{:+04.0f}_behavmerge.csv'.format(i)) ]
     measure_name_list += [ 'MT_projfrac{:+04.0f}'.format(i) ]
     
-### MT ABSOLUTE DEPTHS FROM BOUNDARY
+    # Synthetic
+    filename_list += [ os.path.join(data_dir, 
+                       'PARC_500aparc_synthetic_projfrac{:+04.0f}_behavmerge.csv'.format(i)) ]
+    measure_name_list += [ 'synthetic_projfrac{:+04.0f}'.format(i) ]
+    
+### ABSOLUTE DEPTHS FROM BOUNDARY
 for i in np.arange(-20,-101,-20):
     
+    # MT
     filename_list += [ os.path.join(data_dir, 
                        'PARC_500aparc_MT_projdist{:+04.0f}_behavmerge.csv'.format(i)) ]
     measure_name_list += [ 'MT_projdist{:+04.0f}'.format(i) ]
-
+    
+    # Synthetic
+    filename_list += [ os.path.join(data_dir, 
+                       'PARC_500aparc_synthetic_projdist{:+04.0f}_behavmerge.csv'.format(i)) ]
+    measure_name_list += [ 'synthetic_projdist{:+04.0f}'.format(i) ]
 
 #=============================================================================
 # Then fill in the dictionary with:
