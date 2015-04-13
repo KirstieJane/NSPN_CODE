@@ -412,7 +412,7 @@ def create_violin_labels():
         elif i == 0:
             labels_list += ["GM/WM"]
         elif i > 0: 
-            labels_list += ['{:2.0f}%'.format(i - 100.0)]
+            labels_list += ['{:2.0f}%'.format(100.0 - i)]
         else: 
             labels_list += ['{:2.1f}mm'.format(i/-100.0)]
 
@@ -928,7 +928,7 @@ def partial_volume_fig(measure_dict, figures_dir):
                                         y_max=2.0,
                                         cmap='jet',
                                         cmap_min=0,
-                                        cmap_max=2.0,
+                                        cmap_max=2000.0,
                                         ax=ax_list[0, 0],
                                         figure=big_fig)
                                         
@@ -939,7 +939,7 @@ def partial_volume_fig(measure_dict, figures_dir):
                                         y_max=2.0,
                                         cmap='jet',
                                         cmap_min=0,
-                                        cmap_max=2.0,
+                                        cmap_max=2000.0,
                                         ax=ax_list[0, 1],
                                         figure=big_fig)
     
@@ -949,9 +949,9 @@ def partial_volume_fig(measure_dict, figures_dir):
                                         measure='all_std',
                                         y_min=0,
                                         y_max=0.2,
-                                        cmap='RdBu_r',
+                                        cmap='jet',
                                         cmap_min=0.0,
-                                        cmap_max=0.2,
+                                        cmap_max=200.0,
                                         ax=ax_list[1, 0],
                                         figure=big_fig)
                                         
@@ -960,9 +960,9 @@ def partial_volume_fig(measure_dict, figures_dir):
                                         measure='all_std',
                                         y_min=0,
                                         y_max=0.2,
-                                        cmap='RdBu',
+                                        cmap='jet',
                                         cmap_min=0,
-                                        cmap_max=0.2,
+                                        cmap_max=200.0,
                                         ax=ax_list[1, 1],
                                         figure=big_fig)
                         
