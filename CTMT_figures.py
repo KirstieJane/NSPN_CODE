@@ -928,7 +928,7 @@ def partial_volume_fig(measure_dict, figures_dir):
                                         y_max=2.0,
                                         cmap='jet',
                                         cmap_min=0,
-                                        cmap_max=2.0/1000,
+                                        cmap_max=2.0,
                                         ax=ax_list[0, 0],
                                         figure=big_fig)
                                         
@@ -939,7 +939,7 @@ def partial_volume_fig(measure_dict, figures_dir):
                                         y_max=2.0,
                                         cmap='jet',
                                         cmap_min=0,
-                                        cmap_max=2.0/1000,
+                                        cmap_max=2.0,
                                         ax=ax_list[0, 1],
                                         figure=big_fig)
     
@@ -949,9 +949,9 @@ def partial_volume_fig(measure_dict, figures_dir):
                                         measure='all_std',
                                         y_min=0,
                                         y_max=0.2,
-                                        cmap='jet',
-                                        cmap_min=0,
-                                        cmap_max=0.2/1000,
+                                        cmap='RdBu_r',
+                                        cmap_min=0.0,
+                                        cmap_max=0.2,
                                         ax=ax_list[1, 0],
                                         figure=big_fig)
                                         
@@ -960,9 +960,9 @@ def partial_volume_fig(measure_dict, figures_dir):
                                         measure='all_std',
                                         y_min=0,
                                         y_max=0.2,
-                                        cmap='jet',
+                                        cmap='RdBu',
                                         cmap_min=0,
-                                        cmap_max=0.2/1000,
+                                        cmap_max=0.2,
                                         ax=ax_list[1, 1],
                                         figure=big_fig)
                         
