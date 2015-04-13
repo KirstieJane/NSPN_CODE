@@ -113,7 +113,7 @@ for filename, measure_name in zip(filename_list, measure_name_list):
     measure_dict['{}_all_mean'.format(measure_name)] = df[aparc_names].mean(axis=0).values
 
     # STD
-    measure_dict['{}_all_mean'.format(measure_name)] = df[aparc_names].std(axis=0).values
+    measure_dict['{}_all_std'.format(measure_name)] = df[aparc_names].std(axis=0).values
 
     # CORR W AGE
     (m_array, r_array, 
