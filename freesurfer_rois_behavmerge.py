@@ -57,15 +57,21 @@ file_list += glob(os.path.join(fs_rois_dir, '*std.csv'))
 
 for f in file_list:
     print f
-    df_meas = pd.read_csv(f)
-    if 'nspn_id' in df_meas.columns:
-        df = df_behav.merge(df_meas, on=['nspn_id', 'occ'])
-        df.sort('nspn_id', inplace=True)
-        c_drop = [ x for x in df.columns if 'Measure' in x ]
-        #c_drop += [ x for x in df.columns if '.' in x ]
-        if c_drop:
-            df.drop(c_drop, inplace=True, axis=1)
-        f_out = f.replace('.', '')
-        f_out = f_out.replace('csv', '_behavmerge.csv')
-        df.to_csv(f_out,float_format='%.5f')
+    # Check the number of lines that are in the file
+    with open(f) as fid:
+        num_lines = len(fid.readlines())
         
+    # And only try to merge files that have content
+    if num_lines > 0:
+        df_meas = pd.read_csv(f)
+        if 'nspn_id' in df_meas.columns:
+            df = df_behav.merge(df_meas, on=['nspn_id', 'occ'])
+            df.sort('nspn_id', inplace=True)
+            c_drop = [ x for x in df.columns if 'Measure' in x ]
+            #c_drop += [ x for x in df.columns if '.' in x ]
+            if c_drop:
+                df.drop(c_drop, inplace=True, axis=1)
+            f_out = f.replace('.', '')
+            f_out = f_out.replace('csv', '_behavmerge.csv')
+            df.to_csv(f_out,float_format='%.5f')
+            
