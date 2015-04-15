@@ -268,7 +268,7 @@ for hemi in lh rh; do
 
             # Loop through a bunch of different fractional depths 
             # from the white matter surface
-            for frac in `seq -f %+02.2f -1 0.1 1`; do
+            for frac in `seq -f %+02.2f -1 0.05 1`; do
 
                 # Project the values to the surface
                 if [[ ! -f ${surfer_dir}/surf/${hemi}.${measure}_projfrac${frac}.mgh ]]; then
@@ -297,7 +297,7 @@ for hemi in lh rh; do
 
             # Now loop through the different absolute depths
             # **from the pial surface**
-            for dist in `seq -f %+02.2f -5 0.2 0`; do
+            for dist in `seq -f %+02.2f -5 0.1 0`; do
 
                 if [[ ! -f ${surfer_dir}/surf/${hemi}.${measure}_projdist${dist}.mgh ]]; then
                 
@@ -326,7 +326,7 @@ for hemi in lh rh; do
             
             # Now loop through the different absolute depths
             # **from the grey/white matter boundary**
-            for dist in `seq -f %+02.2f -2 0.2 0`; do
+            for dist in `seq -f %+02.2f -2 0.1 0`; do
 
                 if [[ ! -f ${surfer_dir}/surf/${hemi}.${measure}_projdist${dist}_fromBoundary.mgh ]]; then
                 
