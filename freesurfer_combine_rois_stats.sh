@@ -125,14 +125,14 @@ for parc in aparc 500.aparc lobesStrict; do
                                 -d comma \
                                 --common-parcs \
                                 --skip \
-                                -t ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temptemp.csv 
+                                -t ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temp2.csv 
                                 
             # Drop the first column because it isn't necessary
-            cut -d, -f2- ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temptemp.csv \
+            cut -d, -f2- ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temp2.csv \
                     > ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temp.csv 
             
             # But save it for later!
-            cut -d, -f1 ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temptemp.csv \
+            cut -d, -f1 ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temp2.csv \
                     > ${data_dir}/FS_ROIS/nspn_id_col
         done
         
