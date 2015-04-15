@@ -43,7 +43,8 @@ df_behav = pd.read_csv(behav_file)
 # MERGE MEASURES WITH BEHAV VALUES
 #=============================================================================
 measure_list = [ 'mean', 'area', 
-                    'volume', 'thickness', 
+                    'volume', 'thickness',
+                    'thicknessstd',
                     'meancurv', 'gauscurv', 
                     'foldind', 'curvind' ]
 
@@ -51,8 +52,8 @@ file_list = []
 for measure in measure_list:
     file_list += glob(os.path.join(fs_rois_dir, '*{}.csv'.format(measure)))
 
-file_list += glob(os.path.join(fs_rois_dir, '*proj??????.??.csv'))
-file_list += glob(os.path.join(fs_rois_dir, '*proj??????.??_fromBoundary.csv'))
+file_list += glob(os.path.join(fs_rois_dir, '*mean.csv'))
+file_list += glob(os.path.join(fs_rois_dir, '*std.csv'))
 
 for f in file_list:
     print f
@@ -68,10 +69,3 @@ for f in file_list:
         f_out = f_out.replace('csv', '_behavmerge.csv')
         df.to_csv(f_out,float_format='%.5f')
         
-        if 'MT' in f:
-            df_edit = pd.read_csv(f_out)
-            for col in df_edit.columns:
-                df_edit[col][df_edit[col]<10] = df_edit[col][df_edit[col]<10]*1000
-            df_edit.to_csv(f_out)
-
-#
