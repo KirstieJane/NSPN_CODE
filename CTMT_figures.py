@@ -418,7 +418,7 @@ def create_violin_labels():
 
     return labels_list
 
-def create_violin_data(measure_dict, map='MT', measure='all_slope_age', cmap='RdBu_r', cmap_min=-7, cmap_max=7):
+def create_violin_data_308(measure_dict, map='MT', measure='all_slope_age', cmap='RdBu_r', cmap_min=-7, cmap_max=7):
     '''
     A little function to create a the data frame list
     for the MT depth violin plots
@@ -464,7 +464,7 @@ def create_violin_data(measure_dict, map='MT', measure='all_slope_age', cmap='Rd
     return df, color_list
 
 
-def violin_mt_depths(measure_dict, map='MT', measure='all_slope_age', cmap='PRGn', cmap_min=-7, cmap_max=7, y_max=None, y_min=None, figure_name=None, ax=None, figure=None):
+def violin_diff_depths_308(measure_dict, map='MT', measure='all_slope_age', cmap='PRGn', cmap_min=-7, cmap_max=7, y_max=None, y_min=None, figure_name=None, ax=None, figure=None):
     '''
     INPUTS:
         data_dir --------- where the PARC_*_behavmerge.csv files are saved
@@ -480,7 +480,7 @@ def violin_mt_depths(measure_dict, map='MT', measure='all_slope_age', cmap='PRGn
     sns.set_context("poster", font_scale=2)
     
     # Get the data, colors and labels
-    df, color_list = create_violin_data(measure_dict, map=map, measure=measure, 
+    df, color_list = create_violin_data_308(measure_dict, map=map, measure=measure, 
                                                 cmap=cmap, cmap_min=cmap_min, cmap_max=cmap_max)
     
     labels_list = create_violin_labels()
@@ -701,40 +701,40 @@ def figure_2(ct_data_file, mt_data_file, measure_dict, figures_dir):
     figure_name = os.path.join(figures_dir, 
                                     'MT_projfrac+030_corr_Age_DifferentDepths.png')
     
-    violin_mt_depths(measure_dict,
-                        measure='all_slope_age',
-                        cmap='PRGn',
-                        y_max=0.015, y_min=-0.010, 
-                        figure_name=figure_name)
+    violin_diff_depths_308(measure_dict,
+                            measure='all_slope_age',
+                            cmap='PRGn',
+                            y_max=0.015, y_min=-0.010, 
+                            figure_name=figure_name)
                         
-    ax_list[2, 1] = violin_mt_depths(measure_dict,
-                                        measure='all_slope_age',
-                                        y_max=0.015, y_min=-0.010, 
-                                        ax=ax_list[2, 1],
-                                        figure=big_fig)
+    ax_list[2, 1] = violin_diff_depths_308(measure_dict,
+                                            measure='all_slope_age',
+                                            y_max=0.015, y_min=-0.010, 
+                                            ax=ax_list[2, 1],
+                                            figure=big_fig)
     
     #==== SHOW CORR WITH CT AT DIFFERENT DEPTHS ======================
     figure_name = os.path.join(figures_dir, 
                                     'MT_projfrac+030_corr_CT_DifferentDepths.png')
     
-    violin_mt_depths(measure_dict,
-                        measure='all_slope_ct',
-                        cmap='PRGn',
-                        y_min=-0.000007,
-                        y_max=0.000003,
-                        cmap_min=-0.003,
-                        cmap_max=0.003,
-                        figure_name=figure_name)
+    violin_diff_depths_308(measure_dict,
+                            measure='all_slope_ct',
+                            cmap='PRGn',
+                            y_min=-0.000007,
+                            y_max=0.000003,
+                            cmap_min=-0.003,
+                            cmap_max=0.003,
+                            figure_name=figure_name)
 
-    ax_list[2, 2] = violin_mt_depths(measure_dict,
-                                        measure='all_slope_ct',
-                                        cmap='PRGn',
-                                        y_min=-0.000007,
-                                        y_max=0.000003,
-                                        cmap_min=-0.003,
-                                        cmap_max=0.003,
-                                        ax=ax_list[2, 2],
-                                        figure=big_fig)
+    ax_list[2, 2] = violin_diff_depths_308(measure_dict,
+                                            measure='all_slope_ct',
+                                            cmap='PRGn',
+                                            y_min=-0.000007,
+                                            y_max=0.000003,
+                                            cmap_min=-0.003,
+                                            cmap_max=0.003,
+                                            ax=ax_list[2, 2],
+                                            figure=big_fig)
 
     # Nice tight layout
     big_fig.tight_layout()
@@ -921,50 +921,50 @@ def partial_volume_fig(measure_dict, figures_dir):
     big_fig, ax_list = plt.subplots(2, 2, figsize=(20, 20), facecolor='white')
         
     #==== SHOW MEAN MT AT DIFFERENT DEPTHS ======================                            
-    ax_list[0, 0] = violin_mt_depths(measure_dict,
-                                        map='MT',
-                                        measure='all_mean',
-                                        y_min=0,
-                                        y_max=2.0,
-                                        cmap='jet',
-                                        cmap_min=0,
-                                        cmap_max=2000.0,
-                                        ax=ax_list[0, 0],
-                                        figure=big_fig)
-                                        
-    ax_list[0, 1] = violin_mt_depths(measure_dict,
-                                        map='synthetic',
-                                        measure='all_mean',
-                                        y_min=0,
-                                        y_max=2.0,
-                                        cmap='jet',
-                                        cmap_min=0,
-                                        cmap_max=2000.0,
-                                        ax=ax_list[0, 1],
-                                        figure=big_fig)
+    ax_list[0, 0] = violin_diff_depths_308(measure_dict,
+                                            map='MT',
+                                            measure='all_mean',
+                                            y_min=0,
+                                            y_max=2.0,
+                                            cmap='jet',
+                                            cmap_min=0,
+                                            cmap_max=2000.0,
+                                            ax=ax_list[0, 0],
+                                            figure=big_fig)
+                                            
+    ax_list[0, 1] = violin_diff_depths_308(measure_dict,
+                                            map='synthetic',
+                                            measure='all_mean',
+                                            y_min=0,
+                                            y_max=2.0,
+                                            cmap='jet',
+                                            cmap_min=0,
+                                            cmap_max=2000.0,
+                                            ax=ax_list[0, 1],
+                                            figure=big_fig)
     
     #==== SHOW STD AT DIFFERENT DEPTHS ======================                            
-    ax_list[1, 0] = violin_mt_depths(measure_dict,
-                                        map='MT',
-                                        measure='all_std',
-                                        y_min=0,
-                                        y_max=0.2,
-                                        cmap='jet',
-                                        cmap_min=0.0,
-                                        cmap_max=200.0,
-                                        ax=ax_list[1, 0],
-                                        figure=big_fig)
-                                        
-    ax_list[1, 1] = violin_mt_depths(measure_dict,
-                                        map='synthetic',
-                                        measure='all_std',
-                                        y_min=0,
-                                        y_max=0.2,
-                                        cmap='jet',
-                                        cmap_min=0,
-                                        cmap_max=200.0,
-                                        ax=ax_list[1, 1],
-                                        figure=big_fig)
+    ax_list[1, 0] = violin_diff_depths_308(measure_dict,
+                                            map='MT',
+                                            measure='all_std',
+                                            y_min=0,
+                                            y_max=0.2,
+                                            cmap='jet',
+                                            cmap_min=0.0,
+                                            cmap_max=200.0,
+                                            ax=ax_list[1, 0],
+                                            figure=big_fig)
+                                            
+    ax_list[1, 1] = violin_diff_depths_308(measure_dict,
+                                            map='synthetic',
+                                            measure='all_std',
+                                            y_min=0,
+                                            y_max=0.2,
+                                            cmap='jet',
+                                            cmap_min=0,
+                                            cmap_max=200.0,
+                                            ax=ax_list[1, 1],
+                                            figure=big_fig)
                         
     # Nice tight layout
     big_fig.tight_layout()

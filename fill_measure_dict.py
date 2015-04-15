@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+'''
+measure_dict is a dictionary containing values for all 308 regions
+in the NSPN parcellation. The keys explain which measure exactly.
+'''
+
 import numpy as np
 import pandas as pd
 import os 
@@ -109,6 +114,9 @@ for filename, measure_name in zip(filename_list, measure_name_list):
     
     df = read_in_df(filename)
     
+    #-------------------------------------------------------------------------
+    # 308 regions
+    #-------------------------------------------------------------------------
     # MEAN
     measure_dict['{}_all_mean'.format(measure_name)] = df[aparc_names].mean(axis=0).values
 
@@ -140,3 +148,11 @@ for filename, measure_name in zip(filename_list, measure_name_list):
         measure_dict['{}_all_slope_ct_m_mask'.format(measure_name)] = m_mask_array
         measure_dict['{}_all_slope_ct_m_fdr_mask'.format(measure_name)] = m_fdr_mask_array
 
+    #-------------------------------------------------------------------------
+    # N subjects
+    #-------------------------------------------------------------------------
+    # MEAN
+    measure_dict['{}_global_mean'.format(measure_name)] = df['Global'].values
+
+    # STD
+    measure_dict['{}_global_std'.format(measure_name)] = df['Global_std'].values
