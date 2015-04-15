@@ -230,7 +230,7 @@ for parc in aparc 500.aparc lobesStrict; do
                     aparcstats2table --hemi ${hemi} \
                                         --subjects ${subjects[@]} \
                                         --parc ${parc}.${measure}_projdist${dist}_fromBoundary \
-                                        --meas thickness \
+                                        --meas ${stat} \
                                         -d comma \
                                         --common-parcs \
                                         --skip \
@@ -271,4 +271,14 @@ for parc in aparc 500.aparc lobesStrict; do
     done # Close stat loop
 done # Close parc loop
 
+# If there are any empty files delete them
+# otherwise they'll screw up the behaviour merge code
+for file in `ls -d ${data_dir}/FS_ROIS/*`; do
+
+    lines=(`cat ${file} | wc -l`)
+    
+    if [[ ${lines} == 0 ]]; then
+        rm ${file}
+    fi
+done
 
