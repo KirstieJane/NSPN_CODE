@@ -30,6 +30,22 @@ def read_in_df(data_file):
     
     df['Global'] = df[aparc_names].mean(axis=1)
 
+    # If there is a corresponding standard deviation
+    # file then read in the standard deviation!
+    std_data_file = data_file.replace('mean', 'std')
+    if os.path.isfile(std_data_file):
+        df_std = pd.read_csv(std_data_file, sep=',')
+        df_std = df_std[df_std.occ==0]
+        
+        df['Global_std'] = np.sqrt(np.average(df_std[aparc_names]**2, axis=1))
+        
+    std_data_file = data_file.replace('thickness', 'thicknessstd')
+    if os.path.isfile(std_data_file):
+        df_std = pd.read_csv(std_data_file, sep=',')
+        df_std = df_std[df_std.occ==0]
+        
+        df['Global_std'] = np.sqrt(np.average(df_std[aparc_names]**2, axis=1))
+
     return df
 
     
