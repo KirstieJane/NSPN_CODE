@@ -16,9 +16,9 @@ def read_in_df(data_file):
     # Only keep the first scan!
     df = df[df.occ==0]
 
-    data_cols = [ x.replace('_{}'.format('thickness'), '') for x in df.columns ]
+    data_cols = [ x.replace('_{}'.format('thicknessstd'), '') for x in df.columns ]
     df.columns = data_cols
-    data_cols = [ x.replace('{}_'.format('std'), '') for x in df.columns ]
+    data_cols = [ x.replace('_{}'.format('thickness'), '') for x in df.columns ]
     df.columns = data_cols
         
     # Define a few variables you want
@@ -41,9 +41,9 @@ def read_in_df(data_file):
         df_std = pd.read_csv(std_data_file, sep=',')
         df_std = df_std[df_std.occ==0]
         
-        data_cols = [ x.replace('_{}'.format('thickness'), '') for x in df_std.columns ]
+        data_cols = [ x.replace('_{}'.format('thicknessstd'), '') for x in df_std.columns ]
         df_std.columns = data_cols
-        data_cols = [ x.replace('{}_'.format('std'), '') for x in df.columns ]
+        data_cols = [ x.replace('_{}'.format('thickness'), '') for x in df_std.columns ]
         df_std.columns = data_cols
     
         df['Global_std'] = np.sqrt(np.average(df_std[aparc_names]**2, axis=1))
