@@ -42,10 +42,11 @@ mkdir -p ${data_dir}/FS_ROIS/
 # SEGMENTATIONS
 #=============================================================================
 # Loop through the various segmentations
-for seg in aseg wmparc lobesStrict 500cortExpConsecWMoverlap 500cortConsec; do
-#for seg in aseg; do
+#for seg in aseg wmparc lobesStrict 500cortExpConsecWMoverlap 500cortConsec; do
+for seg in aseg; do
     
-    for measure in R1 MT R2s A FA MD MO L1 L23 sse; do
+    #for measure in R1 MT R2s A FA MD MO L1 L23 sse; do
+    for measure in MT; do
     
         # Find all the individual stats files for that segmentation
         inputs=(`ls -d ${data_dir}/SUB_DATA/*/SURFER/MRI?/stats/${measure}_${seg}.stats 2> /dev/null `)
@@ -171,8 +172,8 @@ for parc in aparc 500.aparc lobesStrict; do
         fi
         
         # Now loop through all the measures
-        for measure in R1 MT R2s A FA MD MO L1 L23 sse synthetic; do
-        #for measure in MT synthetic; do
+        #for measure in R1 MT R2s A FA MD MO L1 L23 sse synthetic; do
+        for measure in MT synthetic; do
                 
             for frac in `seq -f %+02.2f -1 0.05 1`; do
             
