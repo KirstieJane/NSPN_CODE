@@ -109,7 +109,7 @@ for i in np.arange(0.0,110,10):
     measure_name_list += [ 'synthetic_projfrac{:+04.0f}'.format(i) ]
     
 ### ABSOLUTE DEPTHS FROM BOUNDARY
-for i in np.arange(-20,-101,-20):
+for i in np.arange(-20,-201,-20):
     
     # MT
     filename_list += [ os.path.join(data_dir, 
