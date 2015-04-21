@@ -460,7 +460,9 @@ def create_violin_data(measure_dict, map='MT', measure='all_slope_age', cmap='Rd
 
         if np.mean(m_array) > 10:
             df['{}'.format(i)] = m_array/1000.0
-        
+        else:
+            df['{}'.format(i)] = m_array
+            
         color_list += [scalarMap.to_rgba(np.mean(df['{}'.format(i)]))]
 
     return df, color_list
@@ -547,6 +549,7 @@ def figure_1(graph_dict, figures_dir, n=10):
         G = graph_dict['{}_covar_{}_{}_COST_{:02.0f}'.format(measure, covars, group, cost)]
         G_edge = graph_dict['{}_covar_{}_{}_COST_{:02.0f}'.format(measure, covars, group, 2)]
         
+        '''
         #==== SHOW THE AXIAL VIEW =====-=======================
         figure_name = os.path.join(figures_dir, 
                                         '{}_covar_{}_{}_sagittalnetwork_COST_{:02.0f}.png'.format(measure,
@@ -560,7 +563,7 @@ def figure_1(graph_dict, figures_dir, n=10):
         ax_list[0, i] = plot_sagittal_network(G, G_edge, sagittal_pos, axial_pos, 
                                                 integer_adjust=0.1, fractional_adjust=100.0/cost, cmap_name='jet',
                                                 ax=ax_list[0, i])
-        
+        '''
         #==== SET UP RANDOM GRAPH =====-=======================
         # Start by creating n random graphs
         R_list = []
@@ -573,8 +576,8 @@ def figure_1(graph_dict, figures_dir, n=10):
                                                                                                     covars, 
                                                                                                     group.upper(), 
                                                                                                     cost))
-        plot_degree_dist(G, figure_name=figure_name, x_max=150, y_max=0.1, color=sns.color_palette()[0])
-        ax_list[1, i] = plot_degree_dist(G, ax=ax_list[1, i], x_max=150, y_max=0.1, color=sns.color_palette()[0])
+        plot_degree_dist(G, figure_name=figure_name, x_max=100, y_max=0.1, color=sns.color_palette()[0])
+        ax_list[1, i] = plot_degree_dist(G, ax=ax_list[1, i], x_max=100, y_max=0.1, color=sns.color_palette()[0])
 
         #============= RICH CLUB ==============================
         figure_name = os.path.join(figures_dir, 
@@ -583,8 +586,8 @@ def figure_1(graph_dict, figures_dir, n=10):
                                                                                                     group.upper(), 
                                                                                                     cost))
         deg, rc, rc_rand = rich_club(G, R_list, n=n)
-        plot_rich_club(rc, rc_rand, figure_name=figure_name, x_max=150, y_max=1.2, color=sns.color_palette()[0])    
-        ax_list[2, i] = plot_rich_club(rc, rc_rand, ax=ax_list[2, i], x_max=150, y_max=1.2, color=sns.color_palette()[0])    
+        plot_rich_club(rc, rc_rand, figure_name=figure_name, x_max=100, y_max=1.2, color=sns.color_palette()[0])    
+        ax_list[2, i] = plot_rich_club(rc, rc_rand, ax=ax_list[2, i], x_max=100, y_max=1.2, color=sns.color_palette()[0])    
         
         #============= NETWORK MEASURES =======================
         figure_name = os.path.join(figures_dir, 
@@ -595,8 +598,6 @@ def figure_1(graph_dict, figures_dir, n=10):
         measures_dict = calculate_network_measures(G, R_list, n=n)
         plot_network_measures(measures_dict, figure_name=figure_name, y_max=2.5, y_min=-0.5, color=sns.color_palette()[0])
         ax_list[3, i] = plot_network_measures(measures_dict, ax=ax_list[3, i], y_max=2.5, y_min=-0.5, color=sns.color_palette()[0])
-
-        
         
     # Get rid of y axis labels for columns that aren't on the left side
     [ a.set_ylabel('') for a in ax_list[:,1:].reshape(-1) ]
@@ -920,59 +921,82 @@ def figure_3(graph_dict, pc_dict, measures_dict, figures_dir):
     
 def partial_volume_fig(measure_dict, figures_dir):
 
-    big_fig, ax_list = plt.subplots(2, 2, figsize=(20, 20), facecolor='white')
+    big_fig, ax_list = plt.subplots(3, 2, figsize=(20, 20), facecolor='white')
         
     #==== SHOW MEAN MT AT DIFFERENT DEPTHS ======================                            
     ax_list[0, 0] = violin_mt_depths(measure_dict,
                                         map='MT',
-                                        measure='all_mean',
+                                        measure='global_mean',
                                         y_min=0,
                                         y_max=2.0,
                                         cmap='jet',
                                         cmap_min=0,
-                                        cmap_max=2000.0,
+                                        cmap_max=2.0,
                                         ax=ax_list[0, 0],
                                         figure=big_fig)
                                         
     ax_list[0, 1] = violin_mt_depths(measure_dict,
                                         map='synthetic',
-                                        measure='all_mean',
+                                        measure='global_mean',
                                         y_min=0,
                                         y_max=2.0,
                                         cmap='jet',
                                         cmap_min=0,
-                                        cmap_max=2000.0,
+                                        cmap_max=2.0,
                                         ax=ax_list[0, 1],
                                         figure=big_fig)
     
     #==== SHOW STD AT DIFFERENT DEPTHS ======================                            
     ax_list[1, 0] = violin_mt_depths(measure_dict,
                                         map='MT',
-                                        measure='all_std',
+                                        measure='global_std',
                                         y_min=0,
-                                        y_max=0.2,
+                                        y_max=0.6,
                                         cmap='jet',
                                         cmap_min=0.0,
-                                        cmap_max=200.0,
+                                        cmap_max=0.6,
                                         ax=ax_list[1, 0],
                                         figure=big_fig)
                                         
     ax_list[1, 1] = violin_mt_depths(measure_dict,
                                         map='synthetic',
-                                        measure='all_std',
+                                        measure='global_std',
                                         y_min=0,
-                                        y_max=0.2,
+                                        y_max=0.6,
                                         cmap='jet',
                                         cmap_min=0,
-                                        cmap_max=200.0,
+                                        cmap_max=0.6,
                                         ax=ax_list[1, 1],
                                         figure=big_fig)
                         
+    #==== SHOW CORR W AGE AT DIFFERENT DEPTHS ======================                            
+    ax_list[2, 0] = violin_mt_depths(measure_dict,
+                                        map='MT',
+                                        measure='all_slope_age',
+                                        y_min=-0.010,
+                                        y_max=0.015,
+                                        cmap='PRGn',
+                                        cmap_min=-0.015,
+                                        cmap_max=0.015,
+                                        ax=ax_list[2, 0],
+                                        figure=big_fig)
+                                        
+    ax_list[2, 1] = violin_mt_depths(measure_dict,
+                                        map='synthetic',
+                                        measure='all_slope_age',
+                                        y_min=-0.010,
+                                        y_max=0.015,
+                                        cmap='PRGn',
+                                        cmap_min=-0.015,
+                                        cmap_max=0.015,
+                                        ax=ax_list[2, 1],
+                                        figure=big_fig)
+
     # Nice tight layout
     big_fig.tight_layout()
     
     # Save the figure
-    filename = os.path.join(figures_dir, 'PartialVolumeFig.png')
+    filename = os.path.join(figures_dir, 'PartialVolumeFig_AcrossParticipants.png')
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
     
     plt.close()
