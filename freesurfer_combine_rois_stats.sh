@@ -122,7 +122,6 @@ for parc in aparc 500.aparc lobesStrict; do
                                 --parc ${parc} \
                                 --meas ${measure} \
                                 -d comma \
-                                --all-parcs \
                                 --skip \
                                 -t ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temp2.csv 
                                 
@@ -184,7 +183,6 @@ for parc in aparc 500.aparc lobesStrict; do
                                         --parc ${parc}.${measure}_projfrac${frac} \
                                         --meas ${stat} \
                                         -d comma \
-                                        --all-parcs \
                                         --skip \
                                         -t ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_projfrac${frac}_${stat_name}_${hemi}_temptemp.csv 
                                         
@@ -231,7 +229,6 @@ for parc in aparc 500.aparc lobesStrict; do
                                         --parc ${parc}.${measure}_projdist${dist}_fromBoundary \
                                         --meas ${stat} \
                                         -d comma \
-                                        --all-parcs \
                                         --skip \
                                         -t ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_projdist${dist}_fromBoundary_${stat_name}_${hemi}_temptemp.csv 
                                         
