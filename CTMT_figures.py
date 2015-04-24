@@ -955,7 +955,7 @@ def partial_volume_fig(measure_dict, figures_dir):
                                         cmap='jet',
                                         cmap_min=0.0,
                                         cmap_max=0.6,
-                                        ax=ax_list[, 1],
+                                        ax=ax_list[0, 1],
                                         figure=big_fig)
                                         
     ax_list[1, 1] = violin_mt_depths(measure_dict,
