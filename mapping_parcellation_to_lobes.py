@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import argparse
+
 #=============================================================================
 # Set up the argparser so you can read arguments from the command line
 #=============================================================================
@@ -9,7 +11,7 @@ def setup_argparser():
     '''
     
     # Build a basic parser.
-    help_text = ( 'Map the name of a region to the appropriate freesurfer lobe 
+    help_text = ( 'Map the name of a region to the appropriate freesurfer lobe \
                    as defined in https://surfer.nmr.mgh.harvard.edu/fswiki/CorticalParcellation')
     
     sign_off = 'Author: Kirstie Whitaker <kw401@cam.ac.uk>'
@@ -45,7 +47,7 @@ names = [ line.strip() for line in open(arguments.names_file) ]
 
 # Create a list of blanks for the lobes
 # (you'll fill this in in a second)
-lobes = ['.']*len(aparc_names)
+lobes = ['.']*len(names)
 
 
 #=============================================================================
@@ -86,8 +88,8 @@ for i, name in enumerate(names):
 #=============================================================================
 # Save the lobes list
 #=============================================================================
-with open(lobes_file, 'w') as f:
-    f.write("\n".join(arguments.lobes))
+with open(arguments.lobes_file, 'w') as f:
+    f.write("\n".join(lobes))
     
     
 #=============================================================================

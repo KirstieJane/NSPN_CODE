@@ -401,7 +401,7 @@ def create_violin_labels():
     labels_list = []
     
     # Create a list of all the depths you care about
-    depth_list = np.hstack([np.arange(100,-1,-10), np.arange(-20, -201, -20)])
+    depth_list = np.hstack([np.arange(100,-1,-10), np.arange(-20, -101, -20)])
 
     # Loop through all the depths
     for i in depth_list:
@@ -447,7 +447,7 @@ def create_violin_data(measure_dict, map='MT', measure='all_slope_age', cmap='Rd
     scalarMap = mpl.cm.ScalarMappable(norm=cNorm, cmap=cm)
 
     # Create a list of all the depths you care about
-    depth_list = np.hstack([np.arange(100,-1,-10), np.arange(-20, -201, -20)])
+    depth_list = np.hstack([np.arange(100,-1,-10), np.arange(-20, -101, -20)])
     
     # Loop through all the depths
     for i in depth_list:
