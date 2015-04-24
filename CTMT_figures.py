@@ -921,7 +921,7 @@ def figure_3(graph_dict, pc_dict, measures_dict, figures_dir):
     
 def partial_volume_fig(measure_dict, figures_dir):
 
-    big_fig, ax_list = plt.subplots(2, 4, figsize=(20, 40), facecolor='white')
+    big_fig, ax_list = plt.subplots(2, 4, figsize=(40, 20), facecolor='white')
         
     #==== SHOW MEAN MT AT DIFFERENT DEPTHS ======================                            
     ax_list[0, 0] = violin_mt_depths(measure_dict,
@@ -1023,3 +1023,22 @@ def partial_volume_fig(measure_dict, figures_dir):
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
     
     plt.close()
+    
+# MEAN MAGNETISATION TRANSFER ACROSS ALL PARTICIPANTS
+def all_mean_mt(measure_dict, figures_dir):
+
+    figure_name = os.path.join(figures_dir, 
+                                    'MT_projfrac+030_all_mean_DifferentDepths.png')
+                                    
+    fig, ax = plt.subplots(figsize=(10, 8), facecolor='white')
+
+    violin_mt_depths(measure_dict,
+                        measure='all_mean',
+                        y_min=0,
+                        y_max=2.0,
+                        cmap='jet',
+                        cmap_min=0,
+                        cmap_max=2.0,
+                        figure_name=figure_name,
+                        figure=fig,
+                        ax=ax)
