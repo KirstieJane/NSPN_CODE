@@ -31,7 +31,46 @@ def read_in_df(data_file, aparc_names):
         df[aparc_names] = df[aparc_names]/1000.0
         
     return df
+
+def permutation_correlation(x_orig, y_orig, n_perm=1000):
     
+    # Make a copy of the original data
+    # because the shuffle command does this in place
+    # and we don't want any mistakes!
+    x = np.copy(x_orig)
+    y = np.copy(y_orig)
+    
+    # Run the unpermuted correlation
+    m, c, r, p, sterr = linregress(x, y)
+    
+    # Create an m_array that will hold the shuffled
+    # slope values
+    m_array = np.ones([n_perm])
+    
+    # Now loop through all the shuffles and calculate
+    # the regression for each, saving the slopes in the
+    # m_array you created above
+    for i in range(n_perm):
+        np.random.shuffle(y)
+        m_shuff, c_shuff, r_shuff, p_shuff, sterr_shuff = linregress(x, y)
+        m_array[i] = m_shuff
+    
+    # If the true slope is positive then we want to look
+    # for the proportion of shuffled slopes that are
+    # larger than the true slope
+    if m < 0:
+        perm_p = len(m_array[m_array<m])/np.float(n_perm)
+    # If the true slope is negative then we want to look
+    # for the proportion of shuffled slopes that are
+    # *more negative* than the true slope
+    if m > 0:
+        perm_p = len(m_array[m_array>m])/np.float(n_perm)
+    
+    # We're doing a 2 tailed test so we have to multiply
+    # the perm_p value by 2
+    perm_p = perm_p*2.0
+    
+    return m, c, r, p, sterr, perm_p
 
 # Define the data directory
 #data_dir=os.path.join('/scratch', 'kw401', 'UCHANGE_INTERIM')
@@ -81,11 +120,11 @@ table_file_34 = os.path.join(data_dir, 'CT_MT_ANALYSES', 'TABLES', '34_regions.c
 
 # Create a header for the table
 header = [ 'Lobe', 'Region', 'Hemisphere', 
-            'Mean CT (SD)', 'Slope CT with age (x10-3)', 'p',
-            'Mean MTall (SD)', 'Slope MTall with age (x10-3)', 'p',
-            'Mean MT70 (SD)', 'Slope MT70 with age (x10-3)', 'p',
-            'Slope CT with MTall', 'p',
-            'Slope CT with MT70', 'p',
+            'Mean CT (SD)', 'Slope CT with age (x10-3)', 'perm_p',
+            'Mean MTall (SD)', 'Slope MTall with age (x10-3)', 'perm_p',
+            'Mean MT70 (SD)', 'Slope MT70 with age (x10-3)', 'perm_p',
+            'Slope CT with MTall', 'perm_p',
+            'Slope CT with MT70', 'perm_p',
             'N Sub Regions', 'Degree' ]
 
 with open(table_file_308, 'w') as f:
@@ -122,11 +161,11 @@ for roi in aparc_names:
             table_list += [ '{:2.2f} ({:2.2f})'.format(mean, sd) ]
         
         # Find the correlation with age the average within each region
-        m, c, r, p, sterr = linregress(df['age_scan'], df[roi])
-        if p < 0.001:
-            p = '<0.001'
+        m, c, r, p, sterr, perm_p = permutation_correlation(df['age_scan'].values, df[roi].values)
+        if perm_p < 0.001:
+            perm_p = '<0.001'
         else:
-            p = '{:2.3f}'.format(p)
+            perm_p = '{:2.3f}'.format(perm_p)
         
         # Multiply all the values by 1000 so that they print out sensibly
         m = m * 1000.0
@@ -134,27 +173,27 @@ for roi in aparc_names:
         # Change the number of decimal places according to
         # the mean measure
         if mean < 1:
-            table_list += [ '{:2.2f}'.format(m), '{}'.format(p) ]
+            table_list += [ '{:2.2f}'.format(m), '{}'.format(perm_p) ]
         else:
-            table_list += [ '{:2.1f}'.format(m), '{}'.format(p) ]
+            table_list += [ '{:2.1f}'.format(m), '{}'.format(perm_p) ]
         
     # Correlation between mean CT and mean MTall
-    m, c, r, p, sterr = linregress(ct_df[roi], mt_df[roi])
-    if p < 0.001:
-        p = '<0.001'
+    m, c, r, p, sterr, perm_p = permutation_correlation(ct_df[roi].values, mt_df[roi].values)
+    if perm_p < 0.001:
+        perm_p = '<0.001'
     else:
-        p = '{:2.3f}'.format(p)
-    
-    table_list += [ '{:2.3f}'.format(m), '{}'.format(p) ]
+        perm_p = '{:2.3f}'.format(perm_p)
+            
+    table_list += [ '{:2.3f}'.format(m), '{}'.format(perm_p) ]
     
     # Correlation between mean CT and mean MT70
-    m, c, r, p, sterr = linregress(ct_df[roi], mt70_df[roi])
-    if p < 0.001:
-        p = '<0.001'
+    m, c, r, p, sterr, perm_p = permutation_correlation(ct_df[roi].values, mt70_df[roi].values)
+    if perm_p < 0.001:
+        perm_p = '<0.001'
     else:
-        p = '{:2.3f}'.format(p)
-    
-    table_list += [ '{:2.3f}'.format(m), '{}'.format(p) ]
+        perm_p = '{:2.3f}'.format(perm_p)
+            
+    table_list += [ '{:2.3f}'.format(m), '{}'.format(perm_p) ]
     
     # This isn't a combination across any regions
     # so the number of sub regions is always 1
@@ -179,11 +218,11 @@ for roi in aparc_names:
 
 # Create a header for the table
 header = [ 'Lobe', 'Region', 'Hemisphere', 
-            'Mean CT (SD)', 'Slope CT with age (x10-3)', 'p',
-            'Mean MTall (SD)', 'Slope MTall with age (x10-3)', 'p',
-            'Mean MT70 (SD)', 'Slope MT70 with age (x10-3)', 'p',
-            'Slope CT with MTall', 'p',
-            'Slope CT with MT70', 'p',
+            'Mean CT (SD)', 'Slope CT with age (x10-3)', 'perm_p',
+            'Mean MTall (SD)', 'Slope MTall with age (x10-3)', 'perm_p',
+            'Mean MT70 (SD)', 'Slope MT70 with age (x10-3)', 'perm_p',
+            'Slope CT with MTall', 'perm_p',
+            'Slope CT with MT70', 'perm_p',
             'N Sub Regions', 'Degree' ]
 
 with open(table_file_68, 'w') as f:
@@ -229,40 +268,42 @@ for roi, hemi in it.product(region_list, hemi_list):
             table_list += [ '{:2.2f} ({:2.2f})'.format(mean, sd) ]
         
         # Find the correlation with age the average within each region
-        m, c, r, p, sterr = linregress(df['age_scan'], df[roi_list].mean(axis=1))
-        if p < 0.001:
-            p = '<0.001'
+        m, c, r, p, sterr, perm_p = permutation_correlation(df['age_scan'].values, df[roi_list].mean(axis=1).values)
+        if perm_p < 0.001:
+            perm_p = '<0.001'
         else:
-            p = '{:2.3f}'.format(p)
-        
+            perm_p = '{:2.3f}'.format(perm_p)
+                
         # Multiply all the values by 1000 so that they print out sensibly
         m = m * 1000.0
             
         # Change the number of decimal places according to
         # the mean measure
         if mean < 1:
-            table_list += [ '{:2.2f}'.format(m), '{}'.format(p) ]
+            table_list += [ '{:2.2f}'.format(m), '{}'.format(perm_p) ]
         else:
-            table_list += [ '{:2.1f}'.format(m), '{}'.format(p) ]
+            table_list += [ '{:2.1f}'.format(m), '{}'.format(perm_p) ]
         
     # Correlation between mean CT and mean MTall
-    m, c, r, p, sterr = linregress(ct_df[roi_list].mean(axis=1), mt_df[roi_list].mean(axis=1))
-    if p < 0.001:
-        p = '<0.001'
+    m, c, r, p, sterr, perm_p = permutation_correlation(ct_df[roi_list].mean(axis=1).values, 
+                                                            mt_df[roi_list].mean(axis=1).values)
+    if perm_p < 0.001:
+        perm_p = '<0.001'
     else:
-        p = '{:2.3f}'.format(p)
+        perm_p = '{:2.3f}'.format(perm_p)
     
-    table_list += [ '{:2.3f}'.format(m), '{}'.format(p) ]
+    table_list += [ '{:2.3f}'.format(m), '{}'.format(perm_p) ]
     
     # Correlation between mean CT and mean MT70
-    m, c, r, p, sterr = linregress(ct_df[roi_list].mean(axis=1), mt70_df[roi_list].mean(axis=1))
-    if p < 0.001:
-        p = '<0.001'
+    m, c, r, p, sterr, perm_p = permutation_correlation(ct_df[roi_list].mean(axis=1).values, 
+                                                            mt70_df[roi_list].mean(axis=1).values)
+    if perm_p < 0.001:
+        perm_p = '<0.001'
     else:
-        p = '{:2.3f}'.format(p)
+        perm_p = '{:2.3f}'.format(perm_p)
     
-    table_list += [ '{:2.3f}'.format(m), '{}'.format(p) ]
-    
+    table_list += [ '{:2.3f}'.format(m), '{}'.format(perm_p) ]
+
     # Write out the number of sub parcellations this region has
     n = len(roi_list)
     
@@ -286,11 +327,11 @@ for roi, hemi in it.product(region_list, hemi_list):
 
 # Create a header for the table
 header = [ 'Lobe', 'Region', 
-            'Mean CT (SD)', 'Slope CT with age (x10-3)', 'p',
-            'Mean MTall (SD)', 'Slope MTall with age (x10-3)', 'p',
-            'Mean MT70 (SD)', 'Slope MT70 with age (x10-3)', 'p',
-            'Slope CT with MTall', 'p',
-            'Slope CT with MT70', 'p',
+            'Mean CT (SD)', 'Slope CT with age (x10-3)', 'perm_p',
+            'Mean MTall (SD)', 'Slope MTall with age (x10-3)', 'perm_p',
+            'Mean MT70 (SD)', 'Slope MT70 with age (x10-3)', 'perm_p',
+            'Slope CT with MTall', 'perm_p',
+            'Slope CT with MT70', 'perm_p',
             'N Sub Regions', 'Degree' ]
 
 with open(table_file_34, 'w') as f:
@@ -311,7 +352,7 @@ for roi in region_list:
         
         # Make a list of regions in the 500 parcellation
         # that correspond to each region in the D-K parcellation
-        roi_list = [ x for x in aparc_names if roi in x ]
+        roi_list = [ x for x in aparc_names if roi in x and hemi in x ]
         
         # Get the mean of the mean value for each sub parcellation
         # of the aparc region
@@ -336,40 +377,42 @@ for roi in region_list:
             table_list += [ '{:2.2f} ({:2.2f})'.format(mean, sd) ]
         
         # Find the correlation with age the average within each region
-        m, c, r, p, sterr = linregress(df['age_scan'], df[roi_list].mean(axis=1))
-        if p < 0.001:
-            p = '<0.001'
+        m, c, r, p, sterr, perm_p = permutation_correlation(df['age_scan'].values, df[roi_list].mean(axis=1).values)
+        if perm_p < 0.001:
+            perm_p = '<0.001'
         else:
-            p = '{:2.3f}'.format(p)
-
+            perm_p = '{:2.3f}'.format(perm_p)
+                
         # Multiply all the values by 1000 so that they print out sensibly
         m = m * 1000.0
             
         # Change the number of decimal places according to
         # the mean measure
         if mean < 1:
-            table_list += [ '{:2.2f}'.format(m), '{}'.format(p) ]
+            table_list += [ '{:2.2f}'.format(m), '{}'.format(perm_p) ]
         else:
-            table_list += [ '{:2.1f}'.format(m), '{}'.format(p) ]
+            table_list += [ '{:2.1f}'.format(m), '{}'.format(perm_p) ]
         
     # Correlation between mean CT and mean MTall
-    m, c, r, p, sterr = linregress(ct_df[roi_list].mean(axis=1), mt_df[roi_list].mean(axis=1))
-    if p < 0.001:
-        p = '<0.001'
+    m, c, r, p, sterr, perm_p = permutation_correlation(ct_df[roi_list].mean(axis=1).values, 
+                                                            mt_df[roi_list].mean(axis=1).values)
+    if perm_p < 0.001:
+        perm_p = '<0.001'
     else:
-        p = '{:2.3f}'.format(p)
+        perm_p = '{:2.3f}'.format(perm_p)
     
-    table_list += [ '{:2.3f}'.format(m), '{}'.format(p) ]
+    table_list += [ '{:2.3f}'.format(m), '{}'.format(perm_p) ]
     
     # Correlation between mean CT and mean MT70
-    m, c, r, p, sterr = linregress(ct_df[roi_list].mean(axis=1), mt70_df[roi_list].mean(axis=1))
-    if p < 0.001:
-        p = '<0.001'
+    m, c, r, p, sterr, perm_p = permutation_correlation(ct_df[roi_list].mean(axis=1).values, 
+                                                            mt70_df[roi_list].mean(axis=1).values)
+    if perm_p < 0.001:
+        perm_p = '<0.001'
     else:
-        p = '{:2.3f}'.format(p)
-        
-    table_list += [ '{:2.3f}'.format(m), '{}'.format(p) ]
+        perm_p = '{:2.3f}'.format(perm_p)
     
+    table_list += [ '{:2.3f}'.format(m), '{}'.format(perm_p) ]
+
     # Write out the number of sub parcellations this region has
     n = len(roi_list)
     

@@ -468,7 +468,7 @@ def create_violin_data(measure_dict, map='MT', measure='all_slope_age', cmap='Rd
     return df, color_list
 
 
-def violin_mt_depths(measure_dict, map='MT', measure='all_slope_age', cmap='PRGn', cmap_min=-7, cmap_max=7, y_max=None, y_min=None, figure_name=None, ax=None, figure=None):
+def violin_mt_depths(measure_dict, map='MT', measure='all_slope_age', cmap='PRGn', cmap_min=-7, cmap_max=7, y_max=None, y_min=None, figure_name=None, ax=None, figure=None, ylabel=None):
     '''
     INPUTS:
         data_dir --------- where the PARC_*_behavmerge.csv files are saved
@@ -504,7 +504,7 @@ def violin_mt_depths(measure_dict, map='MT', measure='all_slope_age', cmap='PRGn
     if np.isscalar(y_max) and np.isscalar(y_min):
         ax.set_ylim((y_min, y_max))
     
-    ax.ticklabel_format(axis='y', style='sci', scilimits=(-3,3))
+    ax.ticklabel_format(axis='y', style='sci', scilimits=(-2,2))
 
     # Make sure there aren't too many bins!
     ax.locator_params(axis='y', nbins=4)
@@ -514,9 +514,13 @@ def violin_mt_depths(measure_dict, map='MT', measure='all_slope_age', cmap='PRGn
 
     # Put a line at the grey white matter boundary
     # and another at y=0
-    ax.axvline(11, linewidth=0.5, color='black', linestyle='--')
-    ax.axhline(0, linewidth=0.5, color='black', linestyle='-')
+    ax.axvline(11, linewidth=1, color='black', linestyle='--')
+    ax.axhline(0, linewidth=1, color='black', linestyle='-')
 
+    # Set the y label if it's been given
+    if y_label:
+        ax.set_ylabel(y_label)
+        
     # Despine because we all agree it looks better that way
     sns.despine()
     
@@ -662,14 +666,14 @@ def figure_2(ct_data_file, mt_data_file, measure_dict, figures_dir):
     color=sns.color_palette('PRGn_r', 10)[1]
 
     pretty_scatter(df_mt['age_scan'], df_mt['Global']/1000, 
-                    x_label='Age (years)', y_label='Magnetisation Transfer', 
+                    x_label='Age (years)', y_label='Magnetisation Transfer (70%)', 
                     x_max=25, x_min=14, 
                     y_max=1.05, y_min=0.8, 
                     figure_name=figure_name,
                     color=color)
                             
     ax_list[1, 0] = pretty_scatter(df_mt['age_scan'], df_mt['Global']/1000, 
-                    x_label='Age (years)', y_label='Magnetisation Transfer', 
+                    x_label='Age (years)', y_label='Magnetisation Transfer (70%)', 
                     x_max=25, x_min=14, 
                     y_max=1.05, y_min=0.8, 
                     color=color,
@@ -685,18 +689,41 @@ def figure_2(ct_data_file, mt_data_file, measure_dict, figures_dir):
     color=sns.color_palette('PRGn', 10)[1]
 
     pretty_scatter(df_ct['Global'], df_mt['Global']/1000, 
-                    x_label='Cortical Thickness (mm)', y_label='Magnetisation Transfer', 
+                    x_label='Cortical Thickness (mm)', y_label='Magnetisation Transfer (70%)', 
                     x_max=30, x_min=2.4, 
                     y_max=1.05, y_min=0.8, 
                     figure_name=figure_name,
                     color=color)
                             
     ax_list[2, 0] = pretty_scatter(df_ct['Global'], df_mt['Global']/1000, 
-                    x_label='Cortical Thickness (mm)', y_label='Magnetisation Transfer', 
+                    x_label='Cortical Thickness (mm)', y_label='Magnetisation Transfer (70%)', 
                     x_max=3.0, x_min=2.4, 
                     y_max=1.05, y_min=0.8, 
                     color=color,
                     ax=ax_list[2, 0],
+                    figure=big_fig)
+    
+    #==== CORRELATE GLOBAL CT WITH DeltaCT =============================
+    figure_name = os.path.join(figures_dir, 
+                                    'Mean_CT_corr_slope_CT_age.png')
+
+    df_ct = read_in_df(ct_data_file)
+    
+    color=sns.color_palette('RdBu_r', 10)[1]
+
+    pretty_scatter(measure_dict['CT_all_mean'], measure_dict['CT_all_slope_age'],
+                    x_label='Cortical Thickness (mm)', y_label='Slope CT with age', 
+                    x_max=4.0, x_min=1.8, 
+                    y_max=0.04, y_min=-0.04, 
+                    figure_name=figure_name,
+                    color=color)
+                            
+    ax_list[0, 2] = pretty_scatter(measure_dict['CT_all_mean'], measure_dict['CT_all_slope_age'],
+                    x_label='Cortical Thickness (mm)', y_label='Slope CT with age', 
+                    x_max=4.0, x_min=1.8, 
+                    y_max=0.04, y_min=-0.04, 
+                    color=color,
+                    ax=ax_list[0, 2],
                     figure=big_fig)
     
     
@@ -707,13 +734,14 @@ def figure_2(ct_data_file, mt_data_file, measure_dict, figures_dir):
     violin_mt_depths(measure_dict,
                         measure='all_slope_age',
                         cmap='PRGn',
-                        y_max=0.015, y_min=-0.010, 
+                        y_max=15.0, y_min=-10.0, 
                         figure_name=figure_name)
                         
-    ax_list[2, 1] = violin_mt_depths(measure_dict,
+    ax_list[1, 2] = violin_mt_depths(measure_dict,
+                                        y_label='Slope MT(70%) with age',
                                         measure='all_slope_age',
-                                        y_max=0.015, y_min=-0.010, 
-                                        ax=ax_list[2, 1],
+                                        y_max=15.0, y_min=-10.0, 
+                                        ax=ax_list[1, 2],
                                         figure=big_fig)
     
     #==== SHOW CORR WITH CT AT DIFFERENT DEPTHS ======================
@@ -723,17 +751,18 @@ def figure_2(ct_data_file, mt_data_file, measure_dict, figures_dir):
     violin_mt_depths(measure_dict,
                         measure='all_slope_ct',
                         cmap='PRGn',
-                        y_min=-0.000007,
-                        y_max=0.000003,
+                        y_min=-0.007,
+                        y_max=0.003,
                         cmap_min=-0.003,
                         cmap_max=0.003,
                         figure_name=figure_name)
 
     ax_list[2, 2] = violin_mt_depths(measure_dict,
+                                        y_label='Slope MT(70%) with age',
                                         measure='all_slope_ct',
                                         cmap='PRGn',
-                                        y_min=-0.000007,
-                                        y_max=0.000003,
+                                        y_min=-0.007,
+                                        y_max=0.003,
                                         cmap_min=-0.003,
                                         cmap_max=0.003,
                                         ax=ax_list[2, 2],
@@ -1034,11 +1063,11 @@ def all_mean_mt(measure_dict, figures_dir):
 
     violin_mt_depths(measure_dict,
                         measure='all_mean',
-                        y_min=0,
+                        y_min=0.0,
                         y_max=2.0,
                         cmap='jet',
-                        cmap_min=0,
-                        cmap_max=2.0,
+                        cmap_min=0.2,
+                        cmap_max=1.8,
                         figure_name=figure_name,
                         figure=fig,
                         ax=ax)
