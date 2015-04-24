@@ -921,7 +921,7 @@ def figure_3(graph_dict, pc_dict, measures_dict, figures_dir):
     
 def partial_volume_fig(measure_dict, figures_dir):
 
-    big_fig, ax_list = plt.subplots(2, 4, figsize=(20, 20), facecolor='white')
+    big_fig, ax_list = plt.subplots(2, 4, figsize=(20, 40), facecolor='white')
         
     #==== SHOW MEAN MT AT DIFFERENT DEPTHS ======================                            
     ax_list[0, 0] = violin_mt_depths(measure_dict,
