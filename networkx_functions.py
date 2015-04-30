@@ -586,6 +586,7 @@ def calculate_network_measures(G, R_list=None, n=10):
     (unless otherwise stated)
     '''
     import networkx as nx
+    import numpy as np
     
     #==== SET UP ======================
     # Start by creating n random graphs

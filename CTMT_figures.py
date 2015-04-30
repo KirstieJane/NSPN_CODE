@@ -534,7 +534,9 @@ def violin_mt_depths(measure_dict, map='MT', measure='all_slope_age', cmap='PRGn
 
 def figure_1(graph_dict, figures_dir, n=10):
     
-    big_fig, ax_list = plt.subplots(5,4, figsize=(40, 31.5), facecolor='white', sharey='row')
+    import numpy as np
+    
+    big_fig, ax_list = plt.subplots(6,4, figsize=(40, 31.5), facecolor='white', sharey='row')
     
     cost_list = [ 5, 10, 15, 20 ]
     
@@ -550,7 +552,6 @@ def figure_1(graph_dict, figures_dir, n=10):
         G = graph_dict['{}_covar_{}_{}_COST_{:02.0f}'.format(measure, covars, group, cost)]
         G_edge = graph_dict['{}_covar_{}_{}_COST_{:02.0f}'.format(measure, covars, group, 2)]
         
-        '''
         #==== SHOW THE AXIAL VIEW =====-=======================
         figure_name = os.path.join(figures_dir, 
                                         '{}_covar_{}_{}_sagittalnetwork_COST_{:02.0f}.png'.format(measure,
@@ -564,7 +565,7 @@ def figure_1(graph_dict, figures_dir, n=10):
         ax_list[0, i] = plot_sagittal_network(G, G_edge, sagittal_pos, axial_pos, 
                                                 integer_adjust=0.1, fractional_adjust=100.0/cost, cmap_name='jet',
                                                 ax=ax_list[0, i])
-        '''
+        
         #==== SET UP RANDOM GRAPH =====-=======================
         # Start by creating n random graphs
         R_list = []
@@ -606,16 +607,16 @@ def figure_1(graph_dict, figures_dir, n=10):
                                                 x_max=100, x_min=0, 
                                                 y_max=0.5, y_min=-0.1, 
                                                 color='k',
-                                                ax=ax_list[0, 2],
+                                                ax=ax_list[4, i],
                                                 figure=big_fig)
                                                 
         #============= CORR DEGREE W/slope MT age =======================
-        ax_list[4, i] = pretty_scatter(G.degree().values(), measure_dict['MT_projfrac+030_all_slope_age']/1000.0, 
+        ax_list[5, i] = pretty_scatter(G.degree().values(), measure_dict['MT_projfrac+030_all_slope_age']/1000.0, 
                                                 x_label='Degree', y_label='Slope MT(70%) with CT', 
                                                 x_max=100, x_min=0, 
                                                 y_max=0.020, y_min=-0.010, 
                                                 color='k',
-                                                ax=ax_list[0, 2],
+                                                ax=ax_list[5, i],
                                                 figure=big_fig)
     
     # Get rid of y axis labels for columns that aren't on the left side
@@ -624,7 +625,7 @@ def figure_1(graph_dict, figures_dir, n=10):
     # RAAAANDOMLY - and I don't know why this is happening
     # set the x limits for the very last plot to those of the one
     # next to it - HMMMMMM
-    ax_list[3,i].set_xlim( ax_list[3,i-1].get_xlim() )
+    ax_list[5,i].set_xlim( ax_list[5,i-1].get_xlim() )
     
     # Nice tight layout
     big_fig.tight_layout()
