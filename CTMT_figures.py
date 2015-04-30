@@ -339,7 +339,7 @@ def pretty_scatter(x, y, x_label='x', y_label='y', x_max=None, x_min=None, y_max
         fig = figure
         
     # Create the linear regression plot
-    ax = sns.regplot(x_label, y_label, df, ci=95, ax=ax, color=color)
+    ax = sns.regplot(x_label, y_label, df, ci=95, ax=ax, color=color, scatter_kws={'s': 60})
     
     # Fix the x and y axis limits
     if np.isscalar(x_max) and np.isscalar(x_min):
@@ -353,7 +353,7 @@ def pretty_scatter(x, y, x_label='x', y_label='y', x_max=None, x_min=None, y_max
     ax.locator_params(axis='y', nbins=4)
     
     # Put a line at y = 0
-    ax.axhline(0, linewidth=0.5, color='black', linestyle='--')
+    ax.axhline(0, linewidth=1, color='black', linestyle='--')
 
     # Despine because we all agree it looks better that way
     sns.despine()
@@ -458,10 +458,7 @@ def create_violin_data(measure_dict, map='MT', measure='all_slope_age', cmap='Rd
         else:
             m_array = measure_dict['{}_projdist{:+04.0f}_{}'.format(map, i, measure)]
 
-        if np.mean(m_array) > 10:
-            df['{}'.format(i)] = m_array/1000.0
-        else:
-            df['{}'.format(i)] = m_array
+        df['{}'.format(i)] = m_array/1000.0
             
         color_list += [scalarMap.to_rgba(np.mean(df['{}'.format(i)]))]
 
@@ -518,8 +515,8 @@ def violin_mt_depths(measure_dict, map='MT', measure='all_slope_age', cmap='PRGn
     ax.axhline(0, linewidth=1, color='black', linestyle='-')
 
     # Set the y label if it's been given
-    if y_label:
-        ax.set_ylabel(y_label)
+    if ylabel:
+        ax.set_ylabel(ylabel)
         
     # Despine because we all agree it looks better that way
     sns.despine()
@@ -536,8 +533,8 @@ def violin_mt_depths(measure_dict, map='MT', measure='all_slope_age', cmap='PRGn
         return ax
 
 def figure_1(graph_dict, figures_dir, n=10):
-
-    big_fig, ax_list = plt.subplots(4,4, figsize=(40, 25.2), facecolor='white', sharey='row')
+    
+    big_fig, ax_list = plt.subplots(5,4, figsize=(40, 31.5), facecolor='white', sharey='row')
     
     cost_list = [ 5, 10, 15, 20 ]
     
@@ -549,7 +546,7 @@ def figure_1(graph_dict, figures_dir, n=10):
         
         key = '{}_covar_{}_{}_COST_{:02.0f}'.format(measure, covars, group, cost)
         print key
-
+        
         G = graph_dict['{}_covar_{}_{}_COST_{:02.0f}'.format(measure, covars, group, cost)]
         G_edge = graph_dict['{}_covar_{}_{}_COST_{:02.0f}'.format(measure, covars, group, 2)]
         
@@ -573,7 +570,7 @@ def figure_1(graph_dict, figures_dir, n=10):
         R_list = []
         for _ in range(n):
             R_list += [ random_graph(G) ]
-
+        
         #============= DEGREE DISTRIBUTION ====================
         figure_name = os.path.join(figures_dir, 
                                         '{}_covar_{}_{}_degreesKDE_COST_{:02.0f}.png'.format(measure,
@@ -582,7 +579,7 @@ def figure_1(graph_dict, figures_dir, n=10):
                                                                                                     cost))
         plot_degree_dist(G, figure_name=figure_name, x_max=100, y_max=0.1, color=sns.color_palette()[0])
         ax_list[1, i] = plot_degree_dist(G, ax=ax_list[1, i], x_max=100, y_max=0.1, color=sns.color_palette()[0])
-
+    
         #============= RICH CLUB ==============================
         figure_name = os.path.join(figures_dir, 
                                         '{}_covar_{}_{}_richclub_COST_{:02.0f}.png'.format(measure,
@@ -591,7 +588,7 @@ def figure_1(graph_dict, figures_dir, n=10):
                                                                                                     cost))
         deg, rc, rc_rand = rich_club(G, R_list, n=n)
         plot_rich_club(rc, rc_rand, figure_name=figure_name, x_max=100, y_max=1.2, color=sns.color_palette()[0])    
-        ax_list[2, i] = plot_rich_club(rc, rc_rand, ax=ax_list[2, i], x_max=100, y_max=1.2, color=sns.color_palette()[0])    
+        ax_list[2, i] = plot_rich_club(rc, rc_rand, ax=ax_list[2, i], x_max=100, y_max=1.2, color=sns.color_palette()[0])
         
         #============= NETWORK MEASURES =======================
         figure_name = os.path.join(figures_dir, 
@@ -603,6 +600,24 @@ def figure_1(graph_dict, figures_dir, n=10):
         plot_network_measures(measures_dict, figure_name=figure_name, y_max=2.5, y_min=-0.5, color=sns.color_palette()[0])
         ax_list[3, i] = plot_network_measures(measures_dict, ax=ax_list[3, i], y_max=2.5, y_min=-0.5, color=sns.color_palette()[0])
         
+        #============= CORR DEGREE W/slope CT age =======================
+        ax_list[4, i] = pretty_scatter(G.degree().values(), measure_dict['CT_all_slope_age'], 
+                                                x_label='Degree', y_label='Slope MT(70%) with CT', 
+                                                x_max=100, x_min=0, 
+                                                y_max=0.5, y_min=-0.1, 
+                                                color='k',
+                                                ax=ax_list[0, 2],
+                                                figure=big_fig)
+                                                
+        #============= CORR DEGREE W/slope MT age =======================
+        ax_list[4, i] = pretty_scatter(G.degree().values(), measure_dict['MT_projfrac+030_all_slope_age']/1000.0, 
+                                                x_label='Degree', y_label='Slope MT(70%) with CT', 
+                                                x_max=100, x_min=0, 
+                                                y_max=0.020, y_min=-0.010, 
+                                                color='k',
+                                                ax=ax_list[0, 2],
+                                                figure=big_fig)
+    
     # Get rid of y axis labels for columns that aren't on the left side
     [ a.set_ylabel('') for a in ax_list[:,1:].reshape(-1) ]
     
@@ -625,32 +640,31 @@ def figure_1(graph_dict, figures_dir, n=10):
                         weight='bold')
                         
     # Save the figure
-    filename = os.path.join(figures_dir, 'Figure1.png')
+    filename = os.path.join(figures_dir, 'SuppFigure1.png')
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
     
     plt.close()
 
 def figure_2(ct_data_file, mt_data_file, measure_dict, figures_dir):
-
+    
     big_fig, ax_list = plt.subplots(3,3, figsize=(30, 18), facecolor='white')
     
     #==== CORRELATE GLOBAL CT WITH AGE =============================
-    figure_name = os.path.join(figures_dir, 
-                                    'Global_CT_corr_Age.png'.format(measure))
-
+    figure_name = os.path.join(figures_dir, 'Global_CT_corr_Age.png')
+    
     df_ct = read_in_df(ct_data_file)
     
     color=sns.color_palette('RdBu_r', 10)[1]
     
     pretty_scatter(df_ct['age_scan'], df_ct['Global'], 
-                    x_label='Age (years)', y_label='Cortical Thickness (mm)', 
+                    x_label='Age (years)', y_label='Cortical Thickness\n(mm)', 
                     x_max=25, x_min=14, 
                     y_max=3.0, y_min=2.4, 
                     figure_name=figure_name,
                     color=color)
                             
     ax_list[0, 0] = pretty_scatter(df_ct['age_scan'], df_ct['Global'], 
-                    x_label='Age (years)', y_label='Cortical Thickness (mm)', 
+                    x_label='Age (years)', y_label='Cortical Thickness\n(mm)', 
                     x_max=25, x_min=14, 
                     y_max=3.0, y_min=2.4, 
                     color=color,
@@ -660,43 +674,43 @@ def figure_2(ct_data_file, mt_data_file, measure_dict, figures_dir):
     #==== CORRELATE GLOBAL MT(70) WITH AGE =============================
     figure_name = os.path.join(figures_dir, 
                                     'Global_MT_projfrac+030_corr_Age.png')
-
+    
     df_mt = read_in_df(mt_data_file)
     
     color=sns.color_palette('PRGn_r', 10)[1]
-
+    
     pretty_scatter(df_mt['age_scan'], df_mt['Global']/1000, 
-                    x_label='Age (years)', y_label='Magnetisation Transfer (70%)', 
+                    x_label='Age (years)', y_label='Magnetisation Transfer\nat 70% cortical depth', 
                     x_max=25, x_min=14, 
                     y_max=1.05, y_min=0.8, 
                     figure_name=figure_name,
                     color=color)
                             
     ax_list[1, 0] = pretty_scatter(df_mt['age_scan'], df_mt['Global']/1000, 
-                    x_label='Age (years)', y_label='Magnetisation Transfer (70%)', 
+                    x_label='Age (years)', y_label='Magnetisation Transfer\nat 70% cortical depth', 
                     x_max=25, x_min=14, 
                     y_max=1.05, y_min=0.8, 
                     color=color,
                     ax=ax_list[1, 0],
                     figure=big_fig)
-
+    
     #==== CORRELATE GLOBAL MT(70) WITH CT =============================
     figure_name = os.path.join(figures_dir, 
                                     'Global_MT_projfrac+030_corr_CT.png')
-
+    
     df_mt = read_in_df(mt_data_file)
     
     color=sns.color_palette('PRGn', 10)[1]
-
+    
     pretty_scatter(df_ct['Global'], df_mt['Global']/1000, 
-                    x_label='Cortical Thickness (mm)', y_label='Magnetisation Transfer (70%)', 
+                    x_label='Cortical Thickness (mm)', y_label='Magnetisation Transfer\nat 70% cortical depth', 
                     x_max=30, x_min=2.4, 
                     y_max=1.05, y_min=0.8, 
                     figure_name=figure_name,
                     color=color)
                             
     ax_list[2, 0] = pretty_scatter(df_ct['Global'], df_mt['Global']/1000, 
-                    x_label='Cortical Thickness (mm)', y_label='Magnetisation Transfer (70%)', 
+                    x_label='Cortical Thickness (mm)', y_label='Magnetisation Transfer\nat 70% cortical depth', 
                     x_max=3.0, x_min=2.4, 
                     y_max=1.05, y_min=0.8, 
                     color=color,
@@ -706,11 +720,11 @@ def figure_2(ct_data_file, mt_data_file, measure_dict, figures_dir):
     #==== CORRELATE GLOBAL CT WITH DeltaCT =============================
     figure_name = os.path.join(figures_dir, 
                                     'Mean_CT_corr_slope_CT_age.png')
-
+    
     df_ct = read_in_df(ct_data_file)
     
     color=sns.color_palette('RdBu_r', 10)[1]
-
+    
     pretty_scatter(measure_dict['CT_all_mean'], measure_dict['CT_all_slope_age'],
                     x_label='Cortical Thickness (mm)', y_label='Slope CT with age', 
                     x_max=4.0, x_min=1.8, 
@@ -719,7 +733,7 @@ def figure_2(ct_data_file, mt_data_file, measure_dict, figures_dir):
                     color=color)
                             
     ax_list[0, 2] = pretty_scatter(measure_dict['CT_all_mean'], measure_dict['CT_all_slope_age'],
-                    x_label='Cortical Thickness (mm)', y_label='Slope CT with age', 
+                    x_label='Cortical Thickness (mm)', y_label='Slope CT with age\n', 
                     x_max=4.0, x_min=1.8, 
                     y_max=0.04, y_min=-0.04, 
                     color=color,
@@ -734,13 +748,15 @@ def figure_2(ct_data_file, mt_data_file, measure_dict, figures_dir):
     violin_mt_depths(measure_dict,
                         measure='all_slope_age',
                         cmap='PRGn',
-                        y_max=15.0, y_min=-10.0, 
+                        y_max=0.015, y_min=-0.010, 
+                        cmap_min=-0.007, cmap_max=0.007,
                         figure_name=figure_name)
                         
     ax_list[1, 2] = violin_mt_depths(measure_dict,
-                                        y_label='Slope MT(70%) with age',
+                                        ylabel='Slope MT(70%)\nwith age',
                                         measure='all_slope_age',
-                                        y_max=15.0, y_min=-10.0, 
+                                        y_max=0.015, y_min=-0.010, 
+                                        cmap_min=-0.007, cmap_max=0.007,
                                         ax=ax_list[1, 2],
                                         figure=big_fig)
     
@@ -751,23 +767,31 @@ def figure_2(ct_data_file, mt_data_file, measure_dict, figures_dir):
     violin_mt_depths(measure_dict,
                         measure='all_slope_ct',
                         cmap='PRGn',
-                        y_min=-0.007,
-                        y_max=0.003,
-                        cmap_min=-0.003,
-                        cmap_max=0.003,
+                        y_min=-0.000007,
+                        y_max=0.000003,
+                        cmap_min=-0.000003,
+                        cmap_max=0.000003,
                         figure_name=figure_name)
-
+    
     ax_list[2, 2] = violin_mt_depths(measure_dict,
-                                        y_label='Slope MT(70%) with age',
+                                        ylabel='Slope MT(70%)\nwith CT',
                                         measure='all_slope_ct',
                                         cmap='PRGn',
-                                        y_min=-0.007,
-                                        y_max=0.003,
-                                        cmap_min=-0.003,
-                                        cmap_max=0.003,
+                                        y_min=-0.000007,
+                                        y_max=0.000003,
+                                        cmap_min=-0.000003,
+                                        cmap_max=0.000003,
                                         ax=ax_list[2, 2],
                                         figure=big_fig)
-
+    
+    # Allign the y labels for each column    
+    for ax in ax_list.reshape(-1):
+        ax.yaxis.set_label_coords(-0.12, 0.5)
+    
+    # Turn off the axes for the middle column
+    for ax in ax_list[:,1]:
+        ax.axis('off')
+        
     # Nice tight layout
     big_fig.tight_layout()
     
@@ -795,7 +819,7 @@ def figure_3(graph_dict, pc_dict, measures_dict, figures_dir):
     key = '{}_covar_{}_{}_COST_{:02.0f}'.format(measure, covars, group, cost)
 
     G = graph_dict[key]    
-    pc = np.array(pc_dict[key].values())
+    pc = np.array(pc_dict.values())
     degrees = np.array(G.degree().values())
     
     #==== CORRELATE DEGREES WITH CHANGE IN CT WITH AGE =============================
@@ -819,14 +843,6 @@ def figure_3(graph_dict, pc_dict, measures_dict, figures_dir):
                     ax=ax_list[0, 0],
                     figure=big_fig)
     
-    ax_list[0,0].text(0, 1, 
-                        'B', 
-                        horizontalalignment='center',
-                        verticalalignment='top',
-                        fontsize=80,
-                        transform=ax.transAxes,
-                        weight='bold')
-
     #==== CORRELATE PARTICIPATION COEFFS WITH CHANGE IN CT WITH AGE =============================
     figure_name = os.path.join(figures_dir, 
                                     '{}_covar_{}_{}_corrPCSlopeCTAge_COST_{:02.0f}.png'.format(measure,
@@ -861,10 +877,10 @@ def figure_3(graph_dict, pc_dict, measures_dict, figures_dir):
                     figure_name=figure_name,
                     color='k')
                             
-    ax_list[0, 1] = pretty_scatter(degrees, measure_dict['MT_projfrac+030_all_slope_age'], 
+    ax_list[0, 1] = pretty_scatter(degrees, measure_dict['MT_projfrac+030_all_slope_age']/1000.0, 
                     x_label='Degree', y_label='Slope MT(70%) with age', 
                     x_max=100, x_min=0, 
-                    y_max=20, y_min=-10, 
+                    y_max=0.020, y_min=-0.010, 
                     color='k',
                     ax=ax_list[0, 1],
                     figure=big_fig)
@@ -1057,17 +1073,62 @@ def partial_volume_fig(measure_dict, figures_dir):
 def all_mean_mt(measure_dict, figures_dir):
 
     figure_name = os.path.join(figures_dir, 
-                                    'MT_projfrac+030_all_mean_DifferentDepths.png')
+                                    'MT_all_mean_DifferentDepths.png')
                                     
     fig, ax = plt.subplots(figsize=(10, 8), facecolor='white')
 
-    violin_mt_depths(measure_dict,
+    ax = violin_mt_depths(measure_dict,
                         measure='all_mean',
+                        ylabel='Magnetisation Transfer',
                         y_min=0.0,
                         y_max=2.0,
                         cmap='jet',
                         cmap_min=0.2,
                         cmap_max=1.8,
-                        figure_name=figure_name,
                         figure=fig,
                         ax=ax)
+    
+    plt.tight_layout()
+    
+    fig.subplots_adjust(right=0.9)
+    
+    cmap = mpl.cm.jet
+    norm = mpl.colors.Normalize(vmin=0.2, vmax=1.8)
+
+    cax = fig.add_axes([0.93, 0.3, 0.02, 0.6])
+    cb = mpl.colorbar.ColorbarBase(cax, cmap=cmap,
+                                   norm=norm,
+                                   orientation='vertical',
+                                   ticks=np.arange(0.2, 1.81, 0.8))
+                                   
+    cax.tick_params(labelsize=20)
+    
+    # Save the figure
+    fig.savefig(figure_name, bbox_inches=0, dpi=100)
+    
+    plt.close()
+
+                        
+def nodal_ct_mt(measure_dict, figures_dir):
+
+    figure_name = os.path.join(figures_dir, 
+                                    'Nodal_CT_corr_MT_segCort.png')
+                                    
+    fig, ax = plt.subplots(figsize=(10, 8), facecolor='white')
+    
+    ax = pretty_scatter(measure_dict['CT_all_mean'], measure_dict['MTall_all_mean']/1000.0, 
+                    x_label='Average Cortical Thickness (mm)', y_label='Average Magnetisation Transfer', 
+                    x_max=3.8, x_min=1.9, 
+                    y_max=1.00, y_min=0.750, 
+                    color='k',
+                    ax=ax,
+                    figure=fig)
+                    
+    # Nice tight layout
+    fig.tight_layout()
+    
+    # Save the figure
+    fig.savefig(figure_name, bbox_inches=0, dpi=100)
+    
+    plt.close()
+    

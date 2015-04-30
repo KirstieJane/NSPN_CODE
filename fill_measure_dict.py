@@ -95,6 +95,9 @@ measure_name_list = []
 filename_list += [ os.path.join(data_dir, 'PARC_500aparc_thickness_behavmerge.csv') ]
 measure_name_list += [ 'CT' ]
 
+filename_list += [ os.path.join(data_dir, 'SEG_MT_500cortConsec_mean_behavmerge.csv') ]
+measure_name_list += [ 'MTall' ]
+
 ### FRACTIONAL DEPTHS
 for i in np.arange(0.0,110,10):
     
