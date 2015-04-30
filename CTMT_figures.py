@@ -234,7 +234,7 @@ def plot_sagittal_network(G,
                          cmap_name='jet',
                          ax=None, 
                          figure_name=None):
-
+    
     import matplotlib.pylab as plt
     import numpy as np
     import networkx as nx
@@ -243,7 +243,7 @@ def plot_sagittal_network(G,
     
     # Save the colormap
     cmap = plt.get_cmap(cmap_name)
-
+    
     # Binarize both of these graphs
     for u,v,d in G.edges(data=True):
         d['weight']=1
@@ -276,7 +276,7 @@ def plot_sagittal_network(G,
         x_values.append(axial_pos[node][0])
         
     node_list = [ node for (x_coord, node) in sorted(zip(x_values, G.nodes())) ]
-
+    
     # Start the node loop
     for node in node_list:
     
@@ -532,13 +532,13 @@ def violin_mt_depths(measure_dict, map='MT', measure='all_slope_age', cmap='PRGn
     else:
         return ax
 
-def figure_1(graph_dict, figures_dir, n=10):
+def figure_1(graph_dict, figures_dir, saggital_pos, axial_pos, n=10):
     
     import numpy as np
     
-    big_fig, ax_list = plt.subplots(6,4, figsize=(40, 31.5), facecolor='white', sharey='row')
+    big_fig, ax_list = plt.subplots(6, 4, figsize=(40, 35), facecolor='white', sharey='row')
     
-    cost_list = [ 5, 10, 15, 20 ]
+    cost_list = [ 5, 10, 20, 30 ]
     
     for i, cost in enumerate(cost_list):
         measure = 'CT'
@@ -580,7 +580,7 @@ def figure_1(graph_dict, figures_dir, n=10):
                                                                                                     cost))
         plot_degree_dist(G, figure_name=figure_name, x_max=100, y_max=0.1, color=sns.color_palette()[0])
         ax_list[1, i] = plot_degree_dist(G, ax=ax_list[1, i], x_max=100, y_max=0.1, color=sns.color_palette()[0])
-    
+        
         #============= RICH CLUB ==============================
         figure_name = os.path.join(figures_dir, 
                                         '{}_covar_{}_{}_richclub_COST_{:02.0f}.png'.format(measure,
@@ -599,20 +599,21 @@ def figure_1(graph_dict, figures_dir, n=10):
                                                                                                     cost))
         measures_dict = calculate_network_measures(G, R_list, n=n)
         plot_network_measures(measures_dict, figure_name=figure_name, y_max=2.5, y_min=-0.5, color=sns.color_palette()[0])
-        ax_list[3, i] = plot_network_measures(measures_dict, ax=ax_list[3, i], y_max=2.5, y_min=-0.5, color=sns.color_palette()[0])
+        ax_list[3, i] = plot_network_measures(measures_dict, ax=ax_list[3, i], 
+                                                    y_max=2.5, y_min=-0.5, color=sns.color_palette()[0])
         
         #============= CORR DEGREE W/slope CT age =======================
         ax_list[4, i] = pretty_scatter(G.degree().values(), measure_dict['CT_all_slope_age'], 
-                                                x_label='Degree', y_label='Slope MT(70%) with CT', 
+                                                x_label='Degree', y_label='Slope CT with age', 
                                                 x_max=100, x_min=0, 
-                                                y_max=0.5, y_min=-0.1, 
+                                                y_max=0.05, y_min=-0.01, 
                                                 color='k',
                                                 ax=ax_list[4, i],
                                                 figure=big_fig)
                                                 
         #============= CORR DEGREE W/slope MT age =======================
         ax_list[5, i] = pretty_scatter(G.degree().values(), measure_dict['MT_projfrac+030_all_slope_age']/1000.0, 
-                                                x_label='Degree', y_label='Slope MT(70%) with CT', 
+                                                x_label='Degree', y_label='Slope MT(70%) with age', 
                                                 x_max=100, x_min=0, 
                                                 y_max=0.020, y_min=-0.010, 
                                                 color='k',

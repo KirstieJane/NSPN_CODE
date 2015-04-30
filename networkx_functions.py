@@ -22,11 +22,11 @@ def sort_partition(partition, axial_pos):
     module_list = set(partition.values())
     
     for i, mod in enumerate(module_list) :
-
+        
         # Create a list of nodes that are in each module
         list_nodes = [nodes for nodes in partition.keys()
                                     if partition[nodes] == mod]
-
+        
         # Find their average Y position
         y_values = []
         for node in list_nodes:
@@ -36,7 +36,7 @@ def sort_partition(partition, axial_pos):
         
     # Now sort the module_list and return it
     module_list = [ mod for (av_y, mod) in sorted(zip(average_y_list, module_list))]
-
+    
     return module_list    
     
 def graph_at_cost(M, cost):
