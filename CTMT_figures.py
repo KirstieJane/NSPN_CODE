@@ -556,6 +556,7 @@ def figure_1(graph_dict,
     
     for i, cost in enumerate(cost_list):
         cost = np.float(cost)
+        covars = '_'.join(covars)        
         
         key = '{}_covar_{}_{}_COST_{:02.0f}'.format(measure, covars, group, cost)
         print key
@@ -653,7 +654,7 @@ def figure_1(graph_dict,
                         weight='bold')
                         
     # Save the figure
-    filename = os.path.join(figures_dir, 'SuppFigure1.png')
+    filename = os.path.join(figures_dir, 'SuppFigure1_{}.png'.format(covars))
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
     
     plt.close()
