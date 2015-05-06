@@ -137,7 +137,7 @@ def plot_degree_dist(G, ax=None, figure_name=None, x_max=200, y_max=0.1, color=s
     else:
         return ax
     
-def plot_network_measures(measures_dict, ax=None, figure_name=None, y_max=2.5, y_min=-0.5, color=sns.color_palette()[0]):
+def plot_network_measures(measure_dict, ax=None, figure_name=None, y_max=2.5, y_min=-0.5, color=sns.color_palette()[0]):
     '''
     Create a plot of the network measures
     along with their random counterparts
@@ -153,7 +153,7 @@ def plot_network_measures(measures_dict, ax=None, figure_name=None, y_max=2.5, y
     sns.set_context("poster", font_scale=2)
     
     # Read the measures dictionary into an array
-    df = pd.DataFrame(measures_dict)
+    df = pd.DataFrame(measure_dict)
     
     # And re-order the columns in the data frame so that
     # the graph will look nice
@@ -608,9 +608,9 @@ def figure_1(graph_dict,
                                                                                                     covars, 
                                                                                                     group.upper(), 
                                                                                                     cost))
-        measures_dict = calculate_network_measures(G, R_list, n=n)
-        plot_network_measures(measures_dict, figure_name=figure_name, y_max=2.5, y_min=-0.5, color=sns.color_palette()[0])
-        ax_list[3, i] = plot_network_measures(measures_dict, ax=ax_list[3, i], 
+        measure_dict = calculate_network_measures(G, R_list, n=n)
+        plot_network_measures(measure_dict, figure_name=figure_name, y_max=2.5, y_min=-0.5, color=sns.color_palette()[0])
+        ax_list[3, i] = plot_network_measures(measure_dict, ax=ax_list[3, i], 
                                                     y_max=2.5, y_min=-0.5, color=sns.color_palette()[0])
         
         #============= CORR DEGREE W/slope CT age =======================
@@ -820,7 +820,7 @@ def figure_2(ct_data_file, mt_data_file, measure_dict, figures_dir):
     plt.close()
 
     
-def figure_3(graph_dict, measures_dict, figures_dir, covars_list=['ones'], group='all', measure='CT'):
+def figure_3(graph_dict, measure_dict, figures_dir, covars_list=['ones'], group='all', measure='CT'):
 
     import matplotlib.pylab as plt
     import numpy as np
