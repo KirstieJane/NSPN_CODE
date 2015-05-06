@@ -532,7 +532,7 @@ def violin_mt_depths(measure_dict, map='MT', measure='all_slope_age', cmap='PRGn
     else:
         return ax
 
-def figure_1(graph_dict, figures_dir, saggital_pos, axial_pos, n=10):
+def figure_1(graph_dict, figures_dir, sagittal_pos, axial_pos, n=10):
     
     import numpy as np
     
