@@ -717,7 +717,7 @@ def figure_2(ct_data_file, mt_data_file, measure_dict, figures_dir):
     
     pretty_scatter(df_ct['Global'], df_mt['Global']/1000, 
                     x_label='Cortical Thickness (mm)', y_label='Magnetisation Transfer\nat 70% cortical depth', 
-                    x_max=30, x_min=2.4, 
+                    x_max=3.0, x_min=2.4, 
                     y_max=1.05, y_min=0.8, 
                     figure_name=figure_name,
                     color=color)
