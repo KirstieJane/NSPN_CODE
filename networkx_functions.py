@@ -575,7 +575,7 @@ def random_graph(G, Q=10):
     connected=False
 
     # Keep making random graphs until they are connected!
-    while connected:
+    while not connected:
         # Now swap some edges in order to preserve the degree distribution
         print 'Creating random graph - may take a little while!'
         nx.double_edge_swap(R,Q*E,max_tries=Q*E*10)
