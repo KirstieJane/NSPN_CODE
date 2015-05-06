@@ -815,7 +815,7 @@ def figure_2(ct_data_file, mt_data_file, measure_dict, figures_dir):
     plt.close()
 
     
-def figure_3(graph_dict, pc_dict, measures_dict, figures_dir):
+def figure_3(graph_dict, measures_dict, figures_dir):
 
     import matplotlib.pylab as plt
     import numpy as np
@@ -831,7 +831,8 @@ def figure_3(graph_dict, pc_dict, measures_dict, figures_dir):
 
     key = '{}_covar_{}_{}_COST_{:02.0f}'.format(measure, covars, group, cost)
 
-    G = graph_dict[key]    
+    G = graph_dict[key]
+    pc_dict = participation_coefficient(G)    
     pc = np.array(pc_dict.values())
     degrees = np.array(G.degree().values())
     
