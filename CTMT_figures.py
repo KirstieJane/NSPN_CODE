@@ -378,7 +378,7 @@ def pretty_scatter(x, y, x_label='x', y_label='y', x_max=None, x_min=None, y_max
         return ax
         
 
-def degree_r_values(graph_dict, y):
+def degree_r_values(graph_dict, y, covars=['ones'], measure='CT', group='all'):
     
     r_array = np.ones([30])
     p_array = np.ones([30])
@@ -386,10 +386,9 @@ def degree_r_values(graph_dict, y):
     cost_list = range(1,31)
     
     for i, cost in enumerate(cost_list):
-        measure = 'CT'
-        covars = 'ones'
-        group = 'all'
+    
         cost = np.float(cost)
+        covars = '_'.join(covars)
         
         key = '{}_covar_{}_{}_COST_{:02.0f}'.format(measure, covars, group, cost)
         
@@ -547,7 +546,7 @@ def figure_1(graph_dict,
                 measure_dict, 
                 n=10, 
                 measure='CT', 
-                covars='ones', 
+                covars=['ones'], 
                 group='all'):
     
     big_fig, ax_list = plt.subplots(6, 4, figsize=(40, 35), facecolor='white', sharey='row')
@@ -816,7 +815,7 @@ def figure_2(ct_data_file, mt_data_file, measure_dict, figures_dir):
     plt.close()
 
     
-def figure_3(graph_dict, measures_dict, figures_dir):
+def figure_3(graph_dict, measures_dict, figures_dir, covars=['ones'], group='all', measure='CT'):
 
     import matplotlib.pylab as plt
     import numpy as np
@@ -825,10 +824,8 @@ def figure_3(graph_dict, measures_dict, figures_dir):
     big_fig, ax_list = plt.subplots(2,3, figsize=(30, 12), facecolor='white')
     
     cost = 10    
-    covars = 'ones'
-    group = 'all'
     cost = np.float(cost)
-    measure = 'CT'
+    covars = '_'.join(covars)
 
     key = '{}_covar_{}_{}_COST_{:02.0f}'.format(measure, covars, group, cost)
 
