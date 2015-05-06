@@ -10,6 +10,13 @@ import networkx as nx
 import pandas as pd
 import matplotlib as mpl
 import os
+import sys
+
+# Read in some of the other NSPN_CODE functions too
+scripts_dir=sys.argv[0]
+sys.path.append(scripts_dir)
+from networkx_functions import *
+from regional_correlation_functions import *
 
 
 def plot_rich_club(rc, rc_rand, ax=None, figure_name=None, x_max=200, y_max=1.2, color=sns.color_palette()[0]):
