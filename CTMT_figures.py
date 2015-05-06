@@ -608,10 +608,15 @@ def figure_1(graph_dict,
                                                                                                     covars, 
                                                                                                     group.upper(), 
                                                                                                     cost))
-        measure_dict = calculate_network_measures(G, R_list, n=n)
-        plot_network_measures(measure_dict, figure_name=figure_name, y_max=2.5, y_min=-0.5, color=sns.color_palette()[0])
-        ax_list[3, i] = plot_network_measures(measure_dict, ax=ax_list[3, i], 
-                                                    y_max=2.5, y_min=-0.5, color=sns.color_palette()[0])
+        network_measure_dict = calculate_network_measures(G, R_list, n=n)
+        plot_network_measures(network_measure_dict, 
+                                figure_name=figure_name, 
+                                y_max=2.5, y_min=-0.5, 
+                                color=sns.color_palette()[0])
+        ax_list[3, i] = plot_network_measures(network_measure_dict, 
+                                                    ax=ax_list[3, i], 
+                                                    y_max=2.5, y_min=-0.5, 
+                                                    color=sns.color_palette()[0])
         
         #============= CORR DEGREE W/slope CT age =======================
         ax_list[4, i] = pretty_scatter(G.degree().values(), measure_dict['CT_all_slope_age'], 
