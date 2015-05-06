@@ -539,18 +539,21 @@ def violin_mt_depths(measure_dict, map='MT', measure='all_slope_age', cmap='PRGn
     else:
         return ax
 
-def figure_1(graph_dict, figures_dir, sagittal_pos, axial_pos, n=10):
-    
-    import numpy as np
+def figure_1(graph_dict, 
+                figures_dir, 
+                sagittal_pos, 
+                axial_pos, 
+                measure_dict, 
+                n=10, 
+                measure='CT', 
+                covars='ones', 
+                group='all'):
     
     big_fig, ax_list = plt.subplots(6, 4, figsize=(40, 35), facecolor='white', sharey='row')
     
     cost_list = [ 5, 15, 20, 30 ]
     
     for i, cost in enumerate(cost_list):
-        measure = 'CT'
-        covars = 'ones'
-        group = 'all'
         cost = np.float(cost)
         
         key = '{}_covar_{}_{}_COST_{:02.0f}'.format(measure, covars, group, cost)
