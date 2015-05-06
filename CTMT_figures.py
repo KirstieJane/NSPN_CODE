@@ -653,7 +653,12 @@ def figure_1(graph_dict,
                         weight='bold')
                         
     # Save the figure
-    filename = os.path.join(figures_dir, 'SuppFigure1_{}.png'.format(covars))
+    filename = os.path.join(figures_dir, 
+                            'SuppFigure1_{}_covar_{}_{}_COST_{:02.0f}.png'.format(measure, 
+                                                                                covars,
+                                                                                group,
+                                                                                cost))
+
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
     
     plt.close()
@@ -970,7 +975,11 @@ def figure_3(graph_dict, measures_dict, figures_dir, covars=['ones'], group='all
     big_fig.tight_layout()
     
     # Save the figure
-    filename = os.path.join(figures_dir, 'Figure3.png')
+    filename = os.path.join(figures_dir, 
+                                'Figure3_{}_covar_{}_{}_COST_{:02.0f}.png'.format(measure, 
+                                                                                    covars,
+                                                                                    group,
+                                                                                    cost))
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
     
     plt.close()
