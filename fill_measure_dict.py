@@ -12,15 +12,15 @@ import sys
 
 def read_in_df(data_file):
     df = pd.read_csv(data_file, sep=',')
-
+    
     # Only keep the first scan!
     df = df[df.occ==0]
-
+    
     data_cols = [ x.replace('_{}'.format('thicknessstd'), '') for x in df.columns ]
     df.columns = data_cols
     data_cols = [ x.replace('_{}'.format('thickness'), '') for x in df.columns ]
     df.columns = data_cols
-        
+    
     # Define a few variables you want
     df['young'] = 0
     df['young'][df['age_scan']<np.percentile(df.age_scan, 50)] = 1
@@ -29,7 +29,7 @@ def read_in_df(data_file):
     df['age'] = df['age_scan']
     
     df['Global'] = df[aparc_names].mean(axis=1)
-
+    
     # If there is a corresponding standard deviation
     # file then read in the standard deviation!
     if 'mean' in data_file:
