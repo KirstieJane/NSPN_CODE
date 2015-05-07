@@ -669,6 +669,8 @@ def figure_1(graph_dict,
 
 def figure_2(ct_data_file, mt_data_file, measure_dict, figures_dir):
     
+    import seaborn as sns
+    
     big_fig, ax_list = plt.subplots(3,3, figsize=(30, 18), facecolor='white')
     
     #==== CORRELATE GLOBAL CT WITH AGE =============================
