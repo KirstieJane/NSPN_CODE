@@ -203,16 +203,16 @@ for measure in MT; do
         
         # fi
         
-        #=== 500.aparc_cortical_consecutive.nii.gz
-        # Extract measures from the cortical regions in the 500 parcellation
-        if [[ ! -f ${surfer_dir}/stats/${measure}_500cortConsec.stats 
-                && -f ${surfer_dir}/parcellation/500.aparc_cortical_consecutive.nii.gz ]]; then
-            mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
-                         --seg ${surfer_dir}/parcellation/500.aparc_cortical_consecutive.nii.gz  \
-                         --sum ${surfer_dir}/stats/${measure}_500cortConsec.stats \
-                         --pv ${surfer_dir}/mri/norm.mgz \
-                         --ctab ${parc500_ctab}
-        fi
+        # #=== 500.aparc_cortical_consecutive.nii.gz
+        # # Extract measures from the cortical regions in the 500 parcellation
+        # if [[ ! -f ${surfer_dir}/stats/${measure}_500cortConsec.stats 
+                # && -f ${surfer_dir}/parcellation/500.aparc_cortical_consecutive.nii.gz ]]; then
+            # mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
+                         # --seg ${surfer_dir}/parcellation/500.aparc_cortical_consecutive.nii.gz  \
+                         # --sum ${surfer_dir}/stats/${measure}_500cortConsec.stats \
+                         # --pv ${surfer_dir}/mri/norm.mgz \
+                         # --ctab ${parc500_ctab}
+        # fi
         
         # #=== 500.aparc_cortical_expanded_consecutive_WMoverlap
         # # Only run this if there is a 500 cortical parcellation
