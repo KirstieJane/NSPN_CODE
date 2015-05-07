@@ -171,7 +171,8 @@ done
 #     500.aparc_cortical_expanded_consecutive_WMoverlap
 #=============================================================================
 
-for measure in R1 MT R2s A FA MD MO L1 L23 sse; do
+#for measure in R1 MT R2s A FA MD MO L1 L23 sse; do
+for measure in MT; do
     if [[ -f ${surfer_dir}/mri/${measure}.mgz ]]; then
 
         #=== wmparc
@@ -263,12 +264,13 @@ for hemi in lh rh; do
         fi
         
         # Next loop through all the different MPM and DTI files
-        for measure in R1 MT R2s A FA MD MO L1 L23 sse synthetic; do
-        #for measure in MT; do
+        #for measure in R1 MT R2s A FA MD MO L1 L23 sse synthetic; do
+        for measure in MT; do
 
             # Loop through a bunch of different fractional depths 
             # from the white matter surface
-            for frac in `seq -f %+02.2f -1 0.05 1`; do
+            # for frac in `seq -f %+02.2f -1 0.05 1`; do
+            for frac in `seq -f %+02.2f 0 0.1 1`; do
 
                 # Project the values to the surface
                 if [[ ! -f ${surfer_dir}/surf/${hemi}.${measure}_projfrac${frac}.mgh ]]; then
