@@ -297,7 +297,8 @@ for hemi in lh rh; do
 
             # Now loop through the different absolute depths
             # **from the pial surface**
-            for dist in `seq -f %+02.2f -5 0.1 0`; do
+            #for dist in `seq -f %+02.2f -5 0.1 0`; do
+            for dist in `seq -f %+02.2f -0.1 0.1 0`; do
 
                 if [[ ! -f ${surfer_dir}/surf/${hemi}.${measure}_projdist${dist}.mgh ]]; then
                 
