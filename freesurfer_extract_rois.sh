@@ -252,7 +252,8 @@ done
 # Loop over both left and right hemispheres
 for hemi in lh rh; do
     # Loop over parcellations
-    for parc in aparc 500.aparc lobesStrict; do
+    #for parc in aparc 500.aparc lobesStrict; do
+    for parc in 500.aparc; do
 
         # First extract just the thickness & curvature values
         if [[ ! -f ${surfer_dir}/stats/${hemi}.${parc}.stats \
@@ -329,7 +330,7 @@ for hemi in lh rh; do
             
             # Now loop through the different absolute depths
             # **from the grey/white matter boundary**
-            for dist in `seq -f %+02.2f -2 0.1 0`; do
+            for dist in `seq -f %+02.2f -1 0.2 0`; do
 
                 if [[ ! -f ${surfer_dir}/surf/${hemi}.${measure}_projdist${dist}_fromBoundary.mgh ]]; then
                 
