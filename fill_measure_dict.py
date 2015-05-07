@@ -11,6 +11,12 @@ import os
 import sys
 
 def read_in_df(data_file):
+
+    import numpy as np
+    import pandas as pd
+    import os 
+    import sys
+
     df = pd.read_csv(data_file, sep=',')
     
     # Only keep the first scan!
@@ -29,7 +35,7 @@ def read_in_df(data_file):
     df['age'] = df['age_scan']
     
     df['Global'] = df[aparc_names].mean(axis=1)
-    '''
+    
     # If there is a corresponding standard deviation
     # file then read in the standard deviation!
     if 'mean' in data_file:
@@ -47,7 +53,7 @@ def read_in_df(data_file):
         df_std.columns = data_cols
         
         df['Global_std'] = np.sqrt(np.average(df_std[aparc_names]**2, axis=1))
-    '''
+    
     return df
 
     
