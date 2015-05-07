@@ -45,7 +45,7 @@ def read_in_df(data_file):
         df_std.columns = data_cols
         data_cols = [ x.replace('_{}'.format('thickness'), '') for x in df_std.columns ]
         df_std.columns = data_cols
-    
+        
         df['Global_std'] = np.sqrt(np.average(df_std[aparc_names]**2, axis=1))
         
     return df
