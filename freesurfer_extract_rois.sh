@@ -175,33 +175,33 @@ done
 for measure in MT; do
     if [[ -f ${surfer_dir}/mri/${measure}.mgz ]]; then
 
-        #=== wmparc
-        if [[ ! -f ${surfer_dir}/stats/${measure}_wmparc.stats ]]; then
-            mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
-                         --seg ${surfer_dir}/mri/wmparc.mgz \
-                         --ctab ${FREESURFER_HOME}/WMParcStatsLUT.txt \
-                         --sum ${surfer_dir}/stats/${measure}_wmparc.stats \
-                         --pv ${surfer_dir}/mri/norm.mgz
-        fi
+        # #=== wmparc
+        # if [[ ! -f ${surfer_dir}/stats/${measure}_wmparc.stats ]]; then
+            # mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
+                         # --seg ${surfer_dir}/mri/wmparc.mgz \
+                         # --ctab ${FREESURFER_HOME}/WMParcStatsLUT.txt \
+                         # --sum ${surfer_dir}/stats/${measure}_wmparc.stats \
+                         # --pv ${surfer_dir}/mri/norm.mgz
+        # fi
         
-        #=== aseg
-        if [[ ! -f ${surfer_dir}/stats/${measure}_aseg.stats ]]; then
-            mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
-                         --seg ${surfer_dir}/mri/aseg.mgz \
-                         --sum ${surfer_dir}/stats/${measure}_aseg.stats \
-                         --pv ${surfer_dir}/mri/norm.mgz \
-                         --ctab ${FREESURFER_HOME}/ASegStatsLUT.txt 
-        fi
+        # #=== aseg
+        # if [[ ! -f ${surfer_dir}/stats/${measure}_aseg.stats ]]; then
+            # mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
+                         # --seg ${surfer_dir}/mri/aseg.mgz \
+                         # --sum ${surfer_dir}/stats/${measure}_aseg.stats \
+                         # --pv ${surfer_dir}/mri/norm.mgz \
+                         # --ctab ${FREESURFER_HOME}/ASegStatsLUT.txt 
+        # fi
         
-        #=== lobesStrict
-        if [[ ! -f ${surfer_dir}/stats/${measure}_lobesStrict.stats ]]; then
-            mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
-                         --seg ${surfer_dir}/mri/lobes+aseg.mgz \
-                         --sum ${surfer_dir}/stats/${measure}_lobesStrict.stats \
-                         --pv ${surfer_dir}/mri/norm.mgz \
-                         --ctab ${lobes_ctab}
+        # #=== lobesStrict
+        # if [[ ! -f ${surfer_dir}/stats/${measure}_lobesStrict.stats ]]; then
+            # mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
+                         # --seg ${surfer_dir}/mri/lobes+aseg.mgz \
+                         # --sum ${surfer_dir}/stats/${measure}_lobesStrict.stats \
+                         # --pv ${surfer_dir}/mri/norm.mgz \
+                         # --ctab ${lobes_ctab}
         
-        fi
+        # fi
         
         #=== 500.aparc_cortical_consecutive.nii.gz
         # Extract measures from the cortical regions in the 500 parcellation
@@ -214,26 +214,26 @@ for measure in MT; do
                          --ctab ${parc500_ctab}
         fi
         
-        #=== 500.aparc_cortical_expanded_consecutive_WMoverlap
-        # Only run this if there is a 500 cortical parcellation
-        if [[ ! -f ${surfer_dir}/stats/${measure}_500cortExpConsecWMoverlap.stats \
-                && -f ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive.nii.gz ]]; then
+        # #=== 500.aparc_cortical_expanded_consecutive_WMoverlap
+        # # Only run this if there is a 500 cortical parcellation
+        # if [[ ! -f ${surfer_dir}/stats/${measure}_500cortExpConsecWMoverlap.stats \
+                # && -f ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive.nii.gz ]]; then
             
-            # Create the overlap file if it doesn't already exist
-            if [[ ! -f ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive_WMoverlap.nii.gz ]]; then
+            # # Create the overlap file if it doesn't already exist
+            # if [[ ! -f ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive_WMoverlap.nii.gz ]]; then
             
-                fslmaths ${surfer_dir}/parcellation/500.aparc_whiteMatter.nii.gz \
-                            -bin \
-                            -mul ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive.nii.gz \
-                            ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive_WMoverlap.nii.gz
-            fi
+                # fslmaths ${surfer_dir}/parcellation/500.aparc_whiteMatter.nii.gz \
+                            # -bin \
+                            # -mul ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive.nii.gz \
+                            # ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive_WMoverlap.nii.gz
+            # fi
             
-            mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
-                         --seg ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive_WMoverlap.nii.gz \
-                         --sum ${surfer_dir}/stats/${measure}_500cortExpConsecWMoverlap.stats \
-                         --pv ${surfer_dir}/mri/norm.mgz \
-                         --ctab ${parc500_ctab}
-        fi
+            # mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \
+                         # --seg ${surfer_dir}/parcellation/500.aparc_cortical_expanded_consecutive_WMoverlap.nii.gz \
+                         # --sum ${surfer_dir}/stats/${measure}_500cortExpConsecWMoverlap.stats \
+                         # --pv ${surfer_dir}/mri/norm.mgz \
+                         # --ctab ${parc500_ctab}
+        # fi
         
     else
         echo "${measure} file not transformed to Freesurfer space"
