@@ -15,6 +15,8 @@ import sys
 # Read in some of the other NSPN_CODE functions too
 scripts_dir=sys.argv[0]
 sys.path.append(scripts_dir)
+print scripts_dir
+
 from networkx_functions import *
 from regional_correlation_functions import *
 from fill_measure_dict import read_in_df
