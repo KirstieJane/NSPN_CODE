@@ -234,7 +234,7 @@ for measure in MT; do
                          # --pv ${surfer_dir}/mri/norm.mgz \
                          # --ctab ${parc500_ctab}
         # fi
-        
+        echo "===="
     else
         echo "${measure} file not transformed to Freesurfer space"
     fi
