@@ -702,9 +702,8 @@ def figure_1(graph_dict,
                         
     # Save the figure
     filename = os.path.join(figures_dir, 
-                            'SuppFigure1_{}_covar_{}_{}.png'.format(measure, 
-                                                                    covars,
-                                                                    cost))
+                            'SuppFigure1_{}_covar_{}.png'.format(measure, 
+                                                                    covars))
 
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
     
