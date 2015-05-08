@@ -13,14 +13,13 @@ import os
 import sys
 
 # Read in some of the other NSPN_CODE functions too
-scripts_dir=sys.argv[0]
-sys.path.append(scripts_dir)
-print scripts_dir
+this_scripts_dir=os.path.dirname(os.path.abspath(__file__))
+sys.path.append(this_scripts_dir)
+print this_scripts_dir
 
 from networkx_functions import *
 from regional_correlation_functions import *
 from fill_measure_dict import read_in_df
-
 
 def plot_rich_club(rc, rc_rand, ax=None, figure_name=None, x_max=200, y_max=1.2, color=sns.color_palette()[0]):
     '''
