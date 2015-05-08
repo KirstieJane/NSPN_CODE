@@ -15,7 +15,7 @@ import sys
 # Read in some of the other NSPN_CODE functions too
 this_scripts_dir=os.path.dirname(os.path.abspath(__file__))
 sys.path.append(this_scripts_dir)
-print this_scripts_dir
+print 'THIS SCRIPT DIR: {}'.format(this_scripts_dir)
 
 from networkx_functions import *
 from regional_correlation_functions import *
