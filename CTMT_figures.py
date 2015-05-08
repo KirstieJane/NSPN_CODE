@@ -19,7 +19,54 @@ print 'THIS SCRIPT DIR: {}'.format(this_scripts_dir)
 
 from networkx_functions import *
 from regional_correlation_functions import *
-from fill_measure_dict import read_in_df
+
+def read_in_df(data_file):
+
+    import numpy as np
+    import pandas as pd
+    import os 
+    import sys
+
+    df = pd.read_csv(data_file, sep=',')
+    
+    # Only keep the first scan!
+    df = df[df.occ==0]
+    
+    data_cols = [ x.replace('_{}'.format('thicknessstd'), '') for x in df.columns ]
+    df.columns = data_cols
+    data_cols = [ x.replace('_{}'.format('thickness'), '') for x in df.columns ]
+    df.columns = data_cols
+    
+    # Define a few variables you want
+    df['young'] = 0
+    df['young'][df['age_scan']<np.percentile(df.age_scan, 50)] = 1
+    
+    df['ones'] = df['age_scan'] * 0 + 1
+    df['age'] = df['age_scan']
+    
+    df['Global'] = df[aparc_names].mean(axis=1)
+    df['Global_std'] = df[aparc_names].mean(axis=1)
+    
+    # If there is a corresponding standard deviation
+    # file then read in the standard deviation!
+    if 'mean' in data_file:
+        std_data_file = data_file.replace('mean', 'std')
+    else:
+        std_data_file = data_file.replace('thickness', 'thicknessstd')
+    
+    if os.path.isfile(std_data_file):
+        df_std = pd.read_csv(std_data_file, sep=',')
+        df_std = df_std[df_std.occ==0]
+        
+        data_cols = [ x.replace('_{}'.format('thicknessstd'), '') for x in df_std.columns ]
+        df_std.columns = data_cols
+        data_cols = [ x.replace('_{}'.format('thickness'), '') for x in df_std.columns ]
+        df_std.columns = data_cols
+        
+        df['Global_std'] = np.sqrt(np.average(df_std[aparc_names]**2, axis=1))
+    
+    return df
+
 
 def plot_rich_club(rc, rc_rand, ax=None, figure_name=None, x_max=200, y_max=1.2, color=sns.color_palette()[0]):
     '''
