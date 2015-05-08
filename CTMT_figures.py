@@ -22,11 +22,6 @@ from regional_correlation_functions import *
 
 def read_in_df(data_file):
 
-    import numpy as np
-    import pandas as pd
-    import os 
-    import sys
-
     df = pd.read_csv(data_file, sep=',')
     
     # Only keep the first scan!
@@ -715,7 +710,7 @@ def figure_1(graph_dict,
     
     plt.close()
 
-def figure_2(ct_data_file, mt_data_file, measure_dict, figures_dir):
+def figure_2(ct_data_file, mt_data_file, measure_dict, figures_dir, aparc_names):
     
     # Set the seaborn context and style
     sns.set(style="white")
