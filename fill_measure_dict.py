@@ -34,27 +34,6 @@ def read_in_df(data_file):
     df['ones'] = df['age_scan'] * 0 + 1
     df['age'] = df['age_scan']
     
-    df['Global'] = df[aparc_names].mean(axis=1)
-    df['Global_std'] = df[aparc_names].mean(axis=1)
-    
-    # If there is a corresponding standard deviation
-    # file then read in the standard deviation!
-    if 'mean' in data_file:
-        std_data_file = data_file.replace('mean', 'std')
-    else:
-        std_data_file = data_file.replace('thickness', 'thicknessstd')
-    
-    if os.path.isfile(std_data_file):
-        df_std = pd.read_csv(std_data_file, sep=',')
-        df_std = df_std[df_std.occ==0]
-        
-        data_cols = [ x.replace('_{}'.format('thicknessstd'), '') for x in df_std.columns ]
-        df_std.columns = data_cols
-        data_cols = [ x.replace('_{}'.format('thickness'), '') for x in df_std.columns ]
-        df_std.columns = data_cols
-        
-        #df['Global_std'] = np.sqrt(np.average(df_std[aparc_names]**2, axis=1))
-    
     return df
 
     

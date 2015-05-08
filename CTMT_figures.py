@@ -20,7 +20,7 @@ print 'THIS SCRIPT DIR: {}'.format(this_scripts_dir)
 from networkx_functions import *
 from regional_correlation_functions import *
 
-def read_in_df(data_file, aparc_names=aparc_names):
+def read_in_df(data_file):
 
     df = pd.read_csv(data_file, sep=',')
     
@@ -38,27 +38,6 @@ def read_in_df(data_file, aparc_names=aparc_names):
     
     df['ones'] = df['age_scan'] * 0 + 1
     df['age'] = df['age_scan']
-    
-    df['Global'] = df[aparc_names].mean(axis=1)
-    df['Global_std'] = df[aparc_names].mean(axis=1)
-    
-    # If there is a corresponding standard deviation
-    # file then read in the standard deviation!
-    if 'mean' in data_file:
-        std_data_file = data_file.replace('mean', 'std')
-    else:
-        std_data_file = data_file.replace('thickness', 'thicknessstd')
-    
-    if os.path.isfile(std_data_file):
-        df_std = pd.read_csv(std_data_file, sep=',')
-        df_std = df_std[df_std.occ==0]
-        
-        data_cols = [ x.replace('_{}'.format('thicknessstd'), '') for x in df_std.columns ]
-        df_std.columns = data_cols
-        data_cols = [ x.replace('_{}'.format('thickness'), '') for x in df_std.columns ]
-        df_std.columns = data_cols
-        
-        df['Global_std'] = np.sqrt(np.average(df_std[aparc_names]**2, axis=1))
     
     return df
 
@@ -720,7 +699,7 @@ def figure_2(ct_data_file, mt_data_file, measure_dict, figures_dir, aparc_names)
     #==== CORRELATE GLOBAL CT WITH AGE =============================
     figure_name = os.path.join(figures_dir, 'Global_CT_corr_Age.png')
     
-    df_ct = read_in_df(ct_data_file, aparc_names=aparc_names)
+    df_ct = read_in_df(ct_data_file)
     
     color=sns.color_palette('RdBu_r', 10)[1]
     
@@ -743,7 +722,7 @@ def figure_2(ct_data_file, mt_data_file, measure_dict, figures_dir, aparc_names)
     figure_name = os.path.join(figures_dir, 
                                     'Global_MT_projfrac+030_corr_Age.png')
     
-    df_mt = read_in_df(mt_data_file, aparc_names=aparc_names)
+    df_mt = read_in_df(mt_data_file)
     
     color=sns.color_palette('PRGn_r', 10)[1]
     
@@ -766,7 +745,7 @@ def figure_2(ct_data_file, mt_data_file, measure_dict, figures_dir, aparc_names)
     figure_name = os.path.join(figures_dir, 
                                     'Global_MT_projfrac+030_corr_CT.png')
     
-    df_mt = read_in_df(mt_data_file, aparc_names=aparc_names)
+    df_mt = read_in_df(mt_data_file)
     
     color=sns.color_palette('PRGn', 10)[1]
     
@@ -789,7 +768,7 @@ def figure_2(ct_data_file, mt_data_file, measure_dict, figures_dir, aparc_names)
     figure_name = os.path.join(figures_dir, 
                                     'Mean_CT_corr_slope_CT_age.png')
     
-    df_ct = read_in_df(ct_data_file, aparc_names=aparc_names)
+    df_ct = read_in_df(ct_data_file)
     
     color=sns.color_palette('RdBu_r', 10)[1]
     
