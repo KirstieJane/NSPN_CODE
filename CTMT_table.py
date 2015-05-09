@@ -468,7 +468,7 @@ def create_3tables(cohort_dir, fsaverage_dir):
     write_table(table_var_dict, n=34)
 
 #==============================================================================
-def write_table(table_var_dict, n=308)
+def write_table(table_var_dict, n=308):
     '''
     Write out the values into a table calling a buch of 
     little functions along the way
