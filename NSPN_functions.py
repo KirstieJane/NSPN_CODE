@@ -11,6 +11,7 @@ def permutation_correlation(x_orig, y_orig, n_perm=1000):
     '''
     import numpy as np
     from scipy.stats import linregress 
+    import pandas as pd
     
     # Make a copy of the original data
     # because the shuffle command does this in place
@@ -119,6 +120,9 @@ def permutation_multiple_correlation(x_orig, y_orig, covars=[], n_perm=1000):
     
 def read_in_df(data_file, aparc_names):
 
+    import pandas as pd
+    import numpy as np
+    
     df = pd.read_csv(data_file, sep=',')
     
     # Only keep the first scan!
