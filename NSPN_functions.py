@@ -177,3 +177,59 @@ def read_in_df(data_file, aparc_names):
         df.loc[df['Global']<50, aparc_names+['Global']+['Global_std']] = df.loc[df['Global']<50, aparc_names+['Global']+['Global_std']]*1000.0
     
     return df
+    
+    
+def create_pysurfer_command(roi_file,
+                            scripts_dir, 
+                            sub_data_dir, 
+                            c='jet', 
+                            l=None, 
+                            u=None, 
+                            t=-99, 
+                            s='pial', 
+                            center=False):
+    '''
+    Create a text string containing the appropriate options for
+    the pysurfer command
+    '''
+    import os
+    
+    # Create the command for pysurfer and run it
+    # start by putting in the name of the code with its path
+    command_list = [ os.path.join(scripts_dir, 
+                                  'DESCRIBING_DATA',
+                                  'VISUALIZING_SURFACE_MRI_DATA',
+                                  'pysurfer_plot_500parcellation_surface_values.py') ]
+    
+    # Set the subject directory
+    command_list += [ '-sd {}'.format(sub_data_dir) ]
+    
+    # Set the surface
+    if s:
+        command_list += [ '-s {}'.format(s) ]
+
+    # Set the colormap
+    if c:
+        command_list += [ '-c {}'.format(c) ]
+
+    # Set the colormap limits
+    if l:
+        command_list += [ '-l {}'.format(l) ]
+    if u:
+        command_list += [ '-u {}'.format(u) ]
+        
+    # Set the threshold
+    if t:
+        command_list += [ '-t {}'.format(t) ]
+
+    # Center if necessary
+    if center:
+        command_list += [ '--center' ]
+        
+    # And add the filename
+    command_list += [ roi_file ]
+        
+    # Finally join it all together into one string
+    command = ' '.join(command_list)
+
+    return command

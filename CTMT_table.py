@@ -13,6 +13,7 @@ from scipy.stats import linregress
 import networkx as nx
 from NSPN_functions import *
 
+#==============================================================================
 def create_3tables(cohort_dir, fsaverage_dir):
     '''
     This is the main script! It makes your three tables!
@@ -180,7 +181,8 @@ def write_table(table_var_dict, n=308):
         #---------------------------------------------------------------------        
         # And then write out the table :)
         write_table_list(table_var_dict, table_list, n=n)
-            
+        
+#==============================================================================        
 def write_header(table_var_dict, n=308):
     '''
     Write the header into the text file
@@ -219,7 +221,7 @@ def get_roi_list(table_var_dict, n=308):
         
     return roi_list
     
-
+#==============================================================================
 def create_lists(table_var_dict, roi, n=308):
     '''
     Creates the table_list which contains the text that will be written out
@@ -254,7 +256,7 @@ def create_lists(table_var_dict, roi, n=308):
     
     return table_list, sub_roi_list
     
-
+#==============================================================================
 def append_mean_std(table_list, df, sub_roi_list):
     '''
     This is super easy if you only have one roi in the
@@ -285,7 +287,7 @@ def append_mean_std(table_list, df, sub_roi_list):
         
     return table_list
 
-
+#==============================================================================
 def append_correlation(table_list, df, x_col, y_col):
     '''
     Figure out the correlation between x_col(s) and y_col(s)
@@ -325,6 +327,7 @@ def append_correlation(table_list, df, x_col, y_col):
 
     return table_list
 
+#==============================================================================
 def append_degree(table_var_dict, table_list, sub_roi_list):
     '''
     Write the average degree across each sub region to the table list
@@ -339,6 +342,7 @@ def append_degree(table_var_dict, table_list, sub_roi_list):
     
     return table_list
     
+#==============================================================================
 def write_table_list(table_var_dict, table_list, n=308):
 
     f_name = table_var_dict['table_file_{}'.format(n)]
