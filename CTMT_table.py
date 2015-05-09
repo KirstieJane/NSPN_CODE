@@ -11,7 +11,7 @@ import os
 import itertools as it
 from scipy.stats import linregress 
 import networkx as nx
-from NSPN_functions import read_in_df
+from NSPN_functions import *
 
 def setup_table_data(cohort_dir, fsaverage_dir):
     '''
