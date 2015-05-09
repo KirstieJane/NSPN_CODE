@@ -606,14 +606,14 @@ def create_lists(table_var_dict, roi, n=308):
     if n == 68:
         roi_name = roi.split('_')[1]
         table_list = [ lobe, roi_name, hemi ]
-        sub_roi_list = [ x for x in [table_var_dict['aparc_names'] if roi_name in x and hemi in x ]
+        sub_roi_list = [ x for x in table_var_dict['aparc_names'] if roi_name in x and hemi in x ]
         
     # If you're collapsing across hemisphere then drop the
     # hemi part
     if n == 34:
         roi_name = roi.split('_')[1]
         table_list = [ lobe, roi_name ]
-        sub_roi_list = [ x for x in [table_var_dict['aparc_names'] if roi_name in x ]
+        sub_roi_list = [ x for x in table_var_dict['aparc_names'] if roi_name in x ]
     
     return table_list, sub_roi_list
     
