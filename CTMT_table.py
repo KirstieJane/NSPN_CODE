@@ -511,8 +511,8 @@ def write_table(table_var_dict, n=308):
         # Look at correlations across pairs of data frames
         
         # Adjust the roi_names because we're going to merge the data frames
-        ct_sub_roi_list = [ '{}_ct' for x in sub_roi_list ]
-        mt_sub_roi_list = [ '{}_mt' for x in sub_roi_list ]
+        ct_sub_roi_list = [ '{}_ct'.format(x) for x in sub_roi_list ]
+        mt_sub_roi_list = [ '{}_mt'.format(x) for x in sub_roi_list ]
         
         # Correlation between mean CT and mean MTall
         ct_mt_df = table_var_dict['ct_df'].merge(table_var_dict['mt_df'], 
