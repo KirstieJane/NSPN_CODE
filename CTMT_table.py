@@ -86,7 +86,7 @@ def setup_table_data(cohort_dir, fsaverage_dir):
     if not os.path.isdir(os.path.join(cohort_dir, 'TABLES')):
         os.makedirs(os.path.join(cohort_dir, 'TABLES'))
 
-    return ( table_var_dict )
+    return table_var_dict
 
 """
 #==============================================================================
@@ -453,6 +453,19 @@ def write_34(table_var_dict)
             f.write('\n')
 
 """
+
+def create_3tables(cohort_dir, fsaverage_dir):
+    '''
+    This is the main script! It makes your three tables!
+    '''
+    print '    Setting up table data'
+    table_var_dict = setup_table_data(cohort_dir, fsaverage_dir)
+    print '    Making table n=308'
+    write_table(table_var_dict, n=308)
+    print '    Making table n=68'
+    write_table(table_var_dict, n=68)
+    print '    Making table n=34'
+    write_table(table_var_dict, n=34)
 
 #==============================================================================
 def write_table(table_var_dict, n=308)
