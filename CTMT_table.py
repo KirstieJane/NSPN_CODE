@@ -4,7 +4,6 @@
 Code to make a table for the supplementary analyses
 for the NSPN interim cohort
 '''
-
 import numpy as np
 import matplotlib.pylab as plt
 import pandas as pd
@@ -12,6 +11,7 @@ import os
 import itertools as it
 from scipy.stats import linregress 
 import networkx as nx
+from NSPN_functions import read_in_df
 
 def setup_table_data(cohort_dir, fsaverage_dir):
     '''
