@@ -666,7 +666,7 @@ def append_correlation(table_list, df, x_col, y_col):
         # Find the correlation between the average of x_col and y_col(s)
         m, c, r, p, sterr, perm_p = permutation_correlation(df[x].values, df[y].mean(axis=1).values)
         
-    else
+    else:
         # Find the correlation between the average of x_col(s) and y_col(s)
         m, c, r, p, sterr, perm_p = permutation_correlation(df[x].mean(axis=1).values, df[y].mean(axis=1).values)
     
