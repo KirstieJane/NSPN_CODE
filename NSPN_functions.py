@@ -5,7 +5,10 @@ A random collection of useful code
 '''
 
 def permutation_correlation(x_orig, y_orig, n_perm=1000):
-    
+    '''
+    A simple permutation test for linear regression
+    between x and y
+    '''
     import numpy as np
     from scipy.stats import linregress 
     
@@ -48,7 +51,6 @@ def permutation_correlation(x_orig, y_orig, n_perm=1000):
     return m, c, r, p, sterr, perm_p
 
 def permutation_multiple_correlation(x_orig, y_orig, covars=[], n_perm=1000):
-    
     '''
     Define a permuation test for multiple regression
     in which we first calculate the real model fit,
@@ -57,6 +59,7 @@ def permutation_multiple_correlation(x_orig, y_orig, covars=[], n_perm=1000):
     y variable that is shuffled, all the x data remain
     the same.
     '''
+    
     import statsmodels.api as sm
     import numpy as np
     import pandas as pd
@@ -114,4 +117,53 @@ def permutation_multiple_correlation(x_orig, y_orig, covars=[], n_perm=1000):
     
     return results, perm_p
     
+def read_in_df(data_file, aparc_names):
+
+    df = pd.read_csv(data_file, sep=',')
     
+    # Only keep the first scan!
+    df = df[df.occ==0]
+    
+    # Exclude 31856
+    df = df[df.nspn_id<>31856]
+    
+    data_cols = [ x.replace('_{}'.format('thicknessstd'), '') for x in df.columns ]
+    df.columns = data_cols
+    data_cols = [ x.replace('_{}'.format('thickness'), '') for x in df.columns ]
+    df.columns = data_cols
+    
+    # Define a few variables you want
+    df['young'] = 0
+    df['young'].loc[df['age_scan']<np.percentile(df.age_scan, 50)] = 1
+    
+    df['ones'] = df['age_scan'] * 0 + 1
+    df['age'] = df['age_scan']
+    
+    df['Global'] = df[aparc_names].mean(axis=1)
+    df['Global_std'] = df[aparc_names].mean(axis=1)
+    
+    # If there is a corresponding standard deviation
+    # file then read in the standard deviation!
+    if 'mean' in data_file:
+        std_data_file = data_file.replace('mean', 'std')
+    else:
+        std_data_file = data_file.replace('thickness', 'thicknessstd')
+    
+    if os.path.isfile(std_data_file):
+        df_std = pd.read_csv(std_data_file, sep=',')
+        df_std = df_std[df_std.occ==0]
+        df_std = df_std[df_std.nspn_id<>31856]
+        
+        data_cols = [ x.replace('_{}'.format('thicknessstd'), '') for x in df_std.columns ]
+        df_std.columns = data_cols
+        data_cols = [ x.replace('_{}'.format('thickness'), '') for x in df_std.columns ]
+        df_std.columns = data_cols
+        
+        df['Global_std'] = np.sqrt(np.average(df_std[aparc_names]**2, axis=1))
+    
+    df[aparc_names] = df[aparc_names].astype('float')
+    
+    if 'MT_proj' in data_file:
+        df.loc[df['Global']<50, aparc_names+['Global']+['Global_std']] = df.loc[df['Global']<50, aparc_names+['Global']+['Global_std']]*1000.0
+    
+    return df
