@@ -169,9 +169,9 @@ def write_table(table_var_dict, n=308):
         
         #---------------------------------------------------------------------
         # Write the number of sub regions for this roi into the table_list
-        n = len(sub_roi_list)
+        n_sub = len(sub_roi_list)
         
-        table_list += [ '{}'.format(n)]
+        table_list += [ '{}'.format(n_sub)]
         
         #---------------------------------------------------------------------        
         # Get the average degree for this region
