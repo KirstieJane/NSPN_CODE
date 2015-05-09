@@ -542,7 +542,7 @@ def write_table(table_var_dict, n=308):
         
         #---------------------------------------------------------------------        
         # And then write out the table :)
-        write_table_list(table_var_dict, n=308, table_list)
+        write_table_list(table_var_dict, table_list, n=308)
             
 def write_header(table_var_dict, n=308):
     '''
@@ -702,7 +702,7 @@ def append_degree(table_var_dict, table_list, sub_roi_list):
     
     return table_list
     
-def write_table_list(table_var_dict, n=308, table_list):
+def write_table_list(table_var_dict, table_list, n=308):
 
     f_name = table_var_dict['table_file_{}'.format(n)]
     
