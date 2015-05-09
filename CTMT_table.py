@@ -656,19 +656,19 @@ def append_correlation(table_list, df, x_col, y_col):
     '''
     if len(x_col) == 1 and len(y_col) == 1:
         # Find the correlation between x_col and y_col
-        m, c, r, p, sterr, perm_p = permutation_correlation(df[x].values, df[y].values)
+        m, c, r, p, sterr, perm_p = permutation_correlation(df[x_col].values, df[y_col].values)
 
     elif len(x_col) > 1 and len(y_col) == 1:
         # Find the correlation between the average of x_col(s) and y_col
-        m, c, r, p, sterr, perm_p = permutation_correlation(df[x].mean(axis=1).values, df[y].values)
+        m, c, r, p, sterr, perm_p = permutation_correlation(df[x_col].mean(axis=1).values, df[y_col].values)
     
     elif len(x_col) == 1 and len(y_col) > 1:
         # Find the correlation between the average of x_col and y_col(s)
-        m, c, r, p, sterr, perm_p = permutation_correlation(df[x].values, df[y].mean(axis=1).values)
+        m, c, r, p, sterr, perm_p = permutation_correlation(df[x_col].values, df[y_col].mean(axis=1).values)
         
     else:
         # Find the correlation between the average of x_col(s) and y_col(s)
-        m, c, r, p, sterr, perm_p = permutation_correlation(df[x].mean(axis=1).values, df[y].mean(axis=1).values)
+        m, c, r, p, sterr, perm_p = permutation_correlation(df[x_col].mean(axis=1).values, df[y_col].mean(axis=1).values)
     
     # Adjust very small p values to a readable format
     if perm_p < 0.001:
