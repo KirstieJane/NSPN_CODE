@@ -542,7 +542,7 @@ def write_table(table_var_dict, n=308):
         
         #---------------------------------------------------------------------        
         # And then write out the table :)
-        write_table_list(table_var_dict, table_list, n=308)
+        write_table_list(table_var_dict, table_list, n=n)
             
 def write_header(table_var_dict, n=308):
     '''
