@@ -569,6 +569,7 @@ def get_roi_list(table_var_dict, n=308):
     '''
     # If n = 308 then it's really easy, you want all the aparc_names regions
     if n == 308:
+        roi_list = table_var_dict['aparc_names']
         
     # If n = 68 you want the DK regions so we'll pick the first aparc region
     # for each DK atlas region
