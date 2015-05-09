@@ -511,8 +511,8 @@ def write_table(table_var_dict, n=308):
         # Look at correlations across pairs of data frames
         
         # Adjust the roi_names because we're going to merge the data frames
-        ct_roi_list = [ '{}_ct' for x in sub_roi_list ]
-        mt_roi_list = [ '{}_mt' for x in sub_roi_list ]
+        ct_sub_roi_list = [ '{}_ct' for x in sub_roi_list ]
+        mt_sub_roi_list = [ '{}_mt' for x in sub_roi_list ]
         
         # Correlation between mean CT and mean MTall
         ct_mt_df = table_var_dict['ct_df'].merge(table_var_dict['mt_df'], 
@@ -656,15 +656,15 @@ def append_correlation(table_list, df, x_col, y_col):
     '''
     if len(x_col) == 1 and len(y_col) == 1:
         # Find the correlation between x_col and y_col
-        m, c, r, p, sterr, perm_p = permutation_correlation(df[x_col].values, df[y_col].values)
+        m, c, r, p, sterr, perm_p = permutation_correlation(df[x_col[0]].values, df[y_col[0]].values)
 
     elif len(x_col) > 1 and len(y_col) == 1:
         # Find the correlation between the average of x_col(s) and y_col
-        m, c, r, p, sterr, perm_p = permutation_correlation(df[x_col].mean(axis=1).values, df[y_col].values)
+        m, c, r, p, sterr, perm_p = permutation_correlation(df[x_col].mean(axis=1).values, df[y_col[0]].values)
     
     elif len(x_col) == 1 and len(y_col) > 1:
         # Find the correlation between the average of x_col and y_col(s)
-        m, c, r, p, sterr, perm_p = permutation_correlation(df[x_col].values, df[y_col].mean(axis=1).values)
+        m, c, r, p, sterr, perm_p = permutation_correlation(df[x_col[0]].values, df[y_col].mean(axis=1).values)
         
     else:
         # Find the correlation between the average of x_col(s) and y_col(s)
