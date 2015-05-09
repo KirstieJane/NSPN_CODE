@@ -119,7 +119,11 @@ def permutation_multiple_correlation(x_orig, y_orig, covars=[], n_perm=1000):
     return results, perm_p
     
 def read_in_df(data_file, aparc_names):
-
+    '''
+    A very useful command for NSPN behavmerge data frames
+    Beware though - this is quite specific and there are 
+    a few versions floating around! Be careful
+    '''
     import pandas as pd
     import numpy as np
     import os
@@ -127,10 +131,10 @@ def read_in_df(data_file, aparc_names):
     df = pd.read_csv(data_file, sep=',')
     
     # Only keep the first scan!
-    df = df[df.occ==0]
+    df = df.loc[df.occ==0, :]
     
     # Exclude 31856
-    df = df[df.nspn_id<>31856]
+    df = df.loc[df.nspn_id<>31856, :]
     
     data_cols = [ x.replace('_{}'.format('thicknessstd'), '') for x in df.columns ]
     df.columns = data_cols
@@ -138,15 +142,16 @@ def read_in_df(data_file, aparc_names):
     df.columns = data_cols
     
     # Define a few variables you want
+    median_age = np.percentile(df.age_scan, 50)
     df['young'] = 0
-    df['young'].loc[df['age_scan']<np.percentile(df.age_scan, 50)] = 1
-    
+    df['young'].loc[df['age_scan'] < median_age] = 1
+
     df['ones'] = df['age_scan'] * 0 + 1
     df['age'] = df['age_scan']
     
     df['Global'] = df[aparc_names].mean(axis=1)
     df['Global_std'] = df[aparc_names].mean(axis=1)
-    
+
     # If there is a corresponding standard deviation
     # file then read in the standard deviation!
     if 'mean' in data_file:
@@ -156,8 +161,8 @@ def read_in_df(data_file, aparc_names):
     
     if os.path.isfile(std_data_file):
         df_std = pd.read_csv(std_data_file, sep=',')
-        df_std = df_std[df_std.occ==0]
-        df_std = df_std[df_std.nspn_id<>31856]
+        df_std = df_std.loc[df_std.occ==0, :]
+        df_std = df_std.loc[df_std.nspn_id<>31856, :]
         
         data_cols = [ x.replace('_{}'.format('thicknessstd'), '') for x in df_std.columns ]
         df_std.columns = data_cols
