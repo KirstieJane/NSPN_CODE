@@ -589,7 +589,8 @@ def figure_1(graph_dict,
                                                                                                     covars, 
                                                                                                     group.upper(), 
                                                                                                     cost))
-        plot_degree_dist(G, figure_name=figure_name, x_max=200, y_max=0.1, color=sns.color_palette()[0])
+        plot_degree_dist(G, figure_name=figure_name, x_max=100, y_max=0.1, color=sns.color_palette()[0])
+        
         ax_list[1, i] = plot_degree_dist(G, ax=ax_list[1, i], x_max=200, y_max=0.1, color=sns.color_palette()[0])
         
         #============= RICH CLUB ==============================
@@ -599,7 +600,7 @@ def figure_1(graph_dict,
                                                                                                     group.upper(), 
                                                                                                     cost))
         deg, rc, rc_rand = rich_club(G, R_list, n=n)
-        plot_rich_club(rc, rc_rand, figure_name=figure_name, x_max=200, y_max=1.2, color=sns.color_palette()[0])    
+        plot_rich_club(rc, rc_rand, figure_name=figure_name, x_max=100, y_max=1.2, color=sns.color_palette()[0])    
         ax_list[2, i] = plot_rich_club(rc, rc_rand, ax=ax_list[2, i], x_max=200, y_max=1.2, color=sns.color_palette()[0])
         
         #============= NETWORK MEASURES =======================
@@ -621,7 +622,7 @@ def figure_1(graph_dict,
         #============= CORR DEGREE W/slope CT age =======================
         ax_list[4, i] = pretty_scatter(G.degree().values(), measure_dict['CT_all_slope_age'], 
                                                 x_label='Degree', y_label='Slope CT with age', 
-                                                x_max=200, x_min=0, 
+                                                x_max=100, x_min=0, 
                                                 y_max=0.05, y_min=-0.1, 
                                                 color='k',
                                                 ax=ax_list[4, i],
@@ -630,7 +631,7 @@ def figure_1(graph_dict,
         #============= CORR DEGREE W/slope MT age =======================
         ax_list[5, i] = pretty_scatter(G.degree().values(), measure_dict['MT_projfrac+030_all_slope_age']/1000.0, 
                                                 x_label='Degree', y_label='Slope MT(70%) with age', 
-                                                x_max=200, x_min=0, 
+                                                x_max=100, x_min=0, 
                                                 y_max=0.020, y_min=-0.010, 
                                                 color='k',
                                                 ax=ax_list[5, i],
