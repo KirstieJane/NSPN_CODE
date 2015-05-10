@@ -549,9 +549,9 @@ def figure_1(graph_dict,
                 covars_list=['ones'], 
                 group='all'):
     
-    big_fig, ax_list = plt.subplots(6, 4, figsize=(40, 35), facecolor='white', sharey='row')
+    big_fig, ax_list = plt.subplots(6, 5, figsize=(40, 35), facecolor='white', sharey='row')
     
-    cost_list = [ 5, 15, 20, 30 ]
+    cost_list = [ 5, 10, 15, 20, 30 ]
     
     for i, cost in enumerate(cost_list):
         cost = np.float(cost)
