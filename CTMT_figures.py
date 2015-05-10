@@ -832,7 +832,11 @@ def figure_3(graph_dict, measure_dict, figures_dir, covars_list=['ones'], group=
     import matplotlib.pylab as plt
     import numpy as np
     import networkx as nx
-    
+
+    # Set the seaborn context and style
+    sns.set(style="white")
+    sns.set_context("poster", font_scale=2)
+
     big_fig, ax_list = plt.subplots(2,3, figsize=(30, 12), facecolor='white')
     
     cost = 10    
