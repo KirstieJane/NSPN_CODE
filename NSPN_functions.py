@@ -133,8 +133,13 @@ def read_in_df(data_file, aparc_names):
     # Only keep the first scan!
     df = df.loc[df.occ==0, :]
     
-    # Exclude 31856
-    df = df.loc[df.nspn_id<>31856, :]
+    # Exclude a bunch o bad scans
+    bad_list = [ 11932, 12310, 19059, 20321, 20743, 
+                 20743, 22152, 24851, 25098, 26476,
+                 26815, 31856, 34520, 35311, 35485,
+                 35675, 41160, 42655, 47142 ]
+    for bad in bad_list:
+        df = df.loc[df.nspn_id<>bad, :]
     
     data_cols = [ x.replace('_{}'.format('thicknessstd'), '') for x in df.columns ]
     df.columns = data_cols

@@ -666,7 +666,7 @@ def figure_1(graph_dict,
     
     plt.close()
 
-def figure_2(df_ct, df_mt, measure_dict, figures_dir, aparc_names):
+def figure_2(df_ct, df_mt, measure_dict, figures_dir, results_dir, aparc_names):
     
     # Set the seaborn context and style
     sns.set(style="white")
@@ -676,9 +676,7 @@ def figure_2(df_ct, df_mt, measure_dict, figures_dir, aparc_names):
     
     #==== CORRELATE GLOBAL CT WITH AGE =============================
     figure_name = os.path.join(figures_dir, 'Global_CT_corr_Age.png')
-    
-    #df_ct = read_in_df(ct_data_file)
-    
+        
     color=sns.color_palette('RdBu_r', 10)[1]
     
     pretty_scatter(df_ct['age_scan'], df_ct['Global'], 
@@ -699,9 +697,7 @@ def figure_2(df_ct, df_mt, measure_dict, figures_dir, aparc_names):
     #==== CORRELATE GLOBAL MT(70) WITH AGE =============================
     figure_name = os.path.join(figures_dir, 
                                     'Global_MT_projfrac+030_corr_Age.png')
-    
-    #df_mt = read_in_df(mt_data_file)
-    
+        
     color=sns.color_palette('PRGn_r', 10)[1]
     
     pretty_scatter(df_mt['age_scan'], df_mt['Global']/1000, 
@@ -722,9 +718,7 @@ def figure_2(df_ct, df_mt, measure_dict, figures_dir, aparc_names):
     #==== CORRELATE GLOBAL MT(70) WITH CT =============================
     figure_name = os.path.join(figures_dir, 
                                     'Global_MT_projfrac+030_corr_CT.png')
-    
-    #df_mt = read_in_df(mt_data_file)
-    
+        
     color=sns.color_palette('PRGn', 10)[1]
     
     pretty_scatter(df_ct['Global'], df_mt['Global']/1000, 
@@ -742,12 +736,17 @@ def figure_2(df_ct, df_mt, measure_dict, figures_dir, aparc_names):
                     ax=ax_list[2, 0],
                     figure=big_fig)
     
+    #==== SHOW PYSURFER CT CORR AGE =============================
+    #figure_name = os.path.join(results_dir, 
+    #                                'Global_MT_projfrac+030_corr_CT.png')
+    #img = mpimg.imread(f)
+    #ax_list[0,1].imshow(img)
+    # EASY - but needs fiddling with - TBD 
+    
     #==== CORRELATE GLOBAL CT WITH DeltaCT =============================
     figure_name = os.path.join(figures_dir, 
                                     'Mean_CT_corr_slope_CT_age.png')
-    
-    #df_ct = read_in_df(ct_data_file)
-    
+        
     color=sns.color_palette('RdBu_r', 10)[1]
     
     pretty_scatter(measure_dict['CT_all_mean'], measure_dict['CT_all_slope_age'],
