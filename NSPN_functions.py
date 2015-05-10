@@ -169,6 +169,10 @@ def read_in_df(data_file, aparc_names):
         df_std = df_std.loc[df_std.occ==0, :]
         df_std = df_std.loc[df_std.nspn_id<>31856, :]
         
+        # Exclude a bunch o bad scans
+        for bad in bad_list:
+            df_std = df_std.loc[df.nspn_id<>bad, :]
+        
         data_cols = [ x.replace('_{}'.format('thicknessstd'), '') for x in df_std.columns ]
         df_std.columns = data_cols
         data_cols = [ x.replace('_{}'.format('thickness'), '') for x in df_std.columns ]
