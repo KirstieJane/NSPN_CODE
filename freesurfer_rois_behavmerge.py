@@ -33,14 +33,22 @@ def usage():
 # READ IN COMMAND LINE ARGUMENTS
 #=============================================================================
 # Get the fs_rois_dir from the command line
-fs_rois_dir=sys.argv[1]
-# Get the full path to the behaviour csv file
-behav_file=sys.argv[2]
-
-if not os.path.isfile(behav_file):
-    print "Can't find behav_file"
+if not sys.argv[1]:
+    print "Can't find FS_ROIS directory"
     usage()
+else:
+    fs_rois_dir=sys.argv[1]
 
+# Get the full path to the behaviour csv file
+if sys.argv[2]:
+    behav_file=sys.argv[2]
+    if not os.path.isfile(behav_file):
+        print "Can't find behav_file"
+        usage()
+else:
+     print "Can't find behav_file"
+     usage()
+     
 #=============================================================================
 # READ IN BEHAVIOURAL FILE
 #=============================================================================
@@ -102,6 +110,10 @@ for f in file_list:
             
             # Put this file in the same folder as the behavioural file
             behav_dir = os.path.dirname(behav_file)
-            f_out = os.path.join(behav_dir, f_out)
+            f_out = os.path.join(behav_dir, 'FS_BEHAV', f_out)
+
+            if not os.path.isdir(os.path.join(behav_dir, 'FS_BEHAV')):
+                os.makedirs(os.path.join(behav_dir, 'FS_BEHAV'))
+                
             df.to_csv(f_out,float_format='%.5f')
             
