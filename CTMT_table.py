@@ -14,12 +14,12 @@ import networkx as nx
 from NSPN_functions import *
 
 #==============================================================================
-def create_3tables(cohort_dir, fsaverage_dir):
+def create_3tables(data_dir, graph_dir, table_dir, fsaverage_dir):
     '''
     This is the main script! It makes your three tables!
     '''
     print '    Setting up table data'
-    table_var_dict = setup_table_data(cohort_dir, fsaverage_dir)
+    table_var_dict = setup_table_data(data_dir, graph_dir, table_dir, fsaverage_dir)
     print '    Making table n=308'
     write_table(table_var_dict, n=308)
     print '    Making table n=68'
@@ -28,7 +28,7 @@ def create_3tables(cohort_dir, fsaverage_dir):
     write_table(table_var_dict, n=34)
 
 
-def setup_table_data(cohort_dir, fsaverage_dir):
+def setup_table_data(data_dir, graph_dir, table_dir, fsaverage_dir):
     '''
     Read in the files you need, and define the output files
     '''
@@ -39,19 +39,14 @@ def setup_table_data(cohort_dir, fsaverage_dir):
     
     # Define the data files we want to report from
     # (from which we want to report :P)
-    table_var_dict['ct_data_file'] = os.path.join(cohort_dir, 
-                                                        'FS_ROIS', 
+    table_var_dict['ct_data_file'] = os.path.join(data_dir, 
                                                         'PARC_500aparc_thickness_behavmerge.csv')
-    table_var_dict['mt_data_file'] = os.path.join(cohort_dir, 
-                                                        'FS_ROIS', 
+    table_var_dict['mt_data_file'] = os.path.join(data_dir, 
                                                         'SEG_MT_500cortConsec_mean_behavmerge.csv')
-    table_var_dict['mt70_data_file'] = os.path.join(cohort_dir, 
-                                                        'FS_ROIS', 
+    table_var_dict['mt70_data_file'] = os.path.join(data_dir,
                                                         'PARC_500aparc_MT_projfrac+030_mean_behavmerge.csv')
                                                         
-    table_var_dict['ct_graph_file'] = os.path.join(cohort_dir, 
-                                                        'FS_ROIS', 
-                                                         'GRAPHS', 
+    table_var_dict['ct_graph_file'] = os.path.join(graph_dir,
                                                          'Graph_CT_covar_ones_all_COST_10.gpickle')
 
     # Load the names of each region
@@ -84,9 +79,9 @@ def setup_table_data(cohort_dir, fsaverage_dir):
     table_var_dict['deg'] = table_var_dict['G'].degree()
 
     # Define the output files
-    table_var_dict['table_file_308'] = os.path.join(cohort_dir, 'TABLES', '308_regions.csv')
-    table_var_dict['table_file_68'] = os.path.join(cohort_dir, 'TABLES', '68_regions.csv')
-    table_var_dict['table_file_34'] = os.path.join(cohort_dir, 'TABLES', '34_regions.csv')
+    table_var_dict['table_file_308'] = os.path.join(table_dir, '308_regions.csv')
+    table_var_dict['table_file_68'] = os.path.join(table_dir, '68_regions.csv')
+    table_var_dict['table_file_34'] = os.path.join(table_dir, '34_regions.csv')
         
     # Create a header for the table
     table_var_dict['header'] = [ 'Lobe', 'Region', 'Hemisphere', 
@@ -96,10 +91,6 @@ def setup_table_data(cohort_dir, fsaverage_dir):
                                     'Slope CT with MTall', 'perm_p',
                                     'Slope CT with MT70', 'perm_p',
                                     'N Sub Regions', 'Degree' ]
-
-    # Make the folder if necessary
-    if not os.path.isdir(os.path.join(cohort_dir, 'TABLES')):
-        os.makedirs(os.path.join(cohort_dir, 'TABLES'))
 
     return table_var_dict
 
