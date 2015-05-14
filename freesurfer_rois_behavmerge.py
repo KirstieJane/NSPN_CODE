@@ -48,7 +48,7 @@ if sys.argv[2]:
 else:
      print "Can't find behav_file"
      usage()
-     
+
 #=============================================================================
 # READ IN BEHAVIOURAL FILE
 #=============================================================================
@@ -110,10 +110,7 @@ for f in file_list:
             
             # Put this file in the same folder as the behavioural file
             behav_dir = os.path.dirname(behav_file)
-            f_out = os.path.join(behav_dir, 'FS_BEHAV', f_out)
-
-            if not os.path.isdir(os.path.join(behav_dir, 'FS_BEHAV')):
-                os.makedirs(os.path.join(behav_dir, 'FS_BEHAV'))
+            f_out = os.path.join(behav_dir, f_out)
                 
             df.to_csv(f_out,float_format='%.5f')
             
