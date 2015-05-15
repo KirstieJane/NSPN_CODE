@@ -458,11 +458,18 @@ def write_network_result_row(graph_dict_dict, result_text, key, dp=2):
         graph_keys = [ x for x in network_measure_dict.keys() if not 'rand' in x ]
         
         for k in graph_keys:
-            measures_list += [ '{} = {:2.2f} (random = {:2.2f}, 95% CI [{:2.2f}, {:2.2f}])'.format(k, 
-                                        np.mean(network_measure_dict[k]),
-                                        np.mean(network_measure_dict['{}_rand'.format(k)]),
-                                        np.percentile(network_measure_dict['{}_rand'.format(k)], 5),
-                                        np.percentile(network_measure_dict['{}_rand'.format(k)], 95) ) ]
+            if k == 'sigma':
+                measures_list += [ '{} = {:2.2f}, 95% CI [{:2.2f}, {:2.2f}]'.format(k, 
+                                            np.mean(network_measure_dict[k]),
+                                            np.percentile(network_measure_dict[k], 5),
+                                            np.percentile(network_measure_dict[k], 95) ) ]
+            
+            else:
+                measures_list += [ '{} = {:2.2f} (random = {:2.2f}, 95% CI [{:2.2f}, {:2.2f}])'.format(k, 
+                                            np.mean(network_measure_dict[k]),
+                                            np.mean(network_measure_dict['{}_rand'.format(k)]),
+                                            np.percentile(network_measure_dict['{}_rand'.format(k)], 5),
+                                            np.percentile(network_measure_dict['{}_rand'.format(k)], 95) ) ]
                                         
         table_list += [ '; '.join(measures_list) ]
         
@@ -580,6 +587,10 @@ def create_stats_table(measure_dict_dict, graph_dict_dict, paper_dir):
     table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_u_thr=0, mul100000=True)
     write_stats_table_list(f_name, table_list)
 
+    result_text = 'Structural covariance network: bilaterally symmetric community structure'
+    table_list = [ result_text ]
+    write_stats_table_list(f_name, table_list)
+    
     result_text = "Structural covariance network: assortative; modular; clustered; longer average path lengths; lower global efficiency; small world"
     G_key = 'CT_covar_ones_all_COST_10'
     table_list = write_network_result_row(graph_dict_dict, result_text, G_key)
