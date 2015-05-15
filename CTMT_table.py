@@ -567,13 +567,13 @@ def create_stats_table(measure_dict_dict, graph_dict_dict, paper_dir):
     result_text = "Regional change in CT with age weakly dependent on mean MT: less myelinated cortex myelinates more"
     x_key = 'MT_projfrac+030_all_mean'
     y_key = 'CT_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, mul1000=True)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, div1000=True)
     write_stats_table_list(f_name, table_list)
 
     result_text = "(more strongly when you exclude regions that aren't thinning)"
     x_key = 'MT_projfrac+030_all_mean'
     y_key = 'CT_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_u_thr=0, mul1000=True)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_u_thr=0, div1000=True)
     write_stats_table_list(f_name, table_list)
 
     result_text = "Structural covariance network: assortative; modular; clustered; longer average path lengths; lower global efficiency; small world"
