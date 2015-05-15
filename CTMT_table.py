@@ -280,7 +280,7 @@ def append_mean_std(table_list, df, sub_roi_list):
     return table_list
 
 #==============================================================================
-def append_correlation(table_list, df, x_col, y_col, mul1000=True, r_style=False):
+def append_correlation(table_list, df, x_col, y_col, mul1000=True, mul100000=False, r_style=False):
     '''
     Figure out the correlation between x_col(s) and y_col(s)
     and append those values to the table_list
@@ -304,6 +304,10 @@ def append_correlation(table_list, df, x_col, y_col, mul1000=True, r_style=False
     if mul1000:
         # Multiply all the slope values by 1000 so that they print out sensibly
         m = m * 1000.0
+        
+    if mul100000:
+        # Multiply all the slope values by 1000 so that they print out sensibly
+        m = m * 100000.0        
         
     if r_style:
         # Adjust very small p values to a readable format
@@ -383,7 +387,7 @@ def write_corr_result_row(measure_dict_dict,
                             x_key, y_key, 
                             x_u_thr=None, x_l_thr=None, 
                             y_u_thr=None, y_l_thr=None, 
-                            div1000=False, mul1000=False):
+                            div1000=False, mul1000=False, mul100000=False):
 
     table_list = [ result_text ]
     
@@ -416,7 +420,7 @@ def write_corr_result_row(measure_dict_dict,
         # Add the r, p and m values to the table_list
         table_list = append_correlation(table_list, df, 
                                             ['x'], ['y'], 
-                                            mul1000 = mul1000, r_style=True)
+                                            mul1000 = mul1000, mul100000=mul100000, r_style=True)
     return table_list
     
 #==============================================================================
@@ -567,13 +571,13 @@ def create_stats_table(measure_dict_dict, graph_dict_dict, paper_dir):
     result_text = "Regional change in CT with age weakly dependent on mean MT: less myelinated cortex myelinates more"
     x_key = 'MT_projfrac+030_all_mean'
     y_key = 'CT_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, div1000=True)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, mul100000=True)
     write_stats_table_list(f_name, table_list)
 
     result_text = "(more strongly when you exclude regions that aren't thinning)"
     x_key = 'MT_projfrac+030_all_mean'
     y_key = 'CT_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_u_thr=0, div1000=True)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_u_thr=0, mul100000=True)
     write_stats_table_list(f_name, table_list)
 
     result_text = "Structural covariance network: assortative; modular; clustered; longer average path lengths; lower global efficiency; small world"
