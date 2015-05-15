@@ -449,7 +449,7 @@ def write_network_result_row(graph_dict_dict, result_text, key, dp=2):
         
         measures_list = []
         
-        network_measure_dict = calculate_network_measures(G, n=100)
+        network_measure_dict = calculate_network_measures(G, n=3)
         
         graph_keys = [ x for x in network_measure_dict.keys() if not 'rand' in x ]
         
@@ -592,19 +592,19 @@ def create_stats_table(measure_dict_dict, graph_dict_dict, paper_dir):
     result_text = 'High degree nodes show larger decreases in CT'
     x_key = 'Degree_CT_covar_ones_all_COST_10'
     y_key = 'CT_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, mul1000=True)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'and increases in MT at 70% cortical depth with age'
     x_key = 'Degree_CT_covar_ones_all_COST_10'
     y_key = 'MT_projfrac+030_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, mul1000=True)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'No relationship between degree and correlation between CT and MT'
     x_key = 'Degree_CT_covar_ones_all_COST_10'
     y_key = 'MT_projfrac+030_all_slope_ct'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, mul1000=True)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'High degree nodes primarily located in association cortices'
