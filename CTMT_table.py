@@ -315,9 +315,9 @@ def append_correlation(table_list, df, x_col, y_col, mul1000=True, r_style=False
         # Change the number of decimal places according to
         # the intercept measure
         if np.abs(c) < 10:
-            table_list += [ 'r_sq = {:2.2f}, P {}, beta = {:2.2f}'.format(r**2, perm_p, m) ]
+            table_list += [ 'r_sq = {:2.2f}; P {}; beta = {:2.2f}'.format(r**2, perm_p, m) ]
         else:
-            table_list += [ 'r_sq = {:2.2f}, P {}, beta = {:2.1f}'.format(r**2, perm_p, m) ]
+            table_list += [ 'r_sq = {:2.2f}; P {}; beta = {:2.1f}'.format(r**2, perm_p, m) ]
 
     else:
         # Adjust very small p values to a readable format
@@ -460,7 +460,7 @@ def write_network_result_row(graph_dict_dict, result_text, key, dp=2):
                                         np.percentile(network_measure_dict['{}_rand'.format(k)], 5),
                                         np.percentile(network_measure_dict['{}_rand'.format(k)], 95) ) ]
                                         
-        table_list += [ ', '.join(measures_list) ]
+        table_list += [ '; '.join(measures_list) ]
         
     return table_list    
     
@@ -476,15 +476,15 @@ def format_r_p_m(table_list, r, perm_p, m, dp=2):
     # Change the number of decimal places according to
     # the intercept measure
     if dp == 1:
-        table_list += [ 'r_sq = {:2.2f}, P {}, beta = {:2.1f}'.format(r**2, perm_p, m) ]
+        table_list += [ 'r_sq = {:2.2f}; P {}; beta = {:2.1f}'.format(r**2, perm_p, m) ]
     elif dp == 2:
-        table_list += [ 'r_sq = {:2.2f}, P {}, beta = {:2.2f}'.format(r**2, perm_p, m) ]
+        table_list += [ 'r_sq = {:2.2f}; P {}; beta = {:2.2f}'.format(r**2, perm_p, m) ]
     elif dp == 3:
-        table_list += [ 'r_sq = {:2.2f}, P {}, beta = {:2.3f}'.format(r**2, perm_p, m) ]
+        table_list += [ 'r_sq = {:2.2f}; P {}; beta = {:2.3f}'.format(r**2, perm_p, m) ]
     elif dp == 4:
-        table_list += [ 'r_sq = {:2.2f}, P {}, beta = {:2.4f}'.format(r**2, perm_p, m) ]
+        table_list += [ 'r_sq = {:2.2f}; P {}; beta = {:2.4f}'.format(r**2, perm_p, m) ]
     else:
-        table_list += [ 'r_sq = {:2.2f}, P {}, beta = {:2.0f}'.format(r**2, perm_p, m) ]
+        table_list += [ 'r_sq = {:2.2f}; P {}; beta = {:2.0f}'.format(r**2, perm_p, m) ]
         
     return table_list
 
