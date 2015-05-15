@@ -12,6 +12,7 @@ import itertools as it
 from scipy.stats import linregress 
 import networkx as nx
 from NSPN_functions import *
+from networkx_functions import *
 
 #==============================================================================
 def create_3tables(data_dir, graph_dir, table_dir, fsaverage_dir):
