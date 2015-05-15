@@ -458,7 +458,7 @@ def write_network_result_row(graph_dict_dict, result_text, key, dp=2):
         graph_keys = [ x for x in network_measure_dict.keys() if not 'rand' in x ]
         
         for k in graph_keys:
-            measures_list += [ '{} = {:2.2f} (random = {:2.2f} 95% CI [{:2.2f}, {:2.2f}])'.format(k, 
+            measures_list += [ '{} = {:2.2f} (random = {:2.2f}, 95% CI [{:2.2f}, {:2.2f}])'.format(k, 
                                         np.mean(network_measure_dict[k]),
                                         np.mean(network_measure_dict['{}_rand'.format(k)]),
                                         np.percentile(network_measure_dict['{}_rand'.format(k)], 5),
@@ -608,7 +608,7 @@ def create_stats_table(measure_dict_dict, graph_dict_dict, paper_dir):
     result_text = 'No relationship between degree and correlation between CT and MT'
     x_key = 'Degree_CT_covar_ones_all_COST_10'
     y_key = 'MT_projfrac+030_all_slope_ct'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, mul1000=True)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, mul100000=True)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'High degree nodes primarily located in association cortices'
