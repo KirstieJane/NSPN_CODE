@@ -604,10 +604,10 @@ def create_stats_table(measure_dict_dict, graph_dict_dict, paper_dir):
     write_stats_table_list(f_name, table_list)
 
     result_text = 'High degree nodes primarily located in association cortices'
-    table_list = [ table_list ]
+    table_list = [ result_text ]
     write_stats_table_list(f_name, table_list)
 
     result_text = 'Results are consistent across all network densities from 1% to 30%'
-    table_list = [ table_list ]
+    table_list = [ result_text ]
     write_stats_table_list(f_name, table_list)
 
