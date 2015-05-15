@@ -159,11 +159,6 @@ def read_in_df(data_file, aparc_names):
     if os.path.isfile(std_data_file):
         df_std = pd.read_csv(std_data_file, sep=',')
         df_std = df_std.loc[df_std.occ==0, :]
-        df_std = df_std.loc[df_std.nspn_id<>31856, :]
-        
-        # Exclude a bunch o bad scans
-        for bad in bad_list:
-            df_std = df_std.loc[df_std.nspn_id<>bad, :]
         
         data_cols = [ x.replace('_{}'.format('thicknessstd'), '') for x in df_std.columns ]
         df_std.columns = data_cols
