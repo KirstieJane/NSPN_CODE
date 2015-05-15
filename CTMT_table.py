@@ -505,7 +505,7 @@ def create_stats_table(measure_dict_dict, graph_dict_dict, paper_dir):
 
     result_text = 'CT decreases with age'
     m_key = 'CT_global_slope_age'
-    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, dp=4)
+    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, dp=3)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'MT increases with age;'
@@ -520,12 +520,12 @@ def create_stats_table(measure_dict_dict, graph_dict_dict, paper_dir):
 
     result_text = 'Thinner cortex has higher MT;'
     m_key = 'MTall_global_slope_ct'
-    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, dp=2)
+    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, dp=2, div1000=True)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'most strongly at 70% cortical depth'
     m_key = 'MT_projfrac+030_global_slope_ct'
-    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, dp=2)
+    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, dp=2, div1000=True)
     write_stats_table_list(f_name, table_list)
 
     result_text = "Regional change in CT with age not dependent on mean CT"
