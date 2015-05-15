@@ -449,13 +449,17 @@ def write_network_result_row(graph_dict_dict, result_text, key, dp=2):
         
         measures_list = []
         
-        network_measure_dict = calculate_network_measures(G, n=3)
+        network_measure_dict = calculate_network_measures(G, n=100)
         
         graph_keys = [ x for x in network_measure_dict.keys() if not 'rand' in x ]
         
         for k in graph_keys:
-            measures_list += [ '{} = {:2.2f} (random = {:2.2f})'.format(k, np.mean(network_measure_dict[k]),
-                                                                           np.mean(network_measure_dict['{}_rand'.format(k)]))]
+            measures_list += [ '{} = {:2.2f} (random = {:2.2f} 95% CI [{:2.2f}, {:2.2f}])'.format(k, 
+                                        np.mean(network_measure_dict[k]),
+                                        np.mean(network_measure_dict['{}_rand'.format(k)]),
+                                        np.percentile(network_measure_dict['{}_rand'.format(k)], 5),
+                                        np.percentile(network_measure_dict['{}_rand'.format(k)], 95) ) ]
+                                        
         table_list += [ ', '.join(measures_list) ]
         
     return table_list    
