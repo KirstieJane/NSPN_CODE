@@ -17,8 +17,7 @@ import sys
 study_dir = os.path.join('/home', 'kw401', 'UCHANGE', 'INTERIM_ANALYSES')
 if not os.path.isdir(study_dir):
     study_dir = os.path.join('/scratch', 'kw401', 'UCHANGE_INTERIM')
-scripts_dir = os.path.join(study_dir, 'SCRIPTS')
-sys.path.append(os.path.join(scripts_dir, 'NSPN_CODE'))
+
 from regional_correlation_functions import *
 
 #=============================================================================
@@ -138,3 +137,20 @@ for filename, measure_name in zip(filename_list, measure_name_list):
 
     # STD
     measure_dict['{}_global_std'.format(measure_name)] = df['Global_std'].values
+        
+    # CORR W AGE
+    m, c, r, p, sterr, perm_p = permutation_correlation(df['age_scan'], df['Global'].values)
+
+    measure_dict['{}_global_slope_age'.format(measure_name)] = m
+    measure_dict['{}_global_slope_age_r'.format(measure_name)] = r
+    measure_dict['{}_global_slope_age_p'.format(measure_name)] = p
+    measure_dict['{}_global_slope_age_p_perm'.format(measure_name)] = p_perm
+
+    #  CORR W CT
+    if not measure_name == 'CT':
+        m, c, r, p, sterr, perm_p = permutation_correlation(df_ct['Global'], df['Global'].values)
+
+        measure_dict['{}_global_slope_ct'.format(measure_name)] = m
+        measure_dict['{}_global_slope_ct_r'.format(measure_name)] = r
+        measure_dict['{}_global_slope_ct_p'.format(measure_name)] = p
+        measure_dict['{}_global_slope_ct_p_perm'.format(measure_name)] = p_perm

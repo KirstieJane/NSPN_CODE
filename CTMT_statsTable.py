@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
 '''
-Code to make a table for the supplementary analyses
-for the NSPN interim cohort
+Code to make a table that reports all the statistics
+for a cohort within the CT_MT_ANALYSES pipeline
 '''
+
 import numpy as np
 import matplotlib.pylab as plt
 import pandas as pd
@@ -13,8 +14,198 @@ from scipy.stats import linregress
 import networkx as nx
 from NSPN_functions import *
 
+def write_corr_result_row(measure_dict_dict, 
+                            result_text, 
+                            x_key, y_key, 
+                            x_u_thr=None, x_l_thr=None, 
+                            y_u_thr=None, y_l_thr=None, 
+                            div1000=False, mul1000=False):
+
+    table_list = [ result_text ]
+    
+    for cohort_name in sorted(measure_dict_dict):
+        
+        # Load the measure_dict
+        measure_dict = measure_dict_dict[cohort_name]
+        
+        # Save the variables you care about into a data frame
+        df = pd.DataFrame({ 'x' : measure_dict[x_key],
+                            'y' : measure_dict[y_key] })
+
+        # Divide the y values by 1000 if that's requested:
+        if div1000:
+            df['y'] = df.loc[:, 'y']/1000.0
+            
+        # Apply any masks that have been requested        
+        if not x_u_thr is None:
+            df = df.loc[df['x'] < x_u_thr, :]
+            
+        if not x_l_thr is None:
+            df = df.loc[df['x'] > x_l_thr, :]
+            
+        if not y_u_thr is None:
+            df = df.loc[df['y'] < y_u_thr, :]
+            
+        if not y_l_thr is None:
+            df = df.loc[df['y'] > y_l_thr, :]
+                            
+        # Add the r, p and m values to the table_list
+        table_list = append_correlation(table_list, df, 
+                                            ['x'], ['y'], 
+                                            mul1000 = mul1000, r_style=True)
+    return table_list
+    
+def write_value_result_row(measure_dict_dict, result_text, m_key, div1000=False, mul1000=False, dp=2):
+
+    table_list = [ result_text ]
+    
+    for cohort_name in sorted(measure_dict_dict):
+        
+        # Load the measure_dict
+        measure_dict = measure_dict_dict[cohort_name]
+        
+        m = measure_dict[m_key]
+        r = measure_dict['{}_r'.format(m_key)]
+        perm_p = measure_dict['{}_p_perm'.format(m_key)]
+        
+        table_list = format_r_p_m(table_list, r, perm_p, m, dp=dp)
+        
+    return table_list
+
+def write_network_result_row(graph_dict_dict, result_text, key, dp=2):
+
+    table_list = [ result_text ]
+    
+    for cohort_name in sorted(graph_dict_dict):
+        
+        # Load the measure_dict
+        G = graph_dict_dict[cohort_name][key]
+        
+        measures_list = []
+        
+        network_measure_dict = calculate_network_measures(G, n=3)
+        
+        graph_keys = [ x for x in network_measure_dict.keys() if not 'rand' in x ]
+        
+        for k in graph_keys:
+            measures_list += [ '{} = {:2.2f} (random = {:2.2f})'.format(k, np.mean(network_measure_dict[k]),
+                                                                           np.mean(network_measure_dict['{}_rand'.format(k)]))]
+        table_list += [ ', '.join(measures_list) ]
+        
+    return table_list    
+    
+def format_r_p_m(table_list, r, perm_p, m, dp=2):
+    
+    # Adjust very small p values to a readable format
+    if perm_p < 0.001:
+        perm_p = '< 0.001'
+    else:
+        perm_p = '= {:2.3f}'.format(perm_p)
+        
+    # Change the number of decimal places according to
+    # the intercept measure
+    if dp == 1:
+        table_list += [ 'r_sq = {:2.2f}, P {}, beta = {:2.1f}'.format(r**2, perm_p, m) ]
+    elif dp == 2:
+        table_list += [ 'r_sq = {:2.2f}, P {}, beta = {:2.2f}'.format(r**2, perm_p, m) ]
+    elif dp == 3:
+        table_list += [ 'r_sq = {:2.2f}, P {}, beta = {:2.3f}'.format(r**2, perm_p, m) ]
+    elif dp == 4:
+        table_list += [ 'r_sq = {:2.2f}, P {}, beta = {:2.4f}'.format(r**2, perm_p, m) ]
+    else:
+        table_list += [ 'r_sq = {:2.2f}, P {}, beta = {:2.0f}'.format(r**2, perm_p, m) ]
+        
+    return table_list
+
+f_name = os.path.join(paper_dir, 'Table1.txt')
+write_stats_table_header(f_name, measure_dict_dict)
+
+result_text = 'Regional variations in CT and MT correlate inversely'
+x_key = 'CT_all_mean'
+y_key = 'MT_projfrac+030_all_mean'
+table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, div1000=True)
+write_stats_table_list(f_name, table_list)
+
+result_text = 'CT decreases with age'
+m_key = 'CT_global_slope_age'
+table_list = write_value_result_row(measure_dict_dict, result_text, m_key, dp=4)
+write_stats_table_list(f_name, table_list)
+
+result_text = 'MT increases with age;'
+m_key = 'MTall_global_slope_age'
+table_list = write_value_result_row(measure_dict_dict, result_text, m_key, dp=2)
+write_stats_table_list(f_name, table_list)
+
+result_text = 'most strongly at 70% cortical depth'
+m_key = 'MT_projfrac+030_global_slope_age'
+table_list = write_value_result_row(measure_dict_dict, result_text, m_key, dp=2)
+write_stats_table_list(f_name, table_list)
+
+result_text = 'Thinner cortex has higher MT;'
+m_key = 'MTall_global_slope_ct'
+table_list = write_value_result_row(measure_dict_dict, result_text, m_key, dp=2)
+write_stats_table_list(f_name, table_list)
+
+result_text = 'most strongly at 70% cortical depth'
+m_key = 'MT_projfrac+030_global_slope_ct'
+table_list = write_value_result_row(measure_dict_dict, result_text, m_key, dp=2)
+write_stats_table_list(f_name, table_list)
+
+result_text = "Regional change in CT with age not dependent on mean CT"
+x_key = 'CT_all_mean'
+y_key = 'CT_all_slope_age'
+table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, mul1000=True)
+write_stats_table_list(f_name, table_list)
+
+result_text = "(unless you exclude regions that aren't thinning, then thicker cortex thins more)"
+x_key = 'CT_all_mean'
+y_key = 'CT_all_slope_age'
+table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_u_thr=0, mul1000=True)
+write_stats_table_list(f_name, table_list)
+
+result_text = "Regional change in MT with age weakly dependent on mean CT: thinner cortex myelinates more"
+x_key = 'CT_all_mean'
+y_key = 'MT_projfrac+030_all_slope_age'
+table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, mul1000=False)
+write_stats_table_list(f_name, table_list)
+
+result_text = "(more strongly when you exclude regions that aren't thinning)"
+x_key = 'CT_all_mean'
+y_key = 'MT_projfrac+030_all_slope_age'
+table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_l_thr=0, mul1000=False)
+write_stats_table_list(f_name, table_list)
+
+result_text = "Regional change in MT with age weakly dependent on mean MT: less myelinated cortex myelinates more"
+x_key = 'MT_projfrac+030_all_mean'
+y_key = 'MT_projfrac+030_all_slope_age'
+table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, mul1000=True)
+write_stats_table_list(f_name, table_list)
+
+result_text = "(more strongly when you exclude regions that aren't thinning)"
+x_key = 'MT_projfrac+030_all_mean'
+y_key = 'MT_projfrac+030_all_slope_age'
+table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_l_thr=0, mul1000=True)
+write_stats_table_list(f_name, table_list)
+
+result_text = "Regional change in CT with age weakly dependent on mean MT: less myelinated cortex myelinates more"
+x_key = 'MT_projfrac+030_all_mean'
+y_key = 'CT_all_slope_age'
+table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, mul1000=True)
+write_stats_table_list(f_name, table_list)
+
+result_text = "(more strongly when you exclude regions that aren't thinning)"
+x_key = 'MT_projfrac+030_all_mean'
+y_key = 'CT_all_slope_age'
+table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_u_thr=0, mul1000=True)
+write_stats_table_list(f_name, table_list)
+
+result_text = "Structural covariance network: assortative; modular; clustered; longer average path lengths; lower global efficiency; small world"
+G = graph_dict['CT_covar_ones_all_COST_10']
+table_list = write_network_result_row(measure_dict_dict, result_text, G)
+write_stats_table_list(f_name, table_list)
+
 #==============================================================================
-def create_3tables(data_dir, graph_dir, table_dir, fsaverage_dir):
+def create_statstable(data_dir, graph_dir, table_dir, fsaverage_dir):
     '''
     This is the main script! It makes your three tables!
     '''
@@ -97,19 +288,18 @@ def setup_table_data(data_dir, graph_dir, table_dir, fsaverage_dir):
 
 
 #==============================================================================
-def write_table(table_var_dict, n=308):
+def write_table(table_var_dict, measure_dict):
     '''
     Write out the values into a table calling a buch of 
-    little functions along the way
+    little functions along the way.
     '''
-    
     #------------------------------------------------------
     # Put the header at the top of the file
-    write_header(table_var_dict, n)
+    write_header(table_var_dict, n)                                   ###### TO DO 
 
     #------------------------------------------------------
     # Define the roi list you're going to loop over
-    roi_list = get_roi_list(table_var_dict, n)
+    roi_list = get_roi_list(table_var_dict, n)                        ###### TO DO
     
     #------------------------------------------------------
     # Loop through the regions in the roi_list
@@ -193,6 +383,7 @@ def write_header(table_var_dict, n=308):
         f.write('\n')
 
         
+#==============================================================================
 def get_roi_list(table_var_dict, n=308):
     '''
     Figure out which of the aparc_names regions you're going to loop over
@@ -300,37 +491,22 @@ def append_correlation(table_list, df, x_col, y_col, mul1000=True, r_style=False
         # Find the correlation between the average of x_col(s) and y_col(s)
         m, c, r, p, sterr, perm_p = permutation_correlation(df[x_col].mean(axis=1).values, df[y_col].mean(axis=1).values)
     
+    # Adjust very small p values to a readable format
+    if perm_p < 0.001:
+        perm_p = '< 0.001'
+    else:
+        perm_p = '= {:2.3f}'.format(perm_p)
+    
     if mul1000:
         # Multiply all the slope values by 1000 so that they print out sensibly
         m = m * 1000.0
         
-    if r_style:
-        # Adjust very small p values to a readable format
-        if perm_p < 0.001:
-            perm_p = '< 0.001'
-        else:
-            perm_p = '= {:2.3f}'.format(perm_p)
-        
-        # Change the number of decimal places according to
-        # the intercept measure
-        if np.abs(c) < 10:
-            table_list += [ 'r_sq = {:2.2f}, P {}, beta = {:2.2f}'.format(r**2, perm_p, m) ]
-        else:
-            table_list += [ 'r_sq = {:2.2f}, P {}, beta = {:2.1f}'.format(r**2, perm_p, m) ]
-
+    # Change the number of decimal places according to
+    # the intercept measure
+    if c < 1:
+        table_list += [ 'r_sq = {:2.2f}, p {}, beta = {:2.2f}'.format(r, p_perm, m) ]
     else:
-        # Adjust very small p values to a readable format
-        if perm_p < 0.001:
-            perm_p = '<0.001'
-        else:
-            perm_p = '{:2.3f}'.format(perm_p)
-        
-        # Change the number of decimal places according to
-        # the intercept measure
-        if np.abs(c) < 10:
-            table_list += [ '{:2.2f}'.format(m), '{}'.format(perm_p) ]
-        else:
-            table_list += [ '{:2.1f}'.format(m), '{}'.format(perm_p) ]
+        table_list += [ 'r_sq = {:2.2f}, p {}, beta = {:2.1f}'.format(r, p_perm, m) ]
 
     return table_list
 
@@ -357,256 +533,5 @@ def write_table_list(table_var_dict, table_list, n=308):
     with open(f_name, 'a') as f:
             f.write(','.join(table_list))
             f.write('\n')
-            
-#==============================================================================
-def write_stats_table_list(f_name, table_list):
-    
-    with open(f_name, 'a') as f:
-            f.write('\t'.join(table_list))
-            f.write('\n')
 
-#==============================================================================
-def write_stats_table_header(f_name, measure_dict_dict):
-    
-    table_list = [ 'Result' ]
-    
-    for cohort_name in sorted(measure_dict_dict.keys()):
-        table_list += [cohort_name]
-    with open(f_name, 'w') as f:
-            f.write('\t'.join(table_list))
-            f.write('\n')
-            
-#==============================================================================
-def write_corr_result_row(measure_dict_dict, 
-                            result_text, 
-                            x_key, y_key, 
-                            x_u_thr=None, x_l_thr=None, 
-                            y_u_thr=None, y_l_thr=None, 
-                            div1000=False, mul1000=False):
-
-    table_list = [ result_text ]
-    
-    for cohort_name in sorted(measure_dict_dict):
-        
-        # Load the measure_dict
-        measure_dict = measure_dict_dict[cohort_name]
-        
-        # Save the variables you care about into a data frame
-        df = pd.DataFrame({ 'x' : measure_dict[x_key],
-                            'y' : measure_dict[y_key] })
-
-        # Divide the y values by 1000 if that's requested:
-        if div1000:
-            df['y'] = df.loc[:, 'y']/1000.0
-            
-        # Apply any masks that have been requested        
-        if not x_u_thr is None:
-            df = df.loc[df['x'] < x_u_thr, :]
-            
-        if not x_l_thr is None:
-            df = df.loc[df['x'] > x_l_thr, :]
-            
-        if not y_u_thr is None:
-            df = df.loc[df['y'] < y_u_thr, :]
-            
-        if not y_l_thr is None:
-            df = df.loc[df['y'] > y_l_thr, :]
-                            
-        # Add the r, p and m values to the table_list
-        table_list = append_correlation(table_list, df, 
-                                            ['x'], ['y'], 
-                                            mul1000 = mul1000, r_style=True)
-    return table_list
-    
-#==============================================================================
-def write_value_result_row(measure_dict_dict, result_text, m_key, div1000=False, mul1000=False, dp=2):
-
-    table_list = [ result_text ]
-    
-    for cohort_name in sorted(measure_dict_dict):
-        
-        # Load the measure_dict
-        measure_dict = measure_dict_dict[cohort_name]
-        
-        m = measure_dict[m_key]
-        r = measure_dict['{}_r'.format(m_key)]
-        perm_p = measure_dict['{}_p_perm'.format(m_key)]
-        
-        table_list = format_r_p_m(table_list, r, perm_p, m, dp=dp)
-        
-    return table_list
-
-#==============================================================================
-def write_network_result_row(graph_dict_dict, result_text, key, dp=2):
-
-    table_list = [ result_text ]
-    
-    for cohort_name in sorted(graph_dict_dict):
-        
-        # Load the measure_dict
-        G = graph_dict_dict[cohort_name][key]
-        
-        measures_list = []
-        
-        network_measure_dict = calculate_network_measures(G, n=3)
-        
-        graph_keys = [ x for x in network_measure_dict.keys() if not 'rand' in x ]
-        
-        for k in graph_keys:
-            measures_list += [ '{} = {:2.2f} (random = {:2.2f})'.format(k, np.mean(network_measure_dict[k]),
-                                                                           np.mean(network_measure_dict['{}_rand'.format(k)]))]
-        table_list += [ ', '.join(measures_list) ]
-        
-    return table_list    
-    
-#==============================================================================
-def format_r_p_m(table_list, r, perm_p, m, dp=2):
-    
-    # Adjust very small p values to a readable format
-    if perm_p < 0.001:
-        perm_p = '< 0.001'
-    else:
-        perm_p = '= {:2.3f}'.format(perm_p)
-        
-    # Change the number of decimal places according to
-    # the intercept measure
-    if dp == 1:
-        table_list += [ 'r_sq = {:2.2f}, P {}, beta = {:2.1f}'.format(r**2, perm_p, m) ]
-    elif dp == 2:
-        table_list += [ 'r_sq = {:2.2f}, P {}, beta = {:2.2f}'.format(r**2, perm_p, m) ]
-    elif dp == 3:
-        table_list += [ 'r_sq = {:2.2f}, P {}, beta = {:2.3f}'.format(r**2, perm_p, m) ]
-    elif dp == 4:
-        table_list += [ 'r_sq = {:2.2f}, P {}, beta = {:2.4f}'.format(r**2, perm_p, m) ]
-    else:
-        table_list += [ 'r_sq = {:2.2f}, P {}, beta = {:2.0f}'.format(r**2, perm_p, m) ]
-        
-    return table_list
-
-#==============================================================================
-def create_stats_table(measure_dict_dict, graph_dict_dict, paper_dir):
-    f_name = os.path.join(paper_dir, 'Table1.txt')
-    write_stats_table_header(f_name, measure_dict_dict)
-
-    result_text = 'Regional variations in CT and MT correlate inversely'
-    x_key = 'CT_all_mean'
-    y_key = 'MT_projfrac+030_all_mean'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, div1000=True)
-    write_stats_table_list(f_name, table_list)
-
-    result_text = 'MT increases with increasing cortical depth'
-    table_list = [ result_text ]
-    write_stats_table_list(f_name, table_list)
-
-    result_text = 'CT decreases with age'
-    m_key = 'CT_global_slope_age'
-    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, dp=4)
-    write_stats_table_list(f_name, table_list)
-
-    result_text = 'MT increases with age;'
-    m_key = 'MTall_global_slope_age'
-    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, dp=2)
-    write_stats_table_list(f_name, table_list)
-
-    result_text = 'most strongly at 70% cortical depth'
-    m_key = 'MT_projfrac+030_global_slope_age'
-    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, dp=2)
-    write_stats_table_list(f_name, table_list)
-
-    result_text = 'Thinner cortex has higher MT;'
-    m_key = 'MTall_global_slope_ct'
-    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, dp=2)
-    write_stats_table_list(f_name, table_list)
-
-    result_text = 'most strongly at 70% cortical depth'
-    m_key = 'MT_projfrac+030_global_slope_ct'
-    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, dp=2)
-    write_stats_table_list(f_name, table_list)
-
-    result_text = "Regional change in CT with age not dependent on mean CT"
-    x_key = 'CT_all_mean'
-    y_key = 'CT_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, mul1000=True)
-    write_stats_table_list(f_name, table_list)
-
-    result_text = "(unless you exclude regions that aren't thinning, then thicker cortex thins more)"
-    x_key = 'CT_all_mean'
-    y_key = 'CT_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_u_thr=0, mul1000=True)
-    write_stats_table_list(f_name, table_list)
-
-    result_text = "Regional change in MT with age weakly dependent on mean CT: thinner cortex myelinates more"
-    x_key = 'CT_all_mean'
-    y_key = 'MT_projfrac+030_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, mul1000=False)
-    write_stats_table_list(f_name, table_list)
-
-    result_text = "(more strongly when you exclude regions that aren't thinning)"
-    x_key = 'CT_all_mean'
-    y_key = 'MT_projfrac+030_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_l_thr=0, mul1000=False)
-    write_stats_table_list(f_name, table_list)
-
-    result_text = "Regional change in MT with age weakly dependent on mean MT: less myelinated cortex myelinates more"
-    x_key = 'MT_projfrac+030_all_mean'
-    y_key = 'MT_projfrac+030_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, mul1000=True)
-    write_stats_table_list(f_name, table_list)
-
-    result_text = "(more strongly when you exclude regions that aren't thinning)"
-    x_key = 'MT_projfrac+030_all_mean'
-    y_key = 'MT_projfrac+030_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_l_thr=0, mul1000=True)
-    write_stats_table_list(f_name, table_list)
-
-    result_text = "Regional change in CT with age weakly dependent on mean MT: less myelinated cortex myelinates more"
-    x_key = 'MT_projfrac+030_all_mean'
-    y_key = 'CT_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, mul1000=True)
-    write_stats_table_list(f_name, table_list)
-
-    result_text = "(more strongly when you exclude regions that aren't thinning)"
-    x_key = 'MT_projfrac+030_all_mean'
-    y_key = 'CT_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_u_thr=0, mul1000=True)
-    write_stats_table_list(f_name, table_list)
-
-    result_text = "Structural covariance network: assortative; modular; clustered; longer average path lengths; lower global efficiency; small world"
-    G_key = 'CT_covar_ones_all_COST_10'
-    table_list = write_network_result_row(graph_dict_dict, result_text, G_key)
-    write_stats_table_list(f_name, table_list)
-
-    result_text = 'Structural covariance network: heavy tailed degree distribution'
-    table_list = [ result_text ]
-    write_stats_table_list(f_name, table_list)
-
-    result_text = 'Structural covariance network: rich club'
-    table_list = [ result_text ]
-    write_stats_table_list(f_name, table_list)
-
-    result_text = 'High degree nodes show larger decreases in CT'
-    x_key = 'Degree_CT_covar_ones_all_COST_10'
-    y_key = 'CT_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key)
-    write_stats_table_list(f_name, table_list)
-
-    result_text = 'and increases in MT at 70% cortical depth with age'
-    x_key = 'Degree_CT_covar_ones_all_COST_10'
-    y_key = 'MT_projfrac+030_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key)
-    write_stats_table_list(f_name, table_list)
-
-    result_text = 'No relationship between degree and correlation between CT and MT'
-    x_key = 'Degree_CT_covar_ones_all_COST_10'
-    y_key = 'MT_projfrac+030_all_slope_ct'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key)
-    write_stats_table_list(f_name, table_list)
-
-    result_text = 'High degree nodes primarily located in association cortices'
-    table_list = [ table_list ]
-    write_stats_table_list(f_name, table_list)
-
-    result_text = 'Results are consistent across all network densities from 1% to 30%'
-    table_list = [ table_list ]
-    write_stats_table_list(f_name, table_list)
 

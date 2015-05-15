@@ -416,6 +416,7 @@ def create_mat(df, aparc_names, covar, demean=False):
     '''
     import numpy as np
     from scipy.stats import pearsonr
+    import pandas as pd
 
     mat_corr = df[aparc_names].corr().iloc[:,:]
 
@@ -447,7 +448,6 @@ def create_mat(df, aparc_names, covar, demean=False):
     
     
 def assign_node_attr(G, centroids, aparc_names):
-
     
     # Assign names and x,y,z coordinates to the nodes
     for i, node in enumerate(G.nodes()):
@@ -598,13 +598,15 @@ def calculate_network_measures(G, R_list=None, n=10):
     import numpy as np
     
     #==== SET UP ======================
-    # Start by creating n random graphs
+    # If you haven't already calculated random graphs
+    # or you haven't given this function as many random
+    # graphs as it is expecting then calculate a random
+    # graph here
+    if R_list is None:
+        R_list = []
+    
     for i in range(n):
-        # If you haven't already calculated random graphs
-        # or you haven't given this function as many random
-        # graphs as it is expecting then calculate a random
-        # graph here
-        if not R_list or len(R_list) <= i:
+        if len(R_list) <= i:
             R_list += [ random_graph(G) ]
 
     #==== MEASURES ====================
