@@ -464,9 +464,9 @@ def format_r_p_m(table_list, r, perm_p, m, dp=2, om=1):
     # and the number of decimal places
     if m <> 1:
         m = m * (10**om)
-        m_suff == ' x10^{:1.0f}'.format(om)
+        m_suff = ' x10^{:1.0f}'.format(om)
     else:
-        m_suff == ''
+        m_suff = ''
         
     # Set the beta values as given by the dp variable
     if dp == 1:
@@ -500,9 +500,9 @@ def format_m_p(table_list, m, perm_p, dp=2, om=1):
     # and the number of decimal places
     if m <> 1:
         m = m * (10**om)
-        m_suff == ' x10^{:1.0f}'.format(om)
+        m_suff = ' x10^{:1.0f}'.format(om)
     else:
-        m_suff == ''
+        m_suff = ''
 
     # Change the number of decimal places according to
     # the intercept measure
