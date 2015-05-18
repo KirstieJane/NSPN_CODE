@@ -280,7 +280,7 @@ def append_mean_std(table_list, df, sub_roi_list):
     return table_list
 
 #==============================================================================
-def append_correlation(table_list, df, x_col, y_col, r_style=False, dp=2, om=1):
+def append_correlation(table_list, df, x_col, y_col, r_style=False, dp=2, om=0):
     '''
     Figure out the correlation between x_col(s) and y_col(s)
     and append those values to the table_list
@@ -357,7 +357,7 @@ def write_corr_result_row(measure_dict_dict,
                             x_key, y_key, 
                             x_u_thr=None, x_l_thr=None, 
                             y_u_thr=None, y_l_thr=None,
-                            dp=2, om=1):
+                            dp=2, om=0):
 
     table_list = [ result_text ]
     
@@ -391,7 +391,7 @@ def write_corr_result_row(measure_dict_dict,
     return table_list
     
 #==============================================================================
-def write_value_result_row(measure_dict_dict, result_text, m_key, dp=2, om=1):
+def write_value_result_row(measure_dict_dict, result_text, m_key, dp=2, om=0):
 
     table_list = [ result_text ]
     
@@ -443,7 +443,7 @@ def write_network_result_row(graph_dict_dict, result_text, key, dp=2):
     return table_list    
     
 #==============================================================================
-def format_r_p_m(table_list, r, perm_p, m, dp=2, om=1):
+def format_r_p_m(table_list, r, perm_p, m, dp=2, om=0):
     
     # Adjust very small p values to a readable format
     if perm_p < 0.001:
@@ -487,7 +487,7 @@ def format_r_p_m(table_list, r, perm_p, m, dp=2, om=1):
     return table_list
 
 #==============================================================================
-def format_m_p(table_list, m, perm_p, dp=2, om=1):
+def format_m_p(table_list, m, perm_p, dp=2, om=0):
     
     # Adjust very small p values to a readable format
     if perm_p < 0.001:
