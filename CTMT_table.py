@@ -457,7 +457,7 @@ def format_r_p_m(table_list, r, perm_p, m, dp=2, om=1):
     if r_sq < 0.01:
         r_sq = '< 0.01'
     else:
-        r_sq = '{:2.2f}'.format(perm_p)
+        r_sq = '{:2.2f}'.format(r_sq)
         
     # Adjust the beta values - this is a bit more of a faff
     # There are two steps - sorting out the appropriate order of magnitude
