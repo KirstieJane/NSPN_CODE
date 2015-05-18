@@ -432,7 +432,7 @@ def write_network_result_row(graph_dict_dict, result_text, key, dp=2):
                                             np.percentile(network_measure_dict[k], 95) ) ]
             
             else:
-                measures_list += [ '{} = {:2.2f} (random = {:2.2f}, 95% CI [{:2.2f}, {:2.2f}])'.format(k, 
+                measures_list += [ '{} = {:2.2f} (random: {:2.2f}, 95% CI [{:2.2f}, {:2.2f}])'.format(k, 
                                             np.mean(network_measure_dict[k]),
                                             np.mean(network_measure_dict['{}_rand'.format(k)]),
                                             np.percentile(network_measure_dict['{}_rand'.format(k)], 5),
