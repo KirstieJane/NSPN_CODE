@@ -464,7 +464,7 @@ def format_r_p_m(table_list, r, perm_p, m, dp=2, om=0):
     # and the number of decimal places
     if m <> 1:
         m = m * (10**om)
-        m_suff = ' x10^{:1.0f}'.format(om)
+        m_suff = ' x10^{:1.0f}'.format(-1*om)
     else:
         m_suff = ''
         
@@ -500,7 +500,7 @@ def format_m_p(table_list, m, perm_p, dp=2, om=0):
     # and the number of decimal places
     if m <> 1:
         m = m * (10**om)
-        m_suff = ' x10^{:1.0f}'.format(om)
+        m_suff = ' x10^{:1.0f}'.format(-1*om)
     else:
         m_suff = ''
 
@@ -527,7 +527,7 @@ def create_stats_table(measure_dict_dict, graph_dict_dict, paper_dir):
     result_text = 'Regional variations in CT and MT correlate inversely'
     x_key = 'CT_all_mean'
     y_key = 'MT_projfrac+030_all_mean'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, om=0, dp=2)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'MT increases with increasing cortical depth'
@@ -536,12 +536,12 @@ def create_stats_table(measure_dict_dict, graph_dict_dict, paper_dir):
 
     result_text = 'CT decreases with age'
     m_key = 'CT_global_slope_age'
-    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, dp=3)
+    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, om=0, dp=3)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'MT increases with age;'
     m_key = 'MTall_global_slope_age'
-    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, dp=2)
+    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, om=dp=2)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'most strongly at 70% cortical depth'
