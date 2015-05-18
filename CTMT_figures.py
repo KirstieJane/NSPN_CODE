@@ -465,7 +465,7 @@ def create_violin_data(measure_dict, map='MT', measure='all_slope_age', cmap='Rd
         else:
             m_array = measure_dict['{}_projdist{:+04.0f}_{}'.format(map, i, measure)]
 
-        df['{}'.format(i)] = m_array/1000.0
+        df['{}'.format(i)] = m_array
             
         color_list += [scalarMap.to_rgba(np.mean(df['{}'.format(i)]))]
 
@@ -629,7 +629,7 @@ def figure_1(graph_dict,
                                                 figure=big_fig)
                                                 
         #============= CORR DEGREE W/slope MT age =======================
-        ax_list[5, i] = pretty_scatter(G.degree().values(), measure_dict['MT_projfrac+030_all_slope_age']/1000.0, 
+        ax_list[5, i] = pretty_scatter(G.degree().values(), measure_dict['MT_projfrac+030_all_slope_age'], 
                                                 x_label='Degree', y_label='Slope MT(70%) with age', 
                                                 x_max=100, x_min=0, 
                                                 y_max=0.020, y_min=-0.010, 
@@ -701,14 +701,14 @@ def figure_2(df_ct, df_mt, measure_dict, figures_dir, results_dir, aparc_names):
         
     color=sns.color_palette('PRGn_r', 10)[1]
     
-    pretty_scatter(df_mt['age_scan'], df_mt['Global']/1000, 
+    pretty_scatter(df_mt['age_scan'], df_mt['Global'], 
                     x_label='Age (years)', y_label='Magnetisation Transfer\nat 70% cortical depth', 
                     x_max=25, x_min=14, 
                     y_max=1.05, y_min=0.8, 
                     figure_name=figure_name,
                     color=color)
                             
-    ax_list[1, 0] = pretty_scatter(df_mt['age_scan'], df_mt['Global']/1000, 
+    ax_list[1, 0] = pretty_scatter(df_mt['age_scan'], df_mt['Global'], 
                     x_label='Age (years)', y_label='Magnetisation Transfer\nat 70% cortical depth', 
                     x_max=25, x_min=14, 
                     y_max=1.05, y_min=0.8, 
@@ -722,14 +722,14 @@ def figure_2(df_ct, df_mt, measure_dict, figures_dir, results_dir, aparc_names):
         
     color=sns.color_palette('PRGn', 10)[1]
     
-    pretty_scatter(df_ct['Global'], df_mt['Global']/1000, 
+    pretty_scatter(df_ct['Global'], df_mt['Global'], 
                     x_label='Cortical Thickness (mm)', y_label='Magnetisation Transfer\nat 70% cortical depth', 
                     x_max=3.0, x_min=2.4, 
                     y_max=1.05, y_min=0.8, 
                     figure_name=figure_name,
                     color=color)
                             
-    ax_list[2, 0] = pretty_scatter(df_ct['Global'], df_mt['Global']/1000, 
+    ax_list[2, 0] = pretty_scatter(df_ct['Global'], df_mt['Global'], 
                     x_label='Cortical Thickness (mm)', y_label='Magnetisation Transfer\nat 70% cortical depth', 
                     x_max=3.0, x_min=2.4, 
                     y_max=1.05, y_min=0.8, 
@@ -905,7 +905,7 @@ def figure_3(graph_dict, measure_dict, figures_dir, covars_list=['ones'], group=
                     figure_name=figure_name,
                     color='k')
                             
-    ax_list[0, 1] = pretty_scatter(degrees, measure_dict['MT_projfrac+030_all_slope_age']/1000.0, 
+    ax_list[0, 1] = pretty_scatter(degrees, measure_dict['MT_projfrac+030_all_slope_age'], 
                     x_label='Degree', y_label='Slope MT(70%) with age', 
                     x_max=100, x_min=0, 
                     y_max=0.020, y_min=-0.010, 
@@ -1148,7 +1148,7 @@ def nodal_ct_mt(measure_dict, figures_dir):
                                     
     fig, ax = plt.subplots(figsize=(10, 8), facecolor='white')
     
-    ax = pretty_scatter(measure_dict['CT_all_mean'], measure_dict['MTall_all_mean']/1000.0, 
+    ax = pretty_scatter(measure_dict['CT_all_mean'], measure_dict['MTall_all_mean'], 
                     x_label='Average Cortical Thickness (mm)', y_label='Average Magnetisation Transfer', 
                     x_max=3.8, x_min=1.9, 
                     y_max=1.00, y_min=0.750, 

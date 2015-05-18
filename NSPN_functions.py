@@ -197,7 +197,6 @@ def read_in_df(data_file, aparc_names):
     
     return df
     
-    
 def create_pysurfer_command(roi_file,
                             scripts_dir, 
                             sub_data_dir, 

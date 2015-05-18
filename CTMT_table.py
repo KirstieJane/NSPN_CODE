@@ -280,7 +280,7 @@ def append_mean_std(table_list, df, sub_roi_list):
     return table_list
 
 #==============================================================================
-def append_correlation(table_list, df, x_col, y_col, mul1000=True, mul100000=False, r_style=False):
+def append_correlation(table_list, df, x_col, y_col, r_style=False, dp=2, om=om):
     '''
     Figure out the correlation between x_col(s) and y_col(s)
     and append those values to the table_list
@@ -300,43 +300,13 @@ def append_correlation(table_list, df, x_col, y_col, mul1000=True, mul100000=Fal
     else:
         # Find the correlation between the average of x_col(s) and y_col(s)
         m, c, r, p, sterr, perm_p = permutation_correlation(df[x_col].mean(axis=1).values, df[y_col].mean(axis=1).values)
-    
-    if mul1000:
-        # Multiply all the slope values by 1000 so that they print out sensibly
-        m = m * 1000.0
-        
-    if mul100000:
-        # Multiply all the slope values by 1000 so that they print out sensibly
-        m = m * 100000.0        
-        
+
     if r_style:
-        # Adjust very small p values to a readable format
-        if perm_p < 0.001:
-            perm_p = '< 0.001'
-        else:
-            perm_p = '= {:2.3f}'.format(perm_p)
-        
-        # Change the number of decimal places according to
-        # the intercept measure
-        if np.abs(c) < 10:
-            table_list += [ 'r_sq = {:2.2f}; P {}; beta = {:2.2f}'.format(r**2, perm_p, m) ]
-        else:
-            table_list += [ 'r_sq = {:2.2f}; P {}; beta = {:2.1f}'.format(r**2, perm_p, m) ]
+        table_list = format_r_p_m(table_list, r, perm_p, m, dp=dp, om=om)
 
     else:
-        # Adjust very small p values to a readable format
-        if perm_p < 0.001:
-            perm_p = '<0.001'
-        else:
-            perm_p = '{:2.3f}'.format(perm_p)
+        table_list = format_m_p(table_list, m, perm_p, dp=dp, om=om)
         
-        # Change the number of decimal places according to
-        # the intercept measure
-        if np.abs(c) < 10:
-            table_list += [ '{:2.2f}'.format(m), '{}'.format(perm_p) ]
-        else:
-            table_list += [ '{:2.1f}'.format(m), '{}'.format(perm_p) ]
-
     return table_list
 
 #==============================================================================
@@ -386,8 +356,8 @@ def write_corr_result_row(measure_dict_dict,
                             result_text, 
                             x_key, y_key, 
                             x_u_thr=None, x_l_thr=None, 
-                            y_u_thr=None, y_l_thr=None, 
-                            div1000=False, mul1000=False, mul100000=False):
+                            y_u_thr=None, y_l_thr=None,
+                            dp=2, om=1):
 
     table_list = [ result_text ]
     
@@ -400,10 +370,6 @@ def write_corr_result_row(measure_dict_dict,
         df = pd.DataFrame({ 'x' : measure_dict[x_key],
                             'y' : measure_dict[y_key] })
 
-        # Divide the y values by 1000 if that's requested:
-        if div1000:
-            df['y'] = df.loc[:, 'y']/1000.0
-            
         # Apply any masks that have been requested        
         if not x_u_thr is None:
             df = df.loc[df['x'] < x_u_thr, :]
@@ -420,11 +386,12 @@ def write_corr_result_row(measure_dict_dict,
         # Add the r, p and m values to the table_list
         table_list = append_correlation(table_list, df, 
                                             ['x'], ['y'], 
-                                            mul1000 = mul1000, mul100000=mul100000, r_style=True)
+                                            dp=dp, om=om,
+                                            r_style=True)
     return table_list
     
 #==============================================================================
-def write_value_result_row(measure_dict_dict, result_text, m_key, div1000=False, mul1000=False, dp=2):
+def write_value_result_row(measure_dict_dict, result_text, m_key, dp=2, om=1):
 
     table_list = [ result_text ]
     
@@ -437,7 +404,7 @@ def write_value_result_row(measure_dict_dict, result_text, m_key, div1000=False,
         r = measure_dict['{}_r'.format(m_key)]
         perm_p = measure_dict['{}_p_perm'.format(m_key)]
         
-        table_list = format_r_p_m(table_list, r, perm_p, m, dp=dp)
+        table_list = format_r_p_m(table_list, r, perm_p, m, dp=dp, om=om)
         
     return table_list
 
@@ -476,7 +443,7 @@ def write_network_result_row(graph_dict_dict, result_text, key, dp=2):
     return table_list    
     
 #==============================================================================
-def format_r_p_m(table_list, r, perm_p, m, dp=2):
+def format_r_p_m(table_list, r, perm_p, m, dp=2, om=1):
     
     # Adjust very small p values to a readable format
     if perm_p < 0.001:
@@ -484,20 +451,73 @@ def format_r_p_m(table_list, r, perm_p, m, dp=2):
     else:
         perm_p = '= {:2.3f}'.format(perm_p)
         
+    # Adjust very small r values to a readable format
+    r_sq = r**2
+    
+    if r_sq < 0.01:
+        r_sq = '< 0.01'
+    else:
+        r_sq = '{:2.2f}'.format(perm_p)
+        
+    # Adjust the beta values - this is a bit more of a faff
+    # There are two steps - sorting out the appropriate order of magnitude
+    # and the number of decimal places
+    if m <> 1:
+        m = m * (10**om)
+        m_suff == ' x10^{:1.0f}'.format(om)
+    else:
+        m_suff == ''
+        
+    # Set the beta values as given by the dp variable
+    if dp == 1:
+        m = '{:2.1f}{}'.format(m, m_suff)
+    elif dp == 2:
+        m = '{:2.2f}{}'.format(m, m_suff)
+    elif dp == 3:
+        m = '{:2.3f}{}'.format(m, m_suff)
+    elif dp == 4:
+        m = '{:2.4f}{}'.format(m, m_suff)
+    else:
+        m = '{:2.0f}{}'.format(m, m_suff)
+    
+    # Now write these values into the table list
+    # separated by semi-colons
+    table_list += [ 'r_sq = {}; P {}; beta = {}'.format(r_sq, perm_p, m) ]
+        
+    return table_list
+
+#==============================================================================
+def format_m_p(table_list, m, perm_p, dp=2, om=1):
+    
+    # Adjust very small p values to a readable format
+    if perm_p < 0.001:
+        perm_p = '< 0.001'
+    else:
+        perm_p = '{:2.3f}'.format(perm_p)
+        
+    # Adjust the beta values - this is a bit more of a faff
+    # There are two steps - sorting out the appropriate order of magnitude
+    # and the number of decimal places
+    if m <> 1:
+        m = m * (10**om)
+        m_suff == ' x10^{:1.0f}'.format(om)
+    else:
+        m_suff == ''
+
     # Change the number of decimal places according to
     # the intercept measure
     if dp == 1:
-        table_list += [ 'r_sq = {:2.2f}; P {}; beta = {:2.1f}'.format(r**2, perm_p, m) ]
+        table_list += [ '{:2.1f}{}'.format(m, m_suff), '{}'.format(perm_p) ]
     elif dp == 2:
-        table_list += [ 'r_sq = {:2.2f}; P {}; beta = {:2.2f}'.format(r**2, perm_p, m) ]
+        table_list += [ '{:2.2f}{}'.format(m, m_suff), '{}'.format(perm_p) ]
     elif dp == 3:
-        table_list += [ 'r_sq = {:2.2f}; P {}; beta = {:2.3f}'.format(r**2, perm_p, m) ]
+        table_list += [ '{:2.3f}{}'.format(m, m_suff), '{}'.format(perm_p) ]
     elif dp == 4:
-        table_list += [ 'r_sq = {:2.2f}; P {}; beta = {:2.4f}'.format(r**2, perm_p, m) ]
+        table_list += [ '{:2.4f}{}'.format(m, m_suff), '{}'.format(perm_p) ]
     else:
-        table_list += [ 'r_sq = {:2.2f}; P {}; beta = {:2.0f}'.format(r**2, perm_p, m) ]
+        table_list += [ '{:2.0f}{}'.format(m, m_suff), '{}'.format(perm_p) ]
         
-    return table_list
+    return table_list        
 
 #==============================================================================
 def create_stats_table(measure_dict_dict, graph_dict_dict, paper_dir):
@@ -507,7 +527,7 @@ def create_stats_table(measure_dict_dict, graph_dict_dict, paper_dir):
     result_text = 'Regional variations in CT and MT correlate inversely'
     x_key = 'CT_all_mean'
     y_key = 'MT_projfrac+030_all_mean'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, div1000=True)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'MT increases with increasing cortical depth'
@@ -531,60 +551,60 @@ def create_stats_table(measure_dict_dict, graph_dict_dict, paper_dir):
 
     result_text = 'Thinner cortex has higher MT;'
     m_key = 'MTall_global_slope_ct'
-    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, dp=2, div1000=True)
+    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, dp=2)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'most strongly at 70% cortical depth'
     m_key = 'MT_projfrac+030_global_slope_ct'
-    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, dp=2, div1000=True)
+    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, dp=2)
     write_stats_table_list(f_name, table_list)
 
     result_text = "Regional change in CT with age not dependent on mean CT"
     x_key = 'CT_all_mean'
     y_key = 'CT_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, mul1000=True)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key)
     write_stats_table_list(f_name, table_list)
 
     result_text = "(unless you exclude regions that aren't thinning, then thicker cortex thins more)"
     x_key = 'CT_all_mean'
     y_key = 'CT_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_u_thr=0, mul1000=True)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_u_thr=0)
     write_stats_table_list(f_name, table_list)
 
     result_text = "Regional change in MT with age weakly dependent on mean CT: thinner cortex myelinates more"
     x_key = 'CT_all_mean'
     y_key = 'MT_projfrac+030_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, mul1000=False)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key)
     write_stats_table_list(f_name, table_list)
 
     result_text = "(more strongly when you exclude regions that aren't thinning)"
     x_key = 'CT_all_mean'
     y_key = 'MT_projfrac+030_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_l_thr=0, mul1000=False)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_l_thr=0)
     write_stats_table_list(f_name, table_list)
 
     result_text = "Regional change in MT with age weakly dependent on mean MT: less myelinated cortex myelinates more"
     x_key = 'MT_projfrac+030_all_mean'
     y_key = 'MT_projfrac+030_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, mul1000=True)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key)
     write_stats_table_list(f_name, table_list)
 
     result_text = "(more strongly when you exclude regions that aren't thinning)"
     x_key = 'MT_projfrac+030_all_mean'
     y_key = 'MT_projfrac+030_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_l_thr=0, mul1000=True)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_l_thr=0)
     write_stats_table_list(f_name, table_list)
 
     result_text = "Regional change in CT with age weakly dependent on mean MT: less myelinated cortex myelinates more"
     x_key = 'MT_projfrac+030_all_mean'
     y_key = 'CT_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, mul100000=True)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key)
     write_stats_table_list(f_name, table_list)
 
     result_text = "(more strongly when you exclude regions that aren't thinning)"
     x_key = 'MT_projfrac+030_all_mean'
     y_key = 'CT_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_u_thr=0, mul100000=True)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_u_thr=0)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'Structural covariance network: bilaterally symmetric community structure'
@@ -607,19 +627,19 @@ def create_stats_table(measure_dict_dict, graph_dict_dict, paper_dir):
     result_text = 'High degree nodes show larger decreases in CT'
     x_key = 'Degree_CT_covar_ones_all_COST_10'
     y_key = 'CT_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, mul1000=True)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'and increases in MT at 70% cortical depth with age'
     x_key = 'Degree_CT_covar_ones_all_COST_10'
     y_key = 'MT_projfrac+030_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, mul1000=True)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'No relationship between degree and correlation between CT and MT'
     x_key = 'Degree_CT_covar_ones_all_COST_10'
     y_key = 'MT_projfrac+030_all_slope_ct'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, mul100000=True)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'High degree nodes primarily located in association cortices'
