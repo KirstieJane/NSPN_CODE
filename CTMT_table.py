@@ -280,7 +280,7 @@ def append_mean_std(table_list, df, sub_roi_list):
     return table_list
 
 #==============================================================================
-def append_correlation(table_list, df, x_col, y_col, r_style=False, dp=2, om=om):
+def append_correlation(table_list, df, x_col, y_col, r_style=False, dp=2, om=1):
     '''
     Figure out the correlation between x_col(s) and y_col(s)
     and append those values to the table_list
