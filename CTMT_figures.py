@@ -1106,10 +1106,10 @@ def partial_volume_fig(measure_dict, figures_dir):
     plt.close()
     
 # MEAN MAGNETISATION TRANSFER ACROSS ALL PARTICIPANTS
-def all_mean_mt(measure_dict, figures_dir):
+def all_mean_mt(measure_dict, figures_dir, mpm='MT'):
 
     figure_name = os.path.join(figures_dir, 
-                                    'MT_all_mean_DifferentDepths.png')
+                                    '{}_all_mean_DifferentDepths.png'.format(mpm))
                                     
     fig, ax = plt.subplots(figsize=(10, 8), facecolor='white')
 
