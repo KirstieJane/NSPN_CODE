@@ -1122,7 +1122,8 @@ def all_mean_mt(measure_dict, figures_dir, mpm='MT'):
                         cmap_min=0.2,
                         cmap_max=1.8,
                         figure=fig,
-                        ax=ax)
+                        ax=ax,
+                        mpm=mpm)
     
     plt.tight_layout()
     
