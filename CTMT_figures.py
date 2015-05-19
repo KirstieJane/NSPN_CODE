@@ -792,20 +792,20 @@ def figure_2(df_ct, df_mt, measure_dict, figures_dir, results_dir, aparc_names):
     violin_mt_depths(measure_dict,
                         measure='all_slope_ct',
                         cmap='PRGn',
-                        y_min=-0.000007,
-                        y_max=0.000003,
-                        cmap_min=-0.000003,
-                        cmap_max=0.000003,
+                        y_min=-0.07,
+                        y_max=0.03,
+                        cmap_min=-0.03,
+                        cmap_max=0.03,
                         figure_name=figure_name)
     
     ax_list[2, 2] = violin_mt_depths(measure_dict,
                                         ylabel='Slope MT(70%)\nwith CT',
                                         measure='all_slope_ct',
                                         cmap='PRGn',
-                                        y_min=-0.000007,
-                                        y_max=0.000003,
-                                        cmap_min=-0.000003,
-                                        cmap_max=0.000003,
+                                        y_min=-0.07,
+                                        y_max=0.03,
+                                        cmap_min=-0.03,
+                                        cmap_max=0.03,
                                         ax=ax_list[2, 2],
                                         figure=big_fig)
     
