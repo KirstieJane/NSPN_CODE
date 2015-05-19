@@ -541,7 +541,7 @@ def create_stats_table(measure_dict_dict, graph_dict_dict, paper_dir):
 
     result_text = 'MT increases with age;'
     m_key = 'MTall_global_slope_age'
-    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, om=dp=2)
+    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, om=0, dp=2)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'most strongly at 70% cortical depth'
