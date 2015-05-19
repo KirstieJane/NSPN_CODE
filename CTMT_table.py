@@ -462,8 +462,9 @@ def format_r_p_m(table_list, r, perm_p, m, dp=2, om=0):
     # Adjust the beta values - this is a bit more of a faff
     # There are two steps - sorting out the appropriate order of magnitude
     # and the number of decimal places
-    m = m * (10**(om*-1))
-    m_suff = ' x10^{:1.0f}'.format(om)
+    if m <> 0:
+        m = m * (10**(om*-1))
+        m_suff = ' x10^{:1.0f}'.format(om)
     else:
         m_suff = ''
         
@@ -497,7 +498,7 @@ def format_m_p(table_list, m, perm_p, dp=2, om=0):
     # Adjust the beta values - this is a bit more of a faff
     # There are two steps - sorting out the appropriate order of magnitude
     # and the number of decimal places
-    if m <> 1:
+    if m <> 0:
         m = m * (10**(om*-1))
         m_suff = ' x10^{:1.0f}'.format(om)
     else:
@@ -540,7 +541,7 @@ def create_stats_table(measure_dict_dict, graph_dict_dict, paper_dir):
 
     result_text = 'MT increases with age;'
     m_key = 'MTall_global_slope_age'
-    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, om=-3, dp=1)
+    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, om=3, dp=1)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'most strongly at 70% cortical depth'
