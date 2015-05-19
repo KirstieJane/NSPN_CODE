@@ -527,7 +527,7 @@ def create_stats_table(measure_dict_dict, graph_dict_dict, paper_dir):
     result_text = 'Regional variations in CT and MT correlate inversely'
     x_key = 'CT_all_mean'
     y_key = 'MT_projfrac+030_all_mean'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, om=0, dp=2)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, om=0, dp=3)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'MT increases with increasing cortical depth'
@@ -536,75 +536,75 @@ def create_stats_table(measure_dict_dict, graph_dict_dict, paper_dir):
 
     result_text = 'CT decreases with age'
     m_key = 'CT_global_slope_age'
-    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, om=0, dp=3)
+    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, om=0, dp=4)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'MT increases with age;'
     m_key = 'MTall_global_slope_age'
-    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, om=0, dp=2)
+    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, om=-3, dp=1)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'most strongly at 70% cortical depth'
     m_key = 'MT_projfrac+030_global_slope_age'
-    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, dp=2)
+    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, om=-3, dp=1)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'Thinner cortex has higher MT;'
     m_key = 'MTall_global_slope_ct'
-    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, dp=2)
+    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, om=0, dp=3)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'most strongly at 70% cortical depth'
     m_key = 'MT_projfrac+030_global_slope_ct'
-    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, dp=2)
+    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, om=0, dp=3)
     write_stats_table_list(f_name, table_list)
 
     result_text = "Regional change in CT with age not dependent on mean CT"
     x_key = 'CT_all_mean'
     y_key = 'CT_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, om=-3, dp=2)
     write_stats_table_list(f_name, table_list)
 
     result_text = "(unless you exclude regions that aren't thinning, then thicker cortex thins more)"
     x_key = 'CT_all_mean'
     y_key = 'CT_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_u_thr=0)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_u_thr=0, om=-3, dp=2)
     write_stats_table_list(f_name, table_list)
 
     result_text = "Regional change in MT with age weakly dependent on mean CT: thinner cortex myelinates more"
     x_key = 'CT_all_mean'
     y_key = 'MT_projfrac+030_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, om=-3, dp=2)
     write_stats_table_list(f_name, table_list)
 
     result_text = "(more strongly when you exclude regions that aren't thinning)"
     x_key = 'CT_all_mean'
     y_key = 'MT_projfrac+030_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_l_thr=0)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_l_thr=0, om=-3, dp=2)
     write_stats_table_list(f_name, table_list)
 
     result_text = "Regional change in MT with age weakly dependent on mean MT: less myelinated cortex myelinates more"
     x_key = 'MT_projfrac+030_all_mean'
     y_key = 'MT_projfrac+030_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, om=-3, dp=2)
     write_stats_table_list(f_name, table_list)
 
     result_text = "(more strongly when you exclude regions that aren't thinning)"
     x_key = 'MT_projfrac+030_all_mean'
     y_key = 'MT_projfrac+030_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_l_thr=0)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_l_thr=0, om=-3, dp=2)
     write_stats_table_list(f_name, table_list)
 
     result_text = "Regional change in CT with age weakly dependent on mean MT: less myelinated cortex myelinates more"
     x_key = 'MT_projfrac+030_all_mean'
     y_key = 'CT_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, om=-3, dp=2)
     write_stats_table_list(f_name, table_list)
 
     result_text = "(more strongly when you exclude regions that aren't thinning)"
     x_key = 'MT_projfrac+030_all_mean'
     y_key = 'CT_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_u_thr=0)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, y_u_thr=0, om=-3, dp=2)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'Structural covariance network: bilaterally symmetric community structure'
@@ -627,19 +627,19 @@ def create_stats_table(measure_dict_dict, graph_dict_dict, paper_dir):
     result_text = 'High degree nodes show larger decreases in CT'
     x_key = 'Degree_CT_covar_ones_all_COST_10'
     y_key = 'CT_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, om=-3, dp=2)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'and increases in MT at 70% cortical depth with age'
     x_key = 'Degree_CT_covar_ones_all_COST_10'
     y_key = 'MT_projfrac+030_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, om=-3, dp=2)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'No relationship between degree and correlation between CT and MT'
     x_key = 'Degree_CT_covar_ones_all_COST_10'
     y_key = 'MT_projfrac+030_all_slope_ct'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, om=-3, dp=2)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'High degree nodes primarily located in association cortices'
