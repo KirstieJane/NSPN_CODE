@@ -1145,14 +1145,14 @@ def all_mean_mt(measure_dict, figures_dir):
     plt.close()
 
                         
-def nodal_ct_mt(measure_dict, figures_dir):
+def nodal_ct_mt(measure_dict, figures_dir, mpm='MT'):
 
     figure_name = os.path.join(figures_dir, 
-                                    'Nodal_CT_corr_MT_segCort.png')
+                                    'Nodal_CT_corr_{}_segCort.png'.format(mpm))
                                     
     fig, ax = plt.subplots(figsize=(10, 8), facecolor='white')
     
-    ax = pretty_scatter(measure_dict['CT_all_mean'], measure_dict['MTall_all_mean'], 
+    ax = pretty_scatter(measure_dict['CT_all_mean'], measure_dict['{}all_all_mean'.format(mpm)], 
                     x_label='Average Cortical Thickness (mm)', y_label='Average Magnetisation Transfer', 
                     x_max=3.8, x_min=1.9, 
                     y_max=1.00, y_min=0.750, 
