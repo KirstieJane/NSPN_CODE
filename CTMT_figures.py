@@ -708,7 +708,7 @@ def figure_2(df_ct, df_mpm, measure_dict, figures_dir, results_dir, aparc_names,
                     figure_name=figure_name,
                     color=color)
                             
-    ax_list[1, 0] = pretty_scatter(df_mt['age_scan'], df_mt['Global'], 
+    ax_list[1, 0] = pretty_scatter(df_mpm['age_scan'], df_mpm['Global'], 
                     x_label='Age (years)', y_label='Magnetisation Transfer\nat 70% cortical depth', 
                     x_max=25, x_min=14, 
                     y_max=1.05, y_min=0.8, 
