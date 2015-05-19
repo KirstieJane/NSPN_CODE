@@ -425,7 +425,7 @@ def create_violin_labels():
 
     return labels_list
 
-def create_violin_data(measure_dict, map='MT', measure='all_slope_age', cmap='RdBu_r', cmap_min=-7, cmap_max=7):
+def create_violin_data(measure_dict, mpm='MT', measure='all_slope_age', cmap='RdBu_r', cmap_min=-7, cmap_max=7):
     '''
     A little function to create a the data frame list
     for the MT depth violin plots
@@ -444,7 +444,7 @@ def create_violin_data(measure_dict, map='MT', measure='all_slope_age', cmap='Rd
     
     # Create an empty data frame for the data 
     # and an empty list for the associated colors
-    n_values = len(measure_dict['{}_projfrac+000_{}'.format(map, measure)])
+    n_values = len(measure_dict['{}_projfrac+000_{}'.format(mpm, measure)])
     df =  pd.DataFrame({'index' : range(n_values)})
     color_list = []
     
@@ -461,9 +461,9 @@ def create_violin_data(measure_dict, map='MT', measure='all_slope_age', cmap='Rd
         
         # Fill in the appropriate data
         if i >= 0:
-            m_array = measure_dict['{}_projfrac{:+04.0f}_{}'.format(map, i, measure)]
+            m_array = measure_dict['{}_projfrac{:+04.0f}_{}'.format(mpm, i, measure)]
         else:
-            m_array = measure_dict['{}_projdist{:+04.0f}_{}'.format(map, i, measure)]
+            m_array = measure_dict['{}_projdist{:+04.0f}_{}'.format(mpm, i, measure)]
 
         df['{}'.format(i)] = m_array
             
@@ -472,7 +472,7 @@ def create_violin_data(measure_dict, map='MT', measure='all_slope_age', cmap='Rd
     return df, color_list
 
 
-def violin_mt_depths(measure_dict, map='MT', measure='all_slope_age', cmap='PRGn', cmap_min=-7, cmap_max=7, y_max=None, y_min=None, figure_name=None, ax=None, figure=None, ylabel=None):
+def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn', cmap_min=-7, cmap_max=7, y_max=None, y_min=None, figure_name=None, ax=None, figure=None, ylabel=None):
     '''
     INPUTS:
         data_dir --------- where the PARC_*_behavmerge.csv files are saved
@@ -488,7 +488,7 @@ def violin_mt_depths(measure_dict, map='MT', measure='all_slope_age', cmap='PRGn
     sns.set_context("poster", font_scale=2)
     
     # Get the data, colors and labels
-    df, color_list = create_violin_data(measure_dict, map=map, measure=measure, 
+    df, color_list = create_violin_data(measure_dict, mpm=mpm, measure=measure, 
                                                 cmap=cmap, cmap_min=cmap_min, cmap_max=cmap_max)
     
     labels_list = create_violin_labels()
@@ -667,7 +667,7 @@ def figure_1(graph_dict,
     
     plt.close()
 
-def figure_2(df_ct, df_mt, measure_dict, figures_dir, results_dir, aparc_names):
+def figure_2(df_ct, df_mpm, measure_dict, figures_dir, results_dir, aparc_names, mpm='MT'):
     
     # Set the seaborn context and style
     sns.set(style="white")
@@ -697,11 +697,11 @@ def figure_2(df_ct, df_mt, measure_dict, figures_dir, results_dir, aparc_names):
                         
     #==== CORRELATE GLOBAL MT(70) WITH AGE =============================
     figure_name = os.path.join(figures_dir, 
-                                    'Global_MT_projfrac+030_corr_Age.png')
+                                    'Global_{}_projfrac+030_corr_Age.png'.format(mpm))
         
     color=sns.color_palette('PRGn_r', 10)[1]
     
-    pretty_scatter(df_mt['age_scan'], df_mt['Global'], 
+    pretty_scatter(df_mpm['age_scan'], df_mpm['Global'], 
                     x_label='Age (years)', y_label='Magnetisation Transfer\nat 70% cortical depth', 
                     x_max=25, x_min=14, 
                     y_max=1.05, y_min=0.8, 
@@ -718,18 +718,18 @@ def figure_2(df_ct, df_mt, measure_dict, figures_dir, results_dir, aparc_names):
     
     #==== CORRELATE GLOBAL MT(70) WITH CT =============================
     figure_name = os.path.join(figures_dir, 
-                                    'Global_MT_projfrac+030_corr_CT.png')
+                                    'Global_{}_projfrac+030_corr_CT.png'.format(mpm))
         
     color=sns.color_palette('PRGn', 10)[1]
     
-    pretty_scatter(df_ct['Global'], df_mt['Global'], 
+    pretty_scatter(df_ct['Global'], df_mpm['Global'], 
                     x_label='Cortical Thickness (mm)', y_label='Magnetisation Transfer\nat 70% cortical depth', 
                     x_max=3.0, x_min=2.4, 
                     y_max=1.05, y_min=0.8, 
                     figure_name=figure_name,
                     color=color)
                             
-    ax_list[2, 0] = pretty_scatter(df_ct['Global'], df_mt['Global'], 
+    ax_list[2, 0] = pretty_scatter(df_ct['Global'], df_mpm['Global'], 
                     x_label='Cortical Thickness (mm)', y_label='Magnetisation Transfer\nat 70% cortical depth', 
                     x_max=3.0, x_min=2.4, 
                     y_max=1.05, y_min=0.8, 
@@ -768,14 +768,15 @@ def figure_2(df_ct, df_mt, measure_dict, figures_dir, results_dir, aparc_names):
     
     #==== SHOW CORR WITH AGE AT DIFFERENT DEPTHS ======================
     figure_name = os.path.join(figures_dir, 
-                                    'MT_projfrac+030_corr_Age_DifferentDepths.png')
+                                    '{}_projfrac+030_corr_Age_DifferentDepths.png'.format(mpm))
     
     violin_mt_depths(measure_dict,
                         measure='all_slope_age',
                         cmap='PRGn',
                         y_max=0.015, y_min=-0.010, 
                         cmap_min=-0.007, cmap_max=0.007,
-                        figure_name=figure_name)
+                        figure_name=figure_name,
+                        mpm=mpm)
                         
     ax_list[1, 2] = violin_mt_depths(measure_dict,
                                         ylabel='Slope MT(70%)\nwith age',
@@ -783,11 +784,12 @@ def figure_2(df_ct, df_mt, measure_dict, figures_dir, results_dir, aparc_names):
                                         y_max=0.015, y_min=-0.010, 
                                         cmap_min=-0.007, cmap_max=0.007,
                                         ax=ax_list[1, 2],
-                                        figure=big_fig)
+                                        figure=big_fig,
+                                        mpm=mpm)
     
     #==== SHOW CORR WITH CT AT DIFFERENT DEPTHS ======================
     figure_name = os.path.join(figures_dir, 
-                                    'MT_projfrac+030_corr_CT_DifferentDepths.png')
+                                    '{}_projfrac+030_corr_CT_DifferentDepths.png'.format(mpm))
     
     violin_mt_depths(measure_dict,
                         measure='all_slope_ct',
@@ -796,7 +798,8 @@ def figure_2(df_ct, df_mt, measure_dict, figures_dir, results_dir, aparc_names):
                         y_max=3.0,
                         cmap_min=-3.0,
                         cmap_max=3.0,
-                        figure_name=figure_name)
+                        figure_name=figure_name,
+                        mpm=mpm)
     
     ax_list[2, 2] = violin_mt_depths(measure_dict,
                                         ylabel='Slope MT(70%)\nwith CT',
@@ -807,7 +810,8 @@ def figure_2(df_ct, df_mt, measure_dict, figures_dir, results_dir, aparc_names):
                                         cmap_min=-3.0,
                                         cmap_max=3.0,
                                         ax=ax_list[2, 2],
-                                        figure=big_fig)
+                                        figure=big_fig,
+                                        mpm=mpm)
     
     # Allign the y labels for each column    
     for ax in ax_list.reshape(-1):
