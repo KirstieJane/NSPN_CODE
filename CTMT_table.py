@@ -462,7 +462,7 @@ def format_r_p_m(table_list, r, perm_p, m, dp=2, om=0):
     # Adjust the beta values - this is a bit more of a faff
     # There are two steps - sorting out the appropriate order of magnitude
     # and the number of decimal places
-    if m <> 0:
+    if om <> 0:
         m = m * (10**(om*-1))
         m_suff = ' x10^{:1.0f}'.format(om)
     else:
@@ -498,7 +498,7 @@ def format_m_p(table_list, m, perm_p, dp=2, om=0):
     # Adjust the beta values - this is a bit more of a faff
     # There are two steps - sorting out the appropriate order of magnitude
     # and the number of decimal places
-    if m <> 0:
+    if om <> 0:
         m = m * (10**(om*-1))
         m_suff = ' x10^{:1.0f}'.format(om)
     else:
