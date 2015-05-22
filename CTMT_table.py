@@ -541,12 +541,12 @@ def create_stats_table(measure_dict_dict, graph_dict_dict, paper_dir):
 
     result_text = 'MT increases with age;'
     m_key = 'MTall_global_slope_age'
-    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, om=3, dp=1)
+    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, om=-3, dp=2)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'most strongly at 70% cortical depth'
     m_key = 'MT_projfrac+030_global_slope_age'
-    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, om=-3, dp=1)
+    table_list = write_value_result_row(measure_dict_dict, result_text, m_key, om=-3, dp=2)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'Thinner cortex has higher MT;'
@@ -627,13 +627,13 @@ def create_stats_table(measure_dict_dict, graph_dict_dict, paper_dir):
     result_text = 'High degree nodes show larger decreases in CT'
     x_key = 'Degree_CT_covar_ones_all_COST_10'
     y_key = 'CT_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, om=-3, dp=2)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, om=-3, dp=3)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'and increases in MT at 70% cortical depth with age'
     x_key = 'Degree_CT_covar_ones_all_COST_10'
     y_key = 'MT_projfrac+030_all_slope_age'
-    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, om=-3, dp=2)
+    table_list = write_corr_result_row(measure_dict_dict, result_text, x_key, y_key, om=-6, dp=1)
     write_stats_table_list(f_name, table_list)
 
     result_text = 'No relationship between degree and correlation between CT and MT'
