@@ -192,7 +192,8 @@ def calc_modularity(G):
     modularity = community.modularity(partition, G)    
     
     return modularity
-    
+
+
 def calc_efficiency(G): 
 
     import networkx as nx
@@ -204,12 +205,69 @@ def calc_efficiency(G):
 
     return E
     
+def closeness(G):
+    import networkx as nx
+    
+    closeness_dict = closeness_centrality(G)
+
+def shortest_path(G):
+    import networkx as nx
+    import numpy as np
+    
+    shortestpl_dict_dict = nx.shortest_path_length(G)
+    
+    shortestpl_dict = {}
+    
+    for node in G.nodes():
+        shortestpl_dict[node] = np.average(shortestpl_dict_dict[node].values())
+        
+    return shortestpl_dict
+    
+
+def nodal_distance(G, centroids):
+
+    import networkx as nx
+    import numpy as np
+    from scipy.spatial import distance
+    
+    for i, node in enumerate(G.nodes()):
+        G.node[node]['x'] = centroids[i, 0]
+        G.node[node]['y'] = centroids[i, 1]
+        G.node[node]['z'] = centroids[i, 2]
+        G.node[node]['centroids'] = centroids[i, :]
+    
+    for i, node in enumerate(G.nodes()):
+        # Loop through the edges connecting to each node           
+        for node1, node2 in G.edges(nbunch=[node]):
+        
+            cent1 = G.node[node1]['centroids']
+            cent2 = G.node[node2]['centroids']
+            
+            # Calculate the eulidean distance for this edge
+            dist = distance.euclidean(cent1, cent2)
+            G.edge[node1][node2]['euclidean'] = dist 
+            print G.edge[node1][node2]['euclidean']
+        
+        # Create a nodal attribute summarizing the edges
+        # that are connecting to it
+        euc_list = [ G.edge[m][n]['euclidean'] for m, n in G.edges(nbunch=node) ]
+
+        G.node[node]['average_dist'] = np.mean(euc_list)
+        G.node[node]['total_dist'] = np.sum(euc_list)
+        
+    return G
     
 def participation_coefficient(G):
     '''
+    Computes the participation coefficient for each node (Guimera et al. 2005).
+    
     HEAVILY STOLEN FROM https://github.com/mb3152/brain-graphs
     
-    Computes the participation coefficient for each node (Guimera et al. 2005).
+    BUT that link is now gone *and* it had a mistake in it!
+    Nightmare
+    
+    However, Petra V saved the day so now we're back on track
+    
     ------
     Inputs
     ------
@@ -257,9 +315,6 @@ def participation_coefficient(G):
         # Get the set of nodes in this module
         mod_list = set(partition[m])
         
-        # Get the set of nodes outside this module
-        between_mod_list = list(set.difference(all_nodes, mod_list))
-
         # Loop through each node (source node) in this module
         for source in mod_list:
         
@@ -269,20 +324,19 @@ def participation_coefficient(G):
             # Calculate the number of these connections
             # that are to nodes in *other* modules
             count = 0
-            for target in between_mod_list:
+
+            for target in mod_list:
                 
                 # If the edge is in there then increase the counter by 1
                 if (source, target) in G.edges():
                     count += 1
-            
-            # This gives you the between module degree
-            bm_degree = float(count)
-            if bm_degree == 0.0:
-                pc = 0.0
-            else:
-                # The participation coeficient is 1 - the square of 
-                # the ratio of the between module degree and the total degree
-                pc = 1 - ((float(bm_degree) / float(degree))**2)
+
+            # This gives you the within module degree
+            wm_degree = float(count)
+
+            # The participation coeficient is 1 - the square of 
+            # the ratio of the within module degree and the total degree
+            pc = 1 - ((float(wm_degree) / float(degree))**2)
                 
             # Save the participation coefficient to the dictionary
             pc_dict[source] = pc
@@ -449,6 +503,8 @@ def create_mat(df, aparc_names, covar, demean=False):
     
 def assign_node_attr(G, centroids, aparc_names):
     
+    from scipy.spatial import distance
+    
     # Assign names and x,y,z coordinates to the nodes
     for i, node in enumerate(G.nodes()):
         G.node[node]['x'] = centroids[i, 0]
@@ -458,33 +514,41 @@ def assign_node_attr(G, centroids, aparc_names):
         G.node[node]['name_DK'] = aparc_names[i].rsplit('_',1)[0]
         G.node[node]['hemi'] = aparc_names[i].split('_',1)[0]
 
-    # Set a counter for the interhemispheric edges
-    interhem_count=0
+    # Set a counter for the total interhemispheric
+    # edges for the whole graph
+    total_interhem_count = 0
     
-    # Loop through the edges
-    for node1, node2 in G.edges():
-        
-        # If the two hemispheres are the same then interhem == 0
-        if G.node[node1]['hemi'] == G.node[node2]['hemi']:
-
-            G.edge[node1][node2]['interhem'] = 0
-            
-        # If the two hemispheres are different then interhem == 1
-        else:
-            
-            G.edge[node1][node2]['interhem'] = 1
-            interhem_count +=1
-
-    # Now we want to map this back to each node
+    # Loop through the edges connecting to each node
     for i, node in enumerate(G.nodes()):
-        G.node[node]['interhem_proportion'] = interhem_count
     
+        # Set a counter for the interhemispheric edges for THIS node
+        interhem_count=0
+        
+        for node1, node2 in G.edges(nbunch=[node]):
+        
+            # If the two hemispheres are the same then interhem == 0
+            if G.node[node1]['hemi'] == G.node[node2]['hemi']:
+
+                G.edge[node1][node2]['interhem'] = 0
+                
+            # If the two hemispheres are different then interhem == 1
+            else:
+                
+                G.edge[node1][node2]['interhem'] = 1
+                interhem_count +=1
+
+        # Nodal proportion of interhemispheric connections
+        G.node[node]['interhem_proportion'] = interhem_count*1.0 / G.degree()[node]
+        
+        # Update the total interhemispheric counter
+        total_interhem_count += interhem_count
+        
     # Assign a graph attribute of the proportion of edges that are interhemispheric
-    G.graph['interhem_proportion'] = interhem_count*100.0/len(G.edges())
+    # You have to divide the total_interhem_count by 2 because each one has
+    # been counted twice in the loop above
+    G.graph['interhem_proportion'] = total_interhem_count*1.0/(len(G.edges())*2.0)
     
-    # Save this back to the graph_dict
-    # (otherwise all is lost!)
-    graph_dict['{}_covar_{}_{}_COST_{:02.0f}'.format(measure, covars, group, cost)] = G
+    return G
     
     
 def rich_club(G, R_list=None, n=10):
