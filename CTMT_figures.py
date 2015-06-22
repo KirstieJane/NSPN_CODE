@@ -536,7 +536,7 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
         ax.axhline(11, linewidth=1, color='black', linestyle='--')
         ax.axvline(0, linewidth=1, color='black', linestyle='-')
         # Set the y label if it's been given
-        if xlabel:
+        if ylabel:
             ax.set_xlabel(ylabel)
 
     # Despine because we all agree it looks better that way
