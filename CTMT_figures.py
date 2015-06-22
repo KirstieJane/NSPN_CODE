@@ -806,7 +806,8 @@ def figure_2(df_ct, df_mpm, measure_dict, figures_dir, results_dir, aparc_names,
                         y_max=0.015, y_min=-0.010, 
                         cmap_min=-0.007, cmap_max=0.007,
                         figure_name=figure_name,
-                        mpm=mpm)
+                        mpm=mpm,
+                        vert=False)
                         
     ax_list[1, 2] = violin_mt_depths(measure_dict,
                                         ylabel='Slope MT(70%)\nwith age',
@@ -829,7 +830,8 @@ def figure_2(df_ct, df_mpm, measure_dict, figures_dir, results_dir, aparc_names,
                         cmap_min=-3.0,
                         cmap_max=3.0,
                         figure_name=figure_name,
-                        mpm=mpm)
+                        mpm=mpm,
+                        vert=False)
     
     ax_list[2, 2] = violin_mt_depths(measure_dict,
                                         ylabel='Slope MT(70%)\nwith CT',
