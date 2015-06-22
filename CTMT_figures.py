@@ -472,11 +472,12 @@ def create_violin_data(measure_dict, mpm='MT', measure='all_slope_age', cmap='Rd
     return df, color_list
 
 
-def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn', cmap_min=-7, cmap_max=7, y_max=None, y_min=None, figure_name=None, ax=None, figure=None, ylabel=None):
+def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn', cmap_min=-7, cmap_max=7, y_max=None, y_min=None, figure_name=None, ax=None, figure=None, ylabel=None, vert=True):
     '''
     INPUTS:
         data_dir --------- where the PARC_*_behavmerge.csv files are saved
         measure_dict
+        vert ------------- create vertical box plots (rather than horizontal)
     '''
     
     # Import what you need
@@ -502,34 +503,47 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
         
     # Create the box plot
     ##### You could change this here to a violin plot if you wanted to...
-    ax = sns.boxplot(df[df.columns[1:]], color=color_list, names=labels_list, ax=ax)
+    ax = sns.boxplot(df[df.columns[1:]], color=color_list, names=labels_list, ax=ax, vert=vert)
     
-    # Fix the y axis limits
-    if np.isscalar(y_max) and np.isscalar(y_min):
-        ax.set_ylim((y_min, y_max))
-    
-    ax.ticklabel_format(axis='y', style='sci', scilimits=(-2,2))
+    if vert:
+        # Fix the y axis limits
+        if np.isscalar(y_max) and np.isscalar(y_min):
+            ax.set_ylim((y_min, y_max))
+        ax.ticklabel_format(axis='y', style='sci', scilimits=(-2,2))
+        # Make sure there aren't too many bins!
+        ax.locator_params(axis='y', nbins=4)        
+        # Re-do the tick labels so that they're rotated
+        ax.set_xticklabels(labels_list, rotation=90)
+        # Put a line at the grey white matter boundary
+        # and another at y=0
+        ax.axvline(11, linewidth=1, color='black', linestyle='--')
+        ax.axhline(0, linewidth=1, color='black', linestyle='-')
+        # Set the y label if it's been given
+        if ylabel:
+            ax.set_ylabel(ylabel)
 
-    # Make sure there aren't too many bins!
-    ax.locator_params(axis='y', nbins=4)
-    
-    # Re-do the tick labels so that they're rotated
-    ax.set_xticklabels(labels_list, rotation=90)
+    else:
+        # Fix the y axis limits
+        if np.isscalar(y_max) and np.isscalar(y_min):
+            ax.set_xlim((y_min, y_max))
+        ax.ticklabel_format(axis='x', style='sci', scilimits=(-2,2))    
+        # Make sure there aren't too many bins!
+        ax.locator_params(axis='x', nbins=4)
+        # Re-do the tick labels so that they're rotated
+        ax.set_yticklabels(labels_list, rotation=90)
+        # Put a line at the grey white matter boundary
+        # and another at x=0
+        ax.axhline(11, linewidth=1, color='black', linestyle='--')
+        ax.axvline(0, linewidth=1, color='black', linestyle='-')
+        # Set the y label if it's been given
+        if xlabel:
+            ax.set_xlabel(ylabel)
 
-    # Put a line at the grey white matter boundary
-    # and another at y=0
-    ax.axvline(11, linewidth=1, color='black', linestyle='--')
-    ax.axhline(0, linewidth=1, color='black', linestyle='-')
-
-    # Set the y label if it's been given
-    if ylabel:
-        ax.set_ylabel(ylabel)
-        
     # Despine because we all agree it looks better that way
     sns.despine()
     
     # Add in the laminae
-    ax = violin_add_laminae(ax)
+    ax = violin_add_laminae(ax, vert=True)
     
     if figure_name:
         # Do the tight layout because, again, it looks better!
@@ -542,11 +556,16 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
     else:
         return ax
 
-def violin_add_laminae(ax):
+def violin_add_laminae(ax, vert=True):
 
-    ax.axvspan(1.8, 2.4, facecolor='0.5', alpha=0.5, edgecolor='none')
-    ax.axvspan(5.2, 6.1, facecolor='0.5', alpha=0.5, edgecolor='none')
-    ax.axvspan(7.9, 11.0, facecolor='0.5', alpha=0.5, edgecolor='none')
+    if vert:
+        ax.axvspan(1.8, 2.4, facecolor='0.5', alpha=0.5, edgecolor='none')
+        ax.axvspan(5.2, 6.1, facecolor='0.5', alpha=0.5, edgecolor='none')
+        ax.axvspan(7.9, 11.0, facecolor='0.5', alpha=0.5, edgecolor='none')
+    else:
+        ax.axhspan(1.8, 2.4, facecolor='0.5', alpha=0.5, edgecolor='none')
+        ax.axhspan(5.2, 6.1, facecolor='0.5', alpha=0.5, edgecolor='none')
+        ax.axhspan(7.9, 11.0, facecolor='0.5', alpha=0.5, edgecolor='none')
 
     return ax
 
