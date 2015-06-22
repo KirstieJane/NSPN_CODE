@@ -528,6 +528,8 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
     # Despine because we all agree it looks better that way
     sns.despine()
     
+    ax = violin_add_laminae(ax)
+    
     if figure_name:
         # Do the tight layout because, again, it looks better!
         fig.tight_layout()
@@ -538,6 +540,14 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
         
     else:
         return ax
+
+def violin_add_laminae(ax):
+
+    ax.axvspan(1.8, 2.4, facecolor='0.3', alpha=0.5, edgecolor='none')
+    ax.axvspan(5.2, 6.1, facecolor='0.3', alpha=0.5, edgecolor='none')
+    ax.axvspan(7.9, 11.0, facecolor='0.3', alpha=0.5, edgecolor='none')
+
+    return ax
 
 def figure_1(graph_dict, 
                 figures_dir, 

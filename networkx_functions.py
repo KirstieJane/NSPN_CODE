@@ -246,7 +246,6 @@ def nodal_distance(G, centroids):
             # Calculate the eulidean distance for this edge
             dist = distance.euclidean(cent1, cent2)
             G.edge[node1][node2]['euclidean'] = dist 
-            print G.edge[node1][node2]['euclidean']
         
         # Create a nodal attribute summarizing the edges
         # that are connecting to it
