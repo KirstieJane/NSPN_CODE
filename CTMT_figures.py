@@ -529,8 +529,6 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
         ax.ticklabel_format(axis='x', style='sci', scilimits=(-2,2))    
         # Make sure there aren't too many bins!
         ax.locator_params(axis='x', nbins=4)
-        # Re-do the tick labels so that they're rotated
-        ax.set_yticklabels(labels_list, rotation=90)
         # Put a line at the grey white matter boundary
         # and another at x=0
         ax.axhline(11, linewidth=1, color='black', linestyle='--')
