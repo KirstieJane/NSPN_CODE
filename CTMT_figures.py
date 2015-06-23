@@ -541,7 +541,7 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
     sns.despine()
     
     # Add in the laminae
-    ax = violin_add_laminae(ax, vert=True)
+    ax = violin_add_laminae(ax, vert=vert)
     
     if figure_name:
         # Do the tight layout because, again, it looks better!
