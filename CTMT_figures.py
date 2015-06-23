@@ -557,14 +557,29 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
 def violin_add_laminae(ax, vert=True):
 
     if vert:
-        ax.axvspan(1.8, 2.4, facecolor='k', alpha=0.5, edgecolor='none')
-        ax.axvspan(5.2, 6.1, facecolor='k', alpha=0.5, edgecolor='none')
-        ax.axvspan(7.9, 11.0, facecolor='k', alpha=0.5, edgecolor='none')
+        # Put in the mean boundaries
+        ax.axvspan(1.8, 2.4, facecolor='0.5', alpha=0.5, edgecolor='none')
+        ax.axvspan(5.2, 6.1, facecolor='0.5', alpha=0.5, edgecolor='none')
+        ax.axvspan(7.9, 11.0, facecolor='0.5', alpha=0.5, edgecolor='none')
+        # Then the "error bars" around each
+        ax.axvspan(1.6, 2.0, facecolor='0.5', alpha=0.5, edgecolor='none')
+        ax.axvspan(2.2, 2.6, facecolor='0.5', alpha=0.5, edgecolor='none')
+        ax.axvspan(5.0, 5.5, facecolor='0.5', alpha=0.5, edgecolor='none')
+        ax.axvspan(6.0, 6.3, facecolor='0.5', alpha=0.5, edgecolor='none')
+        ax.axvspan(7.8, 8.0, facecolor='0.5', alpha=0.5, edgecolor='none')
+        ax.axvspan(10.9, 11.1, facecolor='0.5', alpha=0.5, edgecolor='none')
     else:
-        ax.axhspan(1.8, 2.4, facecolor='k', alpha=0.5, edgecolor='none')
-        ax.axhspan(5.2, 6.1, facecolor='k', alpha=0.5, edgecolor='none')
-        ax.axhspan(7.9, 11.0, facecolor='k', alpha=0.5, edgecolor='none')
-
+        # Put in the mean boundaries
+        ax.axhspan(1.8, 2.4, facecolor='0.5', alpha=0.5, edgecolor='none')
+        ax.axhspan(5.2, 6.1, facecolor='0.5', alpha=0.5, edgecolor='none')
+        ax.axhspan(7.9, 11.0, facecolor='0.5', alpha=0.5, edgecolor='none')
+        # Then the "error bars" around each
+        ax.axhspan(1.6, 2.0, facecolor='0.5', alpha=0.5, edgecolor='none')
+        ax.axhspan(2.2, 2.6, facecolor='0.5', alpha=0.5, edgecolor='none')
+        ax.axhspan(5.0, 5.5, facecolor='0.5', alpha=0.5, edgecolor='none')
+        ax.axhspan(6.0, 6.3, facecolor='0.5', alpha=0.5, edgecolor='none')
+        ax.axhspan(7.8, 8.0, facecolor='0.5', alpha=0.5, edgecolor='none')
+        ax.axhspan(10.9, 11.1, facecolor='0.5', alpha=0.5, edgecolor='none')
     return ax
 
 def figure_1(graph_dict, 
