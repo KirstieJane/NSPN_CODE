@@ -1204,3 +1204,36 @@ def nodal_ct_mt(measure_dict, figures_dir, mpm='MT'):
     
     plt.close()
     
+    
+def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_mean', ylabel=None):
+    
+    sns.set(style="white")
+    sns.set_context("poster", font_scale=2)
+
+    # Read the data into a data frame
+    df = pd.DataFrame( { 'x' : measure_dict[measure],
+                        'Cortical Laminar Pattern' : von_economo } )
+                        
+    # You'll always use this color_list
+    color_list = [ 'purple', 'blue', 'green', 'orange', 'yellow' ]
+    
+    figure_name = os.path.join(figures_dir, 
+                                    'VonEconomo_{}.png'.format(measure))
+                                    
+    # Create the figure
+    fig, ax = plt.subplots(figsize=(10, 8), facecolor='white')
+
+    # Make the box plot
+    sns.boxplot(df.x[df.x>-99], groupby=df['Cortical Laminar Pattern'], color=color_list, ax=ax)
+    
+    # Set the y label if it's been given
+    if ylabel:
+        ax.set_ylabel(ylabel)
+
+    # Nice tight layout
+    fig.tight_layout()
+    
+    # Save the figure
+    fig.savefig(figure_name, bbox_inches=0, dpi=100)
+    
+    plt.close()
