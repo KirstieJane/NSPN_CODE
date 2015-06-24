@@ -12,6 +12,7 @@ def regional_linregress(df, x, aparc_names):
                            
     RETURNS:
         m_array -------------- numpy array containing slopes for each region
+        c_array -------------- numpy array containing intercepts (at 0) for each region
         r_array -------------- numpy array containing pearson r values for each region
         p_array -------------- numpy array containing raw p values for each region
         p_fdr_array ---------- numpy array containing fdr corrected p values for each region
@@ -39,6 +40,7 @@ def regional_linregress(df, x, aparc_names):
         m, c, r, p, std_err = linregress(df[x].values,
                                             df[roi].values)
         m_array[i] = m
+        c_array[i] = c
         r_array[i] = r    
         p_array[i] = p
         
@@ -54,7 +56,7 @@ def regional_linregress(df, x, aparc_names):
     m_fdr_masked_array[p_fdr_array>0.05] = -99
     
     # Return the arrays
-    return m_array, r_array, p_array, p_fdr_array, m_masked_array, m_fdr_masked_array
+    return m_array, c_array, r_array, p_array, p_fdr_array, m_masked_array, m_fdr_masked_array
         
     
 def regional_linregress_byregion(df_x, df_y, aparc_names):
