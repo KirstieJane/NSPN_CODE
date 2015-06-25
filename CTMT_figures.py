@@ -1205,7 +1205,7 @@ def nodal_ct_mt(measure_dict, figures_dir, mpm='MT'):
     plt.close()
     
     
-def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_mean', ylabel=None):
+def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_mean', ylabel=None, ymin=1.5, ymax=4.0):
     
     sns.set(style="white")
     sns.set_context("poster", font_scale=2)
@@ -1229,6 +1229,10 @@ def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_me
     # Set the y label if it's been given
     if ylabel:
         ax.set_ylabel(ylabel)
+
+    # Set the y limits if given
+    if not y_min:
+        ax.set_ylim((y_min, y_max))
 
     # Nice tight layout
     fig.tight_layout()
