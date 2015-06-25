@@ -1231,8 +1231,8 @@ def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_me
         ax.set_ylabel(ylabel)
 
     # Set the y limits if given
-    if not y_min:
-        ax.set_ylim((y_min, y_max))
+    if not ymin:
+        ax.set_ylim((ymin, ymax))
 
     # Nice tight layout
     fig.tight_layout()
