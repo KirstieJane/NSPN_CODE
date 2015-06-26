@@ -1197,14 +1197,6 @@ def nodal_ct_mt(measure_dict, figures_dir, mpm='MT'):
                     color='k',
                     ax=ax,
                     figure=fig)
-                    
-    # Nice tight layout
-    fig.tight_layout()
-    
-    # Save the figure
-    fig.savefig(figure_name, bbox_inches=0, dpi=100)
-    
-    plt.close()
     
     
 def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_mean', y_label=None, y_min=1.5, y_max=4.0, figure_name=None, figure=None, ax=None):
@@ -1576,3 +1568,36 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                         mpm=mpm,
                         vert=False)
                         
+    # Nodal CT MT
+    figure_name = os.path.join(figures_dir, 
+                                'Nodal_CT_corr_{}_projfrac+030_at14.png'.format(mpm))
+                                    
+    pretty_scatter(measure_dict['CT_all_slope_age_at14'], measure_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)], 
+                    x_label='CT at 14 years (mm)', y_label='MT at 14 years', 
+                    x_min=1.9, x_max=4.0,
+                    y_min=0.750,y_max=1.00, 
+                    color='k',
+                    ax=ax,
+                    figure=fig)
+                    
+    figure_name = os.path.join(figures_dir, 
+                                'Nodal_CT_corr_{}_projfrac+030_at25.png'.format(mpm))
+                                    
+    pretty_scatter(measure_dict['CT_all_slope_age_at25'], measure_dict['{}_projfrac+030_all_slope_age_at25'.format(mpm)], 
+                    x_label='CT at 25 years (mm)', y_label='MT at 25 years', 
+                    x_min=1.9, x_max=4.0,
+                    y_min=0.750,y_max=1.00, 
+                    color='k',
+                    ax=ax,
+                    figure=fig)
+                    
+    figure_name = os.path.join(figures_dir, 
+                                'Nodal_CT_corr_{}_projfrac+030_slope_age.png'.format(mpm))
+                                    
+    pretty_scatter(measure_dict['CT_all_slope_age'], measure_dict['{}_projfrac+030_all_slope_age'.format(mpm)], 
+                    x_label='Change in CT (mm/year)', y_label='Change in MT (AU/year)', 
+                    x_min=-0.055, x_max=0.015,
+                    y_min=-0.004,y_max=0.02, 
+                    color='k',
+                    ax=ax,
+                    figure=fig)
