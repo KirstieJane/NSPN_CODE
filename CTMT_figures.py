@@ -1498,7 +1498,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     for ax in ax_list[:,2].reshape(-1):
         ax.yaxis.set_label_coords(-0.15, 0.5)
     for ax in ax_list[:,3].reshape(-1):
-        ax.yaxis.set_label_coords(-0.10, 0.5)
+        ax.yaxis.set_label_coords(-0.12, 0.5)
     
     # Turn off the axes for the first and second columns
     for ax in ax_list[:,0:2].reshape(-1):
@@ -1517,3 +1517,50 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     plt.close()
     
     
+def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
+    
+    # Set the seaborn context and style
+    sns.set(style="white")
+    sns.set_context("poster", font_scale=2)
+    
+    # MEAN MT ACROSS NODES at different depths
+    
+    figure_name = os.path.join(figures_dir, 
+                                '{}_all_mean_DifferentDepths.png'.format(mpm))
+    
+    violin_mt_depths(measure_dict,
+                        measure='all_mean',
+                        cmap='jet',
+                        y_min=0.2, y_max=1.8, 
+                        cmap_min=0.2, cmap_max=1.8,
+                        figure_name=figure_name,
+                        mpm=mpm,
+                        vert=False)
+                        
+    # MEAN MT ACROSS PEOPLE at different depths
+    
+    figure_name = os.path.join(figures_dir, 
+                                '{}_all_global_DifferentDepths.png'.format(mpm))
+    
+    violin_mt_depths(measure_dict,
+                        measure='all_mean',
+                        cmap='jet',
+                        y_min=0.2, y_max=1.8, 
+                        cmap_min=0.2, cmap_max=1.8,
+                        figure_name=figure_name,
+                        mpm=mpm,
+                        vert=False)
+                        
+    # CORR WITH AGE ACROSS NODES at different depths
+    figure_name = os.path.join(figures_dir, 
+                                    '{}all_slope_Age_DifferentDepths.png'.format(mpm))
+    
+    violin_mt_depths(measure_dict,
+                        measure='all_slope_age',
+                        cmap='PRGn',
+                        y_min=0.02, y_max=-0.005, 
+                        cmap_min=-0.01, cmap_max=0.01,
+                        figure_name=figure_name,
+                        mpm=mpm,
+                        vert=False)
+                        
