@@ -1495,10 +1495,9 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                                         figure=big_fig)    
                                         
     # Allign the y labels for each column    
-    for ax in ax_list[:,2].reshape(-1):
+    for ax in ax_list[:,:].reshape(-1):
         ax.yaxis.set_label_coords(-0.15, 0.5)
-    for ax in ax_list[:,3].reshape(-1):
-        ax.yaxis.set_label_coords(-0.12, 0.5)
+
     
     # Turn off the axes for the first and second columns
     for ax in ax_list[:,0:2].reshape(-1):
@@ -1540,10 +1539,10 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     # MEAN MT ACROSS PEOPLE at different depths
     
     figure_name = os.path.join(figures_dir, 
-                                '{}_all_global_DifferentDepths.png'.format(mpm))
+                                '{}_global_mean_DifferentDepths.png'.format(mpm))
     
     violin_mt_depths(measure_dict,
-                        measure='all_mean',
+                        measure='global_mean',
                         cmap='jet',
                         y_min=0.2, y_max=1.8, 
                         cmap_min=0.2, cmap_max=1.8,
@@ -1553,13 +1552,26 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                         
     # CORR WITH AGE ACROSS NODES at different depths
     figure_name = os.path.join(figures_dir, 
-                                    '{}all_slope_Age_DifferentDepths.png'.format(mpm))
+                                    '{}_all_slope_age_DifferentDepths.png'.format(mpm))
     
     violin_mt_depths(measure_dict,
                         measure='all_slope_age',
                         cmap='PRGn',
-                        y_min=0.02, y_max=-0.005, 
-                        cmap_min=-0.01, cmap_max=0.01,
+                        y_min=-0.004, y_max=0.02, 
+                        cmap_min=-0.005, cmap_max=0.005,
+                        figure_name=figure_name,
+                        mpm=mpm,
+                        vert=False)
+                        
+    # CORR WITH CT ACROSS NODES at different depths
+    figure_name = os.path.join(figures_dir, 
+                                    '{}_all_slope_CT_DifferentDepths.png'.format(mpm))
+    
+    violin_mt_depths(measure_dict,
+                        measure='all_slope_ct',
+                        cmap='PRGn',
+                        y_min=-4.3, y_max=1.5, 
+                        cmap_min=-3.5, cmap_max=3.5,
                         figure_name=figure_name,
                         mpm=mpm,
                         vert=False)
