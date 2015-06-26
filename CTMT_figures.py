@@ -511,6 +511,7 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
         # Fix the y axis limits
         if np.isscalar(y_max) and np.isscalar(y_min):
             ax.set_ylim((y_min, y_max))
+        ax.ticklabel_format(axis='x', style='sci', scilimits=(-5,5))
         ax.ticklabel_format(axis='y', style='sci', scilimits=(-2,2))
         # Make sure there aren't too many bins!
         ax.locator_params(axis='y', nbins=4)        
