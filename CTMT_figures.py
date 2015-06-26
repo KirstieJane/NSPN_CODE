@@ -1268,8 +1268,7 @@ def add_four_hor_brains(grid, f_list, big_fig):
     return big_fig
     
 
-    
-def figure_1(measure_dict, figures_dir, results_dir, aparc_names, mpm='MT'):
+def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     # Set the seaborn context and style
     sns.set(style="white")
