@@ -1504,7 +1504,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     for ax in ax_list[:,0:2].reshape(-1):
         ax.axis('off')
         
-    for ax in ax_list[:,2:4].reshape(-1):
+    for ax in ax_list[:,2:3].reshape(-1):
         ax.ticklabel_format(axis='y', style='sci', scilimits=(-2,2))
 
     # Nice tight layout
