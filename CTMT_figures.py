@@ -1497,7 +1497,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     # Allign the y labels for each column    
     for ax in ax_list[:,2].reshape(-1):
         ax.yaxis.set_label_coords(-0.15, 0.5)
-    for ax in ax_list[:,4].reshape(-1):
+    for ax in ax_list[:,3].reshape(-1):
         ax.yaxis.set_label_coords(-0.10, 0.5)
     
     # Turn off the axes for the first and second columns
