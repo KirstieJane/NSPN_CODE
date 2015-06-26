@@ -1578,8 +1578,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                     x_min=1.9, x_max=4.0,
                     y_min=0.750,y_max=1.00, 
                     color='k',
-                    ax=ax,
-                    figure=fig)
+                    figure_name=figure_name)
                     
     figure_name = os.path.join(figures_dir, 
                                 'Nodal_CT_corr_{}_projfrac+030_at25.png'.format(mpm))
@@ -1589,8 +1588,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                     x_min=1.9, x_max=4.0,
                     y_min=0.750,y_max=1.00, 
                     color='k',
-                    ax=ax,
-                    figure=fig)
+                    figure_name=figure_name)
                     
     figure_name = os.path.join(figures_dir, 
                                 'Nodal_CT_corr_{}_projfrac+030_slope_age.png'.format(mpm))
@@ -1600,8 +1598,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                     x_min=-0.055, x_max=0.015,
                     y_min=-0.004,y_max=0.02, 
                     color='k',
-                    ax=ax,
-                    figure=fig)
+                    figure_name=figure_name)
                     
     print "FIGURE 2 DONE"
     
