@@ -1602,3 +1602,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                     color='k',
                     ax=ax,
                     figure=fig)
+                    
+    print "FIGURE 2 DONE"
+    
+                 
