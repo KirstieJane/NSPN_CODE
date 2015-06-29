@@ -512,13 +512,13 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
         
     # Create the box plot
     ##### You could change this here to a violin plot if you wanted to...
-    ax = sns.boxplot(df[df.columns[1:]], palette=color_dict, names=labels_list, ax=ax, vert=vert)
+    ax = sns.boxplot(df[df.columns[1:]], palette=color_dict, ax=ax, vert=vert)
     
     if vert:
         # Fix the y axis limits
         if np.isscalar(y_max) and np.isscalar(y_min):
             ax.set_ylim((y_min, y_max))
-        ax.ticklabel_format(axis='x', style='sci', scilimits=(-5,5))
+        ax.set_xticklabels(labels)
         ax.ticklabel_format(axis='y', style='sci', scilimits=(-2,2))
         # Make sure there aren't too many bins!
         ax.locator_params(axis='y', nbins=4)        
@@ -536,7 +536,8 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
         # Fix the y axis limits
         if np.isscalar(y_max) and np.isscalar(y_min):
             ax.set_xlim((y_min, y_max))
-        ax.ticklabel_format(axis='x', style='sci', scilimits=(-2,2))    
+        ax.set_yticklabels(labels)
+        ax.ticklabel_format(axis='x', style='sci', scilimits=(-5,5))    
         # Make sure there aren't too many bins!
         ax.locator_params(axis='x', nbins=4)
         # Put a line at the grey white matter boundary
@@ -1552,7 +1553,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     nodal_mt_ct_slope_max=1.5
     
     # Create the big figure
-    big_fig, ax_list = plt.subplots(2,4, figsize=(40, 20), facecolor='white')
+    #big_fig, ax_list = plt.subplots(2,4, figsize=(40, 20), facecolor='white')
     
     # MEAN MT ACROSS NODES at different depths
     
@@ -1610,7 +1611,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                         
     # Nodal CT MT
     figure_name = os.path.join(figures_dir, 
-                                'Nodal_CT_corr_{}_projfrac+030_at14.png'.format(mpm))
+                                'Nodal_CT_corr_{}_projfrac+030_slope_age_at14.png'.format(mpm))
                                     
     pretty_scatter(measure_dict['CT_all_slope_age_at14'], measure_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)], 
                     x_label='CT at 14 years (mm)', y_label='MT at 14 years', 
@@ -1620,6 +1621,9 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                     figure_name=figure_name)
 
     # NODAL SLOPE CT WITH SLOPE MT
+    figure_name = os.path.join(figures_dir, 
+                                'Nodal_CT_corr_{}_projfrac+030_slope_age.png'.format(mpm))
+                                    
     pretty_scatter(measure_dict['CT_all_slope_age'], measure_dict['{}_projfrac+030_all_slope_age'.format(mpm)], 
                     x_label='Change in CT (mm/year)', y_label='Change in MT (AU/year)', 
                     x_min=nodal_ct_slope_min, x_max=nodal_ct_slope_max,
