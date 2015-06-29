@@ -1548,7 +1548,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     nodal_mt_at14_max = 1.1
     nodal_mt_slope_min = -0.004
     nodal_mt_slope_max = 0.02
-    nodal_mt_overall_min=0.5
+    nodal_mt_overall_min=0.4
     nodal_mt_overall_max=1.8
     nodal_mt_ct_slope_min=-4.5
     nodal_mt_ct_slope_max=1.5
@@ -1628,7 +1628,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     pretty_scatter(measure_dict['CT_all_slope_age'], measure_dict['{}_projfrac+030_all_slope_age'.format(mpm)], 
                     x_label='Change in CT (mm/year)', y_label='Change in MT (AU/year)', 
                     x_min=nodal_ct_slope_min, x_max=nodal_ct_slope_max,
-                    y_min=nodal_mt_slope_min,y_max=nodal_mt_slope_min, 
+                    y_min=nodal_mt_slope_min,y_max=nodal_mt_slope_max, 
                     color='k',
                     figure_name=figure_name)
                     
