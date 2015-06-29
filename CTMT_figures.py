@@ -527,8 +527,8 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
         ax.set_xticklabels(labels_list, rotation=90)
         # Put a line at the grey white matter boundary
         # and another at y=0
-        ax.axvline(10, linewidth=1, color='black', linestyle='--')
-        ax.axhline(0, linewidth=1, color='black', linestyle='-')
+        ax.axvline(10, linewidth=1, color='black', linestyle='--', zorder=-1)
+        ax.axhline(0, linewidth=1, color='black', linestyle='-', zorder=-1)
         # Set the y label if it's been given
         if y_label:
             ax.set_ylabel(y_label)
@@ -543,8 +543,8 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
         ax.locator_params(axis='x', nbins=4)
         # Put a line at the grey white matter boundary
         # and another at x=0
-        ax.axhline(10, linewidth=1, color='black', linestyle='--')
-        ax.axvline(0, linewidth=1, color='black', linestyle='-')
+        ax.axhline(10, linewidth=1, color='black', linestyle='--', zorder=-1)
+        ax.axvline(0, linewidth=1, color='black', linestyle='-', zorder=-1)
         # Set the y label if it's been given
         if y_label:
             ax.set_xlabel(y_label)
@@ -570,15 +570,15 @@ def violin_add_laminae(ax, vert=True):
 
     if vert:
         # Put in the mean boundaries
-        ax.axvspan(0.8, 1.4, facecolor='0.5', alpha=0.5, edgecolor='none', zorder=1)
-        ax.axvspan(4.2, 5.1, facecolor='0.5', alpha=0.5, edgecolor='none', zorder=1)
-        ax.axvspan(6.9, 10.0, facecolor='0.5', alpha=0.5, edgecolor='none', zorder=1)
+        ax.axvspan(0.8, 1.4, facecolor='0.5', alpha=0.5, edgecolor='none', zorder=-1)
+        ax.axvspan(4.2, 5.1, facecolor='0.5', alpha=0.5, edgecolor='none', zorder=-1)
+        ax.axvspan(6.9, 10.0, facecolor='0.5', alpha=0.5, edgecolor='none', zorder=-1)
 
     else:
         # Put in the mean boundaries
-        ax.axhspan(0.8, 1.4, facecolor='0.5', alpha=0.5, edgecolor='none', zorder=1)
-        ax.axhspan(4.2, 5.1, facecolor='0.5', alpha=0.5, edgecolor='none', zorder=1)
-        ax.axhspan(6.9, 10.0, facecolor='0.5', alpha=0.5, edgecolor='none', zorder=1)
+        ax.axhspan(0.8, 1.4, facecolor='0.5', alpha=0.5, edgecolor='none', zorder=-1)
+        ax.axhspan(4.2, 5.1, facecolor='0.5', alpha=0.5, edgecolor='none', zorder=-1)
+        ax.axhspan(6.9, 10.0, facecolor='0.5', alpha=0.5, edgecolor='none', zorder=-1)
     return ax
 
 def old_figure_1(graph_dict, 
@@ -1673,7 +1673,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                         y_label='Change in MT with age (AU/year)',
                         cmap='PRGn',
                         y_min=nodal_mt_slope_min, y_max=nodal_mt_slope_max, 
-                        cmap_min=nodal_mt_slope_min/2.0, cmap_max=nodal_mt_slope_min*-1/2.0,
+                        cmap_min=violin_mt_slope_age_max*-1/2.0, cmap_max=violin_mt_slope_age_max/2.0,
                         figure_name=figure_name,
                         mpm=mpm,
                         vert=False)
@@ -1683,7 +1683,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                         y_label='Change in MT with age (AU/year)',
                         cmap='PRGn',
                         y_min=violin_mt_slope_age_min, y_max=violin_mt_slope_age_max, 
-                        cmap_min=nodal_mt_slope_min/2.0, cmap_max=nodal_mt_slope_min*-1/2.0,
+                        cmap_min=violin_mt_slope_age_max*-1/2.0, cmap_max=violin_mt_slope_age_max/2.0,
                         ax=ax_list[1, 3],
                         figure=big_fig,
                         mpm=mpm,
