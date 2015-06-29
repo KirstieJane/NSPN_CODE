@@ -1682,7 +1682,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                         vert=False)
                            
     # Turn off the axes for the first columns
-    for ax in ax_list[:,0].reshape(-1):
+    for ax in ax_list[:,0].reshape(-1) + ax_list[0,1]:
         ax.axis('off')
         
     # Nice tight layout
