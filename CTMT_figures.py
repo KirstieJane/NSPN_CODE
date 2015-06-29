@@ -477,7 +477,7 @@ def create_violin_data(measure_dict, mpm='MT', measure='all_slope_age', cmap='Rd
     return df, color_list, color_dict
 
 
-def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn', cmap_min=-7, cmap_max=7, y_max=None, y_min=None, figure_name=None, ax=None, figure=None, ylabel=None, vert=True):
+def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn', cmap_min=-7, cmap_max=7, y_max=None, y_min=None, figure_name=None, ax=None, figure=None, y_label=None, vert=True):
     '''
     INPUTS:
         data_dir --------- where the PARC_*_behavmerge.csv files are saved
@@ -527,11 +527,11 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
         ax.set_xticklabels(labels_list, rotation=90)
         # Put a line at the grey white matter boundary
         # and another at y=0
-        ax.axvline(11, linewidth=1, color='black', linestyle='--')
+        ax.axvline(10, linewidth=1, color='black', linestyle='--')
         ax.axhline(0, linewidth=1, color='black', linestyle='-')
         # Set the y label if it's been given
-        if ylabel:
-            ax.set_ylabel(ylabel)
+        if y_label:
+            ax.set_ylabel(y_label)
 
     else:
         # Fix the y axis limits
@@ -543,11 +543,11 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
         ax.locator_params(axis='x', nbins=4)
         # Put a line at the grey white matter boundary
         # and another at x=0
-        ax.axhline(11, linewidth=1, color='black', linestyle='--')
+        ax.axhline(10, linewidth=1, color='black', linestyle='--')
         ax.axvline(0, linewidth=1, color='black', linestyle='-')
         # Set the y label if it's been given
-        if ylabel:
-            ax.set_xlabel(ylabel)
+        if y_label:
+            ax.set_xlabel(y_label)
 
     # Despine because we all agree it looks better that way
     sns.despine()
@@ -822,7 +822,7 @@ def old_figure_2(df_ct, df_mpm, measure_dict, figures_dir, results_dir, aparc_na
                         vert=False)
                         
     ax_list[1, 2] = violin_mt_depths(measure_dict,
-                                        ylabel='Slope MT(70%)\nwith age',
+                                        y_label='Slope MT(70%)\nwith age',
                                         measure='all_slope_age',
                                         y_max=0.015, y_min=-0.010, 
                                         cmap_min=-0.007, cmap_max=0.007,
@@ -1550,7 +1550,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     nodal_mt_ct_slope_min=-4.5
     nodal_mt_ct_slope_max=1.5
     violin_mt_slope_age_min = -0.01
-    violin_mt_slope_age_max = 0.02
+    violin_mt_slope_age_max = 0.018
     violin_mt_slope_ct_min = -5.5
     violin_mt_slope_ct_max = 2.5
     
@@ -1605,6 +1605,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     violin_mt_depths(measure_dict,
                         measure='all_mean',
+                        y_label='Mean MT across regions',
                         cmap='jet',
                         y_min=nodal_mt_overall_min, y_max=nodal_mt_overall_max, 
                         cmap_min=nodal_mt_overall_min, cmap_max=nodal_mt_overall_max,
@@ -1614,6 +1615,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     ax_list[1,1] = violin_mt_depths(measure_dict,
                         measure='all_mean',
+                        y_label='Mean MT across regions',
                         cmap='jet',
                         y_min=nodal_mt_overall_min, y_max=nodal_mt_overall_max, 
                         cmap_min=nodal_mt_overall_min, cmap_max=nodal_mt_overall_max,
@@ -1629,6 +1631,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     violin_mt_depths(measure_dict,
                         measure='global_mean',
+                        y_label='Mean MT across participants',
                         cmap='jet',
                         y_min=nodal_mt_overall_min, y_max=nodal_mt_overall_max, 
                         cmap_min=nodal_mt_overall_min, cmap_max=nodal_mt_overall_max,
@@ -1642,18 +1645,20 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     violin_mt_depths(measure_dict,
                         measure='all_slope_age',
+                        y_label='Change in MT with age (AU/year)',
                         cmap='PRGn',
                         y_min=nodal_mt_slope_min, y_max=nodal_mt_slope_max, 
-                        cmap_min=nodal_mt_slope_min, cmap_max=nodal_mt_slope_min*-1,
+                        cmap_min=nodal_mt_slope_min/2.0, cmap_max=nodal_mt_slope_min*-1/2.0,
                         figure_name=figure_name,
                         mpm=mpm,
                         vert=False)
 
     ax_list[1,2] = violin_mt_depths(measure_dict,
                         measure='all_slope_age',
+                        y_label='Change in MT with age (AU/year)',
                         cmap='PRGn',
                         y_min=violin_mt_slope_age_min, y_max=violin_mt_slope_age_max, 
-                        cmap_min=violin_mt_slope_age_min, cmap_max=violin_mt_slope_age_min*-1,
+                        cmap_min=nodal_mt_slope_min/2.0, cmap_max=nodal_mt_slope_min*-1/2.0,
                         ax=ax_list[1, 2],
                         figure=big_fig,
                         mpm=mpm,
@@ -1665,6 +1670,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     violin_mt_depths(measure_dict,
                         measure='all_slope_ct',
+                        y_label='Correlation between MT and CT (AU/mm)',
                         cmap='PRGn',
                         y_min=violin_mt_slope_ct_min, y_max=violin_mt_slope_ct_max, 
                         cmap_min=violin_mt_slope_ct_max*-1, cmap_max=violin_mt_slope_ct_max,
@@ -1674,6 +1680,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                         
     ax_list[1,3] = violin_mt_depths(measure_dict,
                         measure='all_slope_ct',
+                        y_label='Change in MT with CT (AU/mm)',
                         cmap='PRGn',
                         y_min=violin_mt_slope_ct_min, y_max=violin_mt_slope_ct_max, 
                         cmap_min=violin_mt_slope_ct_max*-1, cmap_max=violin_mt_slope_ct_max,
@@ -1699,5 +1706,4 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                     
     print "FIGURE 2 DONE"
     
-
                  
