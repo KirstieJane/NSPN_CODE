@@ -1514,6 +1514,29 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     # Set the seaborn context and style
     sns.set(style="white")
     sns.set_context("poster", font_scale=2)
+
+    # Set the various min and max values:
+    age_min = 14
+    age_max = 25
+    global_ct_min = 2.4
+    global_ct_max = 3.1
+    nodal_ct_at14_min = 1.9
+    nodal_ct_at14_max = 4.0
+    nodal_ct_slope_min = -0.055
+    nodal_ct_slope_max = 0.015
+    global_mt_min = 0.8
+    global_mt_max = 1.05
+    nodal_mt_at14_min = 0.75
+    nodal_mt_at14_max = 1.1
+    nodal_mt_slope_min = -0.004
+    nodal_mt_slope_max = 0.02
+    nodal_mt_overall_min=0.5
+    nodal_mt_overall_max=1.8
+    nodal_mt_ct_slope_min=-4.5
+    nodal_mt_ct_slope_max=1.5
+    
+    # Create the big figure
+    big_fig, ax_list = plt.subplots(2,4, figsize=(40, 20), facecolor='white')
     
     # MEAN MT ACROSS NODES at different depths
     
@@ -1523,8 +1546,8 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     violin_mt_depths(measure_dict,
                         measure='all_mean',
                         cmap='jet',
-                        y_min=0.2, y_max=1.8, 
-                        cmap_min=0.2, cmap_max=1.8,
+                        y_min=nodal_mt_overall_min, y_max=nodal_mt_overall_max, 
+                        cmap_min=nodal_mt_overall_min, cmap_max=nodal_mt_overall_max,
                         figure_name=figure_name,
                         mpm=mpm,
                         vert=False)
@@ -1537,8 +1560,8 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     violin_mt_depths(measure_dict,
                         measure='global_mean',
                         cmap='jet',
-                        y_min=0.2, y_max=1.8, 
-                        cmap_min=0.2, cmap_max=1.8,
+                        y_min=nodal_mt_overall_min, y_max=nodal_mt_overall_max, 
+                        cmap_min=nodal_mt_overall_min, cmap_max=nodal_mt_overall_max,
                         figure_name=figure_name,
                         mpm=mpm,
                         vert=False)
@@ -1550,8 +1573,8 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     violin_mt_depths(measure_dict,
                         measure='all_slope_age',
                         cmap='PRGn',
-                        y_min=-0.004, y_max=0.02, 
-                        cmap_min=-0.005, cmap_max=0.005,
+                        y_min=nodal_mt_slope_min, y_max=nodal_mt_slope_max, 
+                        cmap_min=nodal_mt_slope_min, cmap_max=nodal_mt_slope_min*-1,
                         figure_name=figure_name,
                         mpm=mpm,
                         vert=False)
@@ -1563,8 +1586,8 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     violin_mt_depths(measure_dict,
                         measure='all_slope_ct',
                         cmap='PRGn',
-                        y_min=-4.3, y_max=1.5, 
-                        cmap_min=-3.5, cmap_max=3.5,
+                        y_min=nodal_mt_ct_slope_min, y_max=nodal_mt_ct_slope_max, 
+                        cmap_min=-nodal_mt_ct_slope_max*-1, cmap_max=nodal_mt_ct_slope_max,
                         figure_name=figure_name,
                         mpm=mpm,
                         vert=False)
@@ -1575,31 +1598,20 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                                     
     pretty_scatter(measure_dict['CT_all_slope_age_at14'], measure_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)], 
                     x_label='CT at 14 years (mm)', y_label='MT at 14 years', 
-                    x_min=1.9, x_max=4.0,
-                    y_min=0.750,y_max=1.00, 
+                    x_min=nodal_ct_at14_min, x_max=nodal_ct_at14_max,
+                    y_min=nodal_mt_at14_min,y_max=nodal_mt_at14_max, 
                     color='k',
                     figure_name=figure_name)
-                    
-    figure_name = os.path.join(figures_dir, 
-                                'Nodal_CT_corr_{}_projfrac+030_at25.png'.format(mpm))
-                                    
-    pretty_scatter(measure_dict['CT_all_slope_age_at25'], measure_dict['{}_projfrac+030_all_slope_age_at25'.format(mpm)], 
-                    x_label='CT at 25 years (mm)', y_label='MT at 25 years', 
-                    x_min=1.9, x_max=4.0,
-                    y_min=0.750,y_max=1.00, 
-                    color='k',
-                    figure_name=figure_name)
-                    
-    figure_name = os.path.join(figures_dir, 
-                                'Nodal_CT_corr_{}_projfrac+030_slope_age.png'.format(mpm))
-                                    
+
+    # NODAL SLOPE CT WITH SLOPE MT
     pretty_scatter(measure_dict['CT_all_slope_age'], measure_dict['{}_projfrac+030_all_slope_age'.format(mpm)], 
                     x_label='Change in CT (mm/year)', y_label='Change in MT (AU/year)', 
-                    x_min=-0.055, x_max=0.015,
-                    y_min=-0.004,y_max=0.02, 
+                    x_min=nodal_ct_slope_min, x_max=nodal_ct_slope_max,
+                    y_min=nodal_mt_slope_min,y_max=nodal_mt_slope_min, 
                     color='k',
                     figure_name=figure_name)
                     
     print "FIGURE 2 DONE"
     
+
                  
