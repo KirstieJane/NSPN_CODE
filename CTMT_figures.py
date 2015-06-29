@@ -554,10 +554,7 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
     
     # Add in the laminae
     ax = violin_add_laminae(ax, vert=vert)
-
-    if not vert:
-        ax.invert_yaxis()
-        
+       
     if figure_name:
         # Do the tight layout because, again, it looks better!
         fig.tight_layout()
@@ -573,15 +570,15 @@ def violin_add_laminae(ax, vert=True):
 
     if vert:
         # Put in the mean boundaries
-        ax.axvspan(1.8, 2.4, facecolor='0.5', alpha=0.5, edgecolor='none')
-        ax.axvspan(5.2, 6.1, facecolor='0.5', alpha=0.5, edgecolor='none')
-        ax.axvspan(7.9, 11.0, facecolor='0.5', alpha=0.5, edgecolor='none')
+        ax.axvspan(0.8, 1.4, facecolor='0.5', alpha=0.5, edgecolor='none')
+        ax.axvspan(4.2, 5.1, facecolor='0.5', alpha=0.5, edgecolor='none')
+        ax.axvspan(6.9, 10.0, facecolor='0.5', alpha=0.5, edgecolor='none')
 
     else:
         # Put in the mean boundaries
-        ax.axhspan(1.8, 2.4, facecolor='0.5', alpha=0.5, edgecolor='none')
-        ax.axhspan(5.2, 6.1, facecolor='0.5', alpha=0.5, edgecolor='none')
-        ax.axhspan(7.9, 11.0, facecolor='0.5', alpha=0.5, edgecolor='none')
+        ax.axhspan(0.8, 1.4, facecolor='0.5', alpha=0.5, edgecolor='none')
+        ax.axhspan(4.2, 5.1, facecolor='0.5', alpha=0.5, edgecolor='none')
+        ax.axhspan(6.9, 10.0, facecolor='0.5', alpha=0.5, edgecolor='none')
     return ax
 
 def old_figure_1(graph_dict, 
@@ -1552,6 +1549,10 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     nodal_mt_overall_max=1.8
     nodal_mt_ct_slope_min=-4.5
     nodal_mt_ct_slope_max=1.5
+    violin_mt_slope_age_min = -0.01
+    violin_mt_slope_age_max = 0.02
+    violin_mt_slope_ct_min = -5.5
+    violin_mt_slope_ct_max = 2.5
     
     # Create the big figure
     big_fig, ax_list = plt.subplots(2,4, figsize=(40, 20), facecolor='white')
@@ -1651,8 +1652,8 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     ax_list[1,2] = violin_mt_depths(measure_dict,
                         measure='all_slope_age',
                         cmap='PRGn',
-                        y_min=nodal_mt_slope_min, y_max=nodal_mt_slope_max, 
-                        cmap_min=nodal_mt_slope_min, cmap_max=nodal_mt_slope_min*-1,
+                        y_min=violin_mt_slope_age_min, y_max=violin_mt_slope_age_max, 
+                        cmap_min=violin_mt_slope_age_min, cmap_max=violin_mt_slope_age_min*-1,
                         ax=ax_list[1, 2],
                         figure=big_fig,
                         mpm=mpm,
@@ -1665,8 +1666,8 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     violin_mt_depths(measure_dict,
                         measure='all_slope_ct',
                         cmap='PRGn',
-                        y_min=nodal_mt_ct_slope_min, y_max=nodal_mt_ct_slope_max, 
-                        cmap_min=-nodal_mt_ct_slope_max*-1, cmap_max=nodal_mt_ct_slope_max,
+                        y_min=violin_mt_slope_ct_min, y_max=violin_mt_slope_ct_max, 
+                        cmap_min=violin_mt_slope_ct_max*-1, cmap_max=violin_mt_slope_ct_max,
                         figure_name=figure_name,
                         mpm=mpm,
                         vert=False)
@@ -1674,16 +1675,18 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     ax_list[1,3] = violin_mt_depths(measure_dict,
                         measure='all_slope_ct',
                         cmap='PRGn',
-                        y_min=nodal_mt_ct_slope_min, y_max=nodal_mt_ct_slope_max, 
-                        cmap_min=nodal_mt_ct_slope_max*-1, cmap_max=nodal_mt_ct_slope_max,
+                        y_min=violin_mt_slope_ct_min, y_max=violin_mt_slope_ct_max, 
+                        cmap_min=violin_mt_slope_ct_max*-1, cmap_max=violin_mt_slope_ct_max,
                         ax=ax_list[1, 3],
                         figure=big_fig,
                         mpm=mpm,
                         vert=False)
                            
     # Turn off the axes for the first columns
-    for ax in ax_list[:,0].reshape(-1) + ax_list[0,1]:
+    for ax in ax_list[:,0].reshape(-1):
         ax.axis('off')
+    # And the 2nd plot on the top row
+    ax_list[0,1].axis('off')
         
     # Nice tight layout
     big_fig.tight_layout()
