@@ -1554,8 +1554,49 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     nodal_mt_ct_slope_max=1.5
     
     # Create the big figure
-    #big_fig, ax_list = plt.subplots(2,4, figsize=(40, 20), facecolor='white')
-    
+    big_fig, ax_list = plt.subplots(2,4, figsize=(40, 20), facecolor='white')
+
+
+    #=========================================================================
+    # Nodal CT MT
+    figure_name = os.path.join(figures_dir, 
+                                'Nodal_CT_corr_{}_projfrac+030_slope_age_at14.png'.format(mpm))
+                                    
+    pretty_scatter(measure_dict['CT_all_slope_age_at14'], measure_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)], 
+                    x_label='CT at 14 years (mm)', y_label='MT at 14 years', 
+                    x_min=nodal_ct_at14_min, x_max=nodal_ct_at14_max,
+                    y_min=nodal_mt_at14_min,y_max=nodal_mt_at14_max, 
+                    color='k',
+                    figure_name=figure_name)
+
+    ax_list[0,2] = pretty_scatter(measure_dict['CT_all_slope_age_at14'], measure_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)], 
+                    x_label='CT at 14 years (mm)', y_label='MT at 14 years', 
+                    x_min=nodal_ct_at14_min, x_max=nodal_ct_at14_max,
+                    y_min=nodal_mt_at14_min,y_max=nodal_mt_at14_max, 
+                    color='k',
+                    ax=ax_list[0, 2],
+                    figure=big_fig)    
+                    
+    # NODAL SLOPE CT WITH SLOPE MT
+    figure_name = os.path.join(figures_dir, 
+                                'Nodal_CT_corr_{}_projfrac+030_slope_age.png'.format(mpm))
+                                    
+    pretty_scatter(measure_dict['CT_all_slope_age'], measure_dict['{}_projfrac+030_all_slope_age'.format(mpm)], 
+                    x_label='Change in CT (mm/year)', y_label='Change in MT (AU/year)', 
+                    x_min=nodal_ct_slope_min, x_max=nodal_ct_slope_max,
+                    y_min=nodal_mt_slope_min,y_max=nodal_mt_slope_max, 
+                    color='k',
+                    figure_name=figure_name)
+
+    ax_list[0,3] = pretty_scatter(measure_dict['CT_all_slope_age'], measure_dict['{}_projfrac+030_all_slope_age'.format(mpm)], 
+                    x_label='Change in CT (mm/year)', y_label='Change in MT (AU/year)', 
+                    x_min=nodal_ct_slope_min, x_max=nodal_ct_slope_max,
+                    y_min=nodal_mt_slope_min,y_max=nodal_mt_slope_max, 
+                    color='k',
+                    ax=ax_list[0, 3],
+                    figure=big_fig)    
+                    
+    #=========================================================================
     # MEAN MT ACROSS NODES at different depths
     
     figure_name = os.path.join(figures_dir, 
@@ -1567,6 +1608,16 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                         y_min=nodal_mt_overall_min, y_max=nodal_mt_overall_max, 
                         cmap_min=nodal_mt_overall_min, cmap_max=nodal_mt_overall_max,
                         figure_name=figure_name,
+                        mpm=mpm,
+                        vert=False)
+    
+    ax_list[1,1] = violin_mt_depths(measure_dict,
+                        measure='all_mean',
+                        cmap='jet',
+                        y_min=nodal_mt_overall_min, y_max=nodal_mt_overall_max, 
+                        cmap_min=nodal_mt_overall_min, cmap_max=nodal_mt_overall_max,
+                        ax=ax_list[1, 1],
+                        figure=big_fig,
                         mpm=mpm,
                         vert=False)
                         
@@ -1596,7 +1647,17 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                         figure_name=figure_name,
                         mpm=mpm,
                         vert=False)
-                        
+
+    ax_list[1,2] = violin_mt_depths(measure_dict,
+                        measure='all_slope_age',
+                        cmap='PRGn',
+                        y_min=nodal_mt_slope_min, y_max=nodal_mt_slope_max, 
+                        cmap_min=nodal_mt_slope_min, cmap_max=nodal_mt_slope_min*-1,
+                        ax=ax_list[1, 2],
+                        figure=big_fig,
+                        mpm=mpm,
+                        vert=False)
+                         
     # CORR WITH CT ACROSS NODES at different depths
     figure_name = os.path.join(figures_dir, 
                                     '{}_all_slope_CT_DifferentDepths.png'.format(mpm))
@@ -1610,27 +1671,28 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                         mpm=mpm,
                         vert=False)
                         
-    # Nodal CT MT
-    figure_name = os.path.join(figures_dir, 
-                                'Nodal_CT_corr_{}_projfrac+030_slope_age_at14.png'.format(mpm))
-                                    
-    pretty_scatter(measure_dict['CT_all_slope_age_at14'], measure_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)], 
-                    x_label='CT at 14 years (mm)', y_label='MT at 14 years', 
-                    x_min=nodal_ct_at14_min, x_max=nodal_ct_at14_max,
-                    y_min=nodal_mt_at14_min,y_max=nodal_mt_at14_max, 
-                    color='k',
-                    figure_name=figure_name)
-
-    # NODAL SLOPE CT WITH SLOPE MT
-    figure_name = os.path.join(figures_dir, 
-                                'Nodal_CT_corr_{}_projfrac+030_slope_age.png'.format(mpm))
-                                    
-    pretty_scatter(measure_dict['CT_all_slope_age'], measure_dict['{}_projfrac+030_all_slope_age'.format(mpm)], 
-                    x_label='Change in CT (mm/year)', y_label='Change in MT (AU/year)', 
-                    x_min=nodal_ct_slope_min, x_max=nodal_ct_slope_max,
-                    y_min=nodal_mt_slope_min,y_max=nodal_mt_slope_max, 
-                    color='k',
-                    figure_name=figure_name)
+    ax_list[1,3] = violin_mt_depths(measure_dict,
+                        measure='all_slope_ct',
+                        cmap='PRGn',
+                        y_min=nodal_mt_ct_slope_min, y_max=nodal_mt_ct_slope_max, 
+                        cmap_min=nodal_mt_ct_slope_max*-1, cmap_max=nodal_mt_ct_slope_max,
+                        ax=ax_list[1, 3],
+                        figure=big_fig,
+                        mpm=mpm,
+                        vert=False)
+                           
+    # Turn off the axes for the first columns
+    for ax in ax_list[:,0].reshape(-1):
+        ax.axis('off')
+        
+    # Nice tight layout
+    big_fig.tight_layout()
+    
+    # Save the figure
+    filename = os.path.join(figures_dir, 'New_Figure2.png')
+    big_fig.savefig(filename, bbox_inches=0, dpi=100)
+    
+    plt.close()
                     
     print "FIGURE 2 DONE"
     
