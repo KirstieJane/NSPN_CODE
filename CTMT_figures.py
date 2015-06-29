@@ -1213,6 +1213,11 @@ def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_me
     # You'll always use this color_list
     color_list = [ 'purple', 'blue', 'green', 'orange', 'yellow' ]
     
+    # You need to make it into a color dictionary
+    color_dict={}
+    for i, color in enumerate(color_list):
+        color_dict[i+1] = color
+        
     # Create the figure if you need to
     if not ax:
         # Create a figure
@@ -1221,7 +1226,11 @@ def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_me
         fig = figure
         
     # Make the box plot
-    sns.boxplot(df.x[df.x>-99], groupby=df['Cortical Laminar Pattern'], color=color_list, ax=ax)
+    sns.boxplot(df.x[df.x>-99], 
+                    groupby=df['Cortical Laminar Pattern'], 
+                    order=range(1,6),
+                    palette=color_dict, 
+                    ax=ax)
     
     # Set the y label if it's been given
     if y_label:
