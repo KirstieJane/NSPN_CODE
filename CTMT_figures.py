@@ -518,11 +518,12 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
         # Fix the y axis limits
         if np.isscalar(y_max) and np.isscalar(y_min):
             ax.set_ylim((y_min, y_max))
-        ax.set_xticklabels(labels)
+        # Set tick labels to be in scientific format if they're larger than 100
+        # or smaller than 0.001
         ax.ticklabel_format(axis='y', style='sci', scilimits=(-2,2))
         # Make sure there aren't too many bins!
         ax.locator_params(axis='y', nbins=4)        
-        # Re-do the tick labels so that they're rotated
+        # Add in the tick labels and rotate them
         ax.set_xticklabels(labels_list, rotation=90)
         # Put a line at the grey white matter boundary
         # and another at y=0
@@ -536,7 +537,7 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
         # Fix the y axis limits
         if np.isscalar(y_max) and np.isscalar(y_min):
             ax.set_xlim((y_min, y_max))
-        ax.set_yticklabels(labels)
+        ax.set_yticklabels(labels_list)
         ax.ticklabel_format(axis='x', style='sci', scilimits=(-5,5))    
         # Make sure there aren't too many bins!
         ax.locator_params(axis='x', nbins=4)
