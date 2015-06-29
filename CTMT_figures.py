@@ -449,6 +449,7 @@ def create_violin_data(measure_dict, mpm='MT', measure='all_slope_age', cmap='Rd
     n_values = len(measure_dict['{}_projfrac+000_{}'.format(mpm, measure)])
     df =  pd.DataFrame({'index' : range(n_values)})
     color_list = []
+    color_dict = {}
     
     # Set up the color mapping
     cm = plt.get_cmap(cmap)
@@ -470,8 +471,10 @@ def create_violin_data(measure_dict, mpm='MT', measure='all_slope_age', cmap='Rd
         df['{}'.format(i)] = m_array
             
         color_list += [scalarMap.to_rgba(np.mean(df['{}'.format(i)]))]
-
-    return df, color_list
+        
+        color_dict['{}'.format(i)] = scalarMap.to_rgba(np.mean(df['{}'.format(i)]))
+        
+    return df, color_list, color_dict
 
 
 def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn', cmap_min=-7, cmap_max=7, y_max=None, y_min=None, figure_name=None, ax=None, figure=None, ylabel=None, vert=True):
@@ -491,8 +494,12 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
     sns.set_context("poster", font_scale=2)
     
     # Get the data, colors and labels
-    df, color_list = create_violin_data(measure_dict, mpm=mpm, measure=measure, 
-                                                cmap=cmap, cmap_min=cmap_min, cmap_max=cmap_max)
+    df, color_list, color_dict = create_violin_data(measure_dict, 
+                                                        mpm=mpm, 
+                                                        measure=measure, 
+                                                        cmap=cmap, 
+                                                        cmap_min=cmap_min, 
+                                                        cmap_max=cmap_max)
     
     labels_list = create_violin_labels()
         
@@ -505,7 +512,7 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
         
     # Create the box plot
     ##### You could change this here to a violin plot if you wanted to...
-    ax = sns.boxplot(df[df.columns[1:]], color=color_list, names=labels_list, ax=ax, vert=vert)
+    ax = sns.boxplot(df[df.columns[1:]], palette=color_dict, names=labels_list, ax=ax, vert=vert)
     
     if vert:
         # Fix the y axis limits
