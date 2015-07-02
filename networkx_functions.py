@@ -668,7 +668,7 @@ def random_graph(G, Q=10):
     '''
     Create a random graph that preserves degree distribution
     by swapping pairs of edges (double edge swap).
-    Q is the factor 
+    
     Inputs:
         G: networkx graph
         Q: constant that determines how many swaps to conduct
@@ -677,6 +677,20 @@ def random_graph(G, Q=10):
 
     Returns:
         R: networkx graph
+    
+    CAVEAT: If it is not possible in 15 attempts to create a
+    connected random graph then this code will just return the
+    original graph (G). This means that if you come to look at
+    the values that are an output of calculate_global_measures
+    and see that the values are the same for the random graph
+    as for the main graph it is not necessarily the case that 
+    the graph is random, it may be that the graph was so low cost
+    (density) that this code couldn't create an appropriate random
+    graph!
+    
+    This should only happen for ridiculously low cost graphs that
+    wouldn't make all that much sense to investigate anyway...
+    so if you think carefully it shouldn't be a problem.... I hope!
     '''
     
     import networkx as nx
@@ -690,16 +704,24 @@ def random_graph(G, Q=10):
     # Start with assuming that the random graph is not connected
     # (because it might not be after the first permuatation!)
     connected=False
-
+    attempt=0
+    
     # Keep making random graphs until they are connected!
-    while not connected:
+    while not connected and attempt < 15:
         # Now swap some edges in order to preserve the degree distribution
         print 'Creating random graph - may take a little while!'
         nx.double_edge_swap(R,Q*E,max_tries=Q*E*10)
 
         # Check that this graph is connected! If not, start again
         connected = nx.is_connected(R)
+        if not connected:
+            attempt +=1
     
+    if attempt == 15:
+        print 'Giving up - can not randomise graph'
+        print '==================================='
+        R = G.copy()
+        
     return R
     
 
