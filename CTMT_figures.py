@@ -1256,6 +1256,65 @@ def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_me
     else:
         return ax
 
+def von_economo_scatter(measure_dict, figures_dir, von_economo, measure='CT_all_mean', x_label='x', y_label='y', x_min=1.5, x_max=4.0, y_min=0.8, y_max=1.2, figure_name=None, figure=None, ax=None):
+
+    # Set the seaborn style
+    sns.set(style="white")
+    sns.set_context("poster", font_scale=2)
+
+    # Read the data into a data frame
+    df = pd.DataFrame( { x_label : measure_dict[x_label],
+                         y_label : measure_dict[y_label],
+                         'Cortical Laminar Pattern' : von_economo } )
+                        
+    # You'll always use this color_list
+    color_list = [ 'purple', 'blue', 'green', 'orange', 'yellow' ]
+    
+    # You need to make it into a color dictionary
+    color_dict={}
+    for i, color in enumerate(color_list):
+        color_dict[i+1] = color
+        
+    # Create the figure if you need to
+    if not ax:
+        # Create a figure
+        fig, ax = plt.subplots(figsize=(10, 10), facecolor='white')
+    else:
+        fig = figure
+    
+    for i in range(1,6):
+        df_i = df[df['Cortical Laminar Pattern']==i]
+        # Create the linear regression plot
+        ax = sns.regplot(x_label, y_label, df_i, ci=95, ax=ax, color=color_dict[i], scatter_kws={'s': 60})
+    
+    # Fix the x and y axis limits
+    if np.isscalar(x_max) and np.isscalar(x_min):
+        ax.set_xlim((x_min, x_max))
+    if np.isscalar(y_max) and np.isscalar(y_min):
+        ax.set_ylim((y_min, y_max))
+    
+    ax.ticklabel_format(axis='y', style='sci', scilimits=(-3,3))
+
+    # Make sure there aren't too many bins!
+    ax.locator_params(axis='y', nbins=4)
+    
+    # Put a line at y = 0
+    ax.axhline(0, linewidth=1, color='black', linestyle='--')
+
+    # Despine because we all agree it looks better that way
+    sns.despine()
+    
+    if figure_name:
+        # Do the tight layout because, again, it looks better!
+        fig.tight_layout()
+    
+        # And save the figure
+        fig.savefig(figure_name, bbox_inches=0, dpi=100)
+        plt.close(fig)
+    
+    else:
+        return ax
+
 def add_four_hor_brains(grid, f_list, big_fig):
     for g_loc, f in zip(grid, f_list):
         img = mpimg.imread(f)
@@ -1704,7 +1763,181 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
     
     plt.close()
-                    
-    print "FIGURE 2 DONE"
     
-                 
+def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
+    
+    # Set the seaborn context and style
+    sns.set(style="white")
+    sns.set_context("poster", font_scale=2)
+
+    # Get the set values
+    min_max_dict = get_min_max_values()
+
+    # Create the big figure
+    big_fig, ax_list = plt.subplots(3,4, figsize=(40, 24), facecolor='white')
+    
+    #=========================================================================
+    # Start by putting the high degree nodes in the top row
+    #=========================================================================
+    f_list = [ os.path.join(results_dir, 'PNGS', 'Degree_CT_covar_ones_all_COST_10_lh_pial_lateral.png'),
+                os.path.join(results_dir, 'PNGS', 'Degree_CT_covar_ones_all_COST_10_lh_pial_medial.png'),
+                os.path.join(results_dir, 'PNGS', 'Degree_CT_covar_ones_all_COST_10_rh_pial_medial.png'),
+                os.path.join(results_dir, 'PNGS', 'Degree_CT_covar_ones_all_COST_10_rh_pial_lateral.png') ]
+
+    grid = gridspec.GridSpec(1, 4)
+    grid.update(left=0, right=1, bottom=0.66, top=1, wspace=0, hspace=0)
+
+    big_fig = add_four_hor_brains(grid, f_list, big_fig)
+
+    #=========================================================================
+    # Next put scatter plots of CT, deltaCT, MT and deltaMT by degree
+    #=========================================================================
+    # Degree vs CT
+    figure_name = os.path.join(figures_dir, 
+                                'Degree_corr_CT_all_slope_age_at14.png'.format(mpm))
+                                    
+    pretty_scatter(measure_dict['Degree_CT_covar_ones_all_COST_10'], measure_dict['CT_all_slope_age_at14'], 
+                    x_label='Degree', y_label='CT at 14 years (mm)', 
+                    x_min=min_max_dict['degree_min'], x_max=min_max_dict['degree_max'],
+                    y_min=min_max_dict['nodal_ct_at14_min'],y_max=min_max_dict['nodal_ct_at14_max'], 
+                    color='k',
+                    figure_name=figure_name)
+
+    ax_list[1,0] = pretty_scatter(measure_dict['Degree_CT_covar_ones_all_COST_10'], measure_dict['CT_all_slope_age_at14'], 
+                                    x_label='Degree', y_label='CT at 14 years (mm)', 
+                                    x_min=min_max_dict['degree_min'], x_max=min_max_dict['degree_max'],
+                                    y_min=min_max_dict['nodal_ct_at14_min'],y_max=min_max_dict['nodal_ct_at14_max'], 
+                                    color='k',
+                                    ax=ax_list[1, 0],
+                                    figure=big_fig)    
+
+    # Degree vs Delta CT
+    figure_name = os.path.join(figures_dir, 
+                                'Degree_corr_CT_all_slope_age.png'.format(mpm))
+                                    
+    pretty_scatter(measure_dict['Degree_CT_covar_ones_all_COST_10'], measure_dict['CT_all_slope_age'], 
+                    x_label='Degree', y_label='Change in CT (mm/year)', 
+                    x_min=min_max_dict['degree_min'], x_max=min_max_dict['degree_max'],
+                    y_min=min_max_dict['nodal_ct_slope_min'],y_max=min_max_dict['nodal_ct_slope_max'], 
+                    color='k',
+                    figure_name=figure_name)
+
+    ax_list[1,1] = pretty_scatter(measure_dict['Degree_CT_covar_ones_all_COST_10'], measure_dict['CT_all_slope_age'], 
+                                    x_label='Degree', y_label='Change in CT (mm/year)', 
+                                    x_min=min_max_dict['degree_min'], x_max=min_max_dict['degree_max'],
+                                    y_min=min_max_dict['nodal_ct_slope_min'],y_max=min_max_dict['nodal_ct_slope_max'], 
+                                    color='k',
+                                    ax=ax_list[1, 1],
+                                    figure=big_fig)    
+                                    
+    # Degree vs MT
+    figure_name = os.path.join(figures_dir, 
+                                'Degree_corr_MT_projfrac+030_all_slope_age_at14.png'.format(mpm))
+                                    
+    pretty_scatter(measure_dict['Degree_CT_covar_ones_all_COST_10'], measure_dict['MT_projfrac+030_all_slope_age_at14'], 
+                    x_label='Degree', y_label='MT at 14 years', 
+                    x_min=min_max_dict['degree_min'], x_max=min_max_dict['degree_max'],
+                    y_min=min_max_dict['nodal_mt_at14_min'],y_max=min_max_dict['nodal_mt_at14_max'], 
+                    color='k',
+                    figure_name=figure_name)
+
+    ax_list[1,2] = pretty_scatter(measure_dict['Degree_CT_covar_ones_all_COST_10'], 
+                                    measure_dict['MT_projfrac+030_all_slope_age_at14'], 
+                                    x_label='Degree', y_label='MT at 14 years (AU/year)', 
+                                    x_min=min_max_dict['degree_min'], x_max=min_max_dict['degree_max'],
+                                    y_min=min_max_dict['nodal_mt_at14_min'],y_max=min_max_dict['nodal_mt_at14_max'], 
+                                    color='k',
+                                    ax=ax_list[1, 2],
+                                    figure=big_fig)    
+
+    # Degree vs Delta CT
+    figure_name = os.path.join(figures_dir, 
+                                'Degree_corr_MT_projfrac+030_all_slope_age.png'.format(mpm))
+                                    
+    pretty_scatter(measure_dict['Degree_CT_covar_ones_all_COST_10'], measure_dict['MT_projfrac+030_all_slope_age'], 
+                    x_label='Degree', y_label='Change in MT (AU/year)', 
+                    x_min=min_max_dict['degree_min'], x_max=min_max_dict['degree_max'],
+                    y_min=min_max_dict['nodal_mt_slope_min'],y_max=min_max_dict['nodal_mt_slope_max'], 
+                    color='k',
+                    figure_name=figure_name)
+
+    ax_list[1,3] = pretty_scatter(measure_dict['Degree_CT_covar_ones_all_COST_10'], 
+                                    measure_dict['MT_projfrac+030_all_slope_age'], 
+                                    x_label='Degree', y_label='Change in MT (AU/year)', 
+                                    x_min=min_max_dict['degree_min'], x_max=min_max_dict['degree_max'],
+                                    y_min=min_max_dict['nodal_mt_slope_min'],y_max=min_max_dict['nodal_mt_slope_max'], 
+                                    color='k',
+                                    ax=ax_list[1, 3],
+                                    figure=big_fig)    
+                                    
+    #=========================================================================
+    # Next put von economo box plots of four different graph measures
+    # split up by von economo type
+    #=========================================================================
+    figure_name = os.path.join(figures_dir,
+                                'VonEconomo_{}_projfrac+030_all_slope_age_at14.png'.format(mpm))
+    
+    von_economo_boxes(measure_dict, figures_dir, 
+                        measure_dict['von_economo'], 
+                        measure='Degree_CT_covar_ones_all_COST_10',
+                        y_label='Degree', 
+                        y_min=min_max_dict['degree_min'], y_max=min_max_dict['degree_max'], 
+                        figure_name=figure_name)
+    
+    ax_list[2, 2] = von_economo_boxes(measure_dict, figures_dir, 
+                                        measure_dict['von_economo'], 
+                                        measure='{}_projfrac+030_all_slope_age_at14'.format(mpm),
+                                        y_label='MT at 14 years (AU)', 
+                                        y_min=nodal_mt_at14_min, y_max=nodal_mt_at14_max, 
+                                        ax=ax_list[2, 2],
+                                        figure=big_fig)
+                                    
+    #=========================================================================
+    # And finally clean everything up and save the figure
+    #=========================================================================
+    
+    # Turn off the axes for the first row
+    for ax in ax_list[0,:].reshape(-1):
+        ax.axis('off')
+    
+    # Nice tight layout
+    big_fig.tight_layout()
+
+    # Save the figure
+    filename = os.path.join(figures_dir, 'New_Figure3.png')
+    big_fig.savefig(filename, bbox_inches=0, dpi=100)
+
+    plt.close()
+                                    
+def get_min_max_values():
+    
+    min_max_dict = {}
+        
+    # Set the various min and max values:
+    min_max_dict['age_min'] = 14
+    min_max_dict['age_max'] = 25
+    min_max_dict['global_ct_min'] = 2.4
+    min_max_dict['global_ct_max'] = 3.1
+    min_max_dict['nodal_ct_at14_min'] = 1.9
+    min_max_dict['nodal_ct_at14_max'] = 4.0
+    min_max_dict['nodal_ct_slope_min'] = -0.055
+    min_max_dict['nodal_ct_slope_max'] = 0.015
+    min_max_dict['global_mt_min'] = 0.8
+    min_max_dict['global_mt_max'] = 1.05
+    min_max_dict['nodal_mt_at14_min'] = 0.75
+    min_max_dict['nodal_mt_at14_max'] = 1.1
+    min_max_dict['nodal_mt_slope_min'] = -0.004
+    min_max_dict['nodal_mt_slope_max'] = 0.02
+    min_max_dict['nodal_mt_overall_min'] = 0.4
+    min_max_dict['nodal_mt_overall_max'] = 1.8
+    min_max_dict['nodal_mt_ct_slope_min'] = -4.5
+    min_max_dict['nodal_mt_ct_slope_max'] = 1.5
+    min_max_dict['violin_mt_slope_age_min'] = -0.01
+    min_max_dict['violin_mt_slope_age_max'] = 0.018
+    min_max_dict['violin_mt_slope_ct_min'] = -5.5
+    min_max_dict['violin_mt_slope_ct_max'] = 2.5
+    min_max_dict['degree_min'] = 0
+    min_max_dict['degree_max'] = 110
+    
+    return min_max_dict
+    

@@ -210,6 +210,8 @@ def closeness(G):
     
     closeness_dict = closeness_centrality(G)
 
+
+    
 def shortest_path(G):
     import networkx as nx
     import numpy as np
@@ -224,35 +226,73 @@ def shortest_path(G):
     return shortestpl_dict
     
 
-def nodal_distance(G, centroids):
+def assign_nodal_distance(G, centroids):
 
+    '''
+    Give each node in the graph their
+    x, y, z coordinates and then calculate the eucledian
+    distance for every edge that connects to each node
+    
+    Also calculate the number of interhemispheric edges
+    (defined as edges which different signs for the x 
+    coordinate
+    
+    Returns the graph
+    '''
     import networkx as nx
     import numpy as np
     from scipy.spatial import distance
     
+    # First assign the x, y, z values to each node
     for i, node in enumerate(G.nodes()):
         G.node[node]['x'] = centroids[i, 0]
         G.node[node]['y'] = centroids[i, 1]
         G.node[node]['z'] = centroids[i, 2]
         G.node[node]['centroids'] = centroids[i, :]
     
+    # Loop through every node in turn
     for i, node in enumerate(G.nodes()):
-        # Loop through the edges connecting to each node           
+        # Loop through the edges connecting to this node
+        # Note that "node1" should always be exactly the same
+        # as "node", I've just used another name to keep 
+        # the code clear (which I may not have achieved given
+        # that I thought this comment was necesary...)
         for node1, node2 in G.edges(nbunch=[node]):
         
+            # Calculate the eulidean distance for this edge
             cent1 = G.node[node1]['centroids']
             cent2 = G.node[node2]['centroids']
             
-            # Calculate the eulidean distance for this edge
             dist = distance.euclidean(cent1, cent2)
+            
+            # And assign this value to the edge
             G.edge[node1][node2]['euclidean'] = dist 
         
-        # Create a nodal attribute summarizing the edges
-        # that are connecting to it
+            # Also figure out whether this edge is interhemispheric
+            # by multiplying the x values. If x1 * x2 is negative
+            # then the nodes are in different hemispheres.
+            x1 = G.node[node1]['x']
+            x2 = G.node[node2]['x']
+            
+            if x1*x2 > 0:
+                G.edge[node1][node2]['interhem'] = 0
+            else:
+                G.edge[node1][node2]['interhem'] = 1
+            
+        # Create two nodal attributes (average distance and 
+        # total distance) by summarizing the euclidean distance
+        # for all edges which connect to the node
         euc_list = [ G.edge[m][n]['euclidean'] for m, n in G.edges(nbunch=node) ]
-
+        
         G.node[node]['average_dist'] = np.mean(euc_list)
         G.node[node]['total_dist'] = np.sum(euc_list)
+        
+        # Create an interhem nodal attribute by getting the average
+        # of the interhem values for all edges which connect to the node
+        
+        interhem_list = [ G.edge[m][n]['interhem'] for m, n in G.edges(nbunch=node) ]
+
+        G.node[node]['interhem_proportion'] = np.mean(interhem_list)
         
     return G
     
@@ -339,7 +379,8 @@ def participation_coefficient(G):
                 
             # Save the participation coefficient to the dictionary
             pc_dict[source] = pc
-    return pc_dict
+            
+    return partition, pc_dict
     
     
 def plot_modules(G, 
@@ -498,9 +539,25 @@ def create_mat(df, aparc_names, covar, demean=False):
     mat_corr_covar = mat_corr_covar * mat_corr_covar.T
     
     return mat_corr, mat_corr_covar
+
+def assign_node_names(G, aparc_names):
+
+    # Assign names to the nodes
+    for i, node in enumerate(G.nodes()):
+        G.node[node]['name_500'] = aparc_names[i]
+        G.node[node]['name_DK'] = aparc_names[i].rsplit('_',1)[0]
+        G.node[node]['hemi'] = aparc_names[i].split('_',1)[0]
     
+    return G
     
-def assign_node_attr(G, centroids, aparc_names):
+def assign_euclidean_distances(G, centroids):
+    '''
+    Assign positions to each node and then calculate
+    distance measures for each
+    
+    Returns the graph. You can access the node attributes
+    by typing eg: G.node['x']
+    '''
     
     from scipy.spatial import distance
     
@@ -509,9 +566,6 @@ def assign_node_attr(G, centroids, aparc_names):
         G.node[node]['x'] = centroids[i, 0]
         G.node[node]['y'] = centroids[i, 1]
         G.node[node]['z'] = centroids[i, 2]
-        G.node[node]['name_500'] = aparc_names[i]
-        G.node[node]['name_DK'] = aparc_names[i].rsplit('_',1)[0]
-        G.node[node]['hemi'] = aparc_names[i].split('_',1)[0]
 
     # Set a counter for the total interhemispheric
     # edges for the whole graph
@@ -649,13 +703,16 @@ def random_graph(G, Q=10):
     return R
     
 
-
-def calculate_network_measures(G, R_list=None, n=10):
+def calculate_global_measures(G, R_list=None, n=10):
     '''
     A wrapper function that calls a bunch of useful functions
     and reports a plethora of network measures for the real graph
     G, and for n random graphs that are matched on degree distribution
     (unless otherwise stated)
+    
+    This USED to be called calculate_network_measures. It was
+    changed on 2nd July because another loop which calculated nodal
+    measures was created!
     '''
     import networkx as nx
     import numpy as np
@@ -673,50 +730,110 @@ def calculate_network_measures(G, R_list=None, n=10):
             R_list += [ random_graph(G) ]
 
     #==== MEASURES ====================
-    measures_dict = {}
+    network_measures_dict = {}
     
     #---- Clustering coefficient ------
-    measures_dict['C'] = nx.average_clustering(G)
+    network_measures_dict['C'] = nx.average_clustering(G)
     rand_array = np.ones(n)
     for i in range(n):
         rand_array[i] = nx.average_clustering(R_list[i])
-    measures_dict['C_rand'] = rand_array
+    network_measures_dict['C_rand'] = rand_array
     
     #---- Shortest path length --------
-    measures_dict['L'] = nx.average_shortest_path_length(G)
+    network_measures_dict['L'] = nx.average_shortest_path_length(G)
     rand_array = np.ones(n)
     for i in range(n):
         rand_array[i] = nx.average_shortest_path_length(R_list[i])
-    measures_dict['L_rand'] = rand_array
+    network_measures_dict['L_rand'] = rand_array
     
     #---- Assortativity ---------------
-    measures_dict['a'] = np.mean(nx.degree_assortativity_coefficient(G))
+    network_measures_dict['a'] = np.mean(nx.degree_assortativity_coefficient(G))
     rand_array = np.ones(n)
     for i in range(n):
         rand_array[i] = np.mean(nx.degree_assortativity_coefficient(R_list[i]))
-    measures_dict['a_rand'] = rand_array
+    network_measures_dict['a_rand'] = rand_array
 
     #---- Modularity ------------------
-    measures_dict['M'] = calc_modularity(G)
+    network_measures_dict['M'] = calc_modularity(G)
     rand_array = np.ones(n)
     for i in range(n):
         rand_array[i] = calc_modularity(R_list[i])
-    measures_dict['M_rand'] = rand_array
+    network_measures_dict['M_rand'] = rand_array
     
     #---- Efficiency ------------------
-    measures_dict['E'] = calc_efficiency(G)
+    network_measures_dict['E'] = calc_efficiency(G)
     rand_array = np.ones(n)
     for i in range(n):
         rand_array[i] = calc_efficiency(R_list[i])
-    measures_dict['E_rand'] = rand_array
+    network_measures_dict['E_rand'] = rand_array
      
     #---- Small world -----------------
     sigma_array = np.ones(n)
     for i in range(n):
-        sigma_array[i] = ( ( measures_dict['C'] / measures_dict['C_rand'][i] )
-                            / ( measures_dict['L'] / measures_dict['L_rand'][i] ) )
-    measures_dict['sigma'] = sigma_array
-    measures_dict['sigma_rand'] = 1.0
+        sigma_array[i] = ( ( network_measures_dict['C'] / network_measures_dict['C_rand'][i] )
+                            / ( network_measures_dict['L'] / network_measures_dict['L_rand'][i] ) )
+    network_measures_dict['sigma'] = sigma_array
+    network_measures_dict['sigma_rand'] = 1.0
 
-    return measures_dict
+    return network_measures_dict
 
+def calculate_nodal_measures(G, centroids):
+    '''
+    A function which returns a dictionary of numpy arrays for a graph's
+        * degree
+        * participation coefficient
+        * average distance
+        * total distance
+        * clustering
+        * closeness
+        * interhemispheric proportion
+    '''
+    
+    import numpy as np
+    import networkx as nx
+    
+    #==================================
+    # Create the dictionary
+    nodal_dict = {}
+    
+    #==================================
+    # Degree
+    deg = G.degree().values()    
+    nodal_dict['degree'] = np.array(deg)
+    
+    #==================================
+    # Closeness
+    closeness = nx.closeness_centrality(G).values()
+    nodal_dict['closeness'] = np.array(closeness)
+
+    #==================================
+    # Shortest path length
+    shortest_path = nx.shortest_path_length(G).values()
+    nodal_dict['shortest_path'] = np.array(shortest_path)
+    
+    #==================================
+    # Clustering
+    clustering = nx.clustering(G).values()
+    nodal_dict['clustering'] = np.array(clustering)
+
+    #==================================
+    # Participation coefficent and 
+    # module assignment
+    partition, pc_dict = participation_coefficient(G)
+    nodal_dict['module'] = np.array(partition.values())
+    nodal_dict['pc'] = np.array(pc_dict.values())
+    
+    #==================================
+    # Euclidean distance and
+    # interhem proportion
+    G = assign_nodal_distance(G, centroids)
+    average_dist = nx.get_node_attributes(G, 'average_dist').values()
+    total_dist = nx.get_node_attributes(G, 'total_dist').values()
+    interhem_prop = nx.get_node_attributes(G, 'interhem_proportion').values()
+    
+    nodal_dict['average_dist'] = np.array(average_dist)
+    nodal_dict['total_dist'] = np.array(total_dist)
+    nodal_dict['interhem_prop'] = np.array(interhem_prop)
+    
+    return nodal_dict
+    
