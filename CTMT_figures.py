@@ -1764,7 +1764,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     plt.close()
     
-def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
+def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='Degree'):
     
     # Set the seaborn context and style
     sns.set(style="white")
@@ -1779,10 +1779,14 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
     #=========================================================================
     # Start by putting the high degree nodes in the top row
     #=========================================================================
-    f_list = [ os.path.join(results_dir, 'PNGS', 'Degree_CT_covar_ones_all_COST_10_lh_pial_lateral.png'),
-                os.path.join(results_dir, 'PNGS', 'Degree_CT_covar_ones_all_COST_10_lh_pial_medial.png'),
-                os.path.join(results_dir, 'PNGS', 'Degree_CT_covar_ones_all_COST_10_rh_pial_medial.png'),
-                os.path.join(results_dir, 'PNGS', 'Degree_CT_covar_ones_all_COST_10_rh_pial_lateral.png') ]
+    f_list = [ os.path.join(results_dir, 'PNGS',
+                                '{}_CT_covar_ones_all_COST_10_lh_pial_lateral.png'.format(network_measure)),
+                os.path.join(results_dir, 'PNGS', 
+                                '{}_CT_covar_ones_all_COST_10_lh_pial_medial.png'.format(network_measure)),
+                os.path.join(results_dir, 'PNGS', 
+                                '{}_CT_covar_ones_all_COST_10_rh_pial_medial.png'.format(network_measure)),
+                os.path.join(results_dir, 'PNGS', 
+                                '{}_CT_covar_ones_all_COST_10_rh_pial_lateral.png'.format(network_measure)) ]
 
     grid = gridspec.GridSpec(1, 4)
     grid.update(left=0, right=1, bottom=0.66, top=1, wspace=0, hspace=0)
@@ -1790,107 +1794,78 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
     big_fig = add_four_hor_brains(grid, f_list, big_fig)
 
     #=========================================================================
-    # Next put scatter plots of CT, deltaCT, MT and deltaMT by degree
+    # Next put scatter plots of CT, deltaCT, MT and deltaMT by the network
+    # measure you've chosen
     #=========================================================================
-    # Degree vs CT
-    figure_name = os.path.join(figures_dir, 
-                                'Degree_corr_CT_all_slope_age_at14.png'.format(mpm))
-                                    
-    pretty_scatter(measure_dict['Degree_CT_covar_ones_all_COST_10'], measure_dict['CT_all_slope_age_at14'], 
-                    x_label='Degree', y_label='CT at 14 years (mm)', 
-                    x_min=min_max_dict['degree_min'], x_max=min_max_dict['degree_max'],
-                    y_min=min_max_dict['nodal_ct_at14_min'],y_max=min_max_dict['nodal_ct_at14_max'], 
-                    color='k',
-                    figure_name=figure_name)
+    network_measure_min = min_max_dict['{}_min'.format(network_measure)]
+    network_measure_max = min_max_dict['{}_min'.format(network_measure)]
+    
+    measure_list = [ 'CT_all_slope_age_at14',
+                     'CT_all_slope_age',
+                     '{}_projfrac+030_all_slope_age_at14'.format(mpm),
+                     '{}_projfrac+030_all_slope_age'.format(mpm) ]
+                     
+    # Note that at the moment this code is assuming you're plotting MT for the
+    # y axis values....I know that can change in the future but I haven't done
+    # that yet!
+    y_label_list = [ 'CT at 14 years (mm)', 'Change in CT (mm/year)', 
+                     'MT at 14 years (AU)', 'Change in MT (mm/year)' ]
+     
+    for i, (measure, y_label) in enumerate(zip(measure_list, y_label_list)):
 
-    ax_list[1,0] = pretty_scatter(measure_dict['Degree_CT_covar_ones_all_COST_10'], measure_dict['CT_all_slope_age_at14'], 
-                                    x_label='Degree', y_label='CT at 14 years (mm)', 
-                                    x_min=min_max_dict['degree_min'], x_max=min_max_dict['degree_max'],
-                                    y_min=min_max_dict['nodal_ct_at14_min'],y_max=min_max_dict['nodal_ct_at14_max'], 
-                                    color='k',
-                                    ax=ax_list[1, 0],
-                                    figure=big_fig)    
+        measure_min = min_max_dict['{}_min'.format(measure)]
+        measure_max = min_max_dict['{}_max'.format(measure)]
 
-    # Degree vs Delta CT
-    figure_name = os.path.join(figures_dir, 
-                                'Degree_corr_CT_all_slope_age.png'.format(mpm))
+        figure_name = os.path.join(figures_dir, 
+                                    '{}_corr_{}.png'.format(network_measure, measure))
                                     
-    pretty_scatter(measure_dict['Degree_CT_covar_ones_all_COST_10'], measure_dict['CT_all_slope_age'], 
-                    x_label='Degree', y_label='Change in CT (mm/year)', 
-                    x_min=min_max_dict['degree_min'], x_max=min_max_dict['degree_max'],
-                    y_min=min_max_dict['nodal_ct_slope_min'],y_max=min_max_dict['nodal_ct_slope_max'], 
-                    color='k',
-                    figure_name=figure_name)
+        pretty_scatter(measure_dict['{}_CT_covar_ones_all_COST_10'.format(network_measure)],
+                        measure_dict[measure], 
+                        x_label='Degree',
+                        y_label=y_label, 
+                        x_min=network_measure_min, x_max=network_measure_max,
+                        y_min=measure_min,y_max=measure_max, 
+                        color='k',
+                        figure_name=figure_name)
 
-    ax_list[1,1] = pretty_scatter(measure_dict['Degree_CT_covar_ones_all_COST_10'], measure_dict['CT_all_slope_age'], 
-                                    x_label='Degree', y_label='Change in CT (mm/year)', 
-                                    x_min=min_max_dict['degree_min'], x_max=min_max_dict['degree_max'],
-                                    y_min=min_max_dict['nodal_ct_slope_min'],y_max=min_max_dict['nodal_ct_slope_max'], 
-                                    color='k',
-                                    ax=ax_list[1, 1],
-                                    figure=big_fig)    
-                                    
-    # Degree vs MT
-    figure_name = os.path.join(figures_dir, 
-                                'Degree_corr_MT_projfrac+030_all_slope_age_at14.png'.format(mpm))
-                                    
-    pretty_scatter(measure_dict['Degree_CT_covar_ones_all_COST_10'], measure_dict['MT_projfrac+030_all_slope_age_at14'], 
-                    x_label='Degree', y_label='MT at 14 years', 
-                    x_min=min_max_dict['degree_min'], x_max=min_max_dict['degree_max'],
-                    y_min=min_max_dict['nodal_mt_at14_min'],y_max=min_max_dict['nodal_mt_at14_max'], 
-                    color='k',
-                    figure_name=figure_name)
+        ax_list[1,i] = pretty_scatter(measure_dict['{}_CT_covar_ones_all_COST_10'.format(network_measure)],
+                                        measure_dict[measure], 
+                                        x_label='Degree',
+                                        y_label=y_label, 
+                                        x_min=network_measure_min, x_max=network_measure_max,
+                                        y_min=measure_min,y_max=measure_max, 
+                                        color='k',
+                                        ax=ax_list[1, i],
+                                        figure=big_fig)    
 
-    ax_list[1,2] = pretty_scatter(measure_dict['Degree_CT_covar_ones_all_COST_10'], 
-                                    measure_dict['MT_projfrac+030_all_slope_age_at14'], 
-                                    x_label='Degree', y_label='MT at 14 years (AU/year)', 
-                                    x_min=min_max_dict['degree_min'], x_max=min_max_dict['degree_max'],
-                                    y_min=min_max_dict['nodal_mt_at14_min'],y_max=min_max_dict['nodal_mt_at14_max'], 
-                                    color='k',
-                                    ax=ax_list[1, 2],
-                                    figure=big_fig)    
-
-    # Degree vs Delta CT
-    figure_name = os.path.join(figures_dir, 
-                                'Degree_corr_MT_projfrac+030_all_slope_age.png'.format(mpm))
-                                    
-    pretty_scatter(measure_dict['Degree_CT_covar_ones_all_COST_10'], measure_dict['MT_projfrac+030_all_slope_age'], 
-                    x_label='Degree', y_label='Change in MT (AU/year)', 
-                    x_min=min_max_dict['degree_min'], x_max=min_max_dict['degree_max'],
-                    y_min=min_max_dict['nodal_mt_slope_min'],y_max=min_max_dict['nodal_mt_slope_max'], 
-                    color='k',
-                    figure_name=figure_name)
-
-    ax_list[1,3] = pretty_scatter(measure_dict['Degree_CT_covar_ones_all_COST_10'], 
-                                    measure_dict['MT_projfrac+030_all_slope_age'], 
-                                    x_label='Degree', y_label='Change in MT (AU/year)', 
-                                    x_min=min_max_dict['degree_min'], x_max=min_max_dict['degree_max'],
-                                    y_min=min_max_dict['nodal_mt_slope_min'],y_max=min_max_dict['nodal_mt_slope_max'], 
-                                    color='k',
-                                    ax=ax_list[1, 3],
-                                    figure=big_fig)    
-                                    
     #=========================================================================
     # Next put von economo box plots of four different graph measures
     # split up by von economo type
     #=========================================================================
-    figure_name = os.path.join(figures_dir,
-                                'VonEconomo_{}_projfrac+030_all_slope_age_at14.png'.format(mpm))
-    
-    von_economo_boxes(measure_dict, figures_dir, 
-                        measure_dict['von_economo'], 
-                        measure='Degree_CT_covar_ones_all_COST_10',
-                        y_label='Degree', 
-                        y_min=min_max_dict['degree_min'], y_max=min_max_dict['degree_max'], 
-                        figure_name=figure_name)
-    
-    ax_list[2, 2] = von_economo_boxes(measure_dict, figures_dir, 
-                                        measure_dict['von_economo'], 
-                                        measure='{}_projfrac+030_all_slope_age_at14'.format(mpm),
-                                        y_label='MT at 14 years (AU)', 
-                                        y_min=nodal_mt_at14_min, y_max=nodal_mt_at14_max, 
-                                        ax=ax_list[2, 2],
-                                        figure=big_fig)
+    measure_list = [ 'Degree', 'PC', 'AverageDist', 'Clustering' ]
+    y_label_list = [ 'Degree', 'Participation Coefficient', 'Average Distance', 'Clustering' ]
+    for i, (measure, y_label) in enumerate(zip(measure_list, y_label_list)):
+        
+        measure_min = min_max_dict['{}_min'.format(measure)]
+        measure_max = min_max_dict['{}_max'.format(measure)]
+        
+        figure_name = os.path.join(figures_dir,
+                        'VonEconomo_{}_CT_covar_ones_all_COST_10.png'.format(measure))
+        
+        von_economo_boxes(measure_dict, figures_dir, 
+                            measure_dict['von_economo'], 
+                            measure='{}_CT_covar_ones_all_COST_10'.format(measure),
+                            y_label=y_label, 
+                            y_min=measure_min, y_max=measure_max, 
+                            figure_name=figure_name)
+        
+        ax_list[2, i] = von_economo_boxes(measure_dict, figures_dir, 
+                                            measure_dict['von_economo'], 
+                                            measure='{}_CT_covar_ones_all_COST_10'.format(measure),
+                                            y_label=y_label, 
+                                            y_min=measure_min, y_max=measure_max, 
+                                            ax=ax_list[2, i],
+                                            figure=big_fig)
                                     
     #=========================================================================
     # And finally clean everything up and save the figure
@@ -1904,7 +1879,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
     big_fig.tight_layout()
 
     # Save the figure
-    filename = os.path.join(figures_dir, 'New_Figure3.png')
+    filename = os.path.join(figures_dir, 'New_Figure3_{}.png'.format(network_measure))
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
 
     plt.close()
@@ -1918,16 +1893,26 @@ def get_min_max_values():
     min_max_dict['age_max'] = 25
     min_max_dict['global_ct_min'] = 2.4
     min_max_dict['global_ct_max'] = 3.1
-    min_max_dict['nodal_ct_at14_min'] = 1.9
-    min_max_dict['nodal_ct_at14_max'] = 4.0
-    min_max_dict['nodal_ct_slope_min'] = -0.055
-    min_max_dict['nodal_ct_slope_max'] = 0.015
+    min_max_dict['nodal_ct_at14_min'] = 1.9           # Would like to delete
+    min_max_dict['nodal_ct_at14_max'] = 4.0           # Would like to delete
+    min_max_dict['CT_all_slope_age_at14_min'] = 1.9
+    min_max_dict['CT_all_slope_age_at14_max'] = 4.0
+    min_max_dict['nodal_ct_slope_min'] = -0.055       # Would like to delete
+    min_max_dict['nodal_ct_slope_max'] = 0.015        # Would like to delete
+    min_max_dict['CT_all_slope_age_min'] = -0.055
+    min_max_dict['CT_all_slope_age_max'] = 0.015
     min_max_dict['global_mt_min'] = 0.8
     min_max_dict['global_mt_max'] = 1.05
-    min_max_dict['nodal_mt_at14_min'] = 0.75
-    min_max_dict['nodal_mt_at14_max'] = 1.1
-    min_max_dict['nodal_mt_slope_min'] = -0.004
-    min_max_dict['nodal_mt_slope_max'] = 0.02
+    min_max_dict['nodal_mt_at14_min'] = 0.75          # Would like to delete
+    min_max_dict['nodal_mt_at14_max'] = 1.1           # Would like to delete
+    min_max_dict['MT_projfrac+030_all_slope_age_at14_min'] = 0.75
+    min_max_dict['MT_projfrac+030_all_slope_age_at14_max'] = 1.1
+    min_max_dict['nodal_mt_slope_min'] = -0.004       # Would like to delete
+    min_max_dict['nodal_mt_slope_max'] = 0.02         # Would like to delete
+    min_max_dict['MT_projfrac+030_all_slope_age_min'] = -0.004
+    min_max_dict['MT_projfrac+030_all_slope_age_max'] = 0.02
+    min_max_dict['CT_all_slope_age_min'] = -0.055
+    min_max_dict['CT_all_slope_age_max'] = 0.015
     min_max_dict['nodal_mt_overall_min'] = 0.4
     min_max_dict['nodal_mt_overall_max'] = 1.8
     min_max_dict['nodal_mt_ct_slope_min'] = -4.5
@@ -1936,8 +1921,16 @@ def get_min_max_values():
     min_max_dict['violin_mt_slope_age_max'] = 0.018
     min_max_dict['violin_mt_slope_ct_min'] = -5.5
     min_max_dict['violin_mt_slope_ct_max'] = 2.5
-    min_max_dict['degree_min'] = 0
-    min_max_dict['degree_max'] = 110
-    
+    min_max_dict['degree_min'] = 0     # Can probably be deleted??
+    min_max_dict['degree_max'] = 110   # Can probably be deleted??
+    min_max_dict['Degree_min'] = 0
+    min_max_dict['Degree_max'] = 110
+    min_max_dict['PC_min'] = 0
+    min_max_dict['PC_max'] = 1
+    min_max_dict['AverageDist_min'] = 10
+    min_max_dict['AverageDist_max'] = 120
+    min_max_dict['Clustering_min'] = 0
+    min_max_dict['Clustering_max'] = 1    
+
     return min_max_dict
     
