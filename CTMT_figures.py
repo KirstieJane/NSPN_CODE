@@ -1870,20 +1870,22 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
     #=========================================================================
     # And finally clean everything up and save the figure
     #=========================================================================
-    
     # Turn off the axes for the first row
     for ax in ax_list[0,:].reshape(-1):
         ax.axis('off')
     
+    # Allign the y labels for each column    
+    for ax in ax_list[1:,:].reshape(-1):
+        ax.yaxis.set_label_coords(-0.15, 0.5)
+
     # Nice tight layout
     big_fig.tight_layout()
 
     # Save the figure
-    filename = os.path.join(figures_dir, 'New_Figure3_{}.png'.format(network_measure))
+    filename = os.path.join(figures_dir, 'New_Figure3.png')
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
 
-    plt.close()
-                                    
+    plt.close()                
 def get_min_max_values():
     
     min_max_dict = {}
