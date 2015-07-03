@@ -1223,7 +1223,7 @@ def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_me
         color_dict={}
         for i, color in enumerate(color_list):
             color_dict[i+1] = color
-    
+        print "VON ECONOMO COLORS"
     else:
         color_dict = "muted"
         
