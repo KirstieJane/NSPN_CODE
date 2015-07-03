@@ -1217,7 +1217,7 @@ def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_me
                          group_label : von_economo } )
                         
     # You'll always use this color_list
-    if len(von_economo) == 5:
+    if len(set(von_economo)) == 5:
         color_list = [ 'purple', 'blue', 'green', 'orange', 'yellow' ]
         # You need to make it into a color dictionary
         color_dict={}
@@ -1239,6 +1239,7 @@ def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_me
                     groupby=df['Cortical Laminar Pattern'], 
                     order=range(1,6),
                     palette=color_dict, 
+                    saturation=0.2,
                     ax=ax)
     
     # Set the y label if it's been given
@@ -1881,13 +1882,6 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
     # Nice tight layout
     big_fig.tight_layout()
 
-    # Allign the y labels for each column    
-    for ax in ax_list[1:,0].reshape(-1):
-        ax.yaxis.set_label_coords(-0.15, 0.5)
-    # Allign the y labels for each column    
-    for ax in ax_list[1:,1:].reshape(-1):
-        ax.yaxis.set_label_coords(-0.12, 0.5)
-
     # Save the figure
     filename = os.path.join(figures_dir, 'New_Figure3_{}.png'.format(network_measure))
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
@@ -1952,13 +1946,6 @@ def figure_4(measure_dict, figures_dir, results_dir, mpm='MT'):
     #=========================================================================
     # Nice tight layout
     big_fig.tight_layout()
-
-    # Allign the y labels for each column    
-    for ax in ax_list[:,0].reshape(-1):
-        ax.yaxis.set_label_coords(-0.15, 0.5)
-    # Allign the y labels for each column    
-    for ax in ax_list[:,1:].reshape(-1):
-        ax.yaxis.set_label_coords(-0.12, 0.5)
 
     # Save the figure
     filename = os.path.join(figures_dir, 'New_Figure4.png')
