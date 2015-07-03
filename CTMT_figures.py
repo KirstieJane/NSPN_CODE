@@ -1236,7 +1236,8 @@ def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_me
     # Make the box plot
     sns.boxplot(df.x[df.x>-99], 
                     groupby=df[group_label], 
-                    order=range(np.min(von_economo),np.max(von_economo)),
+                    order=range(np.floor(np.min(von_economo)).astype('int'),
+                                np.floor(np.max(von_economo)).astype('int'),
                     palette=color_dict, 
                     ax=ax)
     
