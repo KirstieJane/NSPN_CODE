@@ -1851,7 +1851,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
         
         measure_min = min_max_dict['{}_min'.format(measure)]
         measure_max = min_max_dict['{}_max'.format(measure)]
-        y_label = ax_label_dict[measure]
+        y_label = axis_label_dict[measure]
         
         figure_name = os.path.join(figures_dir,
                         'VonEconomo_{}_CT_covar_ones_all_COST_10.png'.format(measure))
@@ -1932,7 +1932,7 @@ def figure_4(measure_dict, figures_dir, results_dir, mpm='MT'):
         
         von_economo_boxes(measure_dict, figures_dir, 
                             measure_dict['Module_CT_covar_ones_all_COST_10'], 
-                            measure='{}_CT_covar_ones_all_COST_10'.format(measure),
+                            measure=measure,
                             y_label=y_label, 
                             group_label=group_label,
                             y_min=measure_min, y_max=measure_max, 
@@ -1940,7 +1940,7 @@ def figure_4(measure_dict, figures_dir, results_dir, mpm='MT'):
         
         ax_list[0, i] = von_economo_boxes(measure_dict, figures_dir, 
                                             measure_dict['Module_CT_covar_ones_all_COST_10'], 
-                                            measure='{}_CT_covar_ones_all_COST_10'.format(measure),
+                                            measure=measure,
                                             y_label=y_label, 
                                             group_label=group_label,
                                             y_min=measure_min, y_max=measure_max, 
