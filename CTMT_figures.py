@@ -1234,14 +1234,11 @@ def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_me
         fig = figure
         
     # Make the box plot
-    box = sns.boxplot(df.x[df.x>-99], 
+    sns.boxplot(df.x[df.x>-99], 
                     groupby=df['Cortical Laminar Pattern'], 
                     order=range(1,6),
                     palette=color_dict, 
                     ax=ax)
-    
-    for patch in box['boxes']:
-        patch.set(alpha=alpha)
         
     # Set the y label if it's been given
     if y_label:
