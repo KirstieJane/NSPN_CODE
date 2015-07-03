@@ -326,18 +326,17 @@ def participation_coefficient(G):
         d['weight']=1
 
     # Calculate the best modular partition
-    partition = community.best_partition(G)
+    nodal_partition = community.best_partition(G)
 
     # Reverse the dictionary because the output of Louvain is "backwards"
     # meaning it saves the module per node, rather than the nodes in each
     # module
-    new_part = {}
-    for m,n in zip(partition.values(),partition.keys()):
+    module_partition = {}
+    for m,n in zip(nodal_partition.values(),nodal_partition.keys()):
         try:
-            new_part[m].append(n)
+            module_partition[m].append(n)
         except KeyError:
-            new_part[m] = [n]
-    partition = new_part
+            module_partition[m] = [n]
 
     # Create an empty dictionary for the participation
     # coefficients
@@ -345,14 +344,14 @@ def participation_coefficient(G):
     all_nodes = set(G.nodes())
     
     # Loop through modules
-    for m in partition.keys():
+    for m in module_partition.keys():
         
         # Print a little note to the screen because it can take a long
         # time to run this code
-        print 'Calculating pc for nodes in module {} of {}'.format(m, len(partition.keys()))
+        print 'Calculating pc for nodes in module {} of {}'.format(m, len(module_partition.keys()))
         
         # Get the set of nodes in this module
-        mod_list = set(partition[m])
+        mod_list = set(module_partition[m])
         
         # Loop through each node (source node) in this module
         for source in mod_list:
@@ -380,7 +379,7 @@ def participation_coefficient(G):
             # Save the participation coefficient to the dictionary
             pc_dict[source] = pc
             
-    return partition, pc_dict
+    return nodal_partition, pc_dict
     
     
 def plot_modules(G, 

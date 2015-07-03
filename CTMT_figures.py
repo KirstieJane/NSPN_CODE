@@ -1206,7 +1206,7 @@ def nodal_ct_mt(measure_dict, figures_dir, mpm='MT'):
                     figure=fig)
     
     
-def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_mean', y_label=None, y_min=1.5, y_max=4.0, figure_name=None, figure=None, ax=None):
+def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_mean', group_label='Cortical Laminar Pattern', y_label=None, y_min=1.5, y_max=4.0, figure_name=None, figure=None, ax=None):
 
     # Set the seaborn style
     sns.set(style="white")
@@ -1214,15 +1214,18 @@ def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_me
 
     # Read the data into a data frame
     df = pd.DataFrame( { 'x' : measure_dict[measure],
-                        'Cortical Laminar Pattern' : von_economo } )
+                         group_label : von_economo } )
                         
     # You'll always use this color_list
-    color_list = [ 'purple', 'blue', 'green', 'orange', 'yellow' ]
+    if len(von_economo) == 5:
+        color_list = [ 'purple', 'blue', 'green', 'orange', 'yellow' ]
+        # You need to make it into a color dictionary
+        color_dict={}
+        for i, color in enumerate(color_list):
+            color_dict[i+1] = color
     
-    # You need to make it into a color dictionary
-    color_dict={}
-    for i, color in enumerate(color_list):
-        color_dict[i+1] = color
+    else:
+        color_dict = "muted"
         
     # Create the figure if you need to
     if not ax:
@@ -1772,7 +1775,10 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
 
     # Get the set values
     min_max_dict = get_min_max_values()
-
+    axis_label_dict = get_axis_label_dict()
+    
+    x_label = axis_label_dict[network_measure]
+    
     # Create the big figure
     big_fig, ax_list = plt.subplots(3,4, figsize=(40, 24), facecolor='white')
     
@@ -1798,30 +1804,27 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
     # measure you've chosen
     #=========================================================================
     network_measure_min = min_max_dict['{}_min'.format(network_measure)]
-    network_measure_max = min_max_dict['{}_min'.format(network_measure)]
+    network_measure_max = min_max_dict['{}_max'.format(network_measure)]
     
     measure_list = [ 'CT_all_slope_age_at14',
                      'CT_all_slope_age',
                      '{}_projfrac+030_all_slope_age_at14'.format(mpm),
                      '{}_projfrac+030_all_slope_age'.format(mpm) ]
-                     
-    # Note that at the moment this code is assuming you're plotting MT for the
-    # y axis values....I know that can change in the future but I haven't done
-    # that yet!
-    y_label_list = [ 'CT at 14 years (mm)', 'Change in CT (mm/year)', 
-                     'MT at 14 years (AU)', 'Change in MT (mm/year)' ]
-     
-    for i, (measure, y_label) in enumerate(zip(measure_list, y_label_list)):
+                         
+    for i, measure in enumerate(measure_list):
 
+        # Get the appropriate min, max and label values
+        # for the y axis
         measure_min = min_max_dict['{}_min'.format(measure)]
         measure_max = min_max_dict['{}_max'.format(measure)]
-
+        y_label = axis_label_dict[measure]
+        
         figure_name = os.path.join(figures_dir, 
                                     '{}_corr_{}.png'.format(network_measure, measure))
                                     
         pretty_scatter(measure_dict['{}_CT_covar_ones_all_COST_10'.format(network_measure)],
                         measure_dict[measure], 
-                        x_label='Degree',
+                        x_label=x_label,
                         y_label=y_label, 
                         x_min=network_measure_min, x_max=network_measure_max,
                         y_min=measure_min,y_max=measure_max, 
@@ -1830,7 +1833,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
 
         ax_list[1,i] = pretty_scatter(measure_dict['{}_CT_covar_ones_all_COST_10'.format(network_measure)],
                                         measure_dict[measure], 
-                                        x_label='Degree',
+                                        x_label=x_label,
                                         y_label=y_label, 
                                         x_min=network_measure_min, x_max=network_measure_max,
                                         y_min=measure_min,y_max=measure_max, 
@@ -1843,11 +1846,12 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
     # split up by von economo type
     #=========================================================================
     measure_list = [ 'Degree', 'PC', 'AverageDist', 'Clustering' ]
-    y_label_list = [ 'Degree', 'Participation Coefficient', 'Average Distance', 'Clustering' ]
-    for i, (measure, y_label) in enumerate(zip(measure_list, y_label_list)):
+    
+    for i, measure in enumerate(measure_list):
         
         measure_min = min_max_dict['{}_min'.format(measure)]
         measure_max = min_max_dict['{}_max'.format(measure)]
+        y_label = ax_label_dict[measure]
         
         figure_name = os.path.join(figures_dir,
                         'VonEconomo_{}_CT_covar_ones_all_COST_10.png'.format(measure))
@@ -1874,18 +1878,95 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
     for ax in ax_list[0,:].reshape(-1):
         ax.axis('off')
     
-    # Allign the y labels for each column    
-    for ax in ax_list[1:,:].reshape(-1):
-        ax.yaxis.set_label_coords(-0.15, 0.5)
-
     # Nice tight layout
     big_fig.tight_layout()
 
+    # Allign the y labels for each column    
+    for ax in ax_list[1:,0].reshape(-1):
+        ax.yaxis.set_label_coords(-0.15, 0.5)
+    # Allign the y labels for each column    
+    for ax in ax_list[1:,1:].reshape(-1):
+        ax.yaxis.set_label_coords(-0.12, 0.5)
+
     # Save the figure
-    filename = os.path.join(figures_dir, 'New_Figure3.png')
+    filename = os.path.join(figures_dir, 'New_Figure3_{}.png'.format(network_measure))
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
 
-    plt.close()                
+    plt.close()
+
+    
+def figure_4(measure_dict, figures_dir, results_dir, mpm='MT'):
+    
+    # Set the seaborn context and style
+    sns.set(style="white")
+    sns.set_context("poster", font_scale=2)
+
+    # Get the set values
+    min_max_dict = get_min_max_values()
+    axis_label_dict = get_axis_label_dict()
+    
+    group_label = 'Module'
+    
+    # Create the big figure
+    big_fig, ax_list = plt.subplots(2,5, figsize=(40, 24), facecolor='white')
+
+    #=========================================================================
+    # Put box plots of CT, deltaCT, MT and deltaMT and von economo class 
+    # split up by the network modules
+    #=========================================================================    
+    measure_list = [ 'von_economo',
+                     'CT_all_slope_age_at14',
+                     'CT_all_slope_age',
+                     '{}_projfrac+030_all_slope_age_at14'.format(mpm),
+                     '{}_projfrac+030_all_slope_age'.format(mpm) ]
+
+    for i, measure in enumerate(measure_list):
+        
+        measure_min = min_max_dict['{}_min'.format(measure)]
+        measure_max = min_max_dict['{}_max'.format(measure)]
+        
+        y_label = axis_label_dict[measure]
+        
+        figure_name = os.path.join(figures_dir,
+                        'Module_{}_CT_covar_ones_all_COST_10.png'.format(measure))
+        
+        von_economo_boxes(measure_dict, figures_dir, 
+                            measure_dict['Module_CT_covar_ones_all_COST_10'], 
+                            measure='{}_CT_covar_ones_all_COST_10'.format(measure),
+                            y_label=y_label, 
+                            group_label=group_label,
+                            y_min=measure_min, y_max=measure_max, 
+                            figure_name=figure_name)
+        
+        ax_list[0, i] = von_economo_boxes(measure_dict, figures_dir, 
+                                            measure_dict['Module_CT_covar_ones_all_COST_10'], 
+                                            measure='{}_CT_covar_ones_all_COST_10'.format(measure),
+                                            y_label=y_label, 
+                                            group_label=group_label,
+                                            y_min=measure_min, y_max=measure_max, 
+                                            ax=ax_list[0, i],
+                                            figure=big_fig)
+    
+    #=========================================================================
+    # Clean everything up and save the figure
+    #=========================================================================
+    # Nice tight layout
+    big_fig.tight_layout()
+
+    # Allign the y labels for each column    
+    for ax in ax_list[:,0].reshape(-1):
+        ax.yaxis.set_label_coords(-0.15, 0.5)
+    # Allign the y labels for each column    
+    for ax in ax_list[:,1:].reshape(-1):
+        ax.yaxis.set_label_coords(-0.12, 0.5)
+
+    # Save the figure
+    filename = os.path.join(figures_dir, 'New_Figure4.png')
+    big_fig.savefig(filename, bbox_inches=0, dpi=100)
+
+    plt.close()
+    
+    
 def get_min_max_values():
     
     min_max_dict = {}
@@ -1932,7 +2013,24 @@ def get_min_max_values():
     min_max_dict['AverageDist_min'] = 10
     min_max_dict['AverageDist_max'] = 120
     min_max_dict['Clustering_min'] = 0
-    min_max_dict['Clustering_max'] = 1    
+    min_max_dict['Clustering_max'] = 1  
+    min_max_dict['von_economo_min'] = 1
+    min_max_dict['von_economo_max'] = 5 
 
     return min_max_dict
     
+def get_axis_label_dict():
+
+    axis_label_dict = {}
+    
+    axis_label_dict['Degree'] = 'Degree'
+    axis_label_dict['von_economo'] = 'Cortical Lamination Pattern'
+    axis_label_dict['PC'] = 'Participation Coefficient'
+    axis_label_dict['AverageDist'] = 'Average Distance (mm)'
+    axis_label_dict['Clustering'] = 'Clustering'
+    axis_label_dict['CT_all_slope_age_at14'] = 'CT at 14 years (mm)'
+    axis_label_dict['CT_all_slope_age'] =  'Change in CT (mm/year)'
+    axis_label_dict['MT_projfrac+030_all_slope_age_at14'] = 'MT at 14 years (AU)'
+    axis_label_dict['MT_projfrac+030_all_slope_age'] = 'Change in MT (AU/year)'
+    
+    return axis_label_dict
