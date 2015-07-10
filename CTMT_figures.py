@@ -410,7 +410,7 @@ def create_violin_labels():
     labels_list = []
     
     # Create a list of all the depths you care about
-    depth_list = np.hstack([np.arange(100,-1,-10), np.arange(-40, -121, -40)])
+    depth_list = np.hstack([np.arange(100,-1,-10), np.arange(-40, -81, -40)])
     #depth_list = np.hstack([np.arange(100,-1,-10), np.arange(-20, -101, -20)])
 
     # Loop through all the depths
@@ -458,7 +458,7 @@ def create_violin_data(measure_dict, mpm='MT', measure='all_slope_age', cmap='Rd
     scalarMap = mpl.cm.ScalarMappable(norm=cNorm, cmap=cm)
 
     # Create a list of all the depths you care about
-    depth_list = np.hstack([np.arange(100,-1,-10), np.arange(-40, -121, -40)])
+    depth_list = np.hstack([np.arange(100,-1,-10), np.arange(-40, -81, -40)])
     
     # (Note that originally there were 0.2mm steps into white matter
     # using the following command)
@@ -571,19 +571,73 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
     else:
         return ax
 
-def violin_add_laminae(ax, vert=True):
+def violin_add_laminae(ax, vert=True, labels=True):
 
+    '''
+    Great big thank yous to Konrad Wagstyl for journeying
+    to the actual library and reading an actual book to pull
+    out these values from von Economo's original work.
+    I took these values from Konrad, averaged across regions to
+    get an average thickness per region, added these together 
+    to get an average total thickness and divided each value by 
+    this total number to get the percentages.
+    
+    I then scaled the percentages so they lay ontop of a scale
+    from 0 - 10 corresponding to the 11 sample depths for the 
+    freesurfer analyses.
+    
+    The variance around each value was reasonably small.
+    Means:
+        0.9	1.6	4.6	5.7	7.6	11.0
+    Standard deviations:
+        0.17 0.21 0.25 0.12	0.10 0.12
+
+    Mean + 1 standard devation:
+        1.6	2.2	5.0	6.0	7.8	10.9
+    Mean - 1 standard deviation:
+        2.0	2.6	5.5	6.3	8.0	11.1
+    '''
+    boundary_values = [0.0, 0.8, 1.4, 4.2, 5.1, 6.9, 10.0]
+    numerals = [ 'I', 'II', 'III', 'IV', 'V', 'VI', 'WM' ]
+
+    # Figure out where the bottom of the plot lies
+    # (this changes according to the number of samples into
+    # white matter that you've plotted)
     if vert:
-        # Put in the mean boundaries
-        ax.axvspan(0.8, 1.4, facecolor='0.5', alpha=0.5, edgecolor='none', zorder=-1)
-        ax.axvspan(4.2, 5.1, facecolor='0.5', alpha=0.5, edgecolor='none', zorder=-1)
-        ax.axvspan(6.9, 10.0, facecolor='0.5', alpha=0.5, edgecolor='none', zorder=-1)
-
+        bottom = ax.get_xlim()[0]
     else:
-        # Put in the mean boundaries
-        ax.axhspan(0.8, 1.4, facecolor='0.5', alpha=0.5, edgecolor='none', zorder=-1)
-        ax.axhspan(4.2, 5.1, facecolor='0.5', alpha=0.5, edgecolor='none', zorder=-1)
-        ax.axhspan(6.9, 10.0, facecolor='0.5', alpha=0.5, edgecolor='none', zorder=-1)
+        bottom = ax.get_ylim()[0]
+
+    boundary_values += [ bottom ]
+
+    # Put in the mean boundaries
+    for top, bottom in zip(boundary_values[1::2], boundary_values[2::2]):
+        
+        if vert:
+            ax.axvspan(top, bottom, facecolor='0.5', alpha=0.5, edgecolor='none', zorder=-1)
+
+        else:
+            ax.axhspan(top, bottom, facecolor='0.5', alpha=0.5, edgecolor='none', zorder=-1)
+    
+    if labels:
+    
+        for top, bottom, numeral in zip(boundary_values[0::1], boundary_values[1::1], numerals):
+
+            if vert:
+                x_pos = np.mean([top, bottom])
+                y_pos = ax.get_ylim()[1] - (ax.get_ylim()[1] - ax.get_ylim()[0]) * 0.05
+                ax.text(x_pos, y_pos, numeral,
+                            horizontalalignment='center',
+                            verticalalignment='center',
+                            fontsize=30)
+            else:
+                x_pos = ax.get_xlim()[1] - (ax.get_xlim()[1] - ax.get_xlim()[0]) * 0.05
+                y_pos = np.mean([top, bottom])
+                ax.text(x_pos, y_pos, numeral,
+                            horizontalalignment='center',
+                            verticalalignment='center',
+                            fontsize=30)
+                            
     return ax
 
 def old_figure_1(graph_dict, 
