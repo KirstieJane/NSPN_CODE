@@ -482,7 +482,7 @@ def create_violin_data(measure_dict, mpm='MT', measure='all_slope_age', cmap='Rd
     return df, color_list, color_dict
 
 
-def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn', cmap_min=-7, cmap_max=7, y_max=None, y_min=None, figure_name=None, ax=None, figure=None, y_label=None, vert=True):
+def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn', cmap_min=-7, cmap_max=7, y_max=None, y_min=None, figure_name=None, ax=None, figure=None, y_label=None, vert=True, lam_labels=True):
     '''
     INPUTS:
         data_dir --------- where the PARC_*_behavmerge.csv files are saved
@@ -558,7 +558,7 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
     sns.despine()
     
     # Add in the laminae
-    ax = violin_add_laminae(ax, vert=vert)
+    ax = violin_add_laminae(ax, vert=vert, labels=lam_labels)
        
     if figure_name:
         # Do the tight layout because, again, it looks better!
@@ -1684,8 +1684,18 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     violin_mt_slope_ct_max = 2.5
     
     # Create the big figure
-    big_fig, ax_list = plt.subplots(2,4, figsize=(40, 20), facecolor='white')
-
+    big_fig, big_ax = plt.subplots(figsize=(40, 20), facecolor='white')
+    
+    #=========================================================================
+    # We're going to set up a grid for the top row so we can 
+    # adjust the spacings without screwing up the spacings in the bottom row
+    
+    grid = gridspec.GridSpec(1, 3)
+    grid.update(left=0.3, bottom=0.53, wspace=0.25)
+    top_ax_list = []
+    for g_loc in grid:
+        top_ax_list += [ plt.Subplot(big_fig, g_loc) ]
+        big_fig.add_subplot(top_ax_list[-1])
 
     #=========================================================================
     # Nodal CT MT
@@ -1699,12 +1709,12 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                     color='k',
                     figure_name=figure_name)
 
-    ax_list[0,2] = pretty_scatter(measure_dict['CT_all_slope_age_at14'], measure_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)], 
+    top_ax_list[1] = pretty_scatter(measure_dict['CT_all_slope_age_at14'], measure_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)], 
                     x_label='CT at 14 years (mm)', y_label='MT at 14 years', 
                     x_min=nodal_ct_at14_min, x_max=nodal_ct_at14_max,
                     y_min=nodal_mt_at14_min,y_max=nodal_mt_at14_max, 
                     color='k',
-                    ax=ax_list[0, 2],
+                    ax=top_ax_list[1],
                     figure=big_fig)    
                     
     # NODAL SLOPE CT WITH SLOPE MT
@@ -1718,15 +1728,26 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                     color='k',
                     figure_name=figure_name)
 
-    ax_list[0,3] = pretty_scatter(measure_dict['CT_all_slope_age'], measure_dict['{}_projfrac+030_all_slope_age'.format(mpm)], 
+    top_ax_list[2] = pretty_scatter(measure_dict['CT_all_slope_age'], 
+                    measure_dict['{}_projfrac+030_all_slope_age'.format(mpm)], 
                     x_label='Change in CT (mm/year)', y_label='Change in MT (AU/year)', 
                     x_min=nodal_ct_slope_min, x_max=nodal_ct_slope_max,
                     y_min=nodal_mt_slope_min,y_max=nodal_mt_slope_max, 
                     color='k',
-                    ax=ax_list[0, 3],
+                    ax=top_ax_list[2],
                     figure=big_fig)    
                     
     #=========================================================================
+    # We're going to set up a grid for the bottom row so we can 
+    # adjust the spacings without screwing up the spacings in the top row
+    #
+    grid = gridspec.GridSpec(1, 4)
+    grid.update(top=0.47, wspace=0.05)
+    violin_ax_list = []
+    for g_loc in grid:
+        violin_ax_list += [ plt.Subplot(big_fig, g_loc) ]
+        big_fig.add_subplot(violin_ax_list[-1])
+
     # MEAN MT ACROSS NODES at different depths
     
     figure_name = os.path.join(figures_dir, 
@@ -1741,14 +1762,14 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                         figure_name=figure_name,
                         mpm=mpm,
                         vert=False)
-    
-    ax_list[1,1] = violin_mt_depths(measure_dict,
+
+    violin_ax_list[1] = violin_mt_depths(measure_dict,
                         measure='all_mean',
                         y_label='Mean MT across regions',
                         cmap='jet',
                         y_min=nodal_mt_overall_min, y_max=nodal_mt_overall_max, 
                         cmap_min=nodal_mt_overall_min, cmap_max=nodal_mt_overall_max,
-                        ax=ax_list[1, 1],
+                        ax=violin_ax_list[1],
                         figure=big_fig,
                         mpm=mpm,
                         vert=False)
@@ -1774,7 +1795,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     violin_mt_depths(measure_dict,
                         measure='all_slope_ct',
-                        y_label='Correlation between MT and CT (AU/mm)',
+                        y_label='Correlation MT vs CT (AU/mm)',
                         cmap='PRGn',
                         y_min=violin_mt_slope_ct_min, y_max=violin_mt_slope_ct_max, 
                         cmap_min=violin_mt_slope_ct_max*-1, cmap_max=violin_mt_slope_ct_max,
@@ -1782,13 +1803,13 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                         mpm=mpm,
                         vert=False)
                         
-    ax_list[1,2] = violin_mt_depths(measure_dict,
+    violin_ax_list[2] = violin_mt_depths(measure_dict,
                         measure='all_slope_ct',
-                        y_label='Correlation between MT and CT (AU/mm)',
+                        y_label='Correlation MT vs CT (AU/mm)',
                         cmap='PRGn',
                         y_min=violin_mt_slope_ct_min, y_max=violin_mt_slope_ct_max, 
                         cmap_min=violin_mt_slope_ct_max*-1, cmap_max=violin_mt_slope_ct_max,
-                        ax=ax_list[1, 2],
+                        ax=violin_ax_list[2],
                         figure=big_fig,
                         mpm=mpm,
                         vert=False)
@@ -1807,27 +1828,27 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                         mpm=mpm,
                         vert=False)
 
-    ax_list[1,3] = violin_mt_depths(measure_dict,
+    violin_ax_list[3] = violin_mt_depths(measure_dict,
                         measure='all_slope_age',
                         y_label='Change in MT with age (AU/year)',
                         cmap='PRGn',
                         y_min=violin_mt_slope_age_min, y_max=violin_mt_slope_age_max, 
                         cmap_min=violin_mt_slope_age_max*-1/2.0, cmap_max=violin_mt_slope_age_max/2.0,
-                        ax=ax_list[1, 3],
+                        ax=violin_ax_list[3],
                         figure=big_fig,
                         mpm=mpm,
                         vert=False)
                          
                            
     # Turn off the axes for the first columns
-    for ax in ax_list[:,0].reshape(-1):
+    for ax in [ big_ax, top_ax_list[0], violin_ax_list[0] ]:
         ax.axis('off')
-    # And the 2nd plot on the top row
-    ax_list[0,1].axis('off')
-        
-    # Nice tight layout
-    big_fig.tight_layout()
     
+    # Also remove the y tick labels for the violin plots
+    # that are not the first
+    for ax in violin_ax_list[2:]:
+        ax.set_yticklabels([])
+        
     # Save the figure
     filename = os.path.join(figures_dir, 'New_Figure2.png')
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
