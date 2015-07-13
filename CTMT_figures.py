@@ -14,6 +14,7 @@ import sys
 import matplotlib.image as mpimg
 import matplotlib.gridspec as gridspec
 from glob import glob
+import itertools as it
 
 # Read in some of the other NSPN_CODE functions too
 #this_scripts_dir=os.path.dirname(os.path.abspath(__file__))
@@ -324,7 +325,7 @@ def plot_sagittal_network(G,
     else:
         return ax
 
-def pretty_scatter(x, y, x_label='x', y_label='y', x_max=None, x_min=None, y_max=None, y_min=None, figure_name=None, ax=None, figure=None, color=sns.color_palette()[0]):
+def pretty_scatter(x, y, x_label='x', y_label='y', x_max=None, x_min=None, y_max=None, y_min=None, figure_name=None, ax=None, figure=None, color=sns.color_palette()[0], marker_colors=None):
     '''
     This function creates a scatter plot with a regression line
     for the y variable against the degrees of graph G
@@ -348,8 +349,12 @@ def pretty_scatter(x, y, x_label='x', y_label='y', x_max=None, x_min=None, y_max
     else:
         fig = figure
         
+    # Create a marker colors list if not given
+    if not marker_colors:
+        marker_colors = [color]
+        
     # Create the linear regression plot
-    ax = sns.regplot(x_label, y_label, df, ci=95, ax=ax, color=color, scatter_kws={'s': 60})
+    ax = sns.regplot(x_label, y_label, df, ci=95, ax=ax, color=color, scatter_kws={'s': 60, 'color' : marker_colors})
     
     # Fix the x and y axis limits
     if np.isscalar(x_max) and np.isscalar(x_min):
@@ -357,7 +362,7 @@ def pretty_scatter(x, y, x_label='x', y_label='y', x_max=None, x_min=None, y_max
     if np.isscalar(y_max) and np.isscalar(y_min):
         ax.set_ylim((y_min, y_max))
     
-    ax.ticklabel_format(axis='y', style='sci', scilimits=(-3,3))
+    ax.ticklabel_format(axis='y', style='sci', scilimits=(-2,2))
 
     # Make sure there aren't too many bins!
     ax.locator_params(axis='y', nbins=4)
@@ -614,10 +619,10 @@ def violin_add_laminae(ax, vert=True, labels=True):
     for top, bottom in zip(boundary_values[1::2], boundary_values[2::2]):
         
         if vert:
-            ax.axvspan(top, bottom, facecolor='0.5', alpha=0.5, edgecolor='none', zorder=-1)
+            ax.axvspan(top, bottom, facecolor=(227/255.0, 228/255.0, 229/255.0), alpha=0.5, edgecolor='none', zorder=-1)
 
         else:
-            ax.axhspan(top, bottom, facecolor='0.5', alpha=0.5, edgecolor='none', zorder=-1)
+            ax.axhspan(top, bottom, facecolor=(227/255.0, 228/255.0, 229/255.0), alpha=0.5, edgecolor='none', zorder=-1)
     
     if labels:
     
@@ -629,14 +634,14 @@ def violin_add_laminae(ax, vert=True, labels=True):
                 ax.text(x_pos, y_pos, numeral,
                             horizontalalignment='center',
                             verticalalignment='center',
-                            fontsize=30)
+                            fontsize=25)
             else:
                 x_pos = ax.get_xlim()[1] - (ax.get_xlim()[1] - ax.get_xlim()[0]) * 0.05
                 y_pos = np.mean([top, bottom])
                 ax.text(x_pos, y_pos, numeral,
                             horizontalalignment='center',
                             verticalalignment='center',
-                            fontsize=30)
+                            fontsize=25)
                             
     return ax
 
@@ -1264,8 +1269,20 @@ def nodal_ct_mt(measure_dict, figures_dir, mpm='MT'):
                     ax=ax,
                     figure=fig)
     
+def von_economo_color_dict(von_economo):
+    '''
+    Create a color dictionary for the von economo values you pass
+    The color_list is hard coded at the moment... might change one day
+    '''
+    color_list = [ 'purple', 'blue', 'green', 'orange', 'yellow' ]
+    # You need to make it into a color dictionary
+    color_dict={}
+    for i, color in enumerate(color_list):
+        color_dict[i+1] = color
+            
+    return color_dict
     
-def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_mean', group_label='Cortical Laminar Pattern', y_label=None, y_min=1.5, y_max=4.0, figure_name=None, figure=None, ax=None, von_economo_colors=True):
+def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_mean', group_label='Cortical Laminar Pattern', y_label=None, y_min=1.5, y_max=4.0, figure_name=None, figure=None, ax=None, von_economo_colors=True, red_max=False, red_min=False, alpha=1.0):
 
     # Set the seaborn style
     sns.set(style="white")
@@ -1277,11 +1294,7 @@ def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_me
                         
     # You'll always use this color_list
     if von_economo_colors:
-        color_list = [ 'purple', 'blue', 'green', 'orange', 'yellow' ]
-        # You need to make it into a color dictionary
-        color_dict={}
-        for i, color in enumerate(color_list):
-            color_dict[i+1] = color
+        color_dict = von_economo_color_dict(von_economo)
     else:
         color_dict = "muted"
         
@@ -1293,12 +1306,12 @@ def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_me
         fig = figure
         
     # Make the box plot
-    sns.boxplot(df.x[df.x>-99], 
-                    groupby=df[group_label], 
-                    order=range(np.floor(np.min(von_economo)).astype('int'),
-                                np.floor(np.max(von_economo)).astype('int')+1),
-                    palette=color_dict, 
-                    ax=ax)
+    bp = sns.boxplot(df.x[df.x>-99], 
+                        groupby=df[group_label], 
+                        order=range(np.floor(np.min(von_economo)).astype('int'),
+                                    np.floor(np.max(von_economo)).astype('int')+1),
+                        palette=color_dict, 
+                        ax=ax)
     
     # Set the y label if it's been given
     if y_label:
@@ -1307,6 +1320,35 @@ def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_me
     # Set the y limits
     ax.set_ylim((y_min, y_max))
     
+    # Make the max median line red if requested
+    if red_max:
+        medians = [ line.get_ydata()[0] for line in bp.get_lines()[4::6] ]
+        max_median = np.max(medians)
+        for line in bp.get_lines()[4::6]:
+            if line.get_ydata()[0] == max_median:
+                line.set_color('r')
+                
+    # Make the minimum median line red if requested
+    if red_min:
+        medians = [ line.get_ydata()[0] for line in bp.get_lines()[4::6] ]
+        min_median = np.min(medians)
+        for line in bp.get_lines()[4::6]:
+            if line.get_ydata()[0] == min_median:
+                line.set_color('r')
+    
+    # Change the alpha value for the fill color if requested
+    start_i = len(set(von_economo))*6 + 2
+    stop_i = len(set(von_economo))*7 + 2
+    for patch in bp.get_default_bbox_extra_artists()[start_i:stop_i]:
+        fc = patch.get_facecolor()
+        patch.set_facecolor((fc[0], fc[1], fc[2], alpha))
+    
+    # Make sure there aren't too many bins!
+    ax.locator_params(axis='y', nbins=4)
+    
+    # Put a line at y = 0
+    ax.axhline(0, linewidth=1, color='black', linestyle='--')
+
     if figure_name:
         # Do the tight layout because, again, it looks better!
         fig.tight_layout()
@@ -1378,6 +1420,15 @@ def von_economo_scatter(measure_dict, figures_dir, von_economo, measure='CT_all_
         return ax
 
 def add_four_hor_brains(grid, f_list, big_fig):
+    '''
+    Take the four pysurfer views (left lateral, left medial,
+    right medial and right lateral) and arrange them in a row
+    according to the grid positions given by grid
+    
+    grid    :  the gridspec list of grid placements
+    f_list  :  list of four file pysurfer image files
+    big_fig :  the figure to which you're adding the images
+    '''
     for g_loc, f in zip(grid, f_list):
         img = mpimg.imread(f)
         # Crop the figures appropriately
@@ -1388,15 +1439,58 @@ def add_four_hor_brains(grid, f_list, big_fig):
         else:
             img_cropped = img[90:560, 60:(-55),:]
 
+        # Add an axis to the big_fig
         ax_brain = plt.Subplot(big_fig, g_loc)
         big_fig.add_subplot(ax_brain)
-            
+        
+        # Show the brain on this axis
         ax_brain.imshow(img_cropped, interpolation='none')
         ax_brain.set_axis_off()
     
     return big_fig
-    
 
+def add_colorbar(grid, big_fig, cmap_name, cbar_min=0, cbar_max=1, vert=False, label=None):
+    '''
+    Add a colorbar to the big_fig in the location defined by grid 
+    
+    grid       :  grid spec location to add colormap
+    big_fig    :  figure to which colorbar will be added
+    cmap_name  :  name of the colormap
+    cbar_min   :  minimum value for the colormap (default 0)
+    cbar_max   :  maximum value for the colormap (default 1)
+    vert       :  whether the colorbar should be vertical (default False)
+    label      :  the label for the colorbar (default: None)
+    '''
+    import matplotlib as mpl
+    
+    # Add an axis to the big_fig
+    ax_cbar = plt.Subplot(big_fig, grid)
+    big_fig.add_subplot(ax_cbar)
+    
+    # Normalise the colorbar so you have the correct upper and
+    # lower limits and define the three ticks you want to show
+    norm = mpl.colors.Normalize(vmin=cbar_min, vmax=cbar_max)
+
+    ticks = [cbar_min, np.average([cbar_min, cbar_max]), cbar_max]
+    
+    # Figure out the orientation
+    if vert:
+        orientation='vertical'
+    else:
+        orientation='horizontal'
+        
+    # Add in your colorbar:
+    cb = mpl.colorbar.ColorbarBase(ax_cbar, 
+                                       cmap=cmap_name,
+                                       norm=norm,
+                                       orientation=orientation,
+                                       ticks=ticks)
+                                       
+    if label:
+        cb.set_label(label)
+        
+    return big_fig
+    
 def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     # Set the seaborn context and style
@@ -1429,10 +1523,19 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                 os.path.join(results_dir, 'PNGS', 'SlopeAge_at14_CT_rh_pial_lateral.png') ]
 
     grid = gridspec.GridSpec(1, 4)
-    grid.update(left=0, right=0.48, bottom=0.75, top=1, wspace=0, hspace=0)
+    grid.update(left=0, right=0.48, bottom=0.8, top=1, wspace=0, hspace=0)
 
     big_fig = add_four_hor_brains(grid, f_list, big_fig)
-
+    
+    # Add a colorbar
+    cb_grid = gridspec.GridSpec(1,1)
+    cb_grid.update(left=0.1, right=0.38, bottom=0.8, top=0.81, wspace=0, hspace=0)    
+    big_fig = add_colorbar(cb_grid[0], big_fig, 
+                            cmap_name='jet', 
+                            cbar_min=2.5, 
+                            cbar_max=3.5,
+                            label='CT at 14 yrs (mm)')
+    
     #==== BRAIN IMAGES FOR SLOPE CT ======================================
     f_list = [ os.path.join(results_dir, 'PNGS', 'SlopeAge_FDRmask_CT_lh_pial_lateral.png'),
                 os.path.join(results_dir, 'PNGS', 'SlopeAge_FDRmask_CT_lh_pial_medial.png'),
@@ -1440,9 +1543,18 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                 os.path.join(results_dir, 'PNGS', 'SlopeAge_FDRmask_CT_rh_pial_lateral.png') ]
 
     grid = gridspec.GridSpec(1, 4)
-    grid.update(left=0, right=0.48, bottom=0.50, top=0.75, wspace=0, hspace=0)
+    grid.update(left=0, right=0.48, bottom=0.55, top=0.75, wspace=0, hspace=0)
 
     big_fig = add_four_hor_brains(grid, f_list, big_fig)
+    
+    # Add a colorbar
+    cb_grid = gridspec.GridSpec(1,1)
+    cb_grid.update(left=0.1, right=0.38, bottom=0.55, top=0.56, wspace=0, hspace=0)    
+    big_fig = add_colorbar(cb_grid[0], big_fig, 
+                            cmap_name='winter_r', 
+                            cbar_min=-0.035, 
+                            cbar_max=-0.015,
+                            label=r'$\Delta$CT (mm/year)')
     
     #==== BRAIN IMAGES FOR MT AT 14 ======================================
     f_list = [ os.path.join(results_dir, 'PNGS', 'SlopeAge_at14_MT_projfrac+030_lh_pial_lateral.png'),
@@ -1451,10 +1563,19 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                 os.path.join(results_dir, 'PNGS', 'SlopeAge_at14_MT_projfrac+030_rh_pial_lateral.png') ]
 
     grid = gridspec.GridSpec(1, 4)
-    grid.update(left=0, right=0.48, bottom=0.25, top=0.5, wspace=0, hspace=0)
+    grid.update(left=0, right=0.48, bottom=0.30, top=0.50, wspace=0, hspace=0)
 
     big_fig = add_four_hor_brains(grid, f_list, big_fig)
 
+    # Add a colorbar
+    cb_grid = gridspec.GridSpec(1,1)
+    cb_grid.update(left=0.1, right=0.38, bottom=0.30, top=0.31, wspace=0, hspace=0)    
+    big_fig = add_colorbar(cb_grid[0], big_fig, 
+                            cmap_name='jet', 
+                            cbar_min=0.8, 
+                            cbar_max=1.0,
+                            label='MT at 14 yrs (AU)')
+    
     #==== BRAIN IMAGES FOR SLOPE MT ======================================
     f_list = [ os.path.join(results_dir, 'PNGS', 'SlopeAge_FDRmask_MT_projfrac+030_lh_pial_lateral.png'),
                 os.path.join(results_dir, 'PNGS', 'SlopeAge_FDRmask_MT_projfrac+030_lh_pial_medial.png'),
@@ -1462,27 +1583,40 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                 os.path.join(results_dir, 'PNGS', 'SlopeAge_FDRmask_MT_projfrac+030_rh_pial_lateral.png') ]
 
     grid = gridspec.GridSpec(1, 4)
-    grid.update(left=0, right=0.48, bottom=0, top=0.25, wspace=0, hspace=0)
+    grid.update(left=0, right=0.48, bottom=0.05, top=0.25, wspace=0, hspace=0)
 
     big_fig = add_four_hor_brains(grid, f_list, big_fig)
 
+    # Add a colorbar
+    cb_grid = gridspec.GridSpec(1,1)
+    cb_grid.update(left=0.1, right=0.38, bottom=0.05, top=0.06, wspace=0, hspace=0)    
+    big_fig = add_colorbar(cb_grid[0], big_fig, 
+                            cmap_name='autumn', 
+                            cbar_min=0.005, 
+                            cbar_max=0.01, 
+                            label=r'$\Delta$MT (AU/year)')
+    
     #==== VON ECONOMO BOX PLOTS FOR CT AT 14 =============================
     figure_name = os.path.join(figures_dir, 'VonEconomo_CT_all_slope_age_at14.png')
     
     von_economo_boxes(measure_dict, figures_dir, 
                         measure_dict['von_economo'], 
                         measure='CT_all_slope_age_at14',
-                        y_label='CT at 14 years (mm)', 
+                        y_label='CT at 14 yrs (mm)', 
                         y_min=nodal_ct_at14_min, y_max=nodal_ct_at14_max, 
                         von_economo_colors=True,
+                        red_max=True,
+                        alpha=0.3,
                         figure_name=figure_name)
     
     ax_list[0, 2] = von_economo_boxes(measure_dict, figures_dir, 
                                         measure_dict['von_economo'], 
                                         measure='CT_all_slope_age_at14',
-                                        y_label='CT at 14 years (mm)', 
+                                        y_label='CT at 14 yrs (mm)', 
                                         y_min=nodal_ct_at14_min, y_max=nodal_ct_at14_max, 
                                         von_economo_colors=True,
+                                        red_max=True,
+                                        alpha=0.3,
                                         ax=ax_list[0, 2],
                                         figure=big_fig)
     
@@ -1492,17 +1626,21 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     von_economo_boxes(measure_dict, figures_dir, 
                         measure_dict['von_economo'], 
                         measure='CT_all_slope_age',
-                        y_label='Change in CT (mm/year)', 
+                        y_label=r'$\Delta$CT (mm/year)', 
                         y_min=nodal_ct_slope_min, y_max=nodal_ct_slope_max, 
+                        red_min=True,
+                        alpha=0.3,
                         von_economo_colors=True,
                         figure_name=figure_name)
     
     ax_list[1, 2] = von_economo_boxes(measure_dict, figures_dir, 
                                         measure_dict['von_economo'], 
                                         measure='CT_all_slope_age',
-                                        y_label='Change in CT (mm/year)', 
+                                        y_label=r'$\Delta$CT (mm/year)', 
                                         y_min=nodal_ct_slope_min, y_max=nodal_ct_slope_max, 
                                         von_economo_colors=True,
+                                        red_min=True,
+                                        alpha=0.3,
                                         ax=ax_list[1, 2],
                                         figure=big_fig)
                                         
@@ -1513,17 +1651,21 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     von_economo_boxes(measure_dict, figures_dir, 
                         measure_dict['von_economo'], 
                         measure='{}_projfrac+030_all_slope_age_at14'.format(mpm),
-                        y_label='MT at 14 years (AU)', 
+                        y_label='MT at 14 yrs (AU)', 
                         y_min=nodal_mt_at14_min, y_max=nodal_mt_at14_max, 
+                        red_min=True,
+                        alpha=0.3,
                         von_economo_colors=True,
                         figure_name=figure_name)
     
     ax_list[2, 2] = von_economo_boxes(measure_dict, figures_dir, 
                                         measure_dict['von_economo'], 
                                         measure='{}_projfrac+030_all_slope_age_at14'.format(mpm),
-                                        y_label='MT at 14 years (AU)', 
+                                        y_label='MT at 14 yrs (AU)', 
                                         y_min=nodal_mt_at14_min, y_max=nodal_mt_at14_max, 
                                         von_economo_colors=True,
+                                        red_min=True,
+                                        alpha=0.3,
                                         ax=ax_list[2, 2],
                                         figure=big_fig)
     
@@ -1534,24 +1676,30 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     von_economo_boxes(measure_dict, figures_dir, 
                         measure_dict['von_economo'], 
                         measure='{}_projfrac+030_all_slope_age'.format(mpm),
-                        y_label='Change in MT (AU/year)', 
+                        y_label=r'$\Delta$MT (AU/year)', 
                         y_min=nodal_mt_slope_min, y_max=nodal_mt_slope_max, 
                         von_economo_colors=True,
+                        red_max=True,
+                        alpha=0.3,
                         figure_name=figure_name)
     
     ax_list[3, 2] = von_economo_boxes(measure_dict, figures_dir, 
                                         measure_dict['von_economo'], 
                                         measure='{}_projfrac+030_all_slope_age'.format(mpm),
-                                        y_label='Change in MT (AU/year)', 
+                                        y_label=r'$\Delta$MT (AU/year)', 
                                         y_min=nodal_mt_slope_min, y_max=nodal_mt_slope_max, 
                                         von_economo_colors=True,
+                                        red_max=True,
+                                        alpha=0.3,
                                         ax=ax_list[3, 2],
                                         figure=big_fig)
                                                                                 
     #==== CORRELATE GLOBAL CT WITH AGE =============================
     figure_name = os.path.join(figures_dir, 'Global_CT_corr_Age.png')
-        
-    color=sns.color_palette('RdBu_r', 10)[1]
+    
+    norm = mpl.colors.Normalize(vmin=-0.035, vmax=-0.015)
+    cmap_converter = mpl.cm.ScalarMappable(norm=norm, cmap='winter_r')
+    color = cmap_converter.to_rgba(measure_dict['CT_global_slope_age'])
     
     pretty_scatter(measure_dict['age_scan'], measure_dict['CT_global_mean'], 
                     x_label='Age (years)', y_label='Global CT (mm)', 
@@ -1571,20 +1719,24 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     #==== CORRELATE CHANGE IN CT WITH CT AT 14 =============================
     figure_name = os.path.join(figures_dir, 'SlopevsInt_CT_all_slope_age.png')
         
-    color=sns.color_palette('RdBu_r', 10)[1]
+    color='k'
+    marker_color_dict = von_economo_color_dict(measure_dict['von_economo'])
+    marker_colors = [ marker_color_dict[ve] for ve in measure_dict['von_economo'] ]
     
     pretty_scatter(measure_dict['CT_all_slope_age_at14'], measure_dict['CT_all_slope_age'], 
-                    x_label='CT at 14 years (mm)', y_label='Change in CT (mm/year)', 
+                    x_label='CT at 14 yrs (mm)', y_label=r'$\Delta$CT (mm/year)', 
                     x_min=nodal_ct_at14_min, x_max=nodal_ct_at14_max, 
                     y_min=nodal_ct_slope_min, y_max=nodal_ct_slope_max,
+                    marker_colors = marker_colors,
                     figure_name=figure_name,
                     color=color)
                             
     ax_list[1, 3] = pretty_scatter(measure_dict['CT_all_slope_age_at14'], measure_dict['CT_all_slope_age'], 
-                                        x_label='CT at 14 years (mm)', y_label='Change in CT (mm/year)', 
+                                        x_label='CT at 14 yrs (mm)', y_label=r'$\Delta$CT (mm/year)', 
                                         x_min=nodal_ct_at14_min, x_max=nodal_ct_at14_max, 
                                         y_min=nodal_ct_slope_min, y_max=nodal_ct_slope_max,
                                         color=color,
+                                        marker_colors = marker_colors,
                                         ax=ax_list[1, 3],
                                         figure=big_fig)            
                                         
@@ -1592,7 +1744,9 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     figure_name = os.path.join(figures_dir, 
                                     'Global_{}_projfrac+030_corr_Age.png'.format(mpm))
         
-    color=sns.color_palette('PRGn_r', 10)[1]
+    norm = mpl.colors.Normalize(vmin=0.005, vmax=0.01)
+    cmap_converter = mpl.cm.ScalarMappable(norm=norm, cmap='autumn')
+    color = cmap_converter.to_rgba(measure_dict['{}_projfrac+030_global_slope_age'.format(mpm)])
     
     pretty_scatter(measure_dict['age_scan'], measure_dict['{}_projfrac+030_global_mean'.format(mpm)], 
                     x_label='Age (years)', y_label='Global MT (AU)', 
@@ -1612,37 +1766,69 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     #==== CORRELATE CHANGE IN MT WITH MT AT 14 =============================
     figure_name = os.path.join(figures_dir, 'SlopevsInt_{}_projfrac+030_all_slope_age.png'.format(mpm))
         
-    color=sns.color_palette('PRGn_r', 10)[1]
-    
+    color='k'
+    marker_color_dict = von_economo_color_dict(measure_dict['von_economo'])
+    marker_colors = [ marker_color_dict[ve] for ve in measure_dict['von_economo'] ]
+
     pretty_scatter(measure_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)],
                     measure_dict['{}_projfrac+030_all_slope_age'.format(mpm)], 
-                    x_label='MT at 14 years (AU)', y_label='Change in MT (AU/year)', 
+                    x_label='MT at 14 yrs (AU)', y_label=r'$\Delta$MT (AU/year)', 
                     x_min=nodal_mt_at14_min, x_max=nodal_mt_at14_max, 
                     y_min=nodal_mt_slope_min, y_max=nodal_mt_slope_max,
+                    marker_colors = marker_colors,
                     figure_name=figure_name,
                     color=color)
                             
     ax_list[3, 3] = pretty_scatter(measure_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)],
                                         measure_dict['{}_projfrac+030_all_slope_age'.format(mpm)], 
-                                        x_label='MT at 14 years (AU)', y_label='Change in MT (AU/year)', 
+                                        x_label='MT at 14 yrs (AU)', y_label=r'$\Delta$MT (AU/year)', 
                                         x_min=nodal_mt_at14_min, x_max=nodal_mt_at14_max, 
                                         y_min=nodal_mt_slope_min, y_max=nodal_mt_slope_max,
                                         color=color,
+                                        marker_colors = marker_colors,
                                         ax=ax_list[3, 3],
                                         figure=big_fig)    
                                         
     # Allign the y labels for each column    
     for ax in ax_list[:,:].reshape(-1):
-        ax.yaxis.set_label_coords(-0.15, 0.5)
+        ax.yaxis.set_label_coords(-0.10, 0.5)
 
-    
     # Turn off the axes for the first and second columns
     for ax in ax_list[:,0:2].reshape(-1):
         ax.axis('off')
         
-    for ax in ax_list[:,2:3].reshape(-1):
+    for ax in ax_list[:,2:4].reshape(-1):
         ax.ticklabel_format(axis='y', style='sci', scilimits=(-2,2))
 
+    # Place the A, B, C and i, ii, iii labels
+    let_list = [ 'A', 'B', 'C', 'D' ]
+    rom_list = [ 'i', 'ii', 'iii' ]
+    
+    # For the first column put the letters in the top left corner
+    for i, ax in enumerate(ax_list[:,0]):
+        ax.text(-0.1, 0.95, '{}i'.format(let_list[i]),
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=40,
+                    transform=ax.transAxes,
+                    weight='bold')
+
+    for i, ax in enumerate(ax_list[:,2]):
+        ax.text(-0.2, 0.95, '{}ii'.format(let_list[i]),
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=40,
+                    transform=ax.transAxes,
+                    weight='bold')
+                    
+    for i, ax in enumerate(ax_list[:,3]):
+        ax.text(-0.2, 0.95, '{}iii'.format(let_list[i]),
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=40,
+                    transform=ax.transAxes,
+                    weight='bold')
+                    
     # Nice tight layout
     big_fig.tight_layout()
     
@@ -1703,14 +1889,14 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                                 'Nodal_CT_corr_{}_projfrac+030_slope_age_at14.png'.format(mpm))
                                     
     pretty_scatter(measure_dict['CT_all_slope_age_at14'], measure_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)], 
-                    x_label='CT at 14 years (mm)', y_label='MT at 14 years', 
+                    x_label='CT at 14 yrs (mm)', y_label='MT at 14 yrs', 
                     x_min=nodal_ct_at14_min, x_max=nodal_ct_at14_max,
                     y_min=nodal_mt_at14_min,y_max=nodal_mt_at14_max, 
                     color='k',
                     figure_name=figure_name)
 
     top_ax_list[1] = pretty_scatter(measure_dict['CT_all_slope_age_at14'], measure_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)], 
-                    x_label='CT at 14 years (mm)', y_label='MT at 14 years', 
+                    x_label='CT at 14 yrs (mm)', y_label='MT at 14 yrs', 
                     x_min=nodal_ct_at14_min, x_max=nodal_ct_at14_max,
                     y_min=nodal_mt_at14_min,y_max=nodal_mt_at14_max, 
                     color='k',
@@ -1722,7 +1908,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                                 'Nodal_CT_corr_{}_projfrac+030_slope_age.png'.format(mpm))
                                     
     pretty_scatter(measure_dict['CT_all_slope_age'], measure_dict['{}_projfrac+030_all_slope_age'.format(mpm)], 
-                    x_label='Change in CT (mm/year)', y_label='Change in MT (AU/year)', 
+                    x_label=r'$\Delta$CT (mm/year)', y_label='Change in MT (AU/year)', 
                     x_min=nodal_ct_slope_min, x_max=nodal_ct_slope_max,
                     y_min=nodal_mt_slope_min,y_max=nodal_mt_slope_max, 
                     color='k',
@@ -1730,7 +1916,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
 
     top_ax_list[2] = pretty_scatter(measure_dict['CT_all_slope_age'], 
                     measure_dict['{}_projfrac+030_all_slope_age'.format(mpm)], 
-                    x_label='Change in CT (mm/year)', y_label='Change in MT (AU/year)', 
+                    x_label=r'$\Delta$CT (mm/year)', y_label='Change in MT (AU/year)', 
                     x_min=nodal_ct_slope_min, x_max=nodal_ct_slope_max,
                     y_min=nodal_mt_slope_min,y_max=nodal_mt_slope_max, 
                     color='k',
@@ -2102,9 +2288,9 @@ def get_axis_label_dict():
     axis_label_dict['PC'] = 'Participation Coefficient'
     axis_label_dict['AverageDist'] = 'Average Distance (mm)'
     axis_label_dict['Clustering'] = 'Clustering'
-    axis_label_dict['CT_all_slope_age_at14'] = 'CT at 14 years (mm)'
+    axis_label_dict['CT_all_slope_age_at14'] = 'CT at 14 yrs (mm)'
     axis_label_dict['CT_all_slope_age'] =  'Change in CT (mm/year)'
-    axis_label_dict['MT_projfrac+030_all_slope_age_at14'] = 'MT at 14 years (AU)'
+    axis_label_dict['MT_projfrac+030_all_slope_age_at14'] = 'MT at 14 yrs (AU)'
     axis_label_dict['MT_projfrac+030_all_slope_age'] = 'Change in MT (AU/year)'
     
     return axis_label_dict
