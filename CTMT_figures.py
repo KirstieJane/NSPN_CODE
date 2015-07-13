@@ -577,7 +577,6 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
         return ax
 
 def violin_add_laminae(ax, vert=True, labels=True):
-
     '''
     Great big thank yous to Konrad Wagstyl for journeying
     to the actual library and reading an actual book to pull
@@ -619,10 +618,10 @@ def violin_add_laminae(ax, vert=True, labels=True):
     for top, bottom in zip(boundary_values[1::2], boundary_values[2::2]):
         
         if vert:
-            ax.axvspan(top, bottom, facecolor=(227/255.0, 228/255.0, 229/255.0), alpha=0.5, edgecolor='none', zorder=-1)
+            ax.axvspan(top, bottom, facecolor=(226/255.0, 226/255.0, 226/255.0), alpha=1.0, edgecolor='none', zorder=-1)
 
         else:
-            ax.axhspan(top, bottom, facecolor=(227/255.0, 228/255.0, 229/255.0), alpha=0.5, edgecolor='none', zorder=-1)
+            ax.axhspan(top, bottom, facecolor=(226/255.0, 226/255.0, 226/255.0), alpha=1.0, edgecolor='none', zorder=-1)
     
     if labels:
     
@@ -645,6 +644,7 @@ def violin_add_laminae(ax, vert=True, labels=True):
                             
     return ax
 
+    
 def old_figure_1(graph_dict, 
                     figures_dir, 
                     sagittal_pos, 
@@ -1491,6 +1491,46 @@ def add_colorbar(grid, big_fig, cmap_name, cbar_min=0, cbar_max=1, vert=False, l
         
     return big_fig
     
+def add_cells_picture(figures_dir, big_fig):
+    
+    # Get the file name and read it in as an image
+    f_name = os.path.join(figures_dir, '../..', 'CorticalLayers_schematic_cells.jpg')
+    img = mpimg.imread(f_name)
+    img_cropped = img[30:, :]
+    
+    # Add an axis in the bottom left corner
+    grid = gridspec.GridSpec(1, 1)
+    grid.update(left=0.02, right=0.25, top=0.47, wspace=0, hspace=0)
+    ax = plt.Subplot(big_fig, grid[0])
+    big_fig.add_subplot(ax)
+
+    # Show the picture and turn the axis off
+    ax.imshow(img_cropped)
+    ax.axis('off')
+    
+    # Add in the laminar labels
+    boundary_values = [ 0, 113, 166, 419, 499, 653, 945, 1170 ]
+    
+    numerals = [ 'I', 'II', 'III', 'IV', 'V', 'VI', 'WM' ]
+
+    for top, bottom, numeral in zip(boundary_values[0:], boundary_values[1:], numerals):
+        x_pos = -0.25 * img_cropped.shape[1]
+        y_pos = np.mean([top, bottom])
+        ax.text(x_pos, y_pos, numeral,
+                    horizontalalignment='center',
+                    verticalalignment='center',
+                    fontsize=25)
+                  
+    ax.text(-0.5, 0.5, 'Schematic of cortical laminae',
+                    horizontalalignment='center',
+                    verticalalignment='center',
+                    fontsize=30, 
+                    transform=ax.transAxes, 
+                    rotation='vertical')
+                    
+    return big_fig
+    
+
 def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     # Set the seaborn context and style
@@ -1870,7 +1910,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     violin_mt_slope_ct_max = 2.5
     
     # Create the big figure
-    big_fig, big_ax = plt.subplots(figsize=(34, 20), facecolor='white')
+    big_fig, big_ax = plt.subplots(figsize=(32, 20), facecolor='white')
     big_fig.subplots_adjust(left=0.05, right=0.98, bottom=0.07, top=0.95, wspace=0.05, hspace=0.05)
     
     #=========================================================================
@@ -1878,7 +1918,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     # adjust the spacings without screwing up the spacings in the bottom row
     
     grid = gridspec.GridSpec(1, 3)
-    grid.update(left=0.2, bottom=0.53, wspace=0.25, hspace=0)
+    grid.update(left=0.15, bottom=0.56, wspace=0.2, hspace=0)
     top_ax_list = []
     for g_loc in grid:
         top_ax_list += [ plt.Subplot(big_fig, g_loc) ]
@@ -1889,8 +1929,8 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     f_name = os.path.join(figures_dir, '../..', 'CorticalLayers_schematic_methods.jpg')
     img = mpimg.imread(f_name)
     ax = top_ax_list[0]
-    ax.set_position([0, 0.5, 0.4, 0.48])
-    ax.imshow(img)
+    ax.set_position([0, 0.52, 0.4, 0.46])
+    ax.imshow(img[:850,:])
     ax.axis('off')
     
     #=========================================================================
@@ -1899,7 +1939,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                                 'Nodal_CT_corr_{}_projfrac+030_slope_age_at14.png'.format(mpm))
                                     
     pretty_scatter(measure_dict['CT_all_slope_age_at14'], measure_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)], 
-                    x_label='CT at 14 yrs (mm)', y_label='MT at 14 yrs', 
+                    x_label='CT at 14 yrs (mm)', y_label='MT at 14 yrs (AU)', 
                     x_min=nodal_ct_at14_min, x_max=nodal_ct_at14_max,
                     y_min=nodal_mt_at14_min,y_max=nodal_mt_at14_max, 
                     color='k',
@@ -1907,7 +1947,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
 
     top_ax_list[1] = pretty_scatter(measure_dict['CT_all_slope_age_at14'], 
                     measure_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)], 
-                    x_label='CT at 14 yrs (mm)', y_label='MT at 14 yrs', 
+                    x_label='CT at 14 yrs (mm)', y_label='MT at 14 yrs (AU)', 
                     x_min=nodal_ct_at14_min, x_max=nodal_ct_at14_max,
                     y_min=nodal_mt_at14_min,y_max=nodal_mt_at14_max, 
                     color='k',
@@ -1936,25 +1976,18 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                     
     #=========================================================================
     # Schematic for the different cytoarchitectonics for each layer
-    f_name = os.path.join(figures_dir, '../..', 'CorticalLayers_schematic_cells.jpg')
-    grid = gridspec.GridSpec(1, 1)
-    grid.update(left=0, right=0.15, top=0.47, wspace=0, hspace=0)
-    ax = plt.Subplot(big_fig, grid[0])
-    img = mpimg.imread(f_name)
-    ax.imshow(img)
-    ax.axis('off')
+    big_fig = add_cells_picture(figures_dir, big_fig)
     
     #=========================================================================
     # We're going to set up a grid for the bottom row so we can 
     # adjust the spacings without screwing up the spacings in the top row
     
     grid = gridspec.GridSpec(1, 3)
-    grid.update(left=0.15, top=0.47, wspace=0.05, hspace=0)
+    grid.update(left=0.25, top=0.47, wspace=0.08, hspace=0)
     violin_ax_list = []
     for g_loc in grid:
         violin_ax_list += [ plt.Subplot(big_fig, g_loc) ]
         big_fig.add_subplot(violin_ax_list[-1])
-
     
     #=========================================================================
     # MEAN MT ACROSS NODES at different depths
@@ -1964,7 +1997,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     violin_mt_depths(measure_dict,
                         measure='all_mean',
-                        y_label='Mean MT across regions',
+                        y_label='Mean MT across regions (AU)',
                         cmap='jet',
                         y_min=nodal_mt_overall_min, y_max=nodal_mt_overall_max, 
                         cmap_min=nodal_mt_overall_min, cmap_max=nodal_mt_overall_max,
@@ -1974,7 +2007,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
 
     violin_ax_list[0] = violin_mt_depths(measure_dict,
                         measure='all_mean',
-                        y_label='Mean MT across regions',
+                        y_label='Mean MT across regions (AU)',
                         cmap='jet',
                         y_min=nodal_mt_overall_min, y_max=nodal_mt_overall_max, 
                         cmap_min=nodal_mt_overall_min, cmap_max=nodal_mt_overall_max,
