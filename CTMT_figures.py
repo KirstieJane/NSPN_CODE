@@ -1607,6 +1607,8 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                             cmap_name='jet', 
                             cbar_min=2.5, 
                             cbar_max=3.5,
+                            y_min=2.5,
+                            y_max=3.5,
                             label='CT at 14 yrs (mm)')
     
     #==== BRAIN IMAGES FOR SLOPE CT ======================================
@@ -1627,6 +1629,8 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                             cmap_name='winter_r', 
                             cbar_min=-0.035, 
                             cbar_max=-0.015,
+                            y_min=-0.035,
+                            y_max=-0.015,
                             label=r'$\Delta$CT (mm/year)')
     
     #==== BRAIN IMAGES FOR MT AT 14 ======================================
@@ -1647,6 +1651,8 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                             cmap_name='jet', 
                             cbar_min=0.8, 
                             cbar_max=1.0,
+                            y_min=0.8,
+                            y_max=1.0,
                             label='MT at 14 yrs (AU)')
     
     #==== BRAIN IMAGES FOR SLOPE MT ======================================
@@ -1666,7 +1672,9 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     big_fig = add_colorbar(cb_grid[0], big_fig, 
                             cmap_name='autumn', 
                             cbar_min=0.005, 
-                            cbar_max=0.01, 
+                            cbar_max=0.01,
+                            y_min=0.005,
+                            y_max=0.01,
                             label=r'$\Delta$MT (AU/year)')
     
     #==== VON ECONOMO BOX PLOTS FOR CT AT 14 =============================
@@ -2421,3 +2429,26 @@ def get_axis_label_dict():
     axis_label_dict['MT_projfrac+030_all_slope_age'] = 'Change in MT (AU/year)'
     
     return axis_label_dict
+    
+    
+def corr_by_agebin(measure_dict_dict, paper_dir, x_measure='Degree_CT_covar_ones_all_COST_10', y_measure='CT_all_slope_age'):
+
+    y = measure_dict_dict['COMPLETE'][y_measure]
+    
+    m_array = np.zeros(5)
+    r_array = np.zeros(5)
+    p_array = np.zeros(5)
+    
+    for i, age_bin in enumerate(range(1,6)):
+        cohort = 'AGE_BIN_{}'.format(age_bin)
+        
+        measure_dict = measure_dict_dict[cohort]
+        x = measure_dict[x_measure]
+
+        m,c,r,p,sterr,p_perm = permuatation_correlation(x, y)
+        m_array[i] = m
+        r_array[i] = r
+        p_array[i] = p
+        
+    plt.scatter(range(1,6), m_array)
+        
