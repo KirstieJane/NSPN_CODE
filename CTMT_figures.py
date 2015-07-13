@@ -482,12 +482,12 @@ def create_violin_data(measure_dict, mpm='MT', measure='all_slope_age', cmap='Rd
             
         color_list += [scalarMap.to_rgba(np.mean(df['{}'.format(i)]))]
         
-        color_dict['{}'.format(i)] = scalarMap.to_rgba(np.mean(df['{}'.format(i)]))
+        color_dict['{}'.format(i)] = scalarMap.to_rgba(np.percentile(df['{}'.format(i)], 50))
         
     return df, color_list, color_dict
 
 
-def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn', cmap_min=-7, cmap_max=7, y_max=None, y_min=None, figure_name=None, ax=None, figure=None, y_label=None, vert=True, lam_labels=True):
+def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn', cmap_min=-7, cmap_max=7, y_max=None, y_min=None, figure_name=None, ax=None, figure=None, y_label=None, vert=True, lam_labels=True, cbar=False):
     '''
     INPUTS:
         data_dir --------- where the PARC_*_behavmerge.csv files are saved
@@ -564,7 +564,32 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
     
     # Add in the laminae
     ax = violin_add_laminae(ax, vert=vert, labels=lam_labels)
-       
+
+    # Add a colorbar if necessary:
+    if cbar:
+        
+        cb_grid = gridspec.GridSpec(1,1)
+        pos = ax.get_position()
+
+        if vert:
+            cb_grid.update(left=pos.x1+0.01, right=pos.x1+0.02, bottom=pos.y0, top=pos.y1, wspace=0, hspace=0)
+        else:
+            cb_grid.update(left=pos.x0, right=pos.x1, bottom=pos.y0-0.04, top=pos.y0-0.03, wspace=0, hspace=0)    
+            
+        fig = add_colorbar(cb_grid[0], fig, 
+                                cmap_name=cmap, 
+                                y_min = y_min,
+                                y_max = y_max,
+                                cbar_min=cmap_min, 
+                                cbar_max=cmap_max,
+                                show_ticks=False,
+                                vert=vert)
+    
+        if not vert:
+            # If you add in a colorbar then you need to move the x axis label
+            # down just a smidge
+            ax.set_xlabel(y_label, labelpad=30)
+        
     if figure_name:
         # Do the tight layout because, again, it looks better!
         fig.tight_layout()
@@ -1449,19 +1474,23 @@ def add_four_hor_brains(grid, f_list, big_fig):
     
     return big_fig
 
-def add_colorbar(grid, big_fig, cmap_name, cbar_min=0, cbar_max=1, vert=False, label=None):
+def add_colorbar(grid, big_fig, cmap_name, y_min=0, y_max=1, cbar_min=0, cbar_max=1, vert=False, label=None, show_ticks=True):
     '''
     Add a colorbar to the big_fig in the location defined by grid 
     
     grid       :  grid spec location to add colormap
     big_fig    :  figure to which colorbar will be added
     cmap_name  :  name of the colormap
+    x_min      :  the minimum value to plot this colorbar between
+    x_max      :  the maximum value to plot this colorbar between
     cbar_min   :  minimum value for the colormap (default 0)
     cbar_max   :  maximum value for the colormap (default 1)
     vert       :  whether the colorbar should be vertical (default False)
     label      :  the label for the colorbar (default: None)
+    ticks      :  whether to put the tick values on the colorbar (default: True)
     '''
     import matplotlib as mpl
+    from matplotlib.colors import LinearSegmentedColormap
     
     # Add an axis to the big_fig
     ax_cbar = plt.Subplot(big_fig, grid)
@@ -1471,8 +1500,11 @@ def add_colorbar(grid, big_fig, cmap_name, cbar_min=0, cbar_max=1, vert=False, l
     # lower limits and define the three ticks you want to show
     norm = mpl.colors.Normalize(vmin=cbar_min, vmax=cbar_max)
 
-    ticks = [cbar_min, np.average([cbar_min, cbar_max]), cbar_max]
-    
+    if show_ticks:
+        ticks = [y_min, np.average([y_min, y_max]), y_max]
+    else:
+        ticks=[]
+        
     # Figure out the orientation
     if vert:
         orientation='vertical'
@@ -1484,7 +1516,8 @@ def add_colorbar(grid, big_fig, cmap_name, cbar_min=0, cbar_max=1, vert=False, l
                                        cmap=cmap_name,
                                        norm=norm,
                                        orientation=orientation,
-                                       ticks=ticks)
+                                       ticks=ticks,
+                                       values=np.linspace(y_min, y_max))
                                        
     if label:
         cb.set_label(label)
@@ -1500,7 +1533,7 @@ def add_cells_picture(figures_dir, big_fig):
     
     # Add an axis in the bottom left corner
     grid = gridspec.GridSpec(1, 1)
-    grid.update(left=0.02, right=0.25, top=0.47, wspace=0, hspace=0)
+    grid.update(left=0.02, right=0.23, top=0.47, wspace=0, hspace=0)
     ax = plt.Subplot(big_fig, grid[0])
     big_fig.add_subplot(ax)
 
@@ -1514,14 +1547,14 @@ def add_cells_picture(figures_dir, big_fig):
     numerals = [ 'I', 'II', 'III', 'IV', 'V', 'VI', 'WM' ]
 
     for top, bottom, numeral in zip(boundary_values[0:], boundary_values[1:], numerals):
-        x_pos = -0.25 * img_cropped.shape[1]
+        x_pos = -0.2 * img_cropped.shape[1]
         y_pos = np.mean([top, bottom])
         ax.text(x_pos, y_pos, numeral,
                     horizontalalignment='center',
                     verticalalignment='center',
                     fontsize=25)
                   
-    ax.text(-0.5, 0.5, 'Schematic of cortical laminae',
+    ax.text(-0.4, 0.5, 'Schematic of cortical laminae',
                     horizontalalignment='center',
                     verticalalignment='center',
                     fontsize=30, 
@@ -1918,7 +1951,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     # adjust the spacings without screwing up the spacings in the bottom row
     
     grid = gridspec.GridSpec(1, 3)
-    grid.update(left=0.15, bottom=0.56, wspace=0.2, hspace=0)
+    grid.update(left=0.15, bottom=0.56, top=0.96, wspace=0.2, hspace=0)
     top_ax_list = []
     for g_loc in grid:
         top_ax_list += [ plt.Subplot(big_fig, g_loc) ]
@@ -1929,7 +1962,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     f_name = os.path.join(figures_dir, '../..', 'CorticalLayers_schematic_methods.jpg')
     img = mpimg.imread(f_name)
     ax = top_ax_list[0]
-    ax.set_position([0, 0.52, 0.4, 0.46])
+    ax.set_position([0, 0.52, 0.4, 0.48])
     ax.imshow(img[:850,:])
     ax.axis('off')
     
@@ -1983,7 +2016,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     # adjust the spacings without screwing up the spacings in the top row
     
     grid = gridspec.GridSpec(1, 3)
-    grid.update(left=0.25, top=0.47, wspace=0.08, hspace=0)
+    grid.update(left=0.28, top=0.47, bottom=0.1, wspace=0.08, hspace=0)
     violin_ax_list = []
     for g_loc in grid:
         violin_ax_list += [ plt.Subplot(big_fig, g_loc) ]
@@ -2003,7 +2036,8 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                         cmap_min=nodal_mt_overall_min, cmap_max=nodal_mt_overall_max,
                         figure_name=figure_name,
                         mpm=mpm,
-                        vert=False)
+                        vert=False,
+                        cbar=True)
 
     violin_ax_list[0] = violin_mt_depths(measure_dict,
                         measure='all_mean',
@@ -2015,23 +2049,12 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                         ax=violin_ax_list[0],
                         figure=big_fig,
                         mpm=mpm,
-                        vert=False)
+                        vert=False,
+                        cbar=True)
                         
-    # MEAN MT ACROSS PEOPLE at different depths
-    
-    figure_name = os.path.join(figures_dir, 
-                                '{}_global_mean_DifferentDepths.png'.format(mpm))
-    
-    violin_mt_depths(measure_dict,
-                        measure='global_mean',
-                        y_label='Mean MT across participants',
-                        cmap='jet',
-                        y_min=nodal_mt_overall_min, y_max=nodal_mt_overall_max, 
-                        cmap_min=nodal_mt_overall_min, cmap_max=nodal_mt_overall_max,
-                        figure_name=figure_name,
-                        mpm=mpm,
-                        vert=False)
-                        
+    violin_ax_list[0].set_ylabel('Summary across 308 cortical regions\nat increasing distances from the pial surface',
+                                    fontsize=30)
+        
     # CORR WITH CT ACROSS NODES at different depths
     figure_name = os.path.join(figures_dir, 
                                     '{}_all_slope_CT_DifferentDepths.png'.format(mpm))
@@ -2044,7 +2067,8 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                         cmap_min=violin_mt_slope_ct_max*-1, cmap_max=violin_mt_slope_ct_max,
                         figure_name=figure_name,
                         mpm=mpm,
-                        vert=False)
+                        vert=False,
+                        cbar=True)
                         
     violin_ax_list[1] = violin_mt_depths(measure_dict,
                         measure='all_slope_ct',
@@ -2056,7 +2080,8 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                         ax=violin_ax_list[1],
                         figure=big_fig,
                         mpm=mpm,
-                        vert=False)
+                        vert=False,
+                        cbar=True)
                         
     # CORR WITH AGE ACROSS NODES at different depths
     figure_name = os.path.join(figures_dir, 
@@ -2065,23 +2090,25 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     violin_mt_depths(measure_dict,
                         measure='all_slope_age',
                         y_label=r'$\Delta$MT with age (AU/year)',
-                        cmap='PRGn',
+                        cmap='RdBu_r',
                         y_min=nodal_mt_slope_min, y_max=nodal_mt_slope_max, 
                         cmap_min=violin_mt_slope_age_max*-1/2.0, cmap_max=violin_mt_slope_age_max/2.0,
                         figure_name=figure_name,
                         mpm=mpm,
-                        vert=False)
+                        vert=False,
+                        cbar=True)
 
     violin_ax_list[2] = violin_mt_depths(measure_dict,
                         measure='all_slope_age',
                         y_label=r'$\Delta$MT with age (AU/year)',
-                        cmap='PRGn',
+                        cmap='RdBu_r',
                         y_min=violin_mt_slope_age_min, y_max=violin_mt_slope_age_max, 
                         cmap_min=violin_mt_slope_age_max*-1/2.0, cmap_max=violin_mt_slope_age_max/2.0,
                         ax=violin_ax_list[2],
                         figure=big_fig,
                         mpm=mpm,
-                        vert=False)
+                        vert=False,
+                        cbar=True)
                          
                            
     # Turn off the axes for the first columns
@@ -2093,6 +2120,48 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     for ax in violin_ax_list[1:]:
         ax.set_yticklabels([])
     
+    # Place the A, B, C and i, ii, iii labels
+    let_list = [ 'A', 'B', 'C' ]
+    rom_list = [ 'i', 'ii', 'iii', 'iv' ]
+    
+    # For the first column put the letters in the top left corner
+    for i, ax in enumerate(top_ax_list):
+        x_pos = ax.get_position().x0
+        
+        if i == 0:
+            big_fig.text(x_pos+0.04, 0.97, '{}'.format(let_list[i]),
+                        horizontalalignment='left',
+                        verticalalignment='top',
+                        fontsize=40,
+                        weight='bold',
+                        color='white')
+        else:
+            big_fig.text(x_pos-0.03, 0.97, '{}'.format(let_list[i]),
+                        horizontalalignment='right',
+                        verticalalignment='top',
+                        fontsize=40,
+                        weight='bold',
+                        color='k')
+                        
+    # Add in the figure panel number for the cells schematic
+    big_fig.text(0.04, 0.5, 'Di',
+                    horizontalalignment='left',
+                    verticalalignment='top',
+                    fontsize=40,
+                    weight='bold',
+                    color='k')
+                
+    # And the figure panel numbers for the violin plots
+    for i, ax in enumerate(violin_ax_list):
+        x_pos = ax.get_position().x0
+        
+        big_fig.text(x_pos, 0.5, 'D{}'.format(rom_list[i+1]),
+                    horizontalalignment='right',
+                    verticalalignment='top',
+                    fontsize=40,
+                    weight='bold',
+                    color='k')
+                    
     # Save the figure
     filename = os.path.join(figures_dir, 'New_Figure2.png')
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
