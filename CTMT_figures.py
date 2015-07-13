@@ -1233,8 +1233,8 @@ def all_mean_mt(measure_dict, figures_dir, mpm='MT'):
                         ax=ax,
                         mpm=mpm)
     
-    plt.tight_layout()
-    
+    # Nice tight layout
+    big_fig.tight_layout()    
     fig.subplots_adjust(right=0.9)
     
     cmap = mpl.cm.jet
@@ -1870,19 +1870,29 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     violin_mt_slope_ct_max = 2.5
     
     # Create the big figure
-    big_fig, big_ax = plt.subplots(figsize=(40, 20), facecolor='white')
+    big_fig, big_ax = plt.subplots(figsize=(34, 20), facecolor='white')
+    big_fig.subplots_adjust(left=0.05, right=0.98, bottom=0.07, top=0.95, wspace=0.05, hspace=0.05)
     
     #=========================================================================
     # We're going to set up a grid for the top row so we can 
     # adjust the spacings without screwing up the spacings in the bottom row
     
     grid = gridspec.GridSpec(1, 3)
-    grid.update(left=0.3, bottom=0.53, wspace=0.25)
+    grid.update(left=0.2, bottom=0.53, wspace=0.25, hspace=0)
     top_ax_list = []
     for g_loc in grid:
         top_ax_list += [ plt.Subplot(big_fig, g_loc) ]
         big_fig.add_subplot(top_ax_list[-1])
 
+    #=========================================================================
+    # Schematic for how we measured the different layers
+    f_name = os.path.join(figures_dir, '../..', 'CorticalLayers_schematic_methods.jpg')
+    img = mpimg.imread(f_name)
+    ax = top_ax_list[0]
+    ax.set_position([0, 0.5, 0.4, 0.48])
+    ax.imshow(img)
+    ax.axis('off')
+    
     #=========================================================================
     # Nodal CT MT
     figure_name = os.path.join(figures_dir, 
@@ -1895,7 +1905,8 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                     color='k',
                     figure_name=figure_name)
 
-    top_ax_list[1] = pretty_scatter(measure_dict['CT_all_slope_age_at14'], measure_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)], 
+    top_ax_list[1] = pretty_scatter(measure_dict['CT_all_slope_age_at14'], 
+                    measure_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)], 
                     x_label='CT at 14 yrs (mm)', y_label='MT at 14 yrs', 
                     x_min=nodal_ct_at14_min, x_max=nodal_ct_at14_max,
                     y_min=nodal_mt_at14_min,y_max=nodal_mt_at14_max, 
@@ -1908,7 +1919,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                                 'Nodal_CT_corr_{}_projfrac+030_slope_age.png'.format(mpm))
                                     
     pretty_scatter(measure_dict['CT_all_slope_age'], measure_dict['{}_projfrac+030_all_slope_age'.format(mpm)], 
-                    x_label=r'$\Delta$CT (mm/year)', y_label='Change in MT (AU/year)', 
+                    x_label=r'$\Delta$CT (mm/year)', y_label=r'$\Delta$MT (AU/year)', 
                     x_min=nodal_ct_slope_min, x_max=nodal_ct_slope_max,
                     y_min=nodal_mt_slope_min,y_max=nodal_mt_slope_max, 
                     color='k',
@@ -1916,7 +1927,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
 
     top_ax_list[2] = pretty_scatter(measure_dict['CT_all_slope_age'], 
                     measure_dict['{}_projfrac+030_all_slope_age'.format(mpm)], 
-                    x_label=r'$\Delta$CT (mm/year)', y_label='Change in MT (AU/year)', 
+                    x_label=r'$\Delta$CT (mm/year)', y_label=r'$\Delta$MT (AU/year)', 
                     x_min=nodal_ct_slope_min, x_max=nodal_ct_slope_max,
                     y_min=nodal_mt_slope_min,y_max=nodal_mt_slope_max, 
                     color='k',
@@ -1924,18 +1935,30 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                     figure=big_fig)    
                     
     #=========================================================================
+    # Schematic for the different cytoarchitectonics for each layer
+    f_name = os.path.join(figures_dir, '../..', 'CorticalLayers_schematic_cells.jpg')
+    grid = gridspec.GridSpec(1, 1)
+    grid.update(left=0, right=0.15, top=0.47, wspace=0, hspace=0)
+    ax = plt.Subplot(big_fig, grid[0])
+    img = mpimg.imread(f_name)
+    ax.imshow(img)
+    ax.axis('off')
+    
+    #=========================================================================
     # We're going to set up a grid for the bottom row so we can 
     # adjust the spacings without screwing up the spacings in the top row
-    #
-    grid = gridspec.GridSpec(1, 4)
-    grid.update(top=0.47, wspace=0.05)
+    
+    grid = gridspec.GridSpec(1, 3)
+    grid.update(left=0.15, top=0.47, wspace=0.05, hspace=0)
     violin_ax_list = []
     for g_loc in grid:
         violin_ax_list += [ plt.Subplot(big_fig, g_loc) ]
         big_fig.add_subplot(violin_ax_list[-1])
 
-    # MEAN MT ACROSS NODES at different depths
     
+    #=========================================================================
+    # MEAN MT ACROSS NODES at different depths
+
     figure_name = os.path.join(figures_dir, 
                                 '{}_all_mean_DifferentDepths.png'.format(mpm))
     
@@ -1949,13 +1972,14 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                         mpm=mpm,
                         vert=False)
 
-    violin_ax_list[1] = violin_mt_depths(measure_dict,
+    violin_ax_list[0] = violin_mt_depths(measure_dict,
                         measure='all_mean',
                         y_label='Mean MT across regions',
                         cmap='jet',
                         y_min=nodal_mt_overall_min, y_max=nodal_mt_overall_max, 
                         cmap_min=nodal_mt_overall_min, cmap_max=nodal_mt_overall_max,
-                        ax=violin_ax_list[1],
+                        lam_labels=False,
+                        ax=violin_ax_list[0],
                         figure=big_fig,
                         mpm=mpm,
                         vert=False)
@@ -1989,13 +2013,14 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                         mpm=mpm,
                         vert=False)
                         
-    violin_ax_list[2] = violin_mt_depths(measure_dict,
+    violin_ax_list[1] = violin_mt_depths(measure_dict,
                         measure='all_slope_ct',
                         y_label='Correlation MT vs CT (AU/mm)',
                         cmap='PRGn',
                         y_min=violin_mt_slope_ct_min, y_max=violin_mt_slope_ct_max, 
                         cmap_min=violin_mt_slope_ct_max*-1, cmap_max=violin_mt_slope_ct_max,
-                        ax=violin_ax_list[2],
+                        lam_labels=False,                        
+                        ax=violin_ax_list[1],
                         figure=big_fig,
                         mpm=mpm,
                         vert=False)
@@ -2006,7 +2031,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     violin_mt_depths(measure_dict,
                         measure='all_slope_age',
-                        y_label='Change in MT with age (AU/year)',
+                        y_label=r'$\Delta$MT with age (AU/year)',
                         cmap='PRGn',
                         y_min=nodal_mt_slope_min, y_max=nodal_mt_slope_max, 
                         cmap_min=violin_mt_slope_age_max*-1/2.0, cmap_max=violin_mt_slope_age_max/2.0,
@@ -2014,27 +2039,27 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                         mpm=mpm,
                         vert=False)
 
-    violin_ax_list[3] = violin_mt_depths(measure_dict,
+    violin_ax_list[2] = violin_mt_depths(measure_dict,
                         measure='all_slope_age',
-                        y_label='Change in MT with age (AU/year)',
+                        y_label=r'$\Delta$MT with age (AU/year)',
                         cmap='PRGn',
                         y_min=violin_mt_slope_age_min, y_max=violin_mt_slope_age_max, 
                         cmap_min=violin_mt_slope_age_max*-1/2.0, cmap_max=violin_mt_slope_age_max/2.0,
-                        ax=violin_ax_list[3],
+                        ax=violin_ax_list[2],
                         figure=big_fig,
                         mpm=mpm,
                         vert=False)
                          
                            
     # Turn off the axes for the first columns
-    for ax in [ big_ax, top_ax_list[0], violin_ax_list[0] ]:
+    for ax in [ big_ax, top_ax_list[0] ]:
         ax.axis('off')
     
     # Also remove the y tick labels for the violin plots
     # that are not the first
-    for ax in violin_ax_list[2:]:
+    for ax in violin_ax_list[1:]:
         ax.set_yticklabels([])
-        
+    
     # Save the figure
     filename = os.path.join(figures_dir, 'New_Figure2.png')
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
