@@ -366,6 +366,7 @@ def pretty_scatter(x, y, x_label='x', y_label='y', x_max=None, x_min=None, y_max
 
     # Make sure there aren't too many bins!
     ax.locator_params(axis='y', nbins=4)
+    ax.locator_params(axis='x', nbins=5)
     
     # Put a line at y = 0
     ax.axhline(0, linewidth=1, color='black', linestyle='--')
@@ -1504,7 +1505,7 @@ def add_colorbar(grid, big_fig, cmap_name, y_min=0, y_max=1, cbar_min=0, cbar_ma
         ticks = [y_min, np.average([y_min, y_max]), y_max]
     else:
         ticks=[]
-        
+            
     # Figure out the orientation
     if vert:
         orientation='vertical'
@@ -1517,7 +1518,7 @@ def add_colorbar(grid, big_fig, cmap_name, y_min=0, y_max=1, cbar_min=0, cbar_ma
                                        norm=norm,
                                        orientation=orientation,
                                        ticks=ticks,
-                                       values=np.linspace(y_min, y_max))
+                                       boundaries=np.linspace(y_min, y_max, 300))
                                        
     if label:
         cb.set_label(label)
@@ -1533,7 +1534,7 @@ def add_cells_picture(figures_dir, big_fig):
     
     # Add an axis in the bottom left corner
     grid = gridspec.GridSpec(1, 1)
-    grid.update(left=0.02, right=0.23, top=0.47, wspace=0, hspace=0)
+    grid.update(left=0.02, right=0.23, top=0.47, bottom=0.1, wspace=0, hspace=0)
     ax = plt.Subplot(big_fig, grid[0])
     big_fig.add_subplot(ax)
 
@@ -1687,7 +1688,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                         y_min=nodal_ct_at14_min, y_max=nodal_ct_at14_max, 
                         von_economo_colors=True,
                         red_max=True,
-                        alpha=0.3,
+                        alpha=0,
                         figure_name=figure_name)
     
     ax_list[0, 2] = von_economo_boxes(measure_dict, figures_dir, 
@@ -1697,7 +1698,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                                         y_min=nodal_ct_at14_min, y_max=nodal_ct_at14_max, 
                                         von_economo_colors=True,
                                         red_max=True,
-                                        alpha=0.3,
+                                        alpha=0,
                                         ax=ax_list[0, 2],
                                         figure=big_fig)
     
@@ -1710,7 +1711,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                         y_label=r'$\Delta$CT (mm/year)', 
                         y_min=nodal_ct_slope_min, y_max=nodal_ct_slope_max, 
                         red_min=True,
-                        alpha=0.3,
+                        alpha=0,
                         von_economo_colors=True,
                         figure_name=figure_name)
     
@@ -1721,7 +1722,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                                         y_min=nodal_ct_slope_min, y_max=nodal_ct_slope_max, 
                                         von_economo_colors=True,
                                         red_min=True,
-                                        alpha=0.3,
+                                        alpha=0,
                                         ax=ax_list[1, 2],
                                         figure=big_fig)
                                         
@@ -1735,7 +1736,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                         y_label='MT at 14 yrs (AU)', 
                         y_min=nodal_mt_at14_min, y_max=nodal_mt_at14_max, 
                         red_min=True,
-                        alpha=0.3,
+                        alpha=0,
                         von_economo_colors=True,
                         figure_name=figure_name)
     
@@ -1746,7 +1747,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                                         y_min=nodal_mt_at14_min, y_max=nodal_mt_at14_max, 
                                         von_economo_colors=True,
                                         red_min=True,
-                                        alpha=0.3,
+                                        alpha=0,
                                         ax=ax_list[2, 2],
                                         figure=big_fig)
     
@@ -1761,7 +1762,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                         y_min=nodal_mt_slope_min, y_max=nodal_mt_slope_max, 
                         von_economo_colors=True,
                         red_max=True,
-                        alpha=0.3,
+                        alpha=0,
                         figure_name=figure_name)
     
     ax_list[3, 2] = von_economo_boxes(measure_dict, figures_dir, 
@@ -1771,7 +1772,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                                         y_min=nodal_mt_slope_min, y_max=nodal_mt_slope_max, 
                                         von_economo_colors=True,
                                         red_max=True,
-                                        alpha=0.3,
+                                        alpha=0,
                                         ax=ax_list[3, 2],
                                         figure=big_fig)
                                                                                 
@@ -2270,6 +2271,8 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
                             measure='{}_CT_covar_ones_all_COST_10'.format(measure),
                             y_label=y_label, 
                             y_min=measure_min, y_max=measure_max, 
+                            red_max=True,
+                            alpha=0.3,
                             figure_name=figure_name)
         
         ax_list[2, i] = von_economo_boxes(measure_dict, figures_dir, 
@@ -2277,6 +2280,8 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
                                             measure='{}_CT_covar_ones_all_COST_10'.format(measure),
                                             y_label=y_label, 
                                             y_min=measure_min, y_max=measure_max, 
+                                            red_max=True,
+                                            alpha=0.3,
                                             ax=ax_list[2, i],
                                             figure=big_fig)
                                     
