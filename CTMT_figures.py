@@ -2255,7 +2255,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
     # Next put von economo box plots of four different graph measures
     # split up by von economo type
     #=========================================================================
-    measure_list = [ 'Degree', 'PC', 'AverageDist', 'Clustering' ]
+    measure_list = [ 'Degree', 'PC', 'AverageDist', 'Closeness' ]
     
     for i, measure in enumerate(measure_list):
         
@@ -2414,6 +2414,8 @@ def get_min_max_values():
     min_max_dict['AverageDist_max'] = 120
     min_max_dict['Clustering_min'] = 0
     min_max_dict['Clustering_max'] = 1  
+    min_max_dict['Closeness_min'] = 0.19
+    min_max_dict['Closeness_max'] = 0.58
     min_max_dict['von_economo_min'] = 1
     min_max_dict['von_economo_max'] = 5 
 
@@ -2428,6 +2430,7 @@ def get_axis_label_dict():
     axis_label_dict['PC'] = 'Participation Coefficient'
     axis_label_dict['AverageDist'] = 'Average Distance (mm)'
     axis_label_dict['Clustering'] = 'Clustering'
+    axis_label_dict['Closeness'] = 'Closeness'
     axis_label_dict['CT_all_slope_age_at14'] = 'CT at 14 yrs (mm)'
     axis_label_dict['CT_all_slope_age'] =  'Change in CT (mm/year)'
     axis_label_dict['MT_projfrac+030_all_slope_age_at14'] = 'MT at 14 yrs (AU)'
