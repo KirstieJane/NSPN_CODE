@@ -15,6 +15,7 @@ import matplotlib.image as mpimg
 import matplotlib.gridspec as gridspec
 from glob import glob
 import itertools as it
+import matplotlib.patches as mpatches
 
 # Read in some of the other NSPN_CODE functions too
 #this_scripts_dir=os.path.dirname(os.path.abspath(__file__))
@@ -1295,7 +1296,7 @@ def nodal_ct_mt(measure_dict, figures_dir, mpm='MT'):
                     ax=ax,
                     figure=fig)
     
-def von_economo_color_dict(von_economo):
+def get_von_economo_color_dict(von_economo):
     '''
     Create a color dictionary for the von economo values you pass
     The color_list is hard coded at the moment... might change one day
@@ -1308,7 +1309,7 @@ def von_economo_color_dict(von_economo):
             
     return color_dict
     
-def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_mean', group_label='Cortical Laminar Pattern', y_label=None, y_min=1.5, y_max=4.0, figure_name=None, figure=None, ax=None, von_economo_colors=True, red_max=False, red_min=False, alpha=1.0):
+def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_mean', group_label='Cortical Laminar Pattern', y_label=None, y_min=1.5, y_max=4.0, figure_name=None, figure=None, ax=None, von_economo_colors=True, color_dict="muted", cmap_name=None, red_max=False, red_min=False, alpha=1.0):
 
     # Set the seaborn style
     sns.set(style="white")
@@ -1318,12 +1319,27 @@ def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_me
     df = pd.DataFrame( { 'x' : measure_dict[measure],
                          group_label : von_economo } )
                         
-    # You'll always use this color_list
+    # If you've turned on the von_economo_colors flag
+    # then you'll always used the set color scheme
     if von_economo_colors:
-        color_dict = von_economo_color_dict(von_economo)
-    else:
-        color_dict = "muted"
+        color_dict = get_von_economo_color_dict(von_economo)
         
+    else:
+        color_dict = color_dict
+
+    # If you've passed a colormap then you're going to make a
+    # color dict from that colormap
+    if cmap_name:
+        cmap = plt.get_cmap(cmap_name)
+        color_dict = {}
+        n = len(set(von_economo))
+        for i, value in enumerate(set(von_economo)):
+            color_dict[value] = cmap(np.float(i + 0.5)/n)
+    
+    # Order the box plots from max to min
+    order = range(np.floor(np.min(von_economo)).astype('int'),
+                np.floor(np.max(von_economo)).astype('int')+1)
+
     # Create the figure if you need to
     if not ax:
         # Create a figure
@@ -1334,8 +1350,7 @@ def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_me
     # Make the box plot
     bp = sns.boxplot(df.x[df.x>-99], 
                         groupby=df[group_label], 
-                        order=range(np.floor(np.min(von_economo)).astype('int'),
-                                    np.floor(np.max(von_economo)).astype('int')+1),
+                        order=order,
                         palette=color_dict, 
                         ax=ax)
     
@@ -1802,7 +1817,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     figure_name = os.path.join(figures_dir, 'SlopevsInt_CT_all_slope_age.png')
         
     color='k'
-    marker_color_dict = von_economo_color_dict(measure_dict['von_economo'])
+    marker_color_dict = get_von_economo_color_dict(measure_dict['von_economo'])
     marker_colors = [ marker_color_dict[ve] for ve in measure_dict['von_economo'] ]
     
     pretty_scatter(measure_dict['CT_all_slope_age_at14'], measure_dict['CT_all_slope_age'], 
@@ -1849,7 +1864,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     figure_name = os.path.join(figures_dir, 'SlopevsInt_{}_projfrac+030_all_slope_age.png'.format(mpm))
         
     color='k'
-    marker_color_dict = von_economo_color_dict(measure_dict['von_economo'])
+    marker_color_dict = get_von_economo_color_dict(measure_dict['von_economo'])
     marker_colors = [ marker_color_dict[ve] for ve in measure_dict['von_economo'] ]
 
     pretty_scatter(measure_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)],
@@ -2302,8 +2317,8 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
     plt.close()
 
     
-def figure_4(measure_dict, figures_dir, results_dir, mpm='MT'):
-    
+def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT'):
+        
     # Set the seaborn context and style
     sns.set(style="white")
     sns.set_context("poster", font_scale=2)
@@ -2312,11 +2327,77 @@ def figure_4(measure_dict, figures_dir, results_dir, mpm='MT'):
     min_max_dict = get_min_max_values()
     axis_label_dict = get_axis_label_dict()
     
-    group_label = 'Module'
-    
     # Create the big figure
-    big_fig, ax_list = plt.subplots(2,5, figsize=(40, 24), facecolor='white')
+    big_fig, ax_list = plt.subplots(5,4, figsize=(30, 40), facecolor='white')
 
+    #=========================================================================
+    # The first row should be two sagittal views of the network in an 
+    # anatomical layout - column 1: anatomical module and column2: von economo
+    # classes
+    #=========================================================================
+    G = graph_dict['CT_covar_ones_all_COST_10']
+    rich_edges, rich_nodes = rich_edges_nodes(G, thresh=75)
+    
+    grid = gridspec.GridSpec(1, 2)
+    grid.update(left=0.03, right=0.97, top=0.97, bottom=0.7, wspace=0.02, hspace=0)
+    ax = plt.Subplot(big_fig, grid[0])
+    big_fig.add_subplot(ax)
+    
+    ax = plot_anatomical_network(G, measure_dict, 
+                                    measure='renum_module',
+                                    orientation='sagittal',
+                                    cmap_name='jet_r',
+                                    edge_list = rich_edges, 
+                                    node_size=800,
+                                    ax=ax)
+    ax = plot_anatomical_network(G, measure_dict, 
+                                    measure='renum_module',
+                                    orientation='sagittal',
+                                    cmap_name='jet_r',
+                                    edge_list = [], 
+                                    node_list = rich_nodes,
+                                    node_shape='s', 
+                                    node_size=1000,
+                                    ax=ax)
+                                   
+    ax = plt.Subplot(big_fig, grid[1])
+    big_fig.add_subplot(ax)
+    
+    ax = plot_anatomical_network(G, measure_dict, 
+                                    measure='von_economo',
+                                    orientation='sagittal',
+                                    cmap_name='von_economo',
+                                    edge_list = rich_edges, 
+                                    node_size=800,
+                                    ax=ax)
+    ax = plot_anatomical_network(G, measure_dict, 
+                                    measure='von_economo',
+                                    orientation='sagittal',
+                                    cmap_name='von_economo',
+                                    edge_list = [], 
+                                    node_list = rich_nodes,
+                                    node_size=1000,
+                                    node_shape='s', 
+                                    ax=ax)
+    
+    #=========================================================================
+    # The middle row is of the circular layout and a box plot of 
+    # von economo value by module
+    #=========================================================================
+    grid = gridspec.GridSpec(1, 2)
+    grid.update(left=0.03, right=0.97, top=0.7, bottom=0.45, wspace=0.02, hspace=0)
+    ax = plt.Subplot(big_fig, grid[0])
+    big_fig.add_subplot(ax)
+    
+    ax = plot_circular_network(G, measure_dict, 
+                                    sort_measure='renum_module',
+                                    sort_cmap_name='jet_r',
+                                    wedge_measure='von_economo',
+                                    wedge_cmap_name='von_economo',
+                                    edge_list = rich_edges,
+                                    node_size=1000,
+                                    ax=ax)
+    
     #=========================================================================
     # Put box plots of CT, deltaCT, MT and deltaMT and von economo class 
     # split up by the network modules
@@ -2332,31 +2413,74 @@ def figure_4(measure_dict, figures_dir, results_dir, mpm='MT'):
         measure_min = min_max_dict['{}_min'.format(measure)]
         measure_max = min_max_dict['{}_max'.format(measure)]
         
-        y_label = axis_label_dict[measure]
+        y_label = axis_label_dict[measure]        
         
-        figure_name = os.path.join(figures_dir,
-                        'Module_{}_CT_covar_ones_all_COST_10.png'.format(measure))
+        if i == 0:
+            ax = ax_list[2,2]
+        else:
+            ax = ax_list[3,i-1]
         
-        von_economo_boxes(measure_dict, figures_dir, 
-                            measure_dict['Module_CT_covar_ones_all_COST_10'], 
-                            measure=measure,
-                            y_label=y_label, 
-                            group_label=group_label,
-                            y_min=measure_min, y_max=measure_max, 
-                            figure_name=figure_name)
-        
-        ax_list[0, i] = von_economo_boxes(measure_dict, figures_dir, 
-                                            measure_dict['Module_CT_covar_ones_all_COST_10'], 
+        ax = von_economo_boxes(measure_dict, figures_dir, 
+                                            measure_dict['Renumbered_Module_CT_covar_ones_all_COST_10'], 
                                             measure=measure,
                                             y_label=y_label, 
-                                            group_label=group_label,
+                                            group_label='Module',
                                             y_min=measure_min, y_max=measure_max, 
-                                            ax=ax_list[0, i],
+                                            von_economo_colors=False,
+                                            cmap_name='jet_r',
+                                            alpha=1.0,
+                                            ax=ax,
                                             figure=big_fig)
     
     #=========================================================================
+    # Put box plots of CT, deltaCT, MT and deltaMT and von economo class 
+    # split up by the rich club nodes
+    #=========================================================================    
+    deg = np.copy(measure_dict['Degree_CT_covar_ones_all_COST_10'])
+    hub_thresh = np.percentile(deg, 75)
+    rc = np.zeros_like(deg)
+    rc[deg>hub_thresh] = 1
+    
+    for i, measure in enumerate(measure_list):
+        
+        measure_min = min_max_dict['{}_min'.format(measure)]
+        measure_max = min_max_dict['{}_max'.format(measure)]
+        
+        if i == 0:
+            ax = ax_list[2,3]
+        else:
+            ax = ax_list[4,i-1]
+        
+        y_label = axis_label_dict[measure]        
+        
+        if (i == 1) or (i == 4):
+            red_max = True
+            red_min = False
+        else:
+            red_max = False
+            red_min = True
+            
+        ax = von_economo_boxes(measure_dict, figures_dir, 
+                                            rc, 
+                                            measure=measure,
+                                            y_label=y_label, 
+                                            group_label='Rich Club Member',
+                                            y_min=measure_min, y_max=measure_max, 
+                                            von_economo_colors=False,
+                                            cmap_name='coolwarm',
+                                            alpha=0,
+                                            red_max=red_max,
+                                            red_min=red_min,
+                                            ax=ax,
+                                            figure=big_fig)
+                                            
+    #=========================================================================
     # Clean everything up and save the figure
     #=========================================================================
+    # Turn off the axes you aren't using
+    for ax in ax_list.reshape(-1)[:-10]:
+        ax.axis('off')
+        
     # Nice tight layout
     big_fig.tight_layout()
 
@@ -2393,7 +2517,7 @@ def get_min_max_values():
     min_max_dict['nodal_mt_slope_min'] = -0.004       # Would like to delete
     min_max_dict['nodal_mt_slope_max'] = 0.02         # Would like to delete
     min_max_dict['MT_projfrac+030_all_slope_age_min'] = -0.004
-    min_max_dict['MT_projfrac+030_all_slope_age_max'] = 0.02
+    min_max_dict['MT_projfrac+030_all_slope_age_max'] = 0.01
     min_max_dict['CT_all_slope_age_min'] = -0.055
     min_max_dict['CT_all_slope_age_max'] = 0.015
     min_max_dict['nodal_mt_overall_min'] = 0.4
@@ -2416,9 +2540,10 @@ def get_min_max_values():
     min_max_dict['Clustering_max'] = 1  
     min_max_dict['Closeness_min'] = 0.19
     min_max_dict['Closeness_max'] = 0.58
-    min_max_dict['von_economo_min'] = 1
-    min_max_dict['von_economo_max'] = 5 
-
+    min_max_dict['von_economo_min'] = 0.5
+    min_max_dict['von_economo_max'] = 5.5
+    min_max_dict['InterhemProp_min'] = 0.0
+    min_max_dict['InterhemProp_max'] = 1.0
     return min_max_dict
     
 def get_axis_label_dict():
@@ -2431,6 +2556,7 @@ def get_axis_label_dict():
     axis_label_dict['AverageDist'] = 'Average Distance (mm)'
     axis_label_dict['Clustering'] = 'Clustering'
     axis_label_dict['Closeness'] = 'Closeness'
+    axis_label_dict['InterhemProp'] = 'Interhemispheric Connections'
     axis_label_dict['CT_all_slope_age_at14'] = 'CT at 14 yrs (mm)'
     axis_label_dict['CT_all_slope_age'] =  'Change in CT (mm/year)'
     axis_label_dict['MT_projfrac+030_all_slope_age_at14'] = 'MT at 14 yrs (AU)'
@@ -2439,24 +2565,325 @@ def get_axis_label_dict():
     return axis_label_dict
     
     
-def corr_by_agebin(measure_dict_dict, paper_dir, x_measure='Degree_CT_covar_ones_all_COST_10', y_measure='CT_all_slope_age'):
+def corr_by_agebin(measure_dict_dict, paper_dir, x_measure='Degree_CT_covar_ones_all_COST_10', y_measure='CT_all_slope_age', ax=None, fig=None, label=None):
 
-    y = measure_dict_dict['COMPLETE'][y_measure]
+    y = np.array(measure_dict_dict['COMPLETE_EXCLBAD'][y_measure])
     
     m_array = np.zeros(5)
     r_array = np.zeros(5)
     p_array = np.zeros(5)
     
     for i, age_bin in enumerate(range(1,6)):
-        cohort = 'AGE_BIN_{}'.format(age_bin)
-        
+        cohort = 'AGE_BIN_{}_EXCLBAD'.format(age_bin)
+        print cohort
         measure_dict = measure_dict_dict[cohort]
-        x = measure_dict[x_measure]
-
-        m,c,r,p,sterr,p_perm = permuatation_correlation(x, y)
+        x = np.array(measure_dict[x_measure])
+        
+        m,c,r,p,sterr,p_perm = permutation_correlation(x, y)
         m_array[i] = m
         r_array[i] = r
         p_array[i] = p
         
-    plt.scatter(range(1,6), m_array)
+    if not ax:
+        fig, ax = plt.subplots()
+
+    ax.plot(range(1,6), m_array, c='b')    
+    ax.scatter(range(1,6), m_array, s=70, c='b')
+    ax.ticklabel_format(axis='y', style='sci', scilimits=(-2,2))
+    if label:
+        ax.set_ylabel(label)
+    ax.set_xticklabels(['', '14-15', '16-17', '18-19', '20-21', '22-24'], rotation=45)
+
+    sns.despine()
+    
+    return ax
         
+
+def get_circular_layout(G, df):
+
+    # Create two empty dictionaries for the
+    # positions and the normal angle to each
+    # position (in degrees)
+    pos_dict = {}
+    theta_dict = {}
+    
+    # Make a list of theta values that
+    # start at 90 and go round the circle
+    # in a clockwise direction
+    theta_list = [ t%360 for t in np.arange(450, 90, -360.0/len(df['node'])) ]
+
+    # And then fill in those dictionaries!
+    for i, key in enumerate(df['node'].values):
+        theta = theta_list[i] * np.pi / 180.0
+        pos_dict[key] = np.array([np.cos(theta)*0.5, np.sin(theta)*0.5])
+        theta_dict[key] = theta_list[i]
+    
+    return pos_dict, theta_dict
+    
+def setup_color_list(df, cmap_name='jet', measure='module'):
+    '''
+    Use a colormap to set colors for each value in the 
+    sort_measure and return a list of colors for each node
+    '''
+    
+    colors_dict = {}
+    
+    n = np.float(len(set(df[measure])))
+    
+    if type(cmap_name) is str:
+        cmap = plt.get_cmap(cmap_name)
+    else:
+        cmap = cmap_name
+        
+    for i, mod in enumerate(sorted(set(df[measure]))):
+        colors_dict[mod] = cmap((i+0.5)/n)
+
+    colors_list = [ colors_dict[mod] for mod in df[measure].values ]
+
+    return colors_list
+    
+def plot_circular_network(G, measure_dict, sort_measure='module', wedge_measure='von_economo', sort_cmap_name='jet_r', wedge_cmap_name='von_economo', node_size=500, edge_list=None, edge_color='k', edge_width=0.2, figure=None, ax=None):
+
+    # Set the seaborn context and style
+    sns.set(style="white")
+    sns.set_context("poster", font_scale=2)
+    
+    if not edge_list:
+        edge_list = G.edges()
+        
+    # Put the measures you care about together
+    # in a data frame
+    df = pd.DataFrame({ 'degree' : measure_dict['Degree_CT_covar_ones_all_COST_10'] ,
+                        'module' : measure_dict['Module_CT_covar_ones_all_COST_10'],
+                        'renum_module' : measure_dict['Renumbered_Module_CT_covar_ones_all_COST_10'],
+                        'von_economo' : measure_dict['von_economo'],
+                        'lobes' : measure_dict['lobes'],
+                        'x' : measure_dict['centroids'][:,0],
+                        'y' : measure_dict['centroids'][:,1],
+                        'z' : measure_dict['centroids'][:,2]})
+    df['node'] = range(len(df['degree']))
+    
+    # First get the module and wedge color lists in node order
+    # (This has to be done before you sort the data frame)
+    von_economo_colors = get_von_economo_color_dict(measure_dict['von_economo'])
+    if sort_cmap_name == 'von_economo':
+        sort_cmap_name =  mpl.colors.ListedColormap(von_economo_colors.values())
+    if wedge_cmap_name == 'von_economo':
+        wedge_cmap_name =  mpl.colors.ListedColormap(von_economo_colors.values())
+    
+    node_colors_list = setup_color_list(df, cmap_name=sort_cmap_name, measure=sort_measure)
+    wedge_colors_list = setup_color_list(df, cmap_name=wedge_cmap_name, measure=wedge_measure)
+    
+    # Now sort the df by the measure you care about
+    df.sort(columns=[sort_measure, wedge_measure, 'node'], inplace=True)
+    
+    # Get the positions of node and the normal angle to each position
+    pos_dict, theta_dict = get_circular_layout(G, df)
+    
+    # If you've given this code an axis and figure then use those
+    # otherwise just create your own
+    if not ax:
+        # Create a figure
+        fig, ax = plt.subplots(figsize=(10, 10))
+    else:
+        fig = figure
+    
+    nx.draw_networkx(G, 
+                    pos=pos_dict, 
+                    node_color=node_colors_list, 
+                    node_size=node_size,
+                    edgelist=edge_list,
+                    width=edge_width,
+                    edge_color = edge_color,
+                    with_labels=False, 
+                    ax=ax)
+    
+    ax = add_wedge(df, theta_dict, wedge_colors_list, wedge_measure=wedge_measure, ax=ax)
+    
+    ax.set_xlim(-0.75, 0.75)
+    ax.set_ylim(-0.75, 0.75)
+    ax.axis('off')
+
+    return ax
+    
+def add_wedge(df, theta_dict, wedge_colors_list, wedge_measure='von_economo', ax=None):
+
+    theta_adj = 360.0/(2*len(df['node']))
+    
+    df.sort(['node'], inplace=True)
+    
+    for node in df['node'].values:
+        wedge = mpatches.Wedge((0,0), 
+                                r = 0.65, width = 0.1,
+                                theta1=theta_dict[node]-theta_adj,
+                                theta2=theta_dict[node]+theta_adj,
+                                facecolor=wedge_colors_list[node],
+                                edgecolor='none')
+        ax.add_patch(wedge)
+        
+    return ax
+    
+def plot_anatomical_network(G, measure_dict, measure='module', orientation='sagittal', cmap_name='jet_r', edge_list=None, edge_color='k', edge_width=0.2, node_list=None, node_shape='o', node_size=500, figure=None, ax=None):
+    
+    # Set the seaborn context and style
+    sns.set(style="white")
+    sns.set_context("poster", font_scale=2)
+    
+    if edge_list is None:
+        edge_list = list(G.edges())
+        
+    if node_list is None:
+        node_list = G.nodes()
+        node_list = sorted(node_list)
+        
+    # Put the measures you care about together
+    # in a data frame
+    df = pd.DataFrame({ 'degree' : measure_dict['Degree_CT_covar_ones_all_COST_10'] ,
+                        'module' : measure_dict['Module_CT_covar_ones_all_COST_10'],
+                        'renum_module' : measure_dict['Renumbered_Module_CT_covar_ones_all_COST_10'],
+                        'von_economo' : measure_dict['von_economo'],
+                        'lobes' : measure_dict['lobes'],
+                        'x' : measure_dict['centroids'][:,0],
+                        'y' : measure_dict['centroids'][:,1],
+                        'z' : measure_dict['centroids'][:,2]})
+    df['node'] = range(len(df['degree']))
+            
+    # Get the module and wedge color lists
+    # (This has to be done before you sort the data frame)
+    von_economo_colors = get_von_economo_color_dict(measure_dict['von_economo'])
+    if cmap_name == 'von_economo':
+        cmap_name =  mpl.colors.ListedColormap(von_economo_colors.values())
+
+    colors_list = setup_color_list(df, cmap_name=cmap_name, measure=measure)
+    
+    # Eliminate all nodes that aren't in nodelist
+    df = df.loc[df['node'].isin(node_list)]
+
+    # Sort by x so that the nodes are plotted in a sensible order
+    sort_dict = {}
+    sort_dict['axial'] = 'z'
+    sort_dict['coronal'] = 'y'
+    sort_dict['sagittal'] = 'x'
+    
+    df.sort(columns=[sort_dict[orientation]], inplace=True)
+        
+    # Get the positions of nodes
+    pos_dict = {}
+    pos_dict['axial'], pos_dict['sagittal'], pos_dict['coronal'] = get_anatomical_layouts(G, df)
+    pos = pos_dict[orientation]
+    
+    # If you've given this code an axis and figure then use those
+    # otherwise just create your own
+    if not ax:
+        # Create a figure
+        fig_size_dict = {}
+        fig_size_dict['axial'] = (9,12)
+        fig_size_dict['sagittal'] = (12,8)
+        fig_size_dict['coronal'] = (9,8)
+        
+        fig, ax = plt.subplots(figsize=fig_size_dict[orientation])
+    else:
+        fig = figure
+    
+    nx.draw_networkx(G, 
+                        pos=pos, 
+                        node_color=colors_list, 
+                        node_shape=node_shape,
+                        node_size=node_size,
+                        nodelist=node_list,
+                        edgelist=edge_list,
+                        width=edge_width,
+                        edge_color=edge_color,
+                        with_labels=False, 
+                        ax=ax)
+    
+    axis_limits_dict = {}
+    axis_limits_dict['axial'] = [ -70, 70, -105, 70]
+    axis_limits_dict['coronal'] = [ -70, 70, -45, 75 ]
+    axis_limits_dict['sagittal'] = [ -105, 70, -45, 75 ]
+    
+    ax.set_xlim(axis_limits_dict[orientation][0],axis_limits_dict[orientation][1])
+    ax.set_ylim(axis_limits_dict[orientation][2],axis_limits_dict[orientation][3])
+    ax.axis('off')
+    
+    return ax
+    
+def get_anatomical_layouts(G, df):
+
+    axial_dict = {}
+    sagittal_dict = {}
+    coronal_dict = {}
+    
+    for node in df['node'].values:
+        axial_dict[node] = np.array([df['x'].loc[df['node']==node].values[0], 
+                                        df['y'].loc[df['node']==node].values[0]])
+        coronal_dict[node] = np.array([df['x'].loc[df['node']==node].values[0], 
+                                        df['z'].loc[df['node']==node].values[0]])
+        sagittal_dict[node] = np.array([df['y'].loc[df['node']==node].values[0],
+                                        df['z'].loc[df['node']==node].values[0]])
+        
+    return axial_dict, sagittal_dict, coronal_dict
+    
+def set_conn_types(G, G_edge=None, thresh=75):
+
+    if not G_edge:
+        G_edge = G
+        
+    # Figure out the degrees from the main graph (G)
+    deg = G.degree().values()
+
+    # Now calculate the threshold that you're going
+    # to use to designate a node as a hub or not
+    hub_thresh = np.percentile(deg, thresh)
+
+    # Loop through the edges of the G_edge graph and 
+    # assign the connection type as 2 (hub-hub),
+    # 1 (hub-peripheral; feeder) or 0 (peripheral-peripheral)
+    for node1, node2 in G_edge.edges():
+        if deg[node1] > hub_thresh and deg[node2] > hub_thresh:
+            G_edge.edge[node1][node2]['conn_type'] = 2
+        elif deg[node1] > hub_thresh or deg[node2] > hub_thresh:
+            G_edge.edge[node1][node2]['conn_type'] = 1
+        else:
+            G_edge.edge[node1][node2]['conn_type'] = 0
+            
+    # Return G_edge
+    return G_edge
+    
+def rich_edges_nodes(G, thresh=75):
+    # Figure out the degrees from the main graph (G)
+    deg = G.degree().values()
+
+    # Now calculate the threshold that you're going
+    # to use to designate a node as a hub or not
+    hub_thresh = np.percentile(deg, thresh)
+
+    G = set_conn_types(G, thresh=thresh)
+    
+    rich_edges = [ (node1, node2) for node1, node2 in G.edges() if G[node1][node2]['conn_type']==2 ]
+    rich_nodes = [ node for node in G.nodes() if deg[node] > hub_thresh ]
+    
+    return rich_edges, rich_nodes
+    
+def renumber_modules(measure_dict):
+
+    module = measure_dict['Module_CT_covar_ones_all_COST_10']
+    ct_14 = measure_dict['CT_all_slope_age_at14']
+    
+    med_ct_dict = {}
+    mods = sorted(set(module))
+    for mod in mods:
+        med_ct14 = np.percentile(ct_14[module==mod], 50)
+        med_ct_dict[mod] = med_ct14
+        
+    new_mods = sorted(med_ct_dict, key=med_ct_dict.get)
+    
+    new_module = np.copy(module)
+    
+    for i, mod in enumerate(module):
+        new_module[i] = new_mods.index(mod) + 1
+        
+    measure_dict['Renumbered_Module_CT_covar_ones_all_COST_10'] = new_module
+    
+    return measure_dict
+    

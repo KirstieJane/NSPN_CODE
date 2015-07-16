@@ -273,7 +273,7 @@ def assign_nodal_distance(G, centroids):
             # then the nodes are in different hemispheres.
             x1 = G.node[node1]['x']
             x2 = G.node[node2]['x']
-            
+G =             
             if x1*x2 > 0:
                 G.edge[node1][node2]['interhem'] = 0
             else:
@@ -798,7 +798,7 @@ def calculate_global_measures(G, R_list=None, n=10):
 
     return network_measures_dict
 
-def calculate_nodal_measures(G, centroids):
+def calculate_nodal_measures(G, centroids, aparc_names):
     '''
     A function which returns a dictionary of numpy arrays for a graph's
         * degree
@@ -808,6 +808,8 @@ def calculate_nodal_measures(G, centroids):
         * clustering
         * closeness
         * interhemispheric proportion
+        * name
+        * hemisphere
     '''
     
     import numpy as np
@@ -829,8 +831,8 @@ def calculate_nodal_measures(G, centroids):
 
     #==================================
     # Shortest path length
-    shortest_path = nx.shortest_path_length(G).values()
-    nodal_dict['shortest_path'] = np.array(shortest_path)
+    L = shortest_path(G).values()
+    nodal_dict['shortest_path'] = np.array(L)
     
     #==================================
     # Clustering
@@ -856,5 +858,56 @@ def calculate_nodal_measures(G, centroids):
     nodal_dict['total_dist'] = np.array(total_dist)
     nodal_dict['interhem_prop'] = np.array(interhem_prop)
     
+    #=================================
+    # Names
+    G = assign_node_names(G, aparc_names)
+    name_500 = nx.get_node_attributes(G, 'name_500').values()
+    name_DK = nx.get_node_attributes(G, 'name_DK').values()
+    hemi = nx.get_node_attributes(G, 'hemi').values()
+    nodal_dict['name_500'] = np.array(name_500)
+    nodal_dict['name_DK'] = np.array(name_DK)
+    nodal_dict['hemi'] = np.array(hemi)
+    
     return nodal_dict
+    
+def set_conn_types(G, G_edge=None, thresh=75):
+
+    if not G_edge:
+        G_edge = G
+        
+    # Figure out the degrees from the main graph (G)
+    deg = G.degree().values()
+
+    # Now calculate the threshold that you're going
+    # to use to designate a node as a hub or not
+    hub_thresh = np.percentile(deg, thresh)
+
+    # Loop through the edges of the G_edge graph and 
+    # assign the connection type as 2 (hub-hub),
+    # 1 (hub-peripheral; feeder) or 0 (peripheral-peripheral)
+    for node1, node2 in G_edge.edges():
+        if deg[node1] > hub_thresh and deg[node2] > hub_thresh:
+            G_edge.edge[node1][node2]['conn_type'] = 2
+        elif deg[node1] > hub_thresh or deg[node2] > hub_thresh:
+            G_edge.edge[node1][node2]['conn_type'] = 1
+        else:
+            G_edge.edge[node1][node2]['conn_type'] = 0
+            
+    # Return G_edge
+    return G_edge
+    
+def rich_edges_nodes(G, thresh=75):
+    # Figure out the degrees from the main graph (G)
+    deg = G.degree().values()
+
+    # Now calculate the threshold that you're going
+    # to use to designate a node as a hub or not
+    hub_thresh = np.percentile(deg, thresh)
+
+    G = set_conn_types(G, thresh=thresh)
+    
+    rich_edges = [ (node1, node2) for node1, node2 in G.edges() if G[node1][node2]['conn_type']==2 ]
+    rich_nodes = [ node for node in G.nodes() if deg[node] > hub_thresh ]
+    
+    return rich_edges, rich_nodes
     
