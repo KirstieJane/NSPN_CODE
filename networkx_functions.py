@@ -273,7 +273,7 @@ def assign_nodal_distance(G, centroids):
             # then the nodes are in different hemispheres.
             x1 = G.node[node1]['x']
             x2 = G.node[node2]['x']
-G =             
+            
             if x1*x2 > 0:
                 G.edge[node1][node2]['interhem'] = 0
             else:
