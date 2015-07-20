@@ -129,7 +129,7 @@ print 'The linear relationship between age and MT was significantly greater than
 #==================================================================================================
 # CHANGE TO THE COMPLETE DATA SET (EXCL_BAD)
 #==================================================================================================
-measure_dict = measure_dict_dict['DISCOVERY_EXCLBAD']
+measure_dict = measure_dict_dict['COMPLETE_EXCLBAD']
 
 print '================='
 deg = measure_dict['Degree_CT_covar_ones_all_COST_10']
@@ -158,11 +158,13 @@ m_delta_ct, c, r_delta_ct, p, sterr, p_perm_delta_ct = permutation_correlation(d
 m_mt_14, c, r_mt_14, p, sterr, p_perm_mt_14 = permutation_correlation(deg, mt_14)
 m_delta_mt, c, r_delta_mt, p, sterr, p_perm_delta_mt = permutation_correlation(deg, delta_mt)
 
-print "\n\nDegree was negatively correlated with rate of cortical shrinkage (r2 = {:2.2f}, P {}, β = {:2.3f}x10-33mm.year-1/degree; Figure 3Bii) although not with baseline cortical thickness at age 14 (r2 = {:2.2f}, P {}, β = {:2.3f}x10-33mm/degree; Figure 3Bi). Convergently, degree was negatively correlated with baseline MT at age 14 (r2 = {:2.2f}, P {}, β = {:2.3f}x10-3degree-1) and positively correlated with the rate of increase in MT over the course of adolescence (r2 = {:2.2f}, P {}, β = {:2.1f}x10-6year-1/degree). ".format(r_delta_ct**2, format_p(p_perm_delta_ct), m_delta_ct*1000, r_ct_14**2, format_p(p_perm_ct_14), m_ct_14*1000, r_mt_14**2, format_p(p_perm_mt_14), m_mt_14*1000,r_delta_mt**2, format_p(p_perm_delta_mt), m_delta_mt*1000000 )
+print "\n\nDegree was negatively correlated with rate of cortical shrinkage (r2 = {:2.2f}, P {}, β = {:2.3f}x10-3mm.year-1/degree; Figure 3Bii) although not with baseline cortical thickness at age 14 (r2 = {:2.2f}, P {}, β = {:2.3f}x10-33mm/degree; Figure 3Bi). Convergently, degree was negatively correlated with baseline MT at age 14 (r2 = {:2.2f}, P {}, β = {:2.3f}x10-3degree-1) and positively correlated with the rate of increase in MT over the course of adolescence (r2 = {:2.2f}, P {}, β = {:2.1f}x10-6year-1/degree). ".format(r_delta_ct**2, format_p(p_perm_delta_ct), m_delta_ct*1000, r_ct_14**2, format_p(p_perm_ct_14), m_ct_14*1000, r_mt_14**2, format_p(p_perm_mt_14), m_mt_14*1000,r_delta_mt**2, format_p(p_perm_delta_mt), m_delta_mt*1000000 )
+
+print "\n\nDegree was negatively correlated with rate of cortical shrinkage (r2 = {:2.2f}, P {}, β = {:2.3f}x10-3mm.year-1/degree; Figure 3Bii) although not with baseline cortical thickness at age 14 (r2 < {:2.2f}, P {}, β = {:2.3f}x10-3mm/degree; Figure 3Bi). Convergently, degree was positively correlated with the rate of increase in MT over the course of adolescence (r2 = {:2.2f}, P {}, β = {:2.2f}x10-6AU.year-1/degree; Figure 3Biv) but not correlated with baseline MT at age 14 (r2 < {:2.2f}, P {}, β = {:2.3f}x10-3AU/degree; Figure 3Biii)".format(r_delta_ct**2, format_p(p_perm_delta_ct), m_delta_ct*1000, r_ct_14**2, format_p(p_perm_ct_14), m_ct_14*1000, r_delta_mt**2, format_p(p_perm_delta_mt), m_delta_mt*1000000, r_mt_14**2, format_p(p_perm_mt_14), m_mt_14*1000 )
 
 
 print '================='
-for measure in [ 'Degree', 'PC', 'AverageDist' ]:
+for measure in [ 'Degree', 'PC', 'AverageDist', 'Clustering', 'Closeness' ]:
     print '\nMEASURE: {}'.format(measure)
     m = measure_dict['{}_CT_covar_ones_all_COST_10'.format(measure)]
     ve = np.array(measure_dict['von_economo'])
@@ -184,4 +186,54 @@ for measure in [ 'Degree', 'PC', 'AverageDist' ]:
 
     print '1: {:2.2f}, 2&3: {:2.2f}, 4&5: {:2.2f}'.format(m_ve1, m_ve23, m_ve45)
 
-    print 'As a corollary of these correlational results, there were significant differences of degree centrality and other network metrics between cortical lamination types (degree: F[{:1.0f}, {:1.0f}] = {:2.2f}, P {}; participation coefficient): granular isocortex (types 2 and 3) had higher degree centrality, participation coefficient and mean connection distance than agranular cortex (type 1) or koniocortex (type 5).'.format(dof_ve, dof_res, F, p, m_ve2, m_ve5)
+#==========================================================================
+print '================='
+
+for measure in [ 'von_economo', 'CT_all_slope_age_at14', 'CT_all_slope_age', 'MT_projfrac+030_all_slope_age_at14', 'MT_projfrac+030_all_slope_age' ]:
+    print '\nMEASURE: {}'.format(measure)
+
+    m = np.array(measure_dict[measure])
+    mod = np.array(measure_dict['Renumbered_Module_CT_covar_ones_all_COST_10'])
+
+    df = pd.DataFrame( { 'm' : m, 'mod' : mod })
+    formula = 'm ~ C(mod)'
+    model = smf.ols(formula, data=df).fit()
+    table = sm.stats.anova_lm(model, typ=2)
+    F = table.F['C(mod)']
+    dof_ve = table.df['C(mod)']
+    dof_res = table.df['Residual']
+    p = format_p(table['PR(>F)']['C(mod)'])
+
+    print table
+
+    m_mod1 = np.mean(m[mod==1])
+    m_mod2 = np.mean(m[mod==2])
+    m_mod3 = np.mean(m[mod==3])
+    m_mod4 = np.mean(m[mod==4])
+    m_mod5 = np.mean(m[mod==5])
+
+    print '1: {:2.2f}, 2: {:2.2f}, 3: {:2.2f}, 4: {:2.2f}, 5: {:2.2f}'.format(m_mod1, m_mod2, m_mod3, m_mod4, m_mod5)
+    
+    
+print '================='
+
+for measure in [ 'von_economo', 'CT_all_slope_age_at14', 'CT_all_slope_age', 'MT_projfrac+030_all_slope_age_at14', 'MT_projfrac+030_all_slope_age' ]:
+    print '\nMEASURE: {}'.format(measure)
+
+    m = np.array(measure_dict[measure])
+    
+    deg = np.copy(measure_dict['Degree_CT_covar_ones_all_COST_10'])
+    hub_thresh = np.percentile(deg, 75)
+    rc = np.zeros_like(deg)
+    rc[deg>hub_thresh] = 1    
+
+    df = pd.DataFrame( { 'm' : m, 'rc' : rc })
+    t, p = ttest_ind(df['m'].loc[df['rc']==0], df['m'].loc[df['rc']==1])
+    print t, p
+
+    m_rc0 = np.mean(m[rc==0])
+    m_rc1 = np.mean(m[rc==1])
+
+
+    print '0: {:2.2f}, 1: {:2.2f}'.format(m_rc0, m_rc1)
+    
