@@ -2303,6 +2303,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
     
     # Create the big figure
     big_fig, ax_list = plt.subplots(3,4, figsize=(40, 24), facecolor='white')
+    plt.subplots_adjust(hspace=0.5)
     
     #=========================================================================
     # Start by putting the high degree nodes in the top row
@@ -2333,6 +2334,11 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
                      '{}_projfrac+030_all_slope_age_at14'.format(mpm),
                      '{}_projfrac+030_all_slope_age'.format(mpm) ]
                          
+    marker_color_dict = get_von_economo_color_dict(measure_dict['von_economo'])
+    marker_shapes_dict = get_von_economo_shapes_dict(measure_dict['von_economo'])
+    marker_colors = [ marker_color_dict[ve] for ve in measure_dict['von_economo'] ]
+    marker_shapes = [ marker_shapes_dict[ve] for ve in measure_dict['von_economo'] ]
+    
     for i, measure in enumerate(measure_list):
 
         # Get the appropriate min, max and label values
@@ -2351,8 +2357,10 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
                         x_min=network_measure_min, x_max=network_measure_max,
                         y_min=measure_min,y_max=measure_max, 
                         color='k',
+                        marker_colors=marker_colors,
+                        marker_shapes=marker_shapes,
                         figure_name=figure_name)
-
+    
         ax_list[1,i] = pretty_scatter(measure_dict['{}_CT_covar_ones_all_COST_10'.format(network_measure)],
                                         measure_dict[measure], 
                                         x_label=x_label,
@@ -2360,6 +2368,8 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
                                         x_min=network_measure_min, x_max=network_measure_max,
                                         y_min=measure_min,y_max=measure_max, 
                                         color='k',
+                                        marker_colors=marker_colors,
+                                        marker_shapes=marker_shapes,
                                         ax=ax_list[1, i],
                                         figure=big_fig)    
 
@@ -2384,7 +2394,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
                             y_label=y_label, 
                             y_min=measure_min, y_max=measure_max, 
                             red_max=True,
-                            alpha=0.3,
+                            alpha=0,
                             figure_name=figure_name)
         
         ax_list[2, i] = von_economo_boxes(measure_dict, figures_dir, 
@@ -2393,7 +2403,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
                                             y_label=y_label, 
                                             y_min=measure_min, y_max=measure_max, 
                                             red_max=True,
-                                            alpha=0.3,
+                                            alpha=0,
                                             ax=ax_list[2, i],
                                             figure=big_fig)
                                     
@@ -2407,6 +2417,38 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
     # Nice tight layout
     big_fig.tight_layout()
 
+    # Place the A, B, C and i, ii, iii labels
+    let_list = [ 'A', 'B', 'C' ]
+    rom_list = [ 'i', 'ii', 'iii', 'iv' ]
+
+    # Put A in the top left corner
+    x_pos = ax_list[0,0].get_position().x0
+    y_pos = ax_list[0,0].get_position().y1
+    big_fig.text(x_pos-0.015, y_pos-0.02, 'A',
+                horizontalalignment='right',
+                verticalalignment='top',
+                fontsize=40,
+                weight='bold',
+                color='k')
+
+    # And the figure panel numbers for the second and third rows
+    for i, ax in enumerate(ax_list[1:,:].reshape(-1)):
+        x_pos = ax.get_position().x0
+        y_pos = ax.get_position().y1
+        
+        big_fig.text(x_pos-0.015, y_pos+0.03, '{}{}'.format(let_list[(i/4)+1], rom_list[i%4]),
+                    horizontalalignment='right',
+                    verticalalignment='top',
+                    fontsize=40,
+                    weight='bold',
+                    color='k')
+                    
+    # Save the figure
+    filename = os.path.join(figures_dir, 'New_Figure2.png')
+    big_fig.savefig(filename, bbox_inches=0, dpi=100)
+    
+    plt.close()
+    
     # Save the figure
     filename = os.path.join(figures_dir, 'New_Figure3_{}.png'.format(network_measure))
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
