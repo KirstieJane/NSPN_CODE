@@ -24,7 +24,7 @@ import matplotlib.patches as mpatches
 from networkx_functions import *
 from regional_correlation_functions import *
 
-def plot_rich_club(rc, rc_rand, ax=None, figure_name=None, x_max=200, y_max=1.2, color=sns.color_palette()[0]):
+def plot_rich_club(rc, rc_rand, ax=None, figure_name=None, x_max=200, y_max=1.2, color=sns.color_palette()[0], norm=False):
     '''
     Make a pretty plot of the rich club values per degree
     along with the rich club values you'd expect by chance
@@ -47,21 +47,32 @@ def plot_rich_club(rc, rc_rand, ax=None, figure_name=None, x_max=200, y_max=1.2,
     else:
         fig=None
     
-    # Plot the real rich club data
-    sns.tsplot(rc, color=color, ax=ax)
+    if not norm:
+        # Plot the real rich club data
+        sns.tsplot(rc, color=color, ax=ax)
+        
+        # Plot the random rich club data with confidence intervals error bars
+        sns.tsplot(rc_rand.T, err_style='ci_bars', color='grey', ci=95, ax=ax)
     
-    # Plot the random rich club data with confidence intervals error bars
-    sns.tsplot(rc_rand.T, err_style='ci_bars', color='grey', ci=95, ax=ax)
-    
+    else:
+        # Divide the real rich club by the averge of the
+        # randomised rich club to get a normalised curve
+        rc_norm = rc / rc_rand.T
+        sns.tsplot(rc_norm, err_style='ci_bars', color=color, ax=ax, ci=95)
+        
     # Fix the x and y axis limits
     ax.set_xlim((0, x_max))
     ax.set_ylim((0, y_max))
+    
     # Make sure there aren't too many bins!
     plt.locator_params(nbins=5)
     
     # Set the x and y axis labels
     ax.set_xlabel("Degree")
-    ax.set_ylabel("Rich Club")
+    if not norm:
+        ax.set_ylabel("Rich Club")
+    else:
+        ax.set_ylabel("Normalised Rich Club")
     
     # Despine because we all agree it looks better that way
     sns.despine()
