@@ -251,3 +251,26 @@ def create_pysurfer_command(roi_file,
     command = ' '.join(command_list)
 
     return command
+    
+    
+def renumber_modules(measure_dict):
+
+    module = measure_dict['Module_CT_covar_ones_all_COST_10']
+    ct_14 = measure_dict['CT_all_slope_age_at14']
+    
+    med_ct_dict = {}
+    mods = sorted(set(module))
+    for mod in mods:
+        med_ct14 = np.percentile(ct_14[module==mod], 50)
+        med_ct_dict[mod] = med_ct14
+        
+    new_mods = sorted(med_ct_dict, key=med_ct_dict.get)
+    
+    new_module = np.copy(module)
+    
+    for i, mod in enumerate(module):
+        new_module[i] = new_mods.index(mod) + 1
+        
+    measure_dict['Renumbered_Module_CT_covar_ones_all_COST_10'] = new_module
+    
+    return measure_dict
