@@ -1328,8 +1328,7 @@ def get_von_economo_color_dict(von_economo):
     Create a color dictionary for the von economo values you pass
     The color_list is hard coded at the moment... might change one day
     '''
-    #color_list = [ 'purple', 'blue', 'green', 'orange', 'yellow' ]
-    color_list = [ 'purple', 'green', 'orange' ]
+    color_list = [ 'purple', 'blue', 'green', 'orange', 'yellow' ]
     #color_list = [ '0.5', '0.6', '0.7', '0.8', '0.9' ]
     # You need to make it into a color dictionary
     color_dict={}
@@ -1592,7 +1591,7 @@ def add_cells_picture(figures_dir, big_fig):
     
     # Add an axis in the bottom left corner
     grid = gridspec.GridSpec(1, 1)
-    grid.update(left=0.34, right=0.49, top=0.47, bottom=0.1, wspace=0, hspace=0)
+    grid.update(left=0.36, right=0.51, top=0.47, bottom=0.1, wspace=0, hspace=0)
     ax = plt.Subplot(big_fig, grid[0])
     big_fig.add_subplot(ax)
 
@@ -1613,13 +1612,14 @@ def add_cells_picture(figures_dir, big_fig):
                     verticalalignment='center',
                     fontsize=25)
                   
+    '''
     ax.text(1.1, 0.5, 'Schematic of cortical laminae',
                     horizontalalignment='center',
                     verticalalignment='center',
                     fontsize=30, 
                     transform=ax.transAxes, 
                     rotation=270)
-                    
+    '''
     return big_fig
     
 
@@ -1630,7 +1630,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     sns.set_context("poster", font_scale=2)
 
     # Get the various min and max values:
-    min_max_dict = get_min_max_values()
+    min_max_dict = get_min_max_values(measure_dict)
     axis_label_dict = get_axis_label_dict()
     
     # Create the big figure
@@ -1840,8 +1840,8 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     pretty_scatter(measure_dict['age_scan'], measure_dict['CT_global_mean'], 
                     x_label=axis_label_dict['age_scan'], 
                     y_label=axis_label_dict['CT_global_mean'], 
-                    x_min=min_max_dict['age_min'], 
-                    x_max=min_max_dict['age_max'], 
+                    x_min=min_max_dict['age_scan_min'], 
+                    x_max=min_max_dict['age_scan_max'], 
                     y_min=min_max_dict['CT_global_mean_min'],
                     y_max=min_max_dict['CT_global_mean_max'], 
                     figure_name=figure_name,
@@ -1850,8 +1850,8 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     ax_list[0, 3] = pretty_scatter(measure_dict['age_scan'], measure_dict['CT_global_mean'], 
                                         x_label=axis_label_dict['age_scan'], 
                                         y_label=axis_label_dict['CT_global_mean'], 
-                                        x_min=min_max_dict['age_min'], 
-                                        x_max=min_max_dict['age_max'], 
+                                        x_min=min_max_dict['age_scan_min'], 
+                                        x_max=min_max_dict['age_scan_max'], 
                                         y_min=min_max_dict['CT_global_mean_min'],
                                         y_max=min_max_dict['CT_global_mean_max'], 
                                         color=color,
@@ -1893,8 +1893,8 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     pretty_scatter(measure_dict['age_scan'], measure_dict['{}_projfrac+030_global_mean'.format(mpm)], 
                     x_label=axis_label_dict['age_scan'], 
                     y_label=axis_label_dict['{}_projfrac+030_global_mean'.format(mpm)], 
-                    x_min=min_max_dict['age_min'], 
-                    x_max=min_max_dict['age_max'], 
+                    x_min=min_max_dict['age_scan_min'], 
+                    x_max=min_max_dict['age_scan_max'], 
                     y_min=min_max_dict['{}_projfrac+030_global_mean_min'.format(mpm)],
                     y_max=min_max_dict['{}_projfrac+030_global_mean_max'.format(mpm)], 
                     figure_name=figure_name,
@@ -1903,8 +1903,8 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     ax_list[2, 3] = pretty_scatter(measure_dict['age_scan'], measure_dict['{}_projfrac+030_global_mean'.format(mpm)], 
                                     x_label=axis_label_dict['age_scan'], 
                                     y_label=axis_label_dict['{}_projfrac+030_global_mean'.format(mpm)], 
-                                    x_min=min_max_dict['age_min'], 
-                                    x_max=min_max_dict['age_max'], 
+                                    x_min=min_max_dict['age_scan_min'], 
+                                    x_max=min_max_dict['age_scan_max'], 
                                     y_min=min_max_dict['{}_projfrac+030_global_mean_min'.format(mpm)],
                                     y_max=min_max_dict['{}_projfrac+030_global_mean_max'.format(mpm)], 
                                     color=color,
@@ -1994,7 +1994,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     sns.set_context("poster", font_scale=2)
 
     # Get the various min and max values:
-    min_max_dict = get_min_max_values()
+    min_max_dict = get_min_max_values(measure_dict)
     axis_label_dict = get_axis_label_dict()
     
     # Create the big figure
@@ -2039,8 +2039,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                     y_min=min_max_dict['{}_projfrac+030_all_slope_age_at14_min'.format(mpm)],
                     y_max=min_max_dict['{}_projfrac+030_all_slope_age_at14_max'.format(mpm)], 
                     color='k',
-                    marker_colors=marker_colors,
-                    marker_shapes=marker_shapes,
+                    marker='^',
                     figure_name=figure_name)
 
     top_ax_list[1] = pretty_scatter(measure_dict['CT_all_slope_age_at14'], 
@@ -2052,8 +2051,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                     y_min=min_max_dict['{}_projfrac+030_all_slope_age_at14_min'.format(mpm)],
                     y_max=min_max_dict['{}_projfrac+030_all_slope_age_at14_max'.format(mpm)], 
                     color='k',
-                    marker_colors=marker_colors,
-                    marker_shapes=marker_shapes,
+                    marker='^',
                     ax=top_ax_list[1],
                     figure=big_fig)    
                     
@@ -2069,8 +2067,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                     y_min=min_max_dict['{}_projfrac+030_all_slope_age_min'.format(mpm)],
                     y_max=min_max_dict['{}_projfrac+030_all_slope_age_max'.format(mpm)],  
                     color='k',
-                    marker_colors=marker_colors,
-                    marker_shapes=marker_shapes,
+                    marker='^',
                     figure_name=figure_name)
 
     top_ax_list[2] = pretty_scatter(measure_dict['CT_all_slope_age'], 
@@ -2081,8 +2078,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                     x_max=min_max_dict['CT_all_slope_age_max'],
                     y_min=min_max_dict['{}_projfrac+030_all_slope_age_min'.format(mpm)],
                     y_max=min_max_dict['{}_projfrac+030_all_slope_age_max'.format(mpm)],  
-                    marker_colors=marker_colors,
-                    marker_shapes=marker_shapes,
+                    marker='^',
                     color='k',
                     ax=top_ax_list[2],
                     figure=big_fig)    
@@ -2099,7 +2095,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     # First a space for the first violin plot on the far left
     grid = gridspec.GridSpec(1, 1)
-    grid.update(left=0.12, right=0.35, top=0.47, bottom=0.1, wspace=0, hspace=0)
+    grid.update(left=0.12, right=0.37, top=0.47, bottom=0.1, wspace=0, hspace=0)
     for g_loc in grid:
         violin_ax_list += [ plt.Subplot(big_fig, g_loc) ]
         big_fig.add_subplot(violin_ax_list[-1])
@@ -2258,7 +2254,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                 color='k')
                     
     # Add in the figure panel number for the cells schematic
-    big_fig.text(0.35, 0.5, 'Dii',
+    big_fig.text(0.37, 0.5, 'Dii',
                     horizontalalignment='left',
                     verticalalignment='top',
                     fontsize=40,
@@ -2277,7 +2273,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                     color='k')
                     
     # Save the figure
-    filename = os.path.join(figures_dir, 'New_Figure2.png')
+    filename = os.path.join(figures_dir, 'Figure2.png')
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
     
     plt.close()
@@ -2289,7 +2285,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
     sns.set_context("poster", font_scale=2)
 
     # Get the set values
-    min_max_dict = get_min_max_values()
+    min_max_dict = get_min_max_values(measure_dict)
     axis_label_dict = get_axis_label_dict()
     
     x_label = axis_label_dict[network_measure]
@@ -2319,19 +2315,14 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
     # Next put scatter plots of CT, deltaCT, MT and deltaMT by the network
     # measure you've chosen
     #=========================================================================
-    network_measure_min = min_max_dict['{}_min'.format(network_measure)]
-    network_measure_max = min_max_dict['{}_max'.format(network_measure)]
+    network_measure_min = min_max_dict['{}_CT_covar_ones_all_COST_10_min'.format(network_measure)]
+    network_measure_max = min_max_dict['{}_CT_covar_ones_all_COST_10_max'.format(network_measure)]
     
     measure_list = [ 'CT_all_slope_age_at14',
                      'CT_all_slope_age',
                      '{}_projfrac+030_all_slope_age_at14'.format(mpm),
                      '{}_projfrac+030_all_slope_age'.format(mpm) ]
                          
-    marker_color_dict = get_von_economo_color_dict(measure_dict['von_economo'])
-    marker_shapes_dict = get_von_economo_shapes_dict(measure_dict['von_economo'])
-    marker_colors = [ marker_color_dict[ve] for ve in measure_dict['von_economo'] ]
-    marker_shapes = [ marker_shapes_dict[ve] for ve in measure_dict['von_economo'] ]
-    
     for i, measure in enumerate(measure_list):
 
         # Get the appropriate min, max and label values
@@ -2350,8 +2341,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
                         x_min=network_measure_min, x_max=network_measure_max,
                         y_min=measure_min,y_max=measure_max, 
                         color='k',
-                        marker_colors=marker_colors,
-                        marker_shapes=marker_shapes,
+                        marker='^',
                         figure_name=figure_name)
     
         ax_list[1,i] = pretty_scatter(measure_dict['{}_CT_covar_ones_all_COST_10'.format(network_measure)],
@@ -2361,8 +2351,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
                                         x_min=network_measure_min, x_max=network_measure_max,
                                         y_min=measure_min,y_max=measure_max, 
                                         color='k',
-                                        marker_colors=marker_colors,
-                                        marker_shapes=marker_shapes,
+                                        marker='^',
                                         ax=ax_list[1, i],
                                         figure=big_fig)    
 
@@ -2374,8 +2363,8 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
     
     for i, measure in enumerate(measure_list):
         
-        measure_min = min_max_dict['{}_min'.format(measure)]
-        measure_max = min_max_dict['{}_max'.format(measure)]
+        measure_min = min_max_dict['{}_CT_covar_ones_all_COST_10_min'.format(measure)]
+        measure_max = min_max_dict['{}_CT_covar_ones_all_COST_10_max'.format(measure)]
         y_label = axis_label_dict[measure]
         
         figure_name = os.path.join(figures_dir,
@@ -2437,7 +2426,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
                     color='k')
 
     # Save the figure
-    filename = os.path.join(figures_dir, 'New_Figure3_{}.png'.format(network_measure))
+    filename = os.path.join(figures_dir, 'Figure3_{}.png'.format(network_measure))
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
 
     plt.close()
@@ -2449,11 +2438,8 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT'):
     sns.set(style="white")
     sns.set_context("poster", font_scale=2)
 
-    # Renumber the modules
-    measure_dict = renumber_modules(measure_dict)
-    
     # Get the set values
-    min_max_dict = get_min_max_values()
+    min_max_dict = get_min_max_values(measure_dict)
     axis_label_dict = get_axis_label_dict()
     
     # Create the big figure
@@ -2465,21 +2451,23 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT'):
     # classes
     #=========================================================================
     G = graph_dict['CT_covar_ones_all_COST_10']
-    rich_edges, rich_nodes = rich_edges_nodes(G, thresh=97)
+    G_02 = graph_dict['CT_covar_ones_all_COST_02']
+    
+    rich_edges, rich_nodes = rich_edges_nodes(G, thresh=85)
     
     grid = gridspec.GridSpec(1, 2)
     grid.update(left=0.03, right=0.97, top=0.97, bottom=0.7, wspace=0.02, hspace=0)
     ax = plt.Subplot(big_fig, grid[0])
     big_fig.add_subplot(ax)
     
-    ax = plot_anatomical_network(G, measure_dict, 
+    ax = plot_anatomical_network(G_02, measure_dict, 
                                     measure='renum_module',
                                     orientation='sagittal',
+                                    edge_width=1,
                                     cmap_name='jet_r',
-                                    edge_list = rich_edges, 
                                     node_size=800,
                                     ax=ax)
-    ax = plot_anatomical_network(G, measure_dict, 
+    ax = plot_anatomical_network(G_02, measure_dict, 
                                     measure='renum_module',
                                     orientation='sagittal',
                                     cmap_name='jet_r',
@@ -2492,14 +2480,14 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT'):
     ax = plt.Subplot(big_fig, grid[1])
     big_fig.add_subplot(ax)
     
-    ax = plot_anatomical_network(G, measure_dict, 
+    ax = plot_anatomical_network(G_02, measure_dict, 
                                     measure='von_economo',
                                     orientation='sagittal',
                                     cmap_name='von_economo',
-                                    edge_list = rich_edges, 
+                                    edge_width=0.5,
                                     node_size=800,
                                     ax=ax)
-    ax = plot_anatomical_network(G, measure_dict, 
+    ax = plot_anatomical_network(G_02, measure_dict, 
                                     measure='von_economo',
                                     orientation='sagittal',
                                     cmap_name='von_economo',
@@ -2521,8 +2509,7 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT'):
     ax = plot_circular_network(G, measure_dict, 
                                     sort_measure='renum_module',
                                     sort_cmap_name='jet_r',
-                                    wedge_measure='von_economo',
-                                    wedge_cmap_name='von_economo',
+                                    show_wedge=False,
                                     edge_list = rich_edges,
                                     node_size=1000,
                                     ax=ax)
@@ -2566,7 +2553,7 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT'):
     # split up by the rich club nodes
     #=========================================================================    
     deg = np.copy(measure_dict['Degree_CT_covar_ones_all_COST_10'])
-    hub_thresh = np.percentile(deg, 97)
+    hub_thresh = np.percentile(deg, 85)
     rc = np.zeros_like(deg)
     rc[deg>hub_thresh] = 1
     
@@ -2619,8 +2606,26 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT'):
 
     plt.close()
     
+def calc_min_max(x, pad=0.05):
+    '''
+    Find min and max values such that
+    all the data lies within 90% of
+    of the axis range
+    '''
+    try:
+        r = np.max(x) - np.min(x)
+        if r > 0:
+            x_min = np.min(x) - pad * r
+            x_max = np.max(x) + pad * r
+        else:
+            x_min = np.mean(x)
+            x_max = np.mean(x)
+    except:
+        x_min = np.nan
+        x_max = np.nan
+    return x_min, x_max
     
-def get_min_max_values():
+def get_min_max_values(measure_dict):
     '''
     These are the appropriate min and max values for the 
     discovery cohort
@@ -2628,6 +2633,27 @@ def get_min_max_values():
     
     min_max_dict = {}
         
+    for measure_name, measure_data in measure_dict.items():
+        measure_min, measure_max = calc_min_max(measure_data, pad=0.05)
+        min_max_dict['{}_min'.format(measure_name)] = measure_min
+        min_max_dict['{}_max'.format(measure_name)] = measure_max
+    
+    min_max_dict['CT_all_slope_age_CBAR_min'] = -0.035
+    min_max_dict['CT_all_slope_age_CBAR_max'] = -0.015
+    min_max_dict['CT_all_slope_age_at14_CBAR_min'] = 2.5
+    min_max_dict['CT_all_slope_age_at14_CBAR_max'] = 3.5
+    min_max_dict['MT_projfrac+030_all_slope_age_CBAR_min'] = 0.005
+    min_max_dict['MT_projfrac+030_all_slope_age_CBAR_max'] = 0.01
+    min_max_dict['MT_projfrac+030_all_slope_age_at14_CBAR_min'] = 0.8
+    min_max_dict['MT_projfrac+030_all_slope_age_at14_CBAR_max'] = 1.0
+    min_max_dict['MT_all_mean_min'] = 0.4
+    min_max_dict['MT_all_mean_max'] = 1.8 
+    min_max_dict['MT_all_slope_age_min'] = -0.01
+    min_max_dict['MT_all_slope_age_max'] = 0.016
+    min_max_dict['MT_all_slope_ct_min'] = -5.5
+    min_max_dict['MT_all_slope_ct_max'] = 2.2 
+    
+    '''
     # Set the various min and max values:
     min_max_dict['age_min'] = 14
     min_max_dict['age_max'] = 25
@@ -2635,28 +2661,14 @@ def get_min_max_values():
     min_max_dict['CT_global_mean_max'] = 3.0
     min_max_dict['CT_all_slope_age_at14_min'] = 1.9
     min_max_dict['CT_all_slope_age_at14_max'] = 4.0    
-    min_max_dict['CT_all_slope_age_at14_CBAR_min'] = 2.5
-    min_max_dict['CT_all_slope_age_at14_CBAR_max'] = 3.5
     min_max_dict['CT_all_slope_age_min'] = -0.055
     min_max_dict['CT_all_slope_age_max'] = 0.015
-    min_max_dict['CT_all_slope_age_CBAR_min'] = -0.035
-    min_max_dict['CT_all_slope_age_CBAR_max'] = -0.015
     min_max_dict['MT_projfrac+030_global_mean_min'] = 0.8
     min_max_dict['MT_projfrac+030_global_mean_max'] = 1.05
     min_max_dict['MT_projfrac+030_all_slope_age_at14_min'] = 0.75
     min_max_dict['MT_projfrac+030_all_slope_age_at14_max'] = 1.1
-    min_max_dict['MT_projfrac+030_all_slope_age_at14_CBAR_min'] = 0.8
-    min_max_dict['MT_projfrac+030_all_slope_age_at14_CBAR_max'] = 1.0
     min_max_dict['MT_projfrac+030_all_slope_age_min'] = -0.004
     min_max_dict['MT_projfrac+030_all_slope_age_max'] = 0.016
-    min_max_dict['MT_projfrac+030_all_slope_age_CBAR_min'] = 0.005
-    min_max_dict['MT_projfrac+030_all_slope_age_CBAR_max'] = 0.01
-    min_max_dict['MT_all_mean_min'] = 0.4
-    min_max_dict['MT_all_mean_max'] = 1.8 
-    min_max_dict['MT_all_slope_age_min'] = -0.01
-    min_max_dict['MT_all_slope_age_max'] = 0.016
-    min_max_dict['MT_all_slope_ct_min'] = -5.5
-    min_max_dict['MT_all_slope_ct_max'] = 2.2 
     min_max_dict['Degree_min'] = 0
     min_max_dict['Degree_max'] = 110
     min_max_dict['PC_min'] = 0
@@ -2671,6 +2683,8 @@ def get_min_max_values():
     min_max_dict['von_economo_max'] = 5.5
     min_max_dict['InterhemProp_min'] = 0.0
     min_max_dict['InterhemProp_max'] = 1.0
+    
+    '''
     return min_max_dict
     
 def get_axis_label_dict():
@@ -2775,7 +2789,7 @@ def setup_color_list(df, cmap_name='jet', measure='module'):
 
     return colors_list
     
-def plot_circular_network(G, measure_dict, sort_measure='module', wedge_measure='von_economo', sort_cmap_name='jet_r', wedge_cmap_name='von_economo', node_size=500, edge_list=None, edge_color='k', edge_width=0.2, figure=None, ax=None):
+def plot_circular_network(G, measure_dict, sort_measure='module', wedge_measure='von_economo', sort_cmap_name='jet_r', wedge_cmap_name='von_economo', node_size=500, edge_list=None, edge_color='k', edge_width=0.2, figure=None, ax=None, show_wedge=False):
 
     # Set the seaborn context and style
     sns.set(style="white")
@@ -2831,10 +2845,13 @@ def plot_circular_network(G, measure_dict, sort_measure='module', wedge_measure=
                     with_labels=False, 
                     ax=ax)
     
-    ax = add_wedge(df, theta_dict, wedge_colors_list, wedge_measure=wedge_measure, ax=ax)
-    
-    ax.set_xlim(-0.75, 0.75)
-    ax.set_ylim(-0.75, 0.75)
+    if show_wedge:
+        ax = add_wedge(df, theta_dict, wedge_colors_list, wedge_measure=wedge_measure, ax=ax)
+        ax.set_xlim(-0.75, 0.75)
+        ax.set_ylim(-0.75, 0.75)
+    else:
+        ax.set_xlim(-0.6, 0.6)
+        ax.set_ylim(-0.6, 0.6)
     ax.axis('off')
 
     return ax
