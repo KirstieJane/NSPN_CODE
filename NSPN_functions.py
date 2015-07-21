@@ -255,6 +255,8 @@ def create_pysurfer_command(roi_file,
     
 def renumber_modules(measure_dict):
 
+    import numpy as np
+    
     module = measure_dict['Module_CT_covar_ones_all_COST_10']
     ct_14 = measure_dict['CT_all_slope_age_at14']
     
