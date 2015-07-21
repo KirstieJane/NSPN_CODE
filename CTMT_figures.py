@@ -1868,6 +1868,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                     x_max=min_max_dict['CT_all_slope_age_at14_max'], 
                     y_min=min_max_dict['CT_all_slope_age_min'],
                     y_max=min_max_dict['CT_all_slope_age_max'], 
+                    marker='^',
                     figure_name=figure_name)
                             
     ax_list[1, 3] = pretty_scatter(measure_dict['CT_all_slope_age_at14'], measure_dict['CT_all_slope_age'], 
@@ -1877,6 +1878,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                                         x_max=min_max_dict['CT_all_slope_age_at14_max'], 
                                         y_min=min_max_dict['CT_all_slope_age_min'],
                                         y_max=min_max_dict['CT_all_slope_age_max'], 
+                                        marker='^',
                                         ax=ax_list[1, 3],
                                         figure=big_fig)            
                                         
@@ -1920,6 +1922,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                     x_max=min_max_dict['{}_projfrac+030_all_slope_age_at14_max'.format(mpm)], 
                     y_min=min_max_dict['{}_projfrac+030_all_slope_age_min'.format(mpm)],
                     y_max=min_max_dict['{}_projfrac+030_all_slope_age_max'.format(mpm)], 
+                    marker='^',
                     figure_name=figure_name)
                             
     ax_list[3, 3] = pretty_scatter(measure_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)],
@@ -1930,6 +1933,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                                         x_max=min_max_dict['{}_projfrac+030_all_slope_age_at14_max'.format(mpm)], 
                                         y_min=min_max_dict['{}_projfrac+030_all_slope_age_min'.format(mpm)],
                                         y_max=min_max_dict['{}_projfrac+030_all_slope_age_max'.format(mpm)], 
+                                        marker='^',
                                         ax=ax_list[3, 3],
                                         figure=big_fig)    
                                         
