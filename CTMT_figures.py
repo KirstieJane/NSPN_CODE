@@ -2445,13 +2445,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='
                     fontsize=40,
                     weight='bold',
                     color='k')
-                    
-    # Save the figure
-    filename = os.path.join(figures_dir, 'New_Figure2.png')
-    big_fig.savefig(filename, bbox_inches=0, dpi=100)
-    
-    plt.close()
-    
+
     # Save the figure
     filename = os.path.join(figures_dir, 'New_Figure3_{}.png'.format(network_measure))
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
