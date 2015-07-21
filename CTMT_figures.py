@@ -338,7 +338,7 @@ def plot_sagittal_network(G,
     else:
         return ax
 
-def pretty_scatter(x, y, x_label='x', y_label='y', x_max=None, x_min=None, y_max=None, y_min=None, figure_name=None, ax=None, figure=None, color='k', marker_colors=None, marker_shapes=None, marker_size=100):
+def pretty_scatter(x, y, x_label='x', y_label='y', x_max=None, x_min=None, y_max=None, y_min=None, figure_name=None, ax=None, figure=None, color='k', marker_colors=None, marker_shapes=None, marker_size=100, marker='o'):
     '''
     This function creates a scatter plot with a regression line
     for the y variable against the degrees of graph G
@@ -368,7 +368,7 @@ def pretty_scatter(x, y, x_label='x', y_label='y', x_max=None, x_min=None, y_max
         
     # Create a marker colors list if not given
     if not marker_shapes:
-        marker_shapes = [ 'o' ] * len(df[x_label])
+        marker_shapes = [ marker ] * len(df[x_label])
     df['marker_shapes'] = marker_shapes
     df.sort(columns='marker_shapes', inplace=True)
         
@@ -1328,7 +1328,8 @@ def get_von_economo_color_dict(von_economo):
     Create a color dictionary for the von economo values you pass
     The color_list is hard coded at the moment... might change one day
     '''
-    color_list = [ 'purple', 'blue', 'green', 'orange', 'yellow' ]
+    #color_list = [ 'purple', 'blue', 'green', 'orange', 'yellow' ]
+    color_list = [ 'purple', 'green', 'orange' ]
     #color_list = [ '0.5', '0.6', '0.7', '0.8', '0.9' ]
     # You need to make it into a color dictionary
     color_dict={}
@@ -1727,7 +1728,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     figure_name = os.path.join(figures_dir, 'VonEconomo_CT_all_slope_age_at14.png')
     
     von_economo_boxes(measure_dict, figures_dir, 
-                        measure_dict['von_economo_3'], 
+                        measure_dict['von_economo'], 
                         measure='CT_all_slope_age_at14',
                         y_label=axis_label_dict['CT_all_slope_age_at14'], 
                         y_min=min_max_dict['CT_all_slope_age_at14_min'], 
@@ -1738,7 +1739,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                         figure_name=figure_name)
     
     ax_list[0, 2] = von_economo_boxes(measure_dict, figures_dir, 
-                                        measure_dict['von_economo_3'], 
+                                        measure_dict['von_economo'], 
                                         measure='CT_all_slope_age_at14',
                                         y_label=axis_label_dict['CT_all_slope_age_at14'], 
                                         y_min=min_max_dict['CT_all_slope_age_at14_min'], 
@@ -1753,7 +1754,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     figure_name = os.path.join(figures_dir, 'VonEconomo_CT_all_slope_age.png')
     
     von_economo_boxes(measure_dict, figures_dir, 
-                        measure_dict['von_economo_3'], 
+                        measure_dict['von_economo'], 
                         measure='CT_all_slope_age',
                         y_label=axis_label_dict['CT_all_slope_age'], 
                         y_min=min_max_dict['CT_all_slope_age_min'], 
@@ -1764,7 +1765,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                         figure_name=figure_name)
     
     ax_list[1, 2] = von_economo_boxes(measure_dict, figures_dir, 
-                                        measure_dict['von_economo_3'], 
+                                        measure_dict['von_economo'], 
                                         measure='CT_all_slope_age',
                                         y_label=axis_label_dict['CT_all_slope_age'], 
                                         y_min=min_max_dict['CT_all_slope_age_min'], 
@@ -1780,7 +1781,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                                 'VonEconomo_{}_projfrac+030_all_slope_age_at14.png'.format(mpm))
     
     von_economo_boxes(measure_dict, figures_dir, 
-                        measure_dict['von_economo_3'], 
+                        measure_dict['von_economo'], 
                         measure='{}_projfrac+030_all_slope_age_at14'.format(mpm),
                         y_label=axis_label_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)], 
                         y_min=min_max_dict['{}_projfrac+030_all_slope_age_at14_min'.format(mpm)], 
@@ -1791,7 +1792,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                         figure_name=figure_name)
     
     ax_list[2, 2] = von_economo_boxes(measure_dict, figures_dir, 
-                                        measure_dict['von_economo_3'], 
+                                        measure_dict['von_economo'], 
                                         measure='{}_projfrac+030_all_slope_age_at14'.format(mpm),
                                         y_label=axis_label_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)], 
                                         y_min=min_max_dict['{}_projfrac+030_all_slope_age_at14_min'.format(mpm)], 
@@ -1807,7 +1808,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                                 'VonEconomo_{}_projfrac+030_all_slope_age.png'.format(mpm))
     
     von_economo_boxes(measure_dict, figures_dir, 
-                        measure_dict['von_economo_3'], 
+                        measure_dict['von_economo'], 
                         measure='{}_projfrac+030_all_slope_age'.format(mpm),
                         y_label=axis_label_dict['{}_projfrac+030_all_slope_age'.format(mpm)], 
                         y_min=min_max_dict['{}_projfrac+030_all_slope_age_min'.format(mpm)], 
@@ -1818,7 +1819,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                         figure_name=figure_name)
     
     ax_list[3, 2] = von_economo_boxes(measure_dict, figures_dir, 
-                                        measure_dict['von_economo_3'], 
+                                        measure_dict['von_economo'], 
                                         measure='{}_projfrac+030_all_slope_age'.format(mpm),
                                         y_label=axis_label_dict['{}_projfrac+030_all_slope_age'.format(mpm)], 
                                         y_min=min_max_dict['{}_projfrac+030_all_slope_age_min'.format(mpm)], 
@@ -1844,8 +1845,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                     y_min=min_max_dict['CT_global_mean_min'],
                     y_max=min_max_dict['CT_global_mean_max'], 
                     figure_name=figure_name,
-                    color=color,
-                    marker_size=100)
+                    color=color)
                             
     ax_list[0, 3] = pretty_scatter(measure_dict['age_scan'], measure_dict['CT_global_mean'], 
                                         x_label=axis_label_dict['age_scan'], 
@@ -1856,16 +1856,10 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                                         y_max=min_max_dict['CT_global_mean_max'], 
                                         color=color,
                                         ax=ax_list[0, 3],
-                                        figure=big_fig,
-                                        marker_size=100)
+                                        figure=big_fig)
 
     #==== CORRELATE CHANGE IN CT WITH CT AT 14 =============================
     figure_name = os.path.join(figures_dir, 'SlopevsInt_CT_all_slope_age.png')
-        
-    marker_color_dict = get_von_economo_color_dict(measure_dict['von_economo'])
-    marker_shapes_dict = get_von_economo_shapes_dict(measure_dict['von_economo'])
-    marker_colors = [ marker_color_dict[ve] for ve in measure_dict['von_economo'] ]
-    marker_shapes = [ marker_shapes_dict[ve] for ve in measure_dict['von_economo'] ]
 
     pretty_scatter(measure_dict['CT_all_slope_age_at14'], measure_dict['CT_all_slope_age'], 
                     x_label=axis_label_dict['CT_all_slope_age_at14'], 
@@ -1874,10 +1868,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                     x_max=min_max_dict['CT_all_slope_age_at14_max'], 
                     y_min=min_max_dict['CT_all_slope_age_min'],
                     y_max=min_max_dict['CT_all_slope_age_max'], 
-                    marker_colors = marker_colors,
-                    marker_shapes = marker_shapes,
-                    figure_name=figure_name,
-                    marker_size=100)
+                    figure_name=figure_name)
                             
     ax_list[1, 3] = pretty_scatter(measure_dict['CT_all_slope_age_at14'], measure_dict['CT_all_slope_age'], 
                                         x_label=axis_label_dict['CT_all_slope_age_at14'], 
@@ -1886,11 +1877,8 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                                         x_max=min_max_dict['CT_all_slope_age_at14_max'], 
                                         y_min=min_max_dict['CT_all_slope_age_min'],
                                         y_max=min_max_dict['CT_all_slope_age_max'], 
-                                        marker_colors = marker_colors,
-                                        marker_shapes = marker_shapes,
                                         ax=ax_list[1, 3],
-                                        figure=big_fig,
-                                        marker_size=100)            
+                                        figure=big_fig)            
                                         
     #==== CORRELATE GLOBAL MT(70) WITH AGE =============================
     figure_name = os.path.join(figures_dir, 
@@ -1908,8 +1896,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                     y_min=min_max_dict['{}_projfrac+030_global_mean_min'.format(mpm)],
                     y_max=min_max_dict['{}_projfrac+030_global_mean_max'.format(mpm)], 
                     figure_name=figure_name,
-                    color=color,
-                    marker_size=100)
+                    color=color)
                             
     ax_list[2, 3] = pretty_scatter(measure_dict['age_scan'], measure_dict['{}_projfrac+030_global_mean'.format(mpm)], 
                                     x_label=axis_label_dict['age_scan'], 
@@ -1920,17 +1907,11 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                                     y_max=min_max_dict['{}_projfrac+030_global_mean_max'.format(mpm)], 
                                     color=color,
                                     ax=ax_list[2, 3],
-                                    figure=big_fig,
-                                    marker_size=100)
+                                    figure=big_fig)
     
     #==== CORRELATE CHANGE IN MT WITH MT AT 14 =============================
     figure_name = os.path.join(figures_dir, 'SlopevsInt_{}_projfrac+030_all_slope_age.png'.format(mpm))
         
-    marker_color_dict = get_von_economo_color_dict(measure_dict['von_economo'])
-    marker_shapes_dict = get_von_economo_shapes_dict(measure_dict['von_economo'])
-    marker_colors = [ marker_color_dict[ve] for ve in measure_dict['von_economo'] ]
-    marker_shapes = [ marker_shapes_dict[ve] for ve in measure_dict['von_economo'] ]
-
     pretty_scatter(measure_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)],
                     measure_dict['{}_projfrac+030_all_slope_age'.format(mpm)], 
                     x_label=axis_label_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)], 
@@ -1939,10 +1920,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                     x_max=min_max_dict['{}_projfrac+030_all_slope_age_at14_max'.format(mpm)], 
                     y_min=min_max_dict['{}_projfrac+030_all_slope_age_min'.format(mpm)],
                     y_max=min_max_dict['{}_projfrac+030_all_slope_age_max'.format(mpm)], 
-                    marker_colors = marker_colors,
-                    marker_shapes = marker_shapes,
-                    figure_name=figure_name,
-                    marker_size=100)
+                    figure_name=figure_name)
                             
     ax_list[3, 3] = pretty_scatter(measure_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)],
                                         measure_dict['{}_projfrac+030_all_slope_age'.format(mpm)], 
@@ -1952,11 +1930,8 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                                         x_max=min_max_dict['{}_projfrac+030_all_slope_age_at14_max'.format(mpm)], 
                                         y_min=min_max_dict['{}_projfrac+030_all_slope_age_min'.format(mpm)],
                                         y_max=min_max_dict['{}_projfrac+030_all_slope_age_max'.format(mpm)], 
-                                        marker_colors = marker_colors,
-                                        marker_shapes = marker_shapes,
                                         ax=ax_list[3, 3],
-                                        figure=big_fig,
-                                        marker_size=100)    
+                                        figure=big_fig)    
                                         
     # Allign the y labels for each column    
     for ax in ax_list[:,:].reshape(-1):
@@ -2002,7 +1977,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     big_fig.tight_layout()
     
     # Save the figure
-    filename = os.path.join(figures_dir, 'New_Figure1.png')
+    filename = os.path.join(figures_dir, 'Figure1.png')
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
     
     plt.close()
@@ -2470,6 +2445,9 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT'):
     sns.set(style="white")
     sns.set_context("poster", font_scale=2)
 
+    # Renumber the modules
+    measure_dict = renumber_modules(measure_dict)
+    
     # Get the set values
     min_max_dict = get_min_max_values()
     axis_label_dict = get_axis_label_dict()
@@ -2483,7 +2461,7 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT'):
     # classes
     #=========================================================================
     G = graph_dict['CT_covar_ones_all_COST_10']
-    rich_edges, rich_nodes = rich_edges_nodes(G, thresh=75)
+    rich_edges, rich_nodes = rich_edges_nodes(G, thresh=97)
     
     grid = gridspec.GridSpec(1, 2)
     grid.update(left=0.03, right=0.97, top=0.97, bottom=0.7, wspace=0.02, hspace=0)
@@ -2584,7 +2562,7 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT'):
     # split up by the rich club nodes
     #=========================================================================    
     deg = np.copy(measure_dict['Degree_CT_covar_ones_all_COST_10'])
-    hub_thresh = np.percentile(deg, 75)
+    hub_thresh = np.percentile(deg, 97)
     rc = np.zeros_like(deg)
     rc[deg>hub_thresh] = 1
     
@@ -3016,25 +2994,5 @@ def rich_edges_nodes(G, thresh=75):
     
     return rich_edges, rich_nodes
     
-def renumber_modules(measure_dict):
 
-    module = measure_dict['Module_CT_covar_ones_all_COST_10']
-    ct_14 = measure_dict['CT_all_slope_age_at14']
-    
-    med_ct_dict = {}
-    mods = sorted(set(module))
-    for mod in mods:
-        med_ct14 = np.percentile(ct_14[module==mod], 50)
-        med_ct_dict[mod] = med_ct14
-        
-    new_mods = sorted(med_ct_dict, key=med_ct_dict.get)
-    
-    new_module = np.copy(module)
-    
-    for i, mod in enumerate(module):
-        new_module[i] = new_mods.index(mod) + 1
-        
-    measure_dict['Renumbered_Module_CT_covar_ones_all_COST_10'] = new_module
-    
-    return measure_dict
     
