@@ -32,6 +32,10 @@ if not os.path.isfile(aparc_cort_filename):
     print '    eg: making_synthetic_data.py /home/kw401/UCHANGE/INTERIM_ANALYSIS/SUB_DATA/10736/SURFER/MRI0/'
     sys.exit()
 
+# If the output file already exists then you don't have to overwrite it
+if os.path.isfile(synth_filename):
+    sys.exit()
+    
 # Load the parcellation and MT files
 parc_img = nib.load(aparc_filename)
 parc_cort_img = nib.load(aparc_cort_filename)
@@ -48,19 +52,6 @@ MT_data = MT_img.get_data()
 
 # Create a copy of the MT_data as the synth_data
 synth_data = np.zeros_like(MT_data)
-
-# Figure out the white matter means from the real data
-wm_mean = MT_data[(parc_data==41) + (parc_data==2)].mean()
-wm_std = MT_data[(parc_data==41) + (parc_data==2)].std()
-
-# Assign white matter voxels to have a random value from the distribution
-# defined by their white matter mean and standard deviations
-synth_data[parc_data==41] = np.random.normal(wm_mean, wm_std, size=parc_data[parc_data==41].shape)
-synth_data[parc_data==2] = np.random.normal(wm_mean, wm_std, size=parc_data[parc_data==2].shape)
-synth_data[(parc_data>200) & (parc_data<250)] = np.random.normal(wm_mean, 
-                                                                    wm_std, 
-                                                                    size=parc_data[(parc_data>200)
-                                                                                    & (parc_data<250)].shape)
 
 # Loop through the different parcellations, assign the 
 # appropriate voxels from the MT map to the synth_data
