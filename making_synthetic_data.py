@@ -34,6 +34,7 @@ if not os.path.isfile(aparc_cort_filename):
 
 # If the output file already exists then you don't have to overwrite it
 if os.path.isfile(synth_filename):
+    print 'Data already exists - exiting. Delete {} if you want to overwrite it'.format(synth_filename)
     sys.exit()
     
 # Load the parcellation and MT files
@@ -56,8 +57,8 @@ synth_data = np.zeros_like(MT_data)
 # Loop through the different parcellations, assign the 
 # appropriate voxels from the MT map to the synth_data
 # and shuffle the voxel values within each region
+print 'Calculating synthetic data for each parcel'
 for i in range(1,309):
-    print 'Calculating synthetic data for each parcel'
     # cort
     synth_data[parc_cort_data==i] = MT_data[parc_cort_data==i]
     x = synth_data[parc_cort_data==i]
