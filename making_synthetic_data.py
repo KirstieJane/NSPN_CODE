@@ -57,7 +57,7 @@ synth_data = np.zeros_like(MT_data)
 # appropriate voxels from the MT map to the synth_data
 # and shuffle the voxel values within each region
 for i in range(1,309):
-    print i
+    print 'Calculating synthetic data for each parcel'
     # cort
     synth_data[parc_cort_data==i] = MT_data[parc_cort_data==i]
     x = synth_data[parc_cort_data==i]
