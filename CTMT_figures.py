@@ -2278,7 +2278,113 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     plt.close()
     
-def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='Degree'):
+def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
+    # Set the seaborn context and style
+    sns.set(style="white")
+    sns.set_context("poster", font_scale=2)
+
+    # Get the set values
+    min_max_dict = get_min_max_values(measure_dict)
+    axis_label_dict = get_axis_label_dict()
+
+    # Create the big figure
+    big_fig, big_ax = plt.subplots(figsize=(30, 39), facecolor='white')
+    big_ax.axis('off')
+    # Set the list of network measures we care about for this figure
+    network_measures_list = [ 'Degree', 'Closeness', 'AverageDist' ]
+    
+    # Loop through each network measure
+    for i, network_measure in enumerate(network_measures_list):
+    
+        #=========================================================================
+        # Put the four hor brains in one row
+        #=========================================================================
+        f_list = [ os.path.join(results_dir, 'PNGS',
+                                    '{}_CT_covar_ones_all_COST_10_lh_pial_lateral.png'.format(network_measure)),
+                    os.path.join(results_dir, 'PNGS', 
+                                    '{}_CT_covar_ones_all_COST_10_lh_pial_medial.png'.format(network_measure)),
+                    os.path.join(results_dir, 'PNGS', 
+                                    '{}_CT_covar_ones_all_COST_10_rh_pial_medial.png'.format(network_measure)),
+                    os.path.join(results_dir, 'PNGS', 
+                                    '{}_CT_covar_ones_all_COST_10_rh_pial_lateral.png'.format(network_measure)) ]
+
+        grid = gridspec.GridSpec(1, 4)
+        bottom = (1 - ((5*i)+2)/ 15.0 ) -0.01
+        top = (1 - (5*i)/15.0) -0.01
+        print 'BRAINS: bottom: {:2.2f}, top: {:2.2f}'.format(bottom, top)
+        grid.update(left=0, right=1, bottom=bottom, top=top, wspace=0, hspace=0)
+
+        big_fig = add_four_hor_brains(grid, f_list, big_fig)
+        
+        #=========================================================================
+        # Next put von economo box plots for this graph measure in the 
+        # first column of the next row
+        #=========================================================================
+        network_measure_min = min_max_dict['{}_CT_covar_ones_all_COST_10_min'.format(network_measure)]
+        network_measure_max = min_max_dict['{}_CT_covar_ones_all_COST_10_max'.format(network_measure)]
+        y_label = axis_label_dict[network_measure]
+        
+        grid = gridspec.GridSpec(1, 3)
+        bottom = ( 1 - ((5*i)+5)/ 15.0 ) + 0.03
+        top = ( 1 - ((5*i)+2)/15.0 ) - 0.03
+        print 'PLOTS: bottom: {:2.2f}, top: {:2.2f}'.format(bottom, top)
+        grid.update(bottom=bottom, top=top, left=0.05, right=0.98)
+        
+        ax_list = []
+        for g_loc in grid:
+            ax = plt.Subplot(big_fig, g_loc)
+            big_fig.add_subplot(ax)
+            ax_list += [ax]
+    
+        ax_list[0] = von_economo_boxes(measure_dict, figures_dir, 
+                                            measure_dict['von_economo'], 
+                                            measure='{}_CT_covar_ones_all_COST_10'.format(network_measure),
+                                            y_label=y_label, 
+                                            y_min=network_measure_min, 
+                                            y_max=network_measure_max, 
+                                            red_max=True,
+                                            alpha=0,
+                                            ax=ax_list[0],
+                                            figure=big_fig)
+                                            
+        #=========================================================================
+        # Finally put scatter plots of deltaCT, and deltaMT by the network
+        # measure in the second and third spaces on the next row
+        #=========================================================================
+    
+        measure_list = [ 'CT_all_slope_age',
+                         '{}_projfrac+030_all_slope_age'.format(mpm) ]
+                         
+        for j, measure in enumerate(measure_list):
+
+            # Get the appropriate min, max and label values
+            # for the y axis
+            measure_min = min_max_dict['{}_min'.format(measure)]
+            measure_max = min_max_dict['{}_max'.format(measure)]
+            y_label = axis_label_dict[measure]
+            x_label = axis_label_dict[network_measure]
+        
+            ax_list[j+1] = pretty_scatter(measure_dict['{}_CT_covar_ones_all_COST_10'.format(network_measure)],
+                                                measure_dict[measure], 
+                                                x_label=x_label,
+                                                y_label=y_label, 
+                                                x_min=network_measure_min, x_max=network_measure_max,
+                                                y_min=measure_min,y_max=measure_max, 
+                                                color='k',
+                                                marker='^',
+                                                ax=ax_list[j+1],
+                                                figure=big_fig)    
+                                 
+    #=========================================================================
+    # And finally clean everything up and save the figure
+    #=========================================================================
+    # Save the figure
+    filename = os.path.join(figures_dir, 'Figure3.png')
+    big_fig.savefig(filename, bbox_inches=0, dpi=100)
+
+    plt.close()
+    
+def figure_3_separate(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='Degree'):
     
     # Set the seaborn context and style
     sns.set(style="white")
