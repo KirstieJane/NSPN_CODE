@@ -2311,7 +2311,6 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
         grid = gridspec.GridSpec(1, 4)
         bottom = (1 - ((5*i)+2)/ 15.0 ) -0.01
         top = (1 - (5*i)/15.0) -0.01
-        print 'BRAINS: bottom: {:2.2f}, top: {:2.2f}'.format(bottom, top)
         grid.update(left=0, right=1, bottom=bottom, top=top, wspace=0, hspace=0)
 
         big_fig = add_four_hor_brains(grid, f_list, big_fig)
@@ -2327,7 +2326,6 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
         grid = gridspec.GridSpec(1, 3)
         bottom = ( 1 - ((5*i)+5)/ 15.0 ) + 0.03
         top = ( 1 - ((5*i)+2)/15.0 ) - 0.03
-        print 'PLOTS: bottom: {:2.2f}, top: {:2.2f}'.format(bottom, top)
         grid.update(bottom=bottom, top=top, left=0.05, right=0.98)
         
         ax_list = []
@@ -2375,6 +2373,42 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
                                                 ax=ax_list[j+1],
                                                 figure=big_fig)    
                                  
+    #=========================================================================
+    # Add in the letters for each panel
+    #=========================================================================
+    # Place the A, B, C and i, ii, iii labels
+    let_list = [ 'A', 'B', 'C' ]
+    rom_list = [ 'i', 'ii', 'iii', 'iv' ]
+
+    # Get all the axes
+    ax_list = big_fig.get_axes()
+    
+    # Put the right letter and the first roman numeral
+    # next to each row of brains
+    for i, ax in enumerate(ax_list[1::7]):
+        x_pos = ax.get_position().x0 + 0.01
+        y_pos = ax.get_position().y1
+        big_fig.text(x_pos, y_pos, 
+                    '{}i'.format(let_list[i]),
+                    horizontalalignment='left',
+                    verticalalignment='top',
+                    fontsize=40,
+                    weight='bold',
+                    color='k')
+        # For the same letter put ii, iii and iv next to each
+        # of the plots
+        for j in range(3):
+            ax = ax_list[5 + i*7 + j]
+            x_pos = ax.get_position().x0 - 0.04
+            y_pos = ax.get_position().y1
+            big_fig.text(x_pos, y_pos, 
+                        '{}{}'.format(let_list[i], rom_list[j+1]),
+                        horizontalalignment='left',
+                        verticalalignment='bottom',
+                        fontsize=40,
+                        weight='bold',
+                        color='k')
+
     #=========================================================================
     # And finally clean everything up and save the figure
     #=========================================================================
