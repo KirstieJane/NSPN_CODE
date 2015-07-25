@@ -52,26 +52,32 @@ calc_filename_list=(A MT MTR MTRdiff R1 R2s synt)
 # First convert all the input files to .nii.gz
 # and make sure they're in FSL standard orientation
 #====================================================================
+echo -n "  Reorienting"
 for f_name in ${orig_filename_list[@]} ${calc_filename_list[@]}; do
 
+    echo -n " - ${f_name}"
     mpm_file=(`ls -d ${mpm_dir}/*${f_name}.nii*`)
     
     fslreorient2std ${mpm_file} ${mpm_dir}/${f_name}.nii.gz    
     
 done
+echo ""
 
 #====================================================================
 # Do the brain extraction on the PDw file
 #====================================================================
 mkdir -p ${bet_dir}
   
-bet ${mpm_dir}/PDw.nii.gz ${bet_dir}/PDw_brain.nii.gz –A
+echo "  Conducting brain and head extraction"
+bet ${mpm_dir}/PDw.nii.gz ${bet_dir}/PDw_brain.nii.gz -A
             
 #====================================================================
 # Now make the brain and head files for each of the
 # calculated MPM files
 #====================================================================
+echo -n "  Applying masks"
 for f_name in PDw ${calc_filename_list[@]}; do
+    echo -n " - ${f_name}"
     fslmaths ${bet_dir}/PDw_brain.nii.gz \
                 -bin \
                 -mul ${mpm_dir}/${f_name}.nii.gz \
@@ -83,6 +89,7 @@ for f_name in PDw ${calc_filename_list[@]}; do
                 ${mpm_dir}/${f_name}_head.nii.gz
 
 done # Close the mpm calculated file loop
+echo ""
 
 #====================================================================
 # All done!
