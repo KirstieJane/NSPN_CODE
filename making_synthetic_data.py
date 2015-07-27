@@ -24,18 +24,18 @@ elif not os.path.isdir(sys.argv[1])
 surfer_dir = sys.argv[1]
 
 # Define the input and output filenames
-aparc_filename = os.path.join(surfer_dir, 'parcellation', '500.aparc.nii.gz')
 aparc_cort_filename = os.path.join(surfer_dir, 'parcellation', '500.aparc_cortical_consecutive.nii.gz')
 aparc_white_filename = os.path.join(surfer_dir, 'parcellation', '500.aparc_cortical_expanded_consecutive_WMoverlap.nii.gz')
 MT_filename = os.path.join(surfer_dir, 'mri', 'MT.mgz')
 synth_filename = os.path.join(surfer_dir, 'mri', 'synthetic.mgz')
 
-# Check that the input file name exists
-if not os.path.isfile(aparc_cort_filename):
-    print "ERROR: 500.aparc_cortical_consecutive.nii.gz doesn't exist in 'parcellation' folder"
-    print 'USAGE: making_synthetic_data.py <surfer_dir>'
-    print '    eg: making_synthetic_data.py /home/kw401/UCHANGE/INTERIM_ANALYSIS/SUB_DATA/10736/SURFER/MRI0/'
-    sys.exit()
+# Check that the input file names all exist
+for f_name in [ aparc_cort_filename, aparc_white_filename, MT_filename ]:
+    if not os.path.isfile(f_name):
+        print "ERROR: {} doesn't exist in 'parcellation' folder".format(f_name)
+        print 'USAGE: making_synthetic_data.py <surfer_dir>'
+        print '    eg: making_synthetic_data.py /home/kw401/UCHANGE/INTERIM_ANALYSIS/SUB_DATA/10736/SURFER/MRI0/'
+        sys.exit()
 
 # If the output file already exists then you don't have to overwrite it
 if os.path.isfile(synth_filename):
@@ -43,14 +43,11 @@ if os.path.isfile(synth_filename):
     sys.exit()
     
 # Load the parcellation and MT files
-parc_img = nib.load(aparc_filename)
 parc_cort_img = nib.load(aparc_cort_filename)
 parc_white_img = nib.load(aparc_white_filename)
 MT_img = nib.load(MT_filename)
 
 # Get the data
-parc_data = parc_img.get_data()
-parc_data = parc_data[...,0]
 parc_cort_data = parc_cort_img.get_data()
 parc_cort_data = parc_cort_data[...,0]
 parc_white_data = parc_white_img.get_data()
