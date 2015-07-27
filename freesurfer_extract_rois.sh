@@ -174,7 +174,8 @@ done
 for measure in R1 MT R2s A FA MD MO L1 L23 sse synthetic; do
 #for measure in MT; do
     if [[ -f ${surfer_dir}/mri/${measure}.mgz ]]; then
-
+        
+        echo "MEASURE: ${measure}"
         #=== wmparc
         if [[ ! -f ${surfer_dir}/stats/${measure}_wmparc.stats ]]; then
             mri_segstats --i ${surfer_dir}/mri/${measure}.mgz \

@@ -9,8 +9,13 @@ import numpy as np
 import os
 import sys
 
-if len(sys.argv[1]) == 1:
+if len(sys.argv) == 1:
     print 'No surfer directory provided!'
+    print 'USAGE: making_synthetic_data.py <surfer_dir>'
+    print '    eg: making_synthetic_data.py /home/kw401/UCHANGE/INTERIM_ANALYSIS/SUB_DATA/10736/SURFER/MRI0/'
+    sys.exit()
+elif not os.path.isdir(sys.argv[1])
+    print 'Surfer directory does not exist!'
     print 'USAGE: making_synthetic_data.py <surfer_dir>'
     print '    eg: making_synthetic_data.py /home/kw401/UCHANGE/INTERIM_ANALYSIS/SUB_DATA/10736/SURFER/MRI0/'
     sys.exit()
