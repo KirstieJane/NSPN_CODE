@@ -84,9 +84,9 @@ for seg in aseg wmparc lobesStrict 500cortExpConsecWMoverlap 500cortConsec; do
                                 > ${data_dir}/FS_ROIS/SEG_${measure}_${seg}_${stat}.csv
                                 
                 # And replace all '-' with '_' because statsmodels in python
-                # likes that more :P
-                sed -i "s/-/_/g" ${data_dir}/FS_ROIS/SEG_${measure}_${seg}_${stat}.csv
-                sed -i "s/_0/-0/g" ${data_dir}/FS_ROIS/SEG_${measure}_${seg}_${stat}.csv
+                # likes that more :P but only for the first line
+                sed -i "1 s/-/_/g" ${data_dir}/FS_ROIS/SEG_${measure}_${seg}_${stat}.csv
+                # And replace the : marker
                 sed -i "s/://g" ${data_dir}/FS_ROIS/SEG_${measure}_${seg}_${stat}.csv
 
                 # Remove the temporary files
@@ -147,9 +147,9 @@ for parc in aparc 500.aparc lobesStrict; do
                     > ${data_dir}/FS_ROIS/PARC_${parc}_${measure}.csv
         
         # And replace all '-' with '_' because statsmodels in python
-        # likes that more :P
-        sed -i "s/-/_/g" ${data_dir}/FS_ROIS/PARC_${parc}_${measure}.csv
-        sed -i "s/_0/-0/g" ${data_dir}/FS_ROIS/PARC_${parc}_${measure}.csv
+        # likes that more :P but only for the first line
+        sed -i "1 s/-/_/g" ${data_dir}/FS_ROIS/PARC_${parc}_${measure}.csv
+        # And replace the : marker
         sed -i "s/://g" ${data_dir}/FS_ROIS/PARC_${parc}_${measure}.csv
         
         # Remove the temporary files
@@ -209,9 +209,9 @@ for parc in aparc 500.aparc lobesStrict; do
                             > ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_projfrac${frac}_${stat_name}.csv
                 
                 # And replace all '-' with '_' because statsmodels in python
-                # likes that more :P
-                sed -i "s/-/_/g" ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_projfrac${frac}_${stat_name}.csv
-                sed -i "s/_0/-0/g" ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_projfrac${frac}_${stat_name}.csv
+                # likes that more :P - but only on the first line!
+                sed -i "1 s/-/_/g" ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_projfrac${frac}_${stat_name}.csv
+                # and get rid of the : marker
                 sed -i "s/://g" ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_projfrac${frac}_${stat_name}.csv
                 
                 # Remove the temporary files
@@ -220,7 +220,7 @@ for parc in aparc 500.aparc lobesStrict; do
             
             done # Close frac loop
             
-            for dist in `seq -f %+02.2f 0 -0.2 -2`; do
+            for dist in `seq -f %+02.2f 0 -0.1 -2`; do
             
                 for hemi in lh rh; do
 
@@ -255,9 +255,9 @@ for parc in aparc 500.aparc lobesStrict; do
                             > ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_projdist${dist}_fromBoundary_${stat_name}.csv
                 
                 # And replace all '-' with '_' because statsmodels in python
-                # likes that more :P
-                sed -i "s/-/_/g" ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_projdist${dist}_fromBoundary_${stat_name}.csv
-                sed -i "s/_0/-0/g" ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_projdist${dist}_fromBoundary_${stat_name}.csv
+                # likes that more :P but only on the first row
+                sed -i "1 s/-/_/g" ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_projdist${dist}_fromBoundary_${stat_name}.csv
+                # And replace the : marker
                 sed -i "s/://g" ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_projdist${dist}_fromBoundary_${stat_name}.csv
                 
                 # Remove the temporary files
