@@ -148,8 +148,8 @@ def read_in_df(data_file, aparc_names):
     df['ones'] = df['age_scan'] * 0 + 1
     df['age'] = df['age_scan']
     
-    df['Global'] = df[measure_dict['aparc_names']].mean(axis=1)
-    df['Global_std'] = df[measure_dict['aparc_names']].mean(axis=1)
+    df['Global'] = df[aparc_names].mean(axis=1)
+    df['Global_std'] = df[aparc_names].mean(axis=1)
 
     # If there is a corresponding standard deviation
     # file then read in the standard deviation
@@ -176,7 +176,7 @@ def read_in_df(data_file, aparc_names):
         df['Global_std'] = np.sqrt(np.average(df_std[aparc_names]**2, axis=1))
     
     # Convert the values to floats
-    df[measure_dict['aparc_names']] = df[measure_dict['aparc_names']].astype('float')
+    df[aparc_names] = df[aparc_names].astype('float')
     
     # If this is an MT, R2s, synthetic, MD, L1 or L23 file
     # then you have to divide the values by 1000
