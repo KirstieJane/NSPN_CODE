@@ -62,7 +62,7 @@ def create_header_footer():
     '''
     latex_header = '\n'.join([ '\\documentclass{article}', 
                             '\\usepackage{booktabs}', 
-                            '\\usepackage[a4paper, left={1cm}, right={1cm}, landscape]{geometry}',
+                            '\\usepackage[a4paper, left={1cm}, right={1cm}, top={1.5cm}, bottom={1.5cm}, landscape]{geometry}',
                             '\\usepackage{longtable}',
                             '\\usepackage{array}',
                             '\\begin{document}',
