@@ -3,6 +3,9 @@
 '''
 A random collection of useful code
 '''
+from regional_correlation_functions import *
+import numpy as np
+import pandas as pd
 
 def permutation_correlation(x_orig, y_orig, n_perm=1000):
     '''
@@ -276,3 +279,150 @@ def renumber_modules(measure_dict):
     measure_dict['Renumbered_Module_CT_covar_ones_all_COST_10'] = new_module
     
     return measure_dict
+    
+    
+def save_name_lists(measure_dict, aparc_names, lobes, von_economo, von_economo_3, centroids):
+
+    measure_dict['aparc_names'] = aparc_names
+    measure_dict['lobes'] = lobes
+    measure_dict['von_economo'] = von_economo
+    measure_dict['von_economo_3'] = von_economo_3
+    measure_dict['centroids'] = centroids
+    measure_dict['hemi'] = np.array([ name[0] for name in aparc_names])
+    measure_dict['dk_names_34'] = sorted(list(set([ roi.split('_')[1] for roi in aparc_names ])))
+    measure_dict['dk_names_68'] = sorted(list(set([ roi.rsplit('_', 1)[0] for roi in aparc_names ])))        
+
+    return measure_dict
+    
+def append_collapsed_across_regions(df, measure_dict):
+    '''
+    This code adds in additional columns to the end of
+    the data frame collapsing across regions but 
+    separating the hemispheres (68) and again combining
+    the two hemispheres (34)
+    
+    df is the data frame read in from the FS_ROIS output
+    measure_dict must contain the dk_names and the aparc_names
+    '''
+    for roi in measure_dict['dk_names_34']:
+        roi_list = [ x for x in measure_dict['aparc_names'] if roi in x ]
+        df['{}'.format(roi)] = df[roi_list].mean(axis=1)
+    for roi in measure_dict['dk_names_68']:
+        roi_list = [ x for x in measure_dict['aparc_names'] if roi in x ]
+        df['{}'.format(roi)] = df[roi_list].mean(axis=1)
+    
+    return df
+    
+    
+def save_values_to_dict(measure_name, measure_dict, df, df_ct):
+    
+    import numpy as np
+    import pandas as pd
+    
+    names_dict = { 308 : measure_dict['aparc_names'],
+                    68 : measure_dict['dk_names_68'],
+                    34 : measure_dict['dk_names_34'] }
+                    
+    for n in [ 308, 68, 34 ]:
+        
+        # Set the suffix for the name
+        # 308 is currently blank because it has always
+        # been named without a suffix. This could change
+        # in the future...but would cause a bunch of problems
+        # at the moment!
+        if n == 68:
+            suff='_68'
+        elif n == 34:
+            suff='_34'
+        else:
+            suff = ''
+            
+        # MEAN
+        measure_dict['{}_all_mean{}'.format(measure_name, suff)] = df[names_dict[n]].mean(axis=0).values
+        
+        # STD
+        measure_dict['{}_all_std{}'.format(measure_name, suff)] = df[names_dict[n]].std(axis=0).values
+
+        # CORR W AGE
+        (m_array, c_array, r_array, 
+            p_array, p_fdr_array,
+            m_mask_array, m_fdr_mask_array) = regional_linregress(df, 'age_scan', names_dict[n])
+    
+        measure_dict['{}_all_slope_age{}'.format(measure_name, suff)] = m_array
+        measure_dict['{}_all_slope_age_c{}'.format(measure_name, suff)] = c_array
+        measure_dict['{}_all_slope_age_at14{}'.format(measure_name, suff)] = c_array + 14*m_array
+        measure_dict['{}_all_slope_age_at25{}'.format(measure_name, suff)] = c_array + 25*m_array
+        measure_dict['{}_all_slope_age_r{}'.format(measure_name, suff)] = r_array
+        measure_dict['{}_all_slope_age_p{}'.format(measure_name, suff)] = p_array
+        measure_dict['{}_all_slope_age_p_fdr{}'.format(measure_name, suff)] = p_fdr_array
+        measure_dict['{}_all_slope_age_m_mask{}'.format(measure_name, suff)] = m_mask_array
+        measure_dict['{}_all_slope_age_m_fdr_mask{}'.format(measure_name, suff)] = m_fdr_mask_array
+        measure_dict['{}_all_slope_age_m_fdr_mask{}'.format(measure_name, suff)] = m_fdr_mask_array
+        
+        # CORR SLOPE VS AT 14
+        m, c, r, p, sterr, perm_p = permutation_correlation(c_array + 14*m_array, m_array)
+    
+        measure_dict['{}_all_slope_age_vs_at14{}'.format(measure_name, suff)] = m
+        measure_dict['{}_all_slope_age_vs_at14_c{}'.format(measure_name, suff)] = c
+        measure_dict['{}_all_slope_age_vs_at14_r{}'.format(measure_name, suff)] = r
+        measure_dict['{}_all_slope_age_vs_at14_p{}'.format(measure_name, suff)] = p
+        measure_dict['{}_all_slope_age_vs_at14_p_perm{}'.format(measure_name, suff)] = perm_p
+        
+        # CORR W CT
+        if not measure_name == 'CT':
+            (m_array, c_array, r_array, 
+                p_array, p_fdr_array,
+                m_mask_array, m_fdr_mask_array) = regional_linregress_byregion(df, df_ct, names_dict[n])
+    
+            measure_dict['{}_all_slope_ct{}'.format(measure_name, suff)] = m_array
+            measure_dict['{}_all_slope_ct_c{}'.format(measure_name, suff)] = c_array
+            measure_dict['{}_all_slope_ct_r{}'.format(measure_name, suff)] = r_array
+            measure_dict['{}_all_slope_ct_p{}'.format(measure_name, suff)] = p_array
+            measure_dict['{}_all_slope_ct_p_fdr{}'.format(measure_name, suff)] = p_fdr_array
+            measure_dict['{}_all_slope_ct_m_mask{}'.format(measure_name, suff)] = m_mask_array
+            measure_dict['{}_all_slope_ct_m_fdr_mask{}'.format(measure_name, suff)] = m_fdr_mask_array
+            
+            # CORR SLOPE VS AT 14
+            m, c, r, p, sterr, perm_p = permutation_correlation(c_array + 14*m_array, m_array)
+        
+            measure_dict['{}_all_slope_ct_vs_at14{}'.format(measure_name, suff)] = m
+            measure_dict['{}_all_slope_ct_vs_at14_c{}'.format(measure_name, suff)] = c
+            measure_dict['{}_all_slope_ct_vs_at14_r{}'.format(measure_name, suff)] = r
+            measure_dict['{}_all_slope_ct_vs_at14_p{}'.format(measure_name, suff)] = p
+            measure_dict['{}_all_slope_ct_vs_at14_p_perm{}'.format(measure_name, suff)] = perm_p
+            
+            # CORR SLOPE MT WITH SLOPE CT
+            slope_ct = measure_dict['CT_all_slope_age{}'.format(suff)]
+            slope_mt = measure_dict['{}_all_slope_age{}'.format(measure_name, suff)]
+            
+            m, c, r, p, sterr, perm_p = permutation_correlation(slope_ct, slope_mt)
+            measure_dict['{}_vs_CT_all_slope_age{}'.format(measure_name, suff)] = m
+            measure_dict['{}_vs_CT_all_slope_age_c{}'.format(measure_name, suff)] = c
+            measure_dict['{}_vs_CT_all_slope_age_r{}'.format(measure_name, suff)] = r
+            measure_dict['{}_vs_CT_all_slope_age_p{}'.format(measure_name, suff)] = p
+            measure_dict['{}_vs_CT_all_slope_age_p_perm{}'.format(measure_name, suff)] = perm_p
+            
+            # CORR BASELINE MT WITH BASELINE CT
+            baseline_ct = measure_dict['CT_all_slope_age_at14{}'.format(suff)]
+            baseline_mt = measure_dict['{}_all_slope_age_at14{}'.format(measure_name, suff)]
+            
+            m, c, r, p, sterr, perm_p = permutation_correlation(baseline_ct, baseline_mt)
+            measure_dict['{}_vs_CT_all_slope_age_at14{}'.format(measure_name, suff)] = m
+            measure_dict['{}_vs_CT_all_slope_age_at14_c{}'.format(measure_name, suff)] = c
+            measure_dict['{}_vs_CT_all_slope_age_at14_r{}'.format(measure_name, suff)] = r
+            measure_dict['{}_vs_CT_all_slope_age_at14_p{}'.format(measure_name, suff)] = p
+            measure_dict['{}_vs_CT_all_slope_age_at14_p_perm{}'.format(measure_name, suff)] = perm_p
+
+            # CORR AGE 25 MT WITH AGE 25 CT
+            age25_ct = measure_dict['CT_all_slope_age_at25{}'.format(suff)]
+            age25_mt = measure_dict['{}_all_slope_age_at25{}'.format(measure_name, suff)]
+            
+            m, c, r, p, sterr, perm_p = permutation_correlation(age25_ct, age25_mt)
+            measure_dict['{}_vs_CT_all_slope_age_at25{}'.format(measure_name, suff)] = m
+            measure_dict['{}_vs_CT_all_slope_age_at25_c{}'.format(measure_name, suff)] = c
+            measure_dict['{}_vs_CT_all_slope_age_at25_r{}'.format(measure_name, suff)] = r
+            measure_dict['{}_vs_CT_all_slope_age_at25_p{}'.format(measure_name, suff)] = p
+            measure_dict['{}_vs_CT_all_slope_age_at25_p_perm{}'.format(measure_name, suff)] = perm_p
+
+    return measure_dict
+    
