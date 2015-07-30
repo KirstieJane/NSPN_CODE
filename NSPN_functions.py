@@ -474,6 +474,19 @@ def save_network_values(measure_dict, G_name, graph_dict):
     measure_dict['TotalDist_{}'.format(G_name)] = nodal_dict['total_dist']
     measure_dict['InterhemProp_{}'.format(G_name)] = nodal_dict['interhem_prop']
     
+    measure_dict['Global_Clustering_{}'.format(G_name)] = global_dict['C']
+    measure_dict['Global_Clustering_rand_{}'.format(G_name)] = global_dict['C_rand']
+    measure_dict['Global_Modularity_{}'.format(G_name)] = global_dict['M']
+    measure_dict['Global_Modularity_rand_{}'.format(G_name)] = global_dict['M_rand']
+    measure_dict['Global_ShortestPath_{}'.format(G_name)] = global_dict['L']
+    measure_dict['Global_ShortestPath_rand_{}'.format(G_name)] = global_dict['L_rand']
+    measure_dict['Global_Efficiency_{}'.format(G_name)] = global_dict['E']
+    measure_dict['Global_Efficiency_rand_{}'.format(G_name)] = global_dict['E_rand']
+    measure_dict['Global_Assortativity_{}'.format(G_name)] = global_dict['a']
+    measure_dict['Global_Assortativity_rand_{}'.format(G_name)] = global_dict['a_rand']
+    measure_dict['Global_SmallWorld_{}'.format(G_name)] = global_dict['sigma']
+    measure_dict['Global_SmallWorld_rand_{}'.format(G_name)] = global_dict['sigma_rand']
+
     return measure_dict
     
 def save_global_values(measure_dict, measure_name, df, df_ct):
