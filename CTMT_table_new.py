@@ -240,7 +240,7 @@ def get_dicts(measure_dict, n=308):
     align_title_dict['AverageDist'] = 'C{1.8cm}'
     align_col_dict['AverageDist'] = 'R{1.8cm}'
     top_title_dict['AverageDist'] = 'Average Distance'    
-        bottom_title_dict['AverageDist'] = '(mm)'
+    bottom_title_dict['AverageDist'] = '(mm)'
     multi_column_dict['AverageDist'] = 1
     
     col_list = ['Lobe', 'Region', 
