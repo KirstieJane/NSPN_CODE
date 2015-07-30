@@ -499,13 +499,13 @@ def save_network_values(measure_dict, G_name, graph_dict):
             interhem_prop_list += [ data['interhem_prop'].mean() ]
             
         # Fill in the measure dict
-        measure_dict['Degree_{}{}'.format(G_name, suff)] = degree_list
-        measure_dict['PC_{}{}'.format(G_name, suff)] = pc_list
-        measure_dict['Closeness_{}{}'.format(G_name, suff)] = closeness_list
-        measure_dict['Clustering_{}{}'.format(G_name, suff)] = clustering_list
-        measure_dict['AverageDist_{}{}'.format(G_name, suff)] = average_dist_list
-        measure_dict['TotalDist_{}{}'.format(G_name, suff)] = total_dist_list
-        measure_dict['InterhemProp_{}{}'.format(G_name, suff)] = interhem_prop_list
+        measure_dict['Degree_{}{}'.format(G_name, suff)] = np.array(degree_list)
+        measure_dict['PC_{}{}'.format(G_name, suff)] = np.array(pc_list)
+        measure_dict['Closeness_{}{}'.format(G_name, suff)] = np.array(closeness_list)
+        measure_dict['Clustering_{}{}'.format(G_name, suff)] = np.array(clustering_list)
+        measure_dict['AverageDist_{}{}'.format(G_name, suff)] = np.array(average_dist_list)
+        measure_dict['TotalDist_{}{}'.format(G_name, suff)] = np.array(total_dist_list)
+        measure_dict['InterhemProp_{}{}'.format(G_name, suff)] = np.array(interhem_prop_list)
             
     # Add in these last two that only make sense for n=308
     measure_dict['Module_{}'.format(G_name)] = nodal_dict['module'] + 1
