@@ -316,6 +316,19 @@ def save_name_lists(measure_dict, aparc_names, lobes, von_economo, von_economo_3
     # Centroids - for 308 only at the moment!
     measure_dict['centroids'] = centroids
     
+    # Record the number of subregions for each DK atlas region
+    measure_dict['N_SubRegions'] = np.ones(308)
+    # 34
+    n_subregions_34 = []
+    for roi in measure_dict['dk_names_34']:
+        n_subregions_34 += [ len([ x for x in measure_dict['aparc_names'] if roi in x ]) ]
+    measure_dict['N_SubRegions_34'] = np.array(n_subregions_34)
+    # 68
+    n_subregions_68 = []
+    for roi in measure_dict['dk_names_68']:
+        n_subregions_68 += [ len([ x for x in measure_dict['aparc_names'] if roi in x ]) ]
+    measure_dict['N_SubRegions_68'] = np.array(n_subregions_68)
+    
     return measure_dict
     
 def append_collapsed_across_regions(df, measure_dict):

@@ -140,8 +140,8 @@ def get_dicts(measure_dict, n=308):
 
     table_dict['N_SubRegions'] = measure_dict['N_SubRegions{}'.format(suff)]
     format_dict['N_SubRegions'] = i
-    align_title_dict['N_SubRegions'] = 'C{1.3cm}'
-    align_col_dict['N_SubRegions'] = 'R{1.3cm}'
+    align_title_dict['N_SubRegions'] = 'C{1.5cm}'
+    align_col_dict['N_SubRegions'] = 'R{1.5cm}'
     top_title_dict['N_SubRegions'] = 'N Sub Regions'
     bottom_title_dict['N_SubRegions'] = ''
     multi_column_dict['N_SubRegions'] = 1
@@ -385,7 +385,7 @@ def create_latex_tables(measure_dict, output_filename, sort_col='MT_projfrac+030
 
 """    
 #==============================================================================
-# MAIN CODE
+# SUGGESTED USAGE
 #==============================================================================
 table_filename_308 = 'test_308.tex'
 create_latex_tables(measure_dict, table_filename_308, sort_col='MT_projfrac+030_all_slope_age', n=308)
