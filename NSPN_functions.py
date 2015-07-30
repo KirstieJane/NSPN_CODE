@@ -462,16 +462,56 @@ def save_network_values(measure_dict, G_name, graph_dict):
     nodal_dict = graph_dict['{}_NodalMeasures'.format(G_name)]
     global_dict = graph_dict['{}_GlobalMeasures'.format(G_name)]
     
-    measure_dict['Degree_{}'.format(G_name)] = nodal_dict['degree']
-    measure_dict['PC_{}'.format(G_name)] = nodal_dict['pc']
-    measure_dict['Module_{}'.format(G_name)] = nodal_dict['module'] + 1
-    measure_dict['Closeness_{}'.format(G_name)] = nodal_dict['closeness']
-    measure_dict['ShortestPath_{}'.format(G_name)] = nodal_dict['shortest_path']
-    measure_dict['Clustering_{}'.format(G_name)] = nodal_dict['clustering']
-    measure_dict['AverageDist_{}'.format(G_name)] = nodal_dict['average_dist']
-    measure_dict['TotalDist_{}'.format(G_name)] = nodal_dict['total_dist']
-    measure_dict['InterhemProp_{}'.format(G_name)] = nodal_dict['interhem_prop']
+    # Read in the nodal dict as a data frame
+    nodal_df = pd.DataFrame(nodal_dict)
+    nodal_df['name'] = measure_dict['aparc_names']
+    nodal_df['hemi'] = measure_dict['hemi']
+    nodal_df['dk_region'] = [ x.split('_')[1] for x in measure_dict['aparc_names'] ]
     
+    for n in [ 308, 68, 34 ]:
+        
+        # Sort out the grouping and suffices
+        if n == 68:
+            suff = '_68'
+            grouped = nodal_df.groupby(['hemi', 'dk_region'])
+        elif n == 34:
+            suff = '_34'
+            grouped = nodal_df.groupby(['dk_region'])
+        else:
+            suff = ''
+            grouped = nodal_df.groupby('name')
+        
+        degree_list = []
+        pc_list = []
+        closeness_list = []
+        clustering_list = []
+        average_dist_list = []
+        total_dist_list = []
+        interhem_prop_list = []
+        
+        for name, data in grouped:
+            degree_list += [ data['degree'].mean() ]
+            pc_list += [ data['pc'].mean() ]
+            closeness_list += [ data['closeness'].mean() ]
+            clustering_list += [ data['clustering'].mean() ]
+            average_dist_list += [ data['average_dist'].mean() ]
+            total_dist_list += [ data['total_dist'].mean() ]
+            interhem_prop_list += [ data['interhem_prop'].mean() ]
+            
+        # Fill in the measure dict
+        measure_dict['Degree_{}{}'.format(G_name, suff)] = degree_list
+        measure_dict['PC_{}{}'.format(G_name, suff)] = pc_list
+        measure_dict['Closeness_{}{}'.format(G_name, suff)] = closeness_list
+        measure_dict['Clustering_{}{}'.format(G_name, suff)] = clustering_list
+        measure_dict['AverageDist_{}{}'.format(G_name, suff)] = average_dist_list
+        measure_dict['TotalDist_{}{}'.format(G_name, suff)] = total_dist_list
+        measure_dict['InterhemProp_{}{}'.format(G_name, suff)] = interhem_prop_list
+            
+    # Add in these last two that only make sense for n=308
+    measure_dict['Module_{}'.format(G_name)] = nodal_dict['module'] + 1
+    measure_dict['ShortestPath_{}{}'.format(G_name, suff)] = nodal_dict['shortest_path']
+    
+    # Now put in the global measures
     measure_dict['Global_Clustering_{}'.format(G_name)] = global_dict['C']
     measure_dict['Global_Clustering_rand_{}'.format(G_name)] = global_dict['C_rand']
     measure_dict['Global_Modularity_{}'.format(G_name)] = global_dict['M']

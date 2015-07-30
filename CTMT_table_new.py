@@ -210,11 +210,48 @@ def get_dicts(measure_dict, n=308):
     bottom_title_dict['MT_projfrac+030_all_slope_ct_p'] = 'P'
     multi_column_dict['MT_projfrac+030_all_slope_ct_p'] = 0
 
+    table_dict['Degree'] = measure_dict['Degree_CT_covar_ones_all_COST_10{}'.format(suff)]
+    if n == 308:
+        format_dict['Degree'] = i
+    else:
+        format_dict['Degree'] = f_dp2_exp_0
+    align_title_dict['Degree'] = 'C{1.3cm}'
+    align_col_dict['Degree'] = 'R{1.3cm}'
+    top_title_dict['Degree'] = 'Degree'
+    if n == 308:
+        bottom_title_dict['Degree'] = ''
+    else:
+        bottom_title_dict['Degree'] = '(mean across regions)'
+    multi_column_dict['Degree'] = 1
+    
+    table_dict['Closeness'] = measure_dict['Closeness_CT_covar_ones_all_COST_10{}'.format(suff)]
+    format_dict['Closeness'] = f_dp2_exp_0
+    align_title_dict['Closeness'] = 'C{1.3cm}'
+    align_col_dict['Closeness'] = 'R{1.3cm}'
+    top_title_dict['Closeness'] = 'Closeness'
+    if n == 308:
+        bottom_title_dict['Closeness'] = ''
+    else:
+        bottom_title_dict['Closeness'] = '(mean across regions)'
+    multi_column_dict['Closeness'] = 1
+    
+    table_dict['AverageDist'] = measure_dict['Closeness_CT_covar_ones_all_COST_10{}'.format(suff)]
+    format_dict['AverageDist'] = f_dp2_exp_0
+    align_title_dict['AverageDist'] = 'C{1.3cm}'
+    align_col_dict['AverageDist'] = 'R{1.3cm}'
+    top_title_dict['AverageDist'] = 'Mean Average Distance'    
+    if n == 308:
+        bottom_title_dict['AverageDist'] = '(mm)'
+    else:
+        bottom_title_dict['AverageDist'] = '(mm; mean across regions)'
+    multi_column_dict['AverageDist'] = 1
+    
     col_list = ['Lobe', 'Region', 
                 'Hemi', 'SubRegion', 
                 'CT_all_slope_age_at14', 'CT_all_slope_age', 'CT_all_slope_age_p',
                 'MT_projfrac+030_all_slope_age_at14', 'MT_projfrac+030_all_slope_age', 'MT_projfrac+030_all_slope_age_p',
-                'MT_projfrac+030_all_slope_ct', 'MT_projfrac+030_all_slope_ct_p']
+                'MT_projfrac+030_all_slope_ct', 'MT_projfrac+030_all_slope_ct_p',
+                'Degree', 'Closeness', 'AverageDist' ]
 
     if n==34:
         col_list = col_list[0:2] + ['N_SubRegions'] + col_list[4:]
