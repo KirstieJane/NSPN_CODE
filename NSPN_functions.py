@@ -498,57 +498,57 @@ def save_global_values(measure_dict, measure_name, df, df_ct):
     v_high = df[measure_dict['{}_low_var_names'.format(measure_name)]].var(axis=1)
     measure_dict['{}_high_var_regions_var'.format(measure_name)] = v_high
 
-        # CORR GLOBAL W AGE
-        m, c, r, p, sterr, perm_p = permutation_correlation(df['age_scan'], df['Global'].values)
-    
-        measure_dict['{}_global_slope_age'.format(measure_name)] = m
-        measure_dict['{}_global_slope_age_c'.format(measure_name)] = c
-        measure_dict['{}_global_slope_age_at14'.format(measure_name)] = c + 14*m
-        measure_dict['{}_global_slope_age_at25'.format(measure_name)] = c + 25*m
-        measure_dict['{}_global_slope_age_r'.format(measure_name)] = r
-        measure_dict['{}_global_slope_age_p'.format(measure_name)] = p
-        measure_dict['{}_global_slope_age_p_perm'.format(measure_name)] = perm_p
+    # CORR GLOBAL W AGE
+    m, c, r, p, sterr, perm_p = permutation_correlation(df['age_scan'], df['Global'].values)
 
-        # CORR VAR (ALL REGIONS) W AGE
-        m, c, r, p, sterr, perm_p = permutation_correlation(df['age_scan'], v_all)
+    measure_dict['{}_global_slope_age'.format(measure_name)] = m
+    measure_dict['{}_global_slope_age_c'.format(measure_name)] = c
+    measure_dict['{}_global_slope_age_at14'.format(measure_name)] = c + 14*m
+    measure_dict['{}_global_slope_age_at25'.format(measure_name)] = c + 25*m
+    measure_dict['{}_global_slope_age_r'.format(measure_name)] = r
+    measure_dict['{}_global_slope_age_p'.format(measure_name)] = p
+    measure_dict['{}_global_slope_age_p_perm'.format(measure_name)] = perm_p
+
+    # CORR VAR (ALL REGIONS) W AGE
+    m, c, r, p, sterr, perm_p = permutation_correlation(df['age_scan'], v_all)
+
+    measure_dict['{}_allregions_var_slope_age'.format(measure_name)] = m
+    measure_dict['{}_allregions_var_slope_age_c'.format(measure_name)] = c
+    measure_dict['{}_allregions_var_slope_age_at14'.format(measure_name)] = c + 14*m
+    measure_dict['{}_allregions_var_slope_age_at25'.format(measure_name)] = c + 25*m
+    measure_dict['{}_allregions_var_slope_age_r'.format(measure_name)] = r
+    measure_dict['{}_allregions_var_slope_age_p'.format(measure_name)] = p
+    measure_dict['{}_allregions_var_slope_age_p_perm'.format(measure_name)] = perm_p
     
-        measure_dict['{}_allregions_var_slope_age'.format(measure_name)] = m
-        measure_dict['{}_allregions_var_slope_age_c'.format(measure_name)] = c
-        measure_dict['{}_allregions_var_slope_age_at14'.format(measure_name)] = c + 14*m
-        measure_dict['{}_allregions_var_slope_age_at25'.format(measure_name)] = c + 25*m
-        measure_dict['{}_allregions_var_slope_age_r'.format(measure_name)] = r
-        measure_dict['{}_allregions_var_slope_age_p'.format(measure_name)] = p
-        measure_dict['{}_allregions_var_slope_age_p_perm'.format(measure_name)] = perm_p
+    # CORR VAR (LOW VAR REGIONS) W AGE
+    m, c, r, p, sterr, perm_p = permutation_correlation(df['age_scan'], v_low)
+
+    measure_dict['{}_low_var_regions_var_slope_age'.format(measure_name)] = m
+    measure_dict['{}_low_var_regions_var_slope_age_c'.format(measure_name)] = c
+    measure_dict['{}_low_var_regions_var_slope_age_at14'.format(measure_name)] = c + 14*m
+    measure_dict['{}_low_var_regions_var_slope_age_at25'.format(measure_name)] = c + 25*m
+    measure_dict['{}_low_var_regions_var_slope_age_r'.format(measure_name)] = r
+    measure_dict['{}_low_var_regions_var_slope_age_p'.format(measure_name)] = p
+    measure_dict['{}_low_var_regions_var_slope_age_p_perm'.format(measure_name)] = perm_p
+
+    #  CORR W CT
+    if not measure_name == 'CT':
         
-        # CORR VAR (LOW VAR REGIONS) W AGE
-        m, c, r, p, sterr, perm_p = permutation_correlation(df['age_scan'], v_low)
-    
-        measure_dict['{}_low_var_regions_var_slope_age'.format(measure_name)] = m
-        measure_dict['{}_low_var_regions_var_slope_age_c'.format(measure_name)] = c
-        measure_dict['{}_low_var_regions_var_slope_age_at14'.format(measure_name)] = c + 14*m
-        measure_dict['{}_low_var_regions_var_slope_age_at25'.format(measure_name)] = c + 25*m
-        measure_dict['{}_low_var_regions_var_slope_age_r'.format(measure_name)] = r
-        measure_dict['{}_low_var_regions_var_slope_age_p'.format(measure_name)] = p
-        measure_dict['{}_low_var_regions_var_slope_age_p_perm'.format(measure_name)] = perm_p
+        df_ct_mt = df_ct.merge(df, 
+                                on=['nspn_id', 'occ'],
+                                how='inner', 
+                                suffixes=['_ct', '_mt'])
+                                
+        m, c, r, p, sterr, perm_p = permutation_correlation(df_ct_mt['Global_ct'].values,
+                                                             df_ct_mt['Global_mt'].values)
 
-        #  CORR W CT
-        if not measure_name == 'CT':
-            
-            df_ct_mt = df_ct.merge(df, 
-                                    on=['nspn_id', 'occ'],
-                                    how='inner', 
-                                    suffixes=['_ct', '_mt'])
-                                    
-            m, c, r, p, sterr, perm_p = permutation_correlation(df_ct_mt['Global_ct'].values,
-                                                                 df_ct_mt['Global_mt'].values)
-    
-            measure_dict['{}_global_slope_ct'.format(measure_name)] = m
-            measure_dict['{}_global_slope_ct_c'.format(measure_name)] = c
-            measure_dict['{}_global_slope_ct_at14'.format(measure_name)] = c + 14*m
-            measure_dict['{}_global_slope_ct_at25'.format(measure_name)] = c + 25*m
-            measure_dict['{}_global_slope_ct_r'.format(measure_name)] = r
-            measure_dict['{}_global_slope_ct_p'.format(measure_name)] = p
-            measure_dict['{}_global_slope_ct_p_perm'.format(measure_name)] = perm_p
-    
+        measure_dict['{}_global_slope_ct'.format(measure_name)] = m
+        measure_dict['{}_global_slope_ct_c'.format(measure_name)] = c
+        measure_dict['{}_global_slope_ct_at14'.format(measure_name)] = c + 14*m
+        measure_dict['{}_global_slope_ct_at25'.format(measure_name)] = c + 25*m
+        measure_dict['{}_global_slope_ct_r'.format(measure_name)] = r
+        measure_dict['{}_global_slope_ct_p'.format(measure_name)] = p
+        measure_dict['{}_global_slope_ct_p_perm'.format(measure_name)] = perm_p
+
     return measure_dict
     
