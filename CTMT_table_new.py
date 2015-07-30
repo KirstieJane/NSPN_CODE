@@ -38,7 +38,13 @@ def f_dp2_exp_0(x):
     Return as string wiht 2 decimal places
     '''
     return '{:.2f}'.format(x)
-        
+
+def f_dp1_exp_0(x):
+    '''
+    Return as string wiht 1 decimal place
+    '''
+    return '{:.1f}'.format(x)
+    
 def f_p(x):
     '''
     Return as string with 3 decimal places
@@ -66,9 +72,9 @@ def create_header_footer():
                             '\\usepackage{longtable}',
                             '\\usepackage{array}',
                             '\\begin{document}',
-                            '\\newcolumntype{C}[1]{>{\\centering\let\\newline\\\\\\arraybackslash\hspace{0pt}}m{#1}}',
-                            '\\newcolumntype{R}[1]{>{\\raggedleft\\arraybackslash\let\\newline\\\\\\arraybackslash\hspace{0pt}}m{#1}}',
-                            '\\newcolumntype{L}[1]{>{\\raggedright\\arraybackslash\let\\newline\\\\\\arraybackslash\hspace{0pt}}m{#1}}',
+                            '\\newcolumntype{C}[1]{>{\\centering\let\\newline\\\\\\arraybackslash\hspace{0pt}}b{#1}}',
+                            '\\newcolumntype{R}[1]{>{\\raggedleft\\arraybackslash\let\\newline\\\\\\arraybackslash\hspace{0pt}}b{#1}}',
+                            '\\newcolumntype{L}[1]{>{\\raggedright\\arraybackslash\let\\newline\\\\\\arraybackslash\hspace{0pt}}b{#1}}',
                             '' ])
 
     latex_footer = '\n\\end{document}\n'
@@ -148,8 +154,8 @@ def get_dicts(measure_dict, n=308):
 
     table_dict['CT_all_slope_age_at14'] = measure_dict['CT_all_slope_age_at14{}'.format(suff)]
     format_dict['CT_all_slope_age_at14'] = f_dp2_exp_0
-    align_title_dict['CT_all_slope_age_at14'] = 'C{1.3cm}'
-    align_col_dict['CT_all_slope_age_at14'] = 'R{1.3cm}'
+    align_title_dict['CT_all_slope_age_at14'] = 'C{1cm}'
+    align_col_dict['CT_all_slope_age_at14'] = 'R{1cm}'
     top_title_dict['CT_all_slope_age_at14'] = 'CT at 14'
     bottom_title_dict['CT_all_slope_age_at14'] = '(mm)'
     multi_column_dict['CT_all_slope_age_at14'] = 1
@@ -172,8 +178,8 @@ def get_dicts(measure_dict, n=308):
 
     table_dict['MT_projfrac+030_all_slope_age_at14'] = measure_dict['MT_projfrac+030_all_slope_age_at14{}'.format(suff)]
     format_dict['MT_projfrac+030_all_slope_age_at14'] = f_dp2_exp_0
-    align_title_dict['MT_projfrac+030_all_slope_age_at14'] = 'C{1.3cm}'
-    align_col_dict['MT_projfrac+030_all_slope_age_at14'] = 'R{1.3cm}'
+    align_title_dict['MT_projfrac+030_all_slope_age_at14'] = 'C{1cm}'
+    align_col_dict['MT_projfrac+030_all_slope_age_at14'] = 'R{1cm}'
     top_title_dict['MT_projfrac+030_all_slope_age_at14'] = 'MT at 14'
     bottom_title_dict['MT_projfrac+030_all_slope_age_at14'] = '(AU)'
     multi_column_dict['MT_projfrac+030_all_slope_age_at14'] = 1
@@ -214,36 +220,27 @@ def get_dicts(measure_dict, n=308):
     if n == 308:
         format_dict['Degree'] = i
     else:
-        format_dict['Degree'] = f_dp2_exp_0
+        format_dict['Degree'] = f_dp1_exp_0
     align_title_dict['Degree'] = 'C{1.3cm}'
     align_col_dict['Degree'] = 'R{1.3cm}'
     top_title_dict['Degree'] = 'Degree'
-    if n == 308:
-        bottom_title_dict['Degree'] = ''
-    else:
-        bottom_title_dict['Degree'] = '(mean across regions)'
+    bottom_title_dict['Degree'] = ''
     multi_column_dict['Degree'] = 1
     
     table_dict['Closeness'] = measure_dict['Closeness_CT_covar_ones_all_COST_10{}'.format(suff)]
     format_dict['Closeness'] = f_dp2_exp_0
-    align_title_dict['Closeness'] = 'C{1.3cm}'
-    align_col_dict['Closeness'] = 'R{1.3cm}'
+    align_title_dict['Closeness'] = 'C{1.8cm}'
+    align_col_dict['Closeness'] = 'R{1.8cm}'
     top_title_dict['Closeness'] = 'Closeness'
-    if n == 308:
-        bottom_title_dict['Closeness'] = ''
-    else:
-        bottom_title_dict['Closeness'] = '(mean across regions)'
+    bottom_title_dict['Closeness'] = ''
     multi_column_dict['Closeness'] = 1
     
-    table_dict['AverageDist'] = measure_dict['Closeness_CT_covar_ones_all_COST_10{}'.format(suff)]
+    table_dict['AverageDist'] = measure_dict['AverageDist_CT_covar_ones_all_COST_10{}'.format(suff)]
     format_dict['AverageDist'] = f_dp2_exp_0
-    align_title_dict['AverageDist'] = 'C{1.3cm}'
-    align_col_dict['AverageDist'] = 'R{1.3cm}'
-    top_title_dict['AverageDist'] = 'Mean Average Distance'    
-    if n == 308:
+    align_title_dict['AverageDist'] = 'C{1.8cm}'
+    align_col_dict['AverageDist'] = 'R{1.8cm}'
+    top_title_dict['AverageDist'] = 'Average Distance'    
         bottom_title_dict['AverageDist'] = '(mm)'
-    else:
-        bottom_title_dict['AverageDist'] = '(mm; mean across regions)'
     multi_column_dict['AverageDist'] = 1
     
     col_list = ['Lobe', 'Region', 
