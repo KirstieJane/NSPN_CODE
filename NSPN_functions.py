@@ -460,7 +460,7 @@ def save_regional_values(measure_name, measure_dict, df, df_ct):
     return measure_dict
     
     
-def save_network_values(measure_dict, G_name):
+def save_network_values(measure_dict, G_name, graph_dict):
     nodal_dict = graph_dict['{}_NodalMeasures'.format(G_name)]
     global_dict = graph_dict['{}_GlobalMeasures'.format(G_name)]
     
