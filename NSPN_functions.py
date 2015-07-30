@@ -148,8 +148,8 @@ def read_in_df(data_file, aparc_names):
     df['ones'] = df['age_scan'] * 0 + 1
     df['age'] = df['age_scan']
     
-    df['Global'] = df[aparc_names].mean(axis=1)
-    df['Global_std'] = df[aparc_names].mean(axis=1)
+    df['Global'] = df[measure_dict['aparc_names']].mean(axis=1)
+    df['Global_std'] = df[measure_dict['aparc_names']].mean(axis=1)
 
     # If there is a corresponding standard deviation
     # file then read in the standard deviation
@@ -176,7 +176,7 @@ def read_in_df(data_file, aparc_names):
         df['Global_std'] = np.sqrt(np.average(df_std[aparc_names]**2, axis=1))
     
     # Convert the values to floats
-    df[aparc_names] = df[aparc_names].astype('float')
+    df[measure_dict['aparc_names']] = df[measure_dict['aparc_names']].astype('float')
     
     # If this is an MT, R2s, synthetic, MD, L1 or L23 file
     # then you have to divide the values by 1000
@@ -258,8 +258,6 @@ def create_pysurfer_command(roi_file,
     
 def renumber_modules(measure_dict):
 
-    import numpy as np
-    
     module = measure_dict['Module_CT_covar_ones_all_COST_10']
     ct_14 = measure_dict['CT_all_slope_age_at14']
     
@@ -497,14 +495,14 @@ def save_global_values(measure_dict, measure_name, df, df_ct):
     measure_dict['{}_global_std'.format(measure_name)] = df['Global_std'].values
         
     # VAR across regions
-    v_nodal = df[aparc_names].var(axis=0)
+    v_nodal = df[measure_dict['aparc_names']].var(axis=0)
     p75 = np.percentile(v_nodal, 75)
     p25 = np.percentile(v_nodal, 25)
     IQR = p75 - p25
     upper_limit = p75 + 1.5*IQR
     measure_dict['{}_low_var_names'.format(measure_name)] = [ name for name in measure_dict['aparc_names'] if v_nodal[name] < upper_limit ]
     measure_dict['{}_high_var_names'.format(measure_name)] = [ name for name in measure_dict['aparc_names'] if v_nodal[name] >= upper_limit ]
-    v_all = df[aparc_names].var(axis=1)
+    v_all = df[measure_dict['aparc_names']].var(axis=1)
     measure_dict['{}_allregions_var'.format(measure_name)] = v_all
     v_low = df[measure_dict['{}_low_var_names'.format(measure_name)]].var(axis=1)
     measure_dict['{}_low_var_regions_var'.format(measure_name)] = v_low
