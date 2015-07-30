@@ -283,15 +283,39 @@ def renumber_modules(measure_dict):
     
 def save_name_lists(measure_dict, aparc_names, lobes, von_economo, von_economo_3, centroids):
 
+    # ROI names
     measure_dict['aparc_names'] = aparc_names
+    measure_dict['dk_names_34'] = sorted(list(set([ roi.split('_')[1] for roi in aparc_names ])))
+    measure_dict['dk_names_68'] = sorted(list(set([ roi.rsplit('_', 1)[0] for roi in aparc_names ])))        
+    
+    # ROI hemispheres
+    measure_dict['hemi'] = np.array([ name[0] for name in aparc_names])
+    measure_dict['hemi_34'] = np.array([ name[0] for name in measure_dict['dk_names_34']])
+    measure_dict['hemi_68'] = np.array([ name[0] for name in measure_dict['dk_names_68']])
+    
+    # ROI lobes, von_economo labels and von_economo_3 labels
     measure_dict['lobes'] = lobes
     measure_dict['von_economo'] = von_economo
     measure_dict['von_economo_3'] = von_economo_3
-    measure_dict['centroids'] = centroids
-    measure_dict['hemi'] = np.array([ name[0] for name in aparc_names])
-    measure_dict['dk_names_34'] = sorted(list(set([ roi.split('_')[1] for roi in aparc_names ])))
-    measure_dict['dk_names_68'] = sorted(list(set([ roi.rsplit('_', 1)[0] for roi in aparc_names ])))        
+    
+    for measure in [ 'lobes', 'von_economo', 'von_economo_3' ]:
+        # 34 regions
+        list_34 = []
+        for roi in measure_dict['dk_names_34']:
+            i = np.where(np.array(aparc_names) =='lh_{}_part1'.format(roi))
+            list_34 += [ measure_dict[measure][i[0]] ]
+        measure_dict['{}_34'.format(measure)] = np.array(list_34)
+        
+        # 68 regions
+        list_68 = []
+        for roi in measure_dict['dk_names_68']:
+            i = np.where(np.array(aparc_names) =='{}_part1'.format(roi))
+            list_68 += [ measure_dict[measure][i[0]] ]
+        measure_dict['{}_68'.format(measure)] = np.array(list_68)
 
+    # Centroids - for 308 only at the moment!
+    measure_dict['centroids'] = centroids
+    
     return measure_dict
     
 def append_collapsed_across_regions(df, measure_dict):

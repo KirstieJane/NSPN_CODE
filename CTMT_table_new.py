@@ -94,11 +94,14 @@ def get_dicts(measure_dict, n=308):
     multi_column_dict = {}
 
     if n == 68:
-        suff='_68'
+        suff = '_68'
+        names = 'dk_names_68'
     elif n == 34:
         suff='_34'
+        names = 'dk_names_34'
     else:
         suff=''
+        names = 'aparc_names'
         
     table_dict['Lobe'] = measure_dict['lobes{}'.format(suff)]
     format_dict['Lobe'] = s
@@ -108,7 +111,10 @@ def get_dicts(measure_dict, n=308):
     bottom_title_dict['Lobe'] = ''
     multi_column_dict['Lobe'] = 1
 
-    table_dict['Region'] = [ x.split('_')[1] for x in measure_dict['aparc_names{}'.format(suff)] ]
+    if n > 34:
+        table_dict['Region'] = [ x.split('_')[1] for x in measure_dict[names] ]
+    else:
+        table_dict['Region'] = measure_dict[names]
     format_dict['Region'] = s
     align_title_dict['Region'] = 'c'
     align_col_dict['Region'] = 'l'
@@ -124,14 +130,15 @@ def get_dicts(measure_dict, n=308):
     bottom_title_dict['Hemi'] = ''
     multi_column_dict['Hemi'] = 1
 
-    table_dict['SubRegion'] = [ x.split('part')[-1] for x in measure_dict['aparc_names{}'.format(suff)] ]
+    table_dict['SubRegion'] = [ x.split('part')[-1] for x in measure_dict[names] ]
     format_dict['SubRegion'] = i
     align_title_dict['SubRegion'] = 'C{1.3cm}'
     align_col_dict['SubRegion'] = 'R{1.3cm}'
-    top_title_dict['SubRegion'] = 'SubRegion'
+    top_title_dict['SubRegion'] = 'Sub Region'
     bottom_title_dict['SubRegion'] = ''
     multi_column_dict['SubRegion'] = 1
 
+    table_dict['N_SubRegions'] = measure_dict['N_SubRegions{}'.format(suff)]
     format_dict['N_SubRegions'] = i
     align_title_dict['N_SubRegions'] = 'C{1.3cm}'
     align_col_dict['N_SubRegions'] = 'R{1.3cm}'
@@ -204,16 +211,16 @@ def get_dicts(measure_dict, n=308):
     multi_column_dict['MT_projfrac+030_all_slope_ct_p'] = 0
 
     col_list = ['Lobe', 'Region', 
-            'Hemi', 'SubRegion', 
-            'CT_all_slope_age_at14', 'CT_all_slope_age', 'CT_all_slope_age_p',
-            'MT_projfrac+030_all_slope_age_at14', 'MT_projfrac+030_all_slope_age', 'MT_projfrac+030_all_slope_age_p',
-            'MT_projfrac+030_all_slope_ct', 'MT_projfrac+030_all_slope_ct_p']
+                'Hemi', 'SubRegion', 
+                'CT_all_slope_age_at14', 'CT_all_slope_age', 'CT_all_slope_age_p',
+                'MT_projfrac+030_all_slope_age_at14', 'MT_projfrac+030_all_slope_age', 'MT_projfrac+030_all_slope_age_p',
+                'MT_projfrac+030_all_slope_ct', 'MT_projfrac+030_all_slope_ct_p']
 
     if n==34:
         col_list = col_list[0:2] + ['N_SubRegions'] + col_list[4:]
     elif n==68:
         col_list = col_list[0:3] + ['N_SubRegions'] + col_list[4:]
-    
+        
     # Put all these dicts into a dict of dicts
     table_dict_dict = { 'table_dict' : table_dict,
                         'format_dict' : format_dict,
