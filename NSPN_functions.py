@@ -350,12 +350,8 @@ def append_collapsed_across_regions(df, measure_dict):
     
     return df
     
-    
-def save_values_to_dict(measure_name, measure_dict, df, df_ct):
-    
-    import numpy as np
-    import pandas as pd
-    
+def save_regional_values(measure_name, measure_dict, df, df_ct):
+
     names_dict = { 308 : measure_dict['aparc_names'],
                     68 : measure_dict['dk_names_68'],
                     34 : measure_dict['dk_names_34'] }
@@ -461,5 +457,98 @@ def save_values_to_dict(measure_name, measure_dict, df, df_ct):
             measure_dict['{}_vs_CT_all_slope_age_at25_p{}'.format(measure_name, suff)] = p
             measure_dict['{}_vs_CT_all_slope_age_at25_p_perm{}'.format(measure_name, suff)] = perm_p
 
+    return measure_dict
+    
+    
+def save_network_values(measure_dict, G_name):
+    nodal_dict = graph_dict['{}_NodalMeasures'.format(G_name)]
+    global_dict = graph_dict['{}_GlobalMeasures'.format(G_name)]
+    
+    measure_dict['Degree_{}'.format(G_name)] = nodal_dict['degree']
+    measure_dict['PC_{}'.format(G_name)] = nodal_dict['pc']
+    measure_dict['Module_{}'.format(G_name)] = nodal_dict['module'] + 1
+    measure_dict['Closeness_{}'.format(G_name)] = nodal_dict['closeness']
+    measure_dict['ShortestPath_{}'.format(G_name)] = nodal_dict['shortest_path']
+    measure_dict['Clustering_{}'.format(G_name)] = nodal_dict['clustering']
+    measure_dict['AverageDist_{}'.format(G_name)] = nodal_dict['average_dist']
+    measure_dict['TotalDist_{}'.format(G_name)] = nodal_dict['total_dist']
+    measure_dict['InterhemProp_{}'.format(G_name)] = nodal_dict['interhem_prop']
+    
+    return measure_dict
+    
+def save_global_values(measure_dict, measure_name, df, df_ct):
+    # MEAN
+    measure_dict['{}_global_mean'.format(measure_name)] = df['Global'].values
+
+    # STD
+    measure_dict['{}_global_std'.format(measure_name)] = df['Global_std'].values
+        
+    # VAR across regions
+    v_nodal = df[aparc_names].var(axis=0)
+    p75 = np.percentile(v_nodal, 75)
+    p25 = np.percentile(v_nodal, 25)
+    IQR = p75 - p25
+    upper_limit = p75 + 1.5*IQR
+    measure_dict['{}_low_var_names'.format(measure_name)] = [ name for name in measure_dict['aparc_names'] if v_nodal[name] < upper_limit ]
+    measure_dict['{}_high_var_names'.format(measure_name)] = [ name for name in measure_dict['aparc_names'] if v_nodal[name] >= upper_limit ]
+    v_all = df[aparc_names].var(axis=1)
+    measure_dict['{}_allregions_var'.format(measure_name)] = v_all
+    v_low = df[measure_dict['{}_low_var_names'.format(measure_name)]].var(axis=1)
+    measure_dict['{}_low_var_regions_var'.format(measure_name)] = v_low
+    v_high = df[measure_dict['{}_low_var_names'.format(measure_name)]].var(axis=1)
+    measure_dict['{}_high_var_regions_var'.format(measure_name)] = v_high
+
+        # CORR GLOBAL W AGE
+        m, c, r, p, sterr, perm_p = permutation_correlation(df['age_scan'], df['Global'].values)
+    
+        measure_dict['{}_global_slope_age'.format(measure_name)] = m
+        measure_dict['{}_global_slope_age_c'.format(measure_name)] = c
+        measure_dict['{}_global_slope_age_at14'.format(measure_name)] = c + 14*m
+        measure_dict['{}_global_slope_age_at25'.format(measure_name)] = c + 25*m
+        measure_dict['{}_global_slope_age_r'.format(measure_name)] = r
+        measure_dict['{}_global_slope_age_p'.format(measure_name)] = p
+        measure_dict['{}_global_slope_age_p_perm'.format(measure_name)] = perm_p
+
+        # CORR VAR (ALL REGIONS) W AGE
+        m, c, r, p, sterr, perm_p = permutation_correlation(df['age_scan'], v_all)
+    
+        measure_dict['{}_allregions_var_slope_age'.format(measure_name)] = m
+        measure_dict['{}_allregions_var_slope_age_c'.format(measure_name)] = c
+        measure_dict['{}_allregions_var_slope_age_at14'.format(measure_name)] = c + 14*m
+        measure_dict['{}_allregions_var_slope_age_at25'.format(measure_name)] = c + 25*m
+        measure_dict['{}_allregions_var_slope_age_r'.format(measure_name)] = r
+        measure_dict['{}_allregions_var_slope_age_p'.format(measure_name)] = p
+        measure_dict['{}_allregions_var_slope_age_p_perm'.format(measure_name)] = perm_p
+        
+        # CORR VAR (LOW VAR REGIONS) W AGE
+        m, c, r, p, sterr, perm_p = permutation_correlation(df['age_scan'], v_low)
+    
+        measure_dict['{}_low_var_regions_var_slope_age'.format(measure_name)] = m
+        measure_dict['{}_low_var_regions_var_slope_age_c'.format(measure_name)] = c
+        measure_dict['{}_low_var_regions_var_slope_age_at14'.format(measure_name)] = c + 14*m
+        measure_dict['{}_low_var_regions_var_slope_age_at25'.format(measure_name)] = c + 25*m
+        measure_dict['{}_low_var_regions_var_slope_age_r'.format(measure_name)] = r
+        measure_dict['{}_low_var_regions_var_slope_age_p'.format(measure_name)] = p
+        measure_dict['{}_low_var_regions_var_slope_age_p_perm'.format(measure_name)] = perm_p
+
+        #  CORR W CT
+        if not measure_name == 'CT':
+            
+            df_ct_mt = df_ct.merge(df, 
+                                    on=['nspn_id', 'occ'],
+                                    how='inner', 
+                                    suffixes=['_ct', '_mt'])
+                                    
+            m, c, r, p, sterr, perm_p = permutation_correlation(df_ct_mt['Global_ct'].values,
+                                                                 df_ct_mt['Global_mt'].values)
+    
+            measure_dict['{}_global_slope_ct'.format(measure_name)] = m
+            measure_dict['{}_global_slope_ct_c'.format(measure_name)] = c
+            measure_dict['{}_global_slope_ct_at14'.format(measure_name)] = c + 14*m
+            measure_dict['{}_global_slope_ct_at25'.format(measure_name)] = c + 25*m
+            measure_dict['{}_global_slope_ct_r'.format(measure_name)] = r
+            measure_dict['{}_global_slope_ct_p'.format(measure_name)] = p
+            measure_dict['{}_global_slope_ct_p_perm'.format(measure_name)] = perm_p
+    
     return measure_dict
     
