@@ -250,7 +250,7 @@ def create_pysurfer_command(roi_file,
         
     # Change the cortex style if necessary
     if cst:
-        command_list += [ '-cst {}.format(cst) ]
+        command_list += [ '-cst {}'.format(cst) ]
         
     # And add the filename
     command_list += [ roi_file ]
