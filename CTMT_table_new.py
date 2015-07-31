@@ -326,6 +326,20 @@ def adjust_spacings(latex_table, col_list, align_col_dict):
     return latex_table
     
 #------------------------------------------------------------------------------
+# Define your latex add in caption function
+#------------------------------------------------------------------------------
+def add_caption(latex_table, caption):
+    '''
+    Just add in a row on the second line down to include the caption (title)
+    for this table
+    '''
+    latex_table_list = latex_table.split('\n')
+    latex_table_list[0] = latex_table_list[0] + '\n\\caption{{{}}} \\\\'.format(caption)         
+    latex_table = '\n'.join(latex_table_list)
+
+    return latex_table
+    
+#------------------------------------------------------------------------------
 # Define your latex adjust header function
 #------------------------------------------------------------------------------
 def adjust_header(latex_table, align_title_dict, multi_column_dict, top_title_dict, bottom_title_dict):
@@ -378,7 +392,7 @@ def save_df_to_latex(latex_header, latex_footer, latex_table, output_filename):
 #------------------------------------------------------------------------------
 # Write the overall wrapper function
 #------------------------------------------------------------------------------    
-def create_latex_tables(measure_dict, output_filename, sort_col='MT_projfrac+030_all_slope_age', ascending=False, n=308):
+def create_latex_tables(measure_dict, output_filename, caption=False, sort_col='MT_projfrac+030_all_slope_age', ascending=False, n=308):
     '''
     The overall wrapper function
     '''
@@ -403,6 +417,10 @@ def create_latex_tables(measure_dict, output_filename, sort_col='MT_projfrac+030
                                     table_dict_dict['col_list'], 
                                     table_dict_dict['align_col_dict'])
 
+    # Add in caption
+    if caption:
+        latex_table = add_caption(latex_table, caption)
+    
     # Adjust the header alignments and make the text bold
     latex_table = adjust_header(latex_table, 
                                 table_dict_dict['align_title_dict'], 
@@ -415,19 +433,24 @@ def create_latex_tables(measure_dict, output_filename, sort_col='MT_projfrac+030
     
     # Save to output_file
     save_df_to_latex(latex_header, latex_footer, latex_table, output_filename)
-
+    
+    # Save to output_file without the header and footer
+    save_df_to_latex('', '', latex_table, output_filename.replace('.tex', '.txt'))    
 
 """    
 #==============================================================================
 # SUGGESTED USAGE
 #==============================================================================
 table_filename_308 = 'test_308.tex'
-create_latex_tables(measure_dict, table_filename_308, sort_col='MT_projfrac+030_all_slope_age', n=308)
+caption = 'All Regional Measures (N=308) - Discovery Cohort'
+create_latex_tables(measure_dict, table_filename_308, sort_col='MT_projfrac+030_all_slope_age', n=308, caption=caption)
                     
 table_filename_34 = 'test_34.tex'
-create_latex_tables(measure_dict, table_filename_34, sort_col='MT_projfrac+030_all_slope_age', n=34)
+caption = 'Regional Measures (N=34 atlas regions) - Discovery Cohort'
+create_latex_tables(measure_dict, table_filename_34, sort_col='MT_projfrac+030_all_slope_age', n=34, caption=caption)
 
 table_filename_68 = 'test_68.tex'
-create_latex_tables(measure_dict, table_filename_68, sort_col='MT_projfrac+030_all_slope_age', n=68)
+caption = 'Regional Measures (N=68 atlas regions - Discovery Cohort'
+create_latex_tables(measure_dict, table_filename_68, sort_col='MT_projfrac+030_all_slope_age', n=68, caption=caption)
                     
 """
