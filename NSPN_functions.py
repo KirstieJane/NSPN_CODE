@@ -208,6 +208,7 @@ def create_pysurfer_command(roi_file,
                             u=None, 
                             t=-99, 
                             s='pial', 
+                            cst='classic',
                             center=False):
     '''
     Create a text string containing the appropriate options for
@@ -246,6 +247,10 @@ def create_pysurfer_command(roi_file,
     # Center if necessary
     if center:
         command_list += [ '--center' ]
+        
+    # Change the cortex style if necessary
+    if cst:
+        command_list += [ '-cst {}.format(cst) ]
         
     # And add the filename
     command_list += [ roi_file ]
