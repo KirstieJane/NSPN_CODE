@@ -367,7 +367,7 @@ def adjust_header(latex_table, align_title_dict, multi_column_dict, top_title_di
     and containing some multicolumns and the second being in regular text
     '''
     latex_table_list = latex_table.split('\n')
-    titles_list, lineend = [ x.split('&')  for x in latex_table_list[2].rsplit(' ',1) ]
+    titles_list, lineend = [ x.split('&') for x in latex_table_list[2].rsplit(' ',1) ]
     top_titles_list = []
     bottom_titles_list = []
     for title in titles_list:
@@ -436,10 +436,6 @@ def create_latex_tables(measure_dict, output_filename, caption=False, sort_col='
                                     table_dict_dict['col_list'], 
                                     table_dict_dict['align_col_dict'])
 
-    # Add in caption
-    if caption:
-        latex_table = add_caption(latex_table, caption)
-    
     # Adjust the header alignments and make the text bold
     latex_table = adjust_header(latex_table, 
                                 table_dict_dict['align_title_dict'], 
@@ -447,7 +443,11 @@ def create_latex_tables(measure_dict, output_filename, caption=False, sort_col='
                                 table_dict_dict['top_title_dict'], 
                                 table_dict_dict['bottom_title_dict'])
 
-    # Get your latex header and footer
+    # Add in caption
+    if caption:
+        latex_table = add_caption(latex_table, caption)
+    
+    # Get your latex document header and footer
     latex_header, latex_footer = create_header_footer()
     
     # Save to output_file
