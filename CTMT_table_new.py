@@ -1,9 +1,28 @@
 #!/usr/bin/env python
 
-'''
+"""    
+#==================
 Code to make tables for the NSPN Cortical Myelination paper
-'''
 
+Created July 2015 by Kirstie Whitaker
+Contact: kw401@cam.ac.uk or www.github.com/KirstieJane
+#==================
+
+Suggested Usage:
+#==================
+table_filename_308 = 'test_308.tex'
+caption = 'All Regional Measures (N=308) - Discovery Cohort'
+create_latex_tables(measure_dict, table_filename_308, sort_col='MT_projfrac+030_all_slope_age', n=308, caption=caption)
+                    
+table_filename_34 = 'test_34.tex'
+caption = 'Regional Measures (N=34 atlas regions) - Discovery Cohort'
+create_latex_tables(measure_dict, table_filename_34, sort_col='MT_projfrac+030_all_slope_age', n=34, caption=caption)
+
+table_filename_68 = 'test_68.tex'
+caption = 'Regional Measures (N=68 atlas regions - Discovery Cohort'
+create_latex_tables(measure_dict, table_filename_68, sort_col='MT_projfrac+030_all_slope_age', n=68, caption=caption)
+                    
+"""
 import numpy as np
 import matplotlib.pylab as plt
 import pandas as pd
@@ -437,20 +456,4 @@ def create_latex_tables(measure_dict, output_filename, caption=False, sort_col='
     # Save to output_file without the header and footer
     save_df_to_latex('', '', latex_table, output_filename.replace('.tex', '.txt'))    
 
-"""    
-#==============================================================================
-# SUGGESTED USAGE
-#==============================================================================
-table_filename_308 = 'test_308.tex'
-caption = 'All Regional Measures (N=308) - Discovery Cohort'
-create_latex_tables(measure_dict, table_filename_308, sort_col='MT_projfrac+030_all_slope_age', n=308, caption=caption)
-                    
-table_filename_34 = 'test_34.tex'
-caption = 'Regional Measures (N=34 atlas regions) - Discovery Cohort'
-create_latex_tables(measure_dict, table_filename_34, sort_col='MT_projfrac+030_all_slope_age', n=34, caption=caption)
 
-table_filename_68 = 'test_68.tex'
-caption = 'Regional Measures (N=68 atlas regions - Discovery Cohort'
-create_latex_tables(measure_dict, table_filename_68, sort_col='MT_projfrac+030_all_slope_age', n=68, caption=caption)
-                    
-"""
