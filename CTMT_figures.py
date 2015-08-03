@@ -1351,7 +1351,7 @@ def get_von_economo_shapes_dict(von_economo):
             
     return shape_dict
     
-def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_mean', group_label='Cortical Laminar Pattern', y_label=None, y_min=1.5, y_max=4.0, figure_name=None, figure=None, ax=None, von_economo_colors=True, color_dict="muted", cmap_name=None, red_max=False, red_min=False, alpha=1.0):
+def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_mean', group_label='Cortical Laminar Pattern', y_label=None, y_min=1.5, y_max=4.0, figure_name=None, figure=None, ax=None, von_economo_colors=True, color_dict="muted", cmap_name=None, max_color=False, min_color=False, alpha=1.0):
 
     # Set the seaborn style
     sns.set(style="white")
@@ -1404,20 +1404,20 @@ def von_economo_boxes(measure_dict, figures_dir, von_economo, measure='CT_all_me
     ax.set_ylim((y_min, y_max))
     
     # Make the max median line red if requested
-    if red_max:
+    if max_color:
         medians = [ line.get_ydata()[0] for line in bp.get_lines()[4::6] ]
         max_median = np.max(medians)
         for line in bp.get_lines()[4::6]:
             if line.get_ydata()[0] == max_median:
-                line.set_color('r')
+                line.set_color(max_color)
                 
     # Make the minimum median line red if requested
-    if red_min:
+    if min_color:
         medians = [ line.get_ydata()[0] for line in bp.get_lines()[4::6] ]
         min_median = np.min(medians)
         for line in bp.get_lines()[4::6]:
             if line.get_ydata()[0] == min_median:
-                line.set_color('r')
+                line.set_color(min_color)
     
     # Change the alpha value for the fill color if requested
     start_i = len(set(von_economo))*6 + 2
@@ -1734,7 +1734,8 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                         y_min=min_max_dict['CT_all_slope_age_at14_min'], 
                         y_max=min_max_dict['CT_all_slope_age_at14_max'], 
                         von_economo_colors=True,
-                        red_max=True,
+                        max_color='red',
+                        min_color='blue',
                         alpha=0,
                         figure_name=figure_name)
     
@@ -1745,7 +1746,8 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                                         y_min=min_max_dict['CT_all_slope_age_at14_min'], 
                                         y_max=min_max_dict['CT_all_slope_age_at14_max'], 
                                         von_economo_colors=True,
-                                        red_max=True,
+                                        max_color='red',
+                                        min_color='blue',
                                         alpha=0,
                                         ax=ax_list[0, 2],
                                         figure=big_fig)
@@ -1759,7 +1761,8 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                         y_label=axis_label_dict['CT_all_slope_age'], 
                         y_min=min_max_dict['CT_all_slope_age_min'], 
                         y_max=min_max_dict['CT_all_slope_age_max'], 
-                        red_min=True,
+                        max_color='blue',
+                        min_color='red',
                         alpha=0,
                         von_economo_colors=True,
                         figure_name=figure_name)
@@ -1771,7 +1774,8 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                                         y_min=min_max_dict['CT_all_slope_age_min'], 
                                         y_max=min_max_dict['CT_all_slope_age_max'],
                                         von_economo_colors=True,
-                                        red_min=True,
+                                        max_color='blue',
+                                        min_color='red',
                                         alpha=0,
                                         ax=ax_list[1, 2],
                                         figure=big_fig)
@@ -1786,7 +1790,8 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                         y_label=axis_label_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)], 
                         y_min=min_max_dict['{}_projfrac+030_all_slope_age_at14_min'.format(mpm)], 
                         y_max=min_max_dict['{}_projfrac+030_all_slope_age_at14_max'.format(mpm)], 
-                        red_min=True,
+                        max_color='blue',
+                        min_color='red',
                         alpha=0,
                         von_economo_colors=True,
                         figure_name=figure_name)
@@ -1798,7 +1803,8 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                                         y_min=min_max_dict['{}_projfrac+030_all_slope_age_at14_min'.format(mpm)], 
                                         y_max=min_max_dict['{}_projfrac+030_all_slope_age_at14_max'.format(mpm)], 
                                         von_economo_colors=True,
-                                        red_min=True,
+                                        max_color='blue',
+                                        min_color='red',
                                         alpha=0,
                                         ax=ax_list[2, 2],
                                         figure=big_fig)
@@ -1814,7 +1820,8 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                         y_min=min_max_dict['{}_projfrac+030_all_slope_age_min'.format(mpm)], 
                         y_max=min_max_dict['{}_projfrac+030_all_slope_age_max'.format(mpm)], 
                         von_economo_colors=True,
-                        red_max=True,
+                        max_color='red',
+                        min_color='blue',
                         alpha=0,
                         figure_name=figure_name)
     
@@ -1825,7 +1832,8 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                                         y_min=min_max_dict['{}_projfrac+030_all_slope_age_min'.format(mpm)], 
                                         y_max=min_max_dict['{}_projfrac+030_all_slope_age_max'.format(mpm)], 
                                         von_economo_colors=True,
-                                        red_max=True,
+                                        max_color='red',
+                                        min_color='blue',
                                         alpha=0,
                                         ax=ax_list[3, 2],
                                         figure=big_fig)
@@ -2340,7 +2348,8 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
                                             y_label=y_label, 
                                             y_min=network_measure_min, 
                                             y_max=network_measure_max, 
-                                            red_max=True,
+                                            max_color='red',
+                                            min_color='blue',
                                             alpha=0,
                                             ax=ax_list[0],
                                             figure=big_fig)
@@ -2515,7 +2524,8 @@ def figure_3_separate(measure_dict, figures_dir, results_dir, mpm='MT', network_
                             measure='{}_CT_covar_ones_all_COST_10'.format(measure),
                             y_label=y_label, 
                             y_min=measure_min, y_max=measure_max, 
-                            red_max=True,
+                            max_color='red',
+                            min_color='blue',
                             alpha=0,
                             figure_name=figure_name)
         
@@ -2524,7 +2534,8 @@ def figure_3_separate(measure_dict, figures_dir, results_dir, mpm='MT', network_
                                             measure='{}_CT_covar_ones_all_COST_10'.format(measure),
                                             y_label=y_label, 
                                             y_min=measure_min, y_max=measure_max, 
-                                            red_max=True,
+                                            max_color='red',
+                                            min_color='blue',
                                             alpha=0,
                                             ax=ax_list[2, i],
                                             figure=big_fig)
@@ -2710,11 +2721,11 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT'):
         y_label = axis_label_dict[measure]        
         
         if (i == 1) or (i == 4):
-            red_max = True
-            red_min = False
+            max_color = 'red'
+            min_color = 'blue'
         else:
-            red_max = False
-            red_min = True
+            max_color = 'blue'
+            min_color = 'red'
             
         ax = von_economo_boxes(measure_dict, figures_dir, 
                                             rc, 
@@ -2725,8 +2736,8 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT'):
                                             von_economo_colors=False,
                                             cmap_name='coolwarm',
                                             alpha=0,
-                                            red_max=red_max,
-                                            red_min=red_min,
+                                            max_color=max_color,
+                                            min_color=min_color,
                                             ax=ax,
                                             figure=big_fig)
                                             

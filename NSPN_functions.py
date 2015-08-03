@@ -484,7 +484,7 @@ def save_network_values(measure_dict, G_name, graph_dict):
             grouped = nodal_df.groupby(['dk_region'])
         else:
             suff = ''
-            grouped = nodal_df.groupby('name')
+            grouped = nodal_df.groupby('name', sort=False)
         
         degree_list = []
         pc_list = []
