@@ -2106,7 +2106,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
 def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
     # Set the seaborn context and style
     sns.set(style="white")
-    sns.set_context("poster", font_scale=3)
+    sns.set_context("poster", font_scale=2)
 
     # Get the set values
     min_max_dict = get_min_max_values(measure_dict)
@@ -2151,7 +2151,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
         grid = gridspec.GridSpec(1, 3)
         bottom = ( 1 - ((5*i)+5)/ 15.0 ) + 0.03
         top = ( 1 - ((5*i)+2)/15.0 ) - 0.03
-        grid.update(bottom=bottom, top=top, left=0.05, right=0.98)
+        grid.update(bottom=bottom, top=top, left=0.05, right=0.98, hspace=0.1)
         
         ax_list = []
         for g_loc in grid:
@@ -2187,7 +2187,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
             measure_max = min_max_dict['{}_max'.format(measure)]
             y_label = axis_label_dict[measure]
             x_label = axis_label_dict[network_measure]
-        
+            
             ax_list[j+1] = pretty_scatter(measure_dict['{}_CT_covar_ones_all_COST_10'.format(network_measure)],
                                                 measure_dict[measure], 
                                                 x_label=x_label,
@@ -2198,7 +2198,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
                                                 marker='^',
                                                 ax=ax_list[j+1],
                                                 figure=big_fig)    
-                                 
+                    
     #=========================================================================
     # Add in the letters for each panel
     #=========================================================================
