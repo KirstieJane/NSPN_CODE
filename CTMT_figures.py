@@ -527,10 +527,6 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
     import matplotlib.pylab as plt
     import seaborn as sns
     
-    # Set the seaborn context and style
-    sns.set(style="white")
-    sns.set_context("poster", font_scale=2)
-    
     # Get the data, colors and labels
     df, color_list, color_dict = create_violin_data(measure_dict, 
                                                         mpm=mpm, 
@@ -545,6 +541,9 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
     if not ax:
         # Create a figure
         fig, ax = plt.subplots(figsize=(10, 10))
+        # Set the seaborn context and style
+        sns.set(style="white")
+        sns.set_context("poster", font_scale=2)
     else:
         fig = figure
         
@@ -560,7 +559,7 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
         # or smaller than 0.001
         ax.ticklabel_format(axis='y', style='sci', scilimits=(-2,2))
         # Make sure there aren't too many bins!
-        ax.locator_params(axis='y', nbins=4)        
+        ax.locator_params(axis='y', nbins=4)  
         # Add in the tick labels and rotate them
         ax.set_xticklabels(labels_list, rotation=90)
         # Put a line at the grey white matter boundary
@@ -577,6 +576,10 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
             ax.set_xlim((y_min, y_max))
         ax.set_yticklabels(labels_list)
         ax.ticklabel_format(axis='x', style='sci', scilimits=(-5,5))    
+        size = ax.get_yticklabels()[0].get_fontsize()
+        for lab in ax.get_yticklabels():
+            f_size = lab.get_fontsize()
+            lab.set_fontsize(f_size * 0.7)  
         # Make sure there aren't too many bins!
         ax.locator_params(axis='x', nbins=4)
         # Put a line at the grey white matter boundary
@@ -598,11 +601,11 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
         
         cb_grid = gridspec.GridSpec(1,1)
         pos = ax.get_position()
-
+        
         if vert:
             cb_grid.update(left=pos.x1+0.01, right=pos.x1+0.02, bottom=pos.y0, top=pos.y1, wspace=0, hspace=0)
         else:
-            cb_grid.update(left=pos.x0, right=pos.x1, bottom=pos.y0-0.04, top=pos.y0-0.03, wspace=0, hspace=0)    
+            cb_grid.update(left=pos.x0, right=pos.x1, bottom=pos.y0-0.05, top=pos.y0-0.04, wspace=0, hspace=0)    
             
         fig = add_colorbar(cb_grid[0], fig, 
                                 cmap_name=cmap, 
@@ -678,6 +681,10 @@ def violin_add_laminae(ax, vert=True, labels=True):
     
     if labels:
     
+        for lab in ax.get_yticklabels():
+            f_size = lab.get_fontsize()
+        print f_size
+        
         for top, bottom, numeral in zip(boundary_values[0::1], boundary_values[1::1], numerals):
 
             if vert:
@@ -686,14 +693,14 @@ def violin_add_laminae(ax, vert=True, labels=True):
                 ax.text(x_pos, y_pos, numeral,
                             horizontalalignment='center',
                             verticalalignment='center',
-                            fontsize=25)
+                            fontsize=f_size)
             else:
                 x_pos = ax.get_xlim()[1] - (ax.get_xlim()[1] - ax.get_xlim()[0]) * 0.05
                 y_pos = np.mean([top, bottom])
                 ax.text(x_pos, y_pos, numeral,
                             horizontalalignment='center',
                             verticalalignment='center',
-                            fontsize=25)
+                            fontsize=f_size)
                             
     return ax
 
@@ -1589,7 +1596,7 @@ def add_cells_picture(figures_dir, big_fig):
     
     # Add an axis in the bottom left corner
     grid = gridspec.GridSpec(1, 1)
-    grid.update(left=0.36, right=0.51, top=0.47, bottom=0.1, wspace=0, hspace=0)
+    grid.update(left=0.33, right=0.45, top=0.47, bottom=0.1, wspace=0, hspace=0)
     ax = plt.Subplot(big_fig, grid[0])
     big_fig.add_subplot(ax)
 
@@ -1597,6 +1604,10 @@ def add_cells_picture(figures_dir, big_fig):
     ax.imshow(img_cropped)
     ax.axis('off')
     
+    # Get the font size
+    for lab in [ ax.yaxis.label ]:
+        f_size = lab.get_fontsize()
+            
     # Add in the laminar labels
     boundary_values = [ 0, 113, 166, 419, 499, 653, 945, 1170 ]
     
@@ -1608,7 +1619,7 @@ def add_cells_picture(figures_dir, big_fig):
         ax.text(x_pos, y_pos, numeral,
                     horizontalalignment='center',
                     verticalalignment='center',
-                    fontsize=25)
+                    fontsize=f_size/2.0)
                   
     '''
     ax.text(1.1, 0.5, 'Schematic of cortical laminae',
@@ -1774,11 +1785,11 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
             f_size = lab.get_fontsize()
             lab.set_fontsize(f_size * 0.88)     
 
+    '''
     # Place the A, B, C and i, ii, iii labels
     let_list = [ 'A', 'B', 'C', 'D' ]
     rom_list = [ 'i', 'ii', 'iii' ]
     
-    '''
     # For the first column put the letters in the top left corner
     for i, ax in enumerate(ax_list[:,0]):
         ax.text(-0.1, 0.95, '{}i'.format(let_list[i]),
@@ -1807,7 +1818,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     '''        
     # Save the figure
     filename = os.path.join(figures_dir, 'Figure1.png')
-    big_fig.savefig(filename, bbox_inches=0, dpi=120)
+    big_fig.savefig(filename, bbox_inches=0, dpi=30)
     
     plt.close()
     
@@ -1816,22 +1827,21 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     # Set the seaborn context and style
     sns.set(style="white")
-    sns.set_context("poster", font_scale=2)
+    sns.set_context("poster", font_scale=3.5)
 
     # Get the various min and max values:
     min_max_dict = get_min_max_values(measure_dict)
     axis_label_dict = get_axis_label_dict()
     
     # Create the big figure
-    big_fig, big_ax = plt.subplots(figsize=(32, 20), facecolor='white')
+    big_fig, big_ax = plt.subplots(figsize=(34.5, 22), facecolor='white')
     big_fig.subplots_adjust(left=0.05, right=0.98, bottom=0.07, top=0.95, wspace=0.05, hspace=0.05)
     
     #=========================================================================
     # We're going to set up a grid for the top row so we can 
     # adjust the spacings without screwing up the spacings in the bottom row
-    
     grid = gridspec.GridSpec(1, 3)
-    grid.update(left=0.15, bottom=0.56, top=0.96, wspace=0.2, hspace=0)
+    grid.update(left=0.17, bottom=0.57, top=0.96, wspace=0.2, hspace=0)
     top_ax_list = []
     for g_loc in grid:
         top_ax_list += [ plt.Subplot(big_fig, g_loc) ]
@@ -1847,25 +1857,11 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     ax.axis('off')
     
     #=========================================================================
-    # Nodal CT MT
-    figure_name = os.path.join(figures_dir, 
-                                'Nodal_CT_corr_{}_projfrac+030_slope_age_at14.png'.format(mpm))
-                                    
+    # Nodal CT MT                                    
     marker_color_dict = get_von_economo_color_dict(measure_dict['von_economo'])
     marker_shapes_dict = get_von_economo_shapes_dict(measure_dict['von_economo'])
     marker_colors = [ marker_color_dict[ve] for ve in measure_dict['von_economo'] ]
     marker_shapes = [ marker_shapes_dict[ve] for ve in measure_dict['von_economo'] ]
-    
-    pretty_scatter(measure_dict['CT_all_slope_age_at14'], measure_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)], 
-                    x_label=axis_label_dict['CT_all_slope_age_at14'],
-                    y_label=axis_label_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)], 
-                    x_min=min_max_dict['CT_all_slope_age_at14_min'],
-                    x_max=min_max_dict['CT_all_slope_age_at14_max'],
-                    y_min=min_max_dict['{}_projfrac+030_all_slope_age_at14_min'.format(mpm)],
-                    y_max=min_max_dict['{}_projfrac+030_all_slope_age_at14_max'.format(mpm)], 
-                    color='k',
-                    marker='^',
-                    figure_name=figure_name)
 
     top_ax_list[1] = pretty_scatter(measure_dict['CT_all_slope_age_at14'], 
                     measure_dict['{}_projfrac+030_all_slope_age_at14'.format(mpm)], 
@@ -1879,22 +1875,10 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                     marker='^',
                     ax=top_ax_list[1],
                     figure=big_fig)    
-                    
-    # NODAL SLOPE CT WITH SLOPE MT
-    figure_name = os.path.join(figures_dir, 
-                                'Nodal_CT_corr_{}_projfrac+030_slope_age.png'.format(mpm))
-                                    
-    pretty_scatter(measure_dict['CT_all_slope_age'], measure_dict['{}_projfrac+030_all_slope_age'.format(mpm)], 
-                    x_label=axis_label_dict['CT_all_slope_age'],
-                    y_label=axis_label_dict['{}_projfrac+030_all_slope_age'.format(mpm)], 
-                    x_min=min_max_dict['CT_all_slope_age_min'],
-                    x_max=min_max_dict['CT_all_slope_age_max'],
-                    y_min=min_max_dict['{}_projfrac+030_all_slope_age_min'.format(mpm)],
-                    y_max=min_max_dict['{}_projfrac+030_all_slope_age_max'.format(mpm)],  
-                    color='k',
-                    marker='^',
-                    figure_name=figure_name)
+    
+    top_ax_list[1].yaxis.set_label_coords(-0.14, 0.5)
 
+    # NODAL SLOPE CT WITH SLOPE MT
     top_ax_list[2] = pretty_scatter(measure_dict['CT_all_slope_age'], 
                     measure_dict['{}_projfrac+030_all_slope_age'.format(mpm)], 
                     x_label=axis_label_dict['CT_all_slope_age'],
@@ -1907,11 +1891,6 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                     color='k',
                     ax=top_ax_list[2],
                     figure=big_fig)    
-    
-    # Make sure the y labels are the same distance from the axis
-    # for these two plots    
-    for ax in top_ax_list:
-        ax.yaxis.set_label_coords(-0.1, 0.5)
 
     #=========================================================================
     # We're going to set up two separate grids for the bottom row so we can 
@@ -1920,14 +1899,14 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     # First a space for the first violin plot on the far left
     grid = gridspec.GridSpec(1, 1)
-    grid.update(left=0.12, right=0.37, top=0.47, bottom=0.1, wspace=0, hspace=0)
+    grid.update(left=0.0702, right=0.325, top=0.47, bottom=0.1, wspace=0, hspace=0)
     for g_loc in grid:
         violin_ax_list += [ plt.Subplot(big_fig, g_loc) ]
         big_fig.add_subplot(violin_ax_list[-1])
         
     # Next two spaces for the remaining two
     grid = gridspec.GridSpec(1, 2)
-    grid.update(left=0.49, top=0.47, bottom=0.1, wspace=0.08, hspace=0)
+    grid.update(left=0.45, top=0.47, bottom=0.1, wspace=0.08, hspace=0)
     for g_loc in grid:
         violin_ax_list += [ plt.Subplot(big_fig, g_loc) ]
         big_fig.add_subplot(violin_ax_list[-1])
@@ -1938,23 +1917,6 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     #=========================================================================
     # MEAN MT ACROSS NODES at different depths
-
-    figure_name = os.path.join(figures_dir, 
-                                '{}_all_mean_DifferentDepths.png'.format(mpm))
-    
-    violin_mt_depths(measure_dict,
-                        measure='all_mean',
-                        y_label=axis_label_dict['{}_all_mean'.format(mpm)],
-                        cmap='jet',
-                        y_min=min_max_dict['{}_all_mean_min'.format(mpm)],
-                        y_max=min_max_dict['{}_all_mean_max'.format(mpm)], 
-                        cmap_min=min_max_dict['{}_all_mean_min'.format(mpm)],
-                        cmap_max=min_max_dict['{}_all_mean_max'.format(mpm)],
-                        figure_name=figure_name,
-                        mpm=mpm,
-                        vert=False,
-                        cbar=True)
-
     violin_ax_list[0] = violin_mt_depths(measure_dict,
                         measure='all_mean',
                         y_label=axis_label_dict['{}_all_mean'.format(mpm)],
@@ -1970,26 +1932,11 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                         vert=False,
                         cbar=True)
                         
+    '''
     violin_ax_list[0].set_ylabel('Summary across 308 cortical regions\nat increasing distances from pial surface',
                                     fontsize=30)
-        
+    '''    
     # CORR WITH AGE ACROSS NODES at different depths
-    figure_name = os.path.join(figures_dir, 
-                                    '{}_all_slope_age_DifferentDepths.png'.format(mpm))
-    
-    violin_mt_depths(measure_dict,
-                        measure='all_slope_age',
-                        y_label=axis_label_dict['{}_all_slope_age'.format(mpm)],
-                        cmap='RdBu_r',
-                        y_min=min_max_dict['{}_all_slope_age_min'.format(mpm)], 
-                        y_max=min_max_dict['{}_all_slope_age_max'.format(mpm)], 
-                        cmap_min=min_max_dict['{}_all_slope_age_max'.format(mpm)]*-1/2.0, 
-                        cmap_max=min_max_dict['{}_all_slope_age_max'.format(mpm)]/2.0,
-                        figure_name=figure_name,
-                        mpm=mpm,
-                        vert=False,
-                        cbar=True)
-
     violin_ax_list[1] = violin_mt_depths(measure_dict,
                         measure='all_slope_age',
                         y_label=axis_label_dict['{}_all_slope_age'.format(mpm)],
@@ -2006,22 +1953,6 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                         cbar=True)
                          
     # CORR WITH CT ACROSS NODES at different depths
-    figure_name = os.path.join(figures_dir, 
-                                    '{}_all_slope_CT_DifferentDepths.png'.format(mpm))
-    
-    violin_mt_depths(measure_dict,
-                        measure='all_slope_ct',
-                        y_label=axis_label_dict['{}_all_slope_ct'.format(mpm)],
-                        cmap='PRGn',
-                        y_min=min_max_dict['{}_all_slope_ct_min'.format(mpm)], 
-                        y_max=min_max_dict['{}_all_slope_ct_max'.format(mpm)], 
-                        cmap_min=min_max_dict['{}_all_slope_ct_max'.format(mpm)]*-1, 
-                        cmap_max=min_max_dict['{}_all_slope_ct_max'.format(mpm)],
-                        figure_name=figure_name,
-                        mpm=mpm,
-                        vert=False,
-                        cbar=True)
-                        
     violin_ax_list[2] = violin_mt_depths(measure_dict,
                         measure='all_slope_ct',
                         y_label=axis_label_dict['{}_all_slope_ct'.format(mpm)],
@@ -2037,7 +1968,6 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                         vert=False,
                         cbar=True)
                         
-
     # Turn off the axes for the first columns
     for ax in [ big_ax, top_ax_list[0] ]:
         ax.axis('off')
@@ -2047,6 +1977,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     for ax in violin_ax_list[1:]:
         ax.set_yticklabels([])
     
+    '''
     # Place the A, B, C and i, ii, iii labels
     let_list = [ 'A', 'B', 'C' ]
     rom_list = [ 'i', 'ii', 'iii', 'iv' ]
@@ -2096,10 +2027,10 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                     fontsize=40,
                     weight='bold',
                     color='k')
-                    
+    '''                
     # Save the figure
     filename = os.path.join(figures_dir, 'Figure2.png')
-    big_fig.savefig(filename, bbox_inches=0, dpi=100)
+    big_fig.savefig(filename, bbox_inches=0, dpi=30)
     
     plt.close()
     
@@ -2674,7 +2605,7 @@ def get_axis_label_dict():
     axis_label_dict['CT_global_mean'] = 'Global CT (mm)'
     axis_label_dict['MT_projfrac+030_global_mean'] = 'Global MT (AU)'
     axis_label_dict['MT_all_mean'] = 'Mean MT across regions (AU)'
-    axis_label_dict['MT_all_slope_ct'] = 'Correlation MT vs CT (AU/mm)'
+    axis_label_dict['MT_all_slope_ct'] = r'$\Delta$MT with CT (AU/mm)'
     axis_label_dict['MT_all_slope_age'] = r'$\Delta$MT with age (AU/year)'
     
     return axis_label_dict
