@@ -1818,7 +1818,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     '''        
     # Save the figure
     filename = os.path.join(figures_dir, 'Figure1.png')
-    big_fig.savefig(filename, bbox_inches=0, dpi=30)
+    big_fig.savefig(filename, bbox_inches=0, dpi=100)
     
     plt.close()
     
@@ -2030,21 +2030,22 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     '''                
     # Save the figure
     filename = os.path.join(figures_dir, 'Figure2.png')
-    big_fig.savefig(filename, bbox_inches=0, dpi=30)
+    big_fig.savefig(filename, bbox_inches=0, dpi=100)
     
     plt.close()
     
 def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
+
     # Set the seaborn context and style
     sns.set(style="white")
-    sns.set_context("poster", font_scale=2)
+    sns.set_context("poster", font_scale=3.5)
 
     # Get the set values
     min_max_dict = get_min_max_values(measure_dict)
     axis_label_dict = get_axis_label_dict()
 
     # Create the big figure
-    big_fig, big_ax = plt.subplots(figsize=(30, 39), facecolor='white')
+    big_fig, big_ax = plt.subplots(figsize=(23, 30), facecolor='white')
     big_ax.axis('off')
     # Set the list of network measures we care about for this figure
     network_measures_list = [ 'Degree', 'Closeness', 'AverageDist' ]
@@ -2130,6 +2131,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
                                                 ax=ax_list[j+1],
                                                 figure=big_fig)    
                     
+    '''
     #=========================================================================
     # Add in the letters for each panel
     #=========================================================================
@@ -2165,7 +2167,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
                         fontsize=40,
                         weight='bold',
                         color='k')
-
+    '''
     #=========================================================================
     # And finally clean everything up and save the figure
     #=========================================================================
@@ -2914,3 +2916,43 @@ def rich_edges_nodes(G, thresh=75):
     
     return rich_edges, rich_nodes
     
+    
+def figure_1_replication(measure_dict_D, measure_dict_V):
+
+    # Set the seaborn context and style
+    sns.set(style="white")
+    sns.set_context("poster", font_scale=2)
+
+    # Get the set values
+    min_max_dict_D = get_min_max_values(measure_dict_D)
+    min_max_dict_V = get_min_max_values(measure_dict_V)
+    axis_label_dict = get_axis_label_dict()
+
+    # Create the big figure
+    big_fig, ax_list = plt.subplots(2,2, figsize=(20,20), facecolor='white')
+    
+    measure_list = ['CT_all_slope_age_at14',
+                         'CT_all_slope_age',
+                         'MT_projfrac+030_all_slope_age_at14',
+                         'MT_projfrac+030_all_slope_age']
+
+    for i, measure in enumerate(measure_list):
+    
+        DV_min = np.min([min_max_dict_D['{}_min'.format(measure)], 
+                        min_max_dict_V['{}_min'.format(measure)]])
+        DV_max = np.min([min_max_dict_D['{}_max'.format(measure)], 
+                        min_max_dict_V['{}_max'.format(measure)]])
+        
+        ax_list.reshape(-1)[i] = pretty_scatter(measure_dict_D[measure],
+                                                measure_dict_V[measure],
+                                                x_label='Discovery', 
+                                                y_label='Validation', 
+                                                x_min=DV_min, x_max=DV_max,
+                                                y_min=DV_min, y_max=DV_max,
+                                                ax=ax_list.reshape(-1)[i], 
+                                                figure=big_fig)
+    
+        m, c, r, p, sterr, perm_p = permutation_correlation(measure_dict_D[measure], measure_dict_V[measure])
+        print '{:2.2f}, {:2.8f}'.format(r**2, perm_p)
+    big_fig.savefig('replication_testing.png', bbox_inches=0, dpi=100)
+    plt.close(big_fig)
