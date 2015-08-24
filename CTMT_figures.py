@@ -55,16 +55,16 @@ def plot_rich_club(rc, rc_rand, ax=None, figure_name=None, x_max=200, y_max=1.2,
         # Plot the random rich club data with confidence intervals error bars
         sns.tsplot(rc_rand.T, err_style='ci_bars', color='grey', ci=95, ax=ax)
     
+        # Fix the x and y axis limits
+        ax.set_xlim((0, x_max))
+        ax.set_ylim((0, y_max))
+        
     else:
         # Divide the real rich club by the averge of the
         # randomised rich club to get a normalised curve
         rc_norm = rc / rc_rand.T
         sns.tsplot(rc_norm, err_style='ci_bars', color=color, ax=ax, ci=95)
-        
-    # Fix the x and y axis limits
-    ax.set_xlim((0, x_max))
-    ax.set_ylim((0, y_max))
-    
+            
     # Make sure there aren't too many bins!
     plt.locator_params(nbins=5)
     
@@ -2035,7 +2035,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     plt.close()
     
-def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
+def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', rich_club=False):
 
     # Set the seaborn context and style
     sns.set(style="white")
@@ -2066,6 +2066,10 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
                     os.path.join(results_dir, 'PNGS', 
                                     '{}_CT_covar_ones_all_COST_10_rh_pial_classic_lateral.png'.format(network_measure)) ]
 
+        if rich_club and network_measure == 'Degree':
+            for i, f in enumerate(f_list):
+                f_list[i] = f.replace('Degree_CT', 'Degree_RC_CT')
+        
         grid = gridspec.GridSpec(1, 4)
         bottom = (1 - ((5*i)+2)/ 15.0 ) -0.01
         top = (1 - (5*i)/15.0) -0.01
@@ -2932,8 +2936,7 @@ def figure_1_replication(measure_dict_D, measure_dict_V, paper_dir):
     axis_label_dict = get_axis_label_dict()
 
     # Create the big figure
-    big_fig, ax_list = plt.subplots(2,2, figsize=(20, 12), facecolor='white')
-    plt.subplots_adjust(wspace=0.25, hspace=0.5, bottom=0.15)
+    big_fig, ax_list = plt.subplots(1,4, figsize=(40, 8), facecolor='white')
     
     measure_list = ['CT_all_slope_age_at14',
                          'CT_all_slope_age',
@@ -2975,15 +2978,96 @@ def figure_1_replication(measure_dict_D, measure_dict_V, paper_dir):
             title = '{} with age'.format(title)
         ax.set_title(title)
         
-        #m, c, r, p, sterr, perm_p = permutation_correlation(measure_dict_D[measure], measure_dict_V[measure])
-        #print '{:2.2f}, {:2.8f}'.format(r**2, perm_p)
-        
-    for ax in ax_list[:,0]:
-        ax.yaxis.set_label_coords(-0.15, 0.5)
-    for ax in ax_list[:,1]:
+    for ax in ax_list[1:]:
         ax.set_ylabel('')
-    for ax in ax_list[0,:]:
-        ax.set_xlabel('')
-        
+    
+    plt.tight_layout()
     big_fig.savefig(os.path.join(paper_dir, 'Replication_Figure1.png'), bbox_inches=0, dpi=100)
     plt.close(big_fig)
+
+    
+def figure_3_replication(measure_dict_D, measure_dict_V, paper_dir):
+
+    # Set the seaborn context and style
+    sns.set(style="white")
+    sns.set_context("poster", font_scale=2.5)
+
+    # Get the set values
+    min_max_dict_D = get_min_max_values(measure_dict_D)
+    min_max_dict_V = get_min_max_values(measure_dict_V)
+    axis_label_dict = get_axis_label_dict()
+
+    # Create the big figure
+    big_fig, ax_list = plt.subplots(1,3, figsize=(30, 8), facecolor='white')
+    
+    measure_list = ['Degree', 'Closeness', 'AverageDist' ]
+
+    for i, measure in enumerate(measure_list):
+    
+        measure_name = '{}_CT_covar_ones_all_COST_10'.format(measure)
+        
+        ax = ax_list.reshape(-1)[i]
+        DV_min = np.min([min_max_dict_D['{}_min'.format(measure_name)], 
+                        min_max_dict_V['{}_min'.format(measure_name)]])
+        DV_max = np.max([min_max_dict_D['{}_max'.format(measure_name)], 
+                        min_max_dict_V['{}_max'.format(measure_name)]])
+            
+        # Put a linear regression for Discovery vs Valication
+        ax = pretty_scatter(measure_dict_D[measure_name],
+                                                measure_dict_V[measure_name],
+                                                x_label='Discovery', 
+                                                y_label='Validation', 
+                                                x_min=DV_min, x_max=DV_max,
+                                                y_min=DV_min, y_max=DV_max,
+                                                marker_size=60,
+                                                ax=ax, 
+                                                figure=big_fig)
+                                                
+        # Add a unity line
+        ax.plot([DV_min, DV_max], [DV_min, DV_max], linestyle='--', color='k')
+        
+        # Put a title on the subplot
+        title = axis_label_dict[measure].split(' (')[0]
+        ax.set_title(title)
+        
+    for ax in ax_list[1:]:
+        ax.set_ylabel('')
+
+    plt.tight_layout()
+    big_fig.savefig(os.path.join(paper_dir, 'Replication_Figure3.png'), bbox_inches=0, dpi=100)
+    plt.close(big_fig)
+    
+    
+def network_matrix(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT'):
+    
+    # Set the seaborn context and style
+    sns.set(style="white")
+    sns.set_context("poster", font_scale=1.5)
+
+    fig, ax = plt.subplots(figsize=(10, 8), facecolor='white')
+
+    network_df = pd.DataFrame()
+    
+    measure_list = ['Degree', 'TotalDist', 'Closeness', 'AverageDist', 'InterhemProp', 'PC', 'Clustering' ]
+            
+    for network_measure in measure_list:
+        measure_name = '{}_CT_covar_ones_all_COST_10'.format(network_measure)
+        
+        network_df[network_measure] = measure_dict[measure_name]
+
+    # Create a mask to show the diagonal and only the lower triangle
+    mask = np.zeros_like(network_df.corr())
+    mask[np.triu_indices_from(mask, k=1)] = True
+    
+    # Now plot the heatmap
+    ax = sns.heatmap(network_df.corr(), ax=ax, annot=True, mask=mask)
+    
+    # Adjust the x labels
+    labels = ax.get_xticklabels()
+    for label in labels:
+        label.set_rotation(45) 
+        label.set_ha('right') 
+    
+    plt.tight_layout()
+    fig.savefig(os.path.join(figures_dir, 'Network_Matrix.png'), bbox_inches=0, dpi=100)
+    plt.close(fig)
