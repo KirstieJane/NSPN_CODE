@@ -2045,7 +2045,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
     axis_label_dict = get_axis_label_dict()
 
     # Create the big figure
-    big_fig, big_ax = plt.subplots(figsize=(23, 30), facecolor='white')
+    big_fig, big_ax = plt.subplots(figsize=(34.5, 45), facecolor='white')
     big_ax.axis('off')
     # Set the list of network measures we care about for this figure
     network_measures_list = [ 'Degree', 'Closeness', 'AverageDist' ]
@@ -2081,9 +2081,9 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
         y_label = axis_label_dict[network_measure]
         
         grid = gridspec.GridSpec(1, 3)
-        bottom = ( 1 - ((5*i)+5)/ 15.0 ) + 0.03
+        bottom = ( 1 - ((5*i)+5)/ 15.0 ) + 0.04
         top = ( 1 - ((5*i)+2)/15.0 ) - 0.03
-        grid.update(bottom=bottom, top=top, left=0.05, right=0.98, hspace=0.1)
+        grid.update(bottom=bottom, top=top, left=0.07, right=0.98, hspace=0.1, wspace=0.3)
         
         ax_list = []
         for g_loc in grid:
@@ -2102,7 +2102,9 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
                                             alpha=0,
                                             ax=ax_list[0],
                                             figure=big_fig)
-                                            
+                                           
+        ax_list[0].yaxis.set_label_coords(-0.15, 0.5)
+                                           
         #=========================================================================
         # Finally put scatter plots of deltaCT, and deltaMT by the network
         # measure in the second and third spaces on the next row
