@@ -2180,6 +2180,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', rich_club=False):
     #=========================================================================
     # Save the figure
     filename = os.path.join(figures_dir, 'Figure3.png')
+    
     if rich_club:
         filename.replace('.png', '_RC.png')
         
