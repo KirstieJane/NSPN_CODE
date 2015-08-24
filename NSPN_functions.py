@@ -501,11 +501,13 @@ def save_network_values(measure_dict, G_name, graph_dict):
         average_dist_list = []
         total_dist_list = []
         interhem_prop_list = []
+        betweenness_list = []
         
         for name, data in grouped:
             degree_list += [ data['degree'].mean() ]
             pc_list += [ data['pc'].mean() ]
             closeness_list += [ data['closeness'].mean() ]
+            beteweenness_list += [ data['closeness'].mean() ]
             clustering_list += [ data['clustering'].mean() ]
             average_dist_list += [ data['average_dist'].mean() ]
             total_dist_list += [ data['total_dist'].mean() ]
@@ -515,6 +517,7 @@ def save_network_values(measure_dict, G_name, graph_dict):
         measure_dict['Degree_{}{}'.format(G_name, suff)] = np.array(degree_list)
         measure_dict['PC_{}{}'.format(G_name, suff)] = np.array(pc_list)
         measure_dict['Closeness_{}{}'.format(G_name, suff)] = np.array(closeness_list)
+        measure_dict['Betweenness_{}{}'.format(G_name, suff)] = np.array(betweenness_list)
         measure_dict['Clustering_{}{}'.format(G_name, suff)] = np.array(clustering_list)
         measure_dict['AverageDist_{}{}'.format(G_name, suff)] = np.array(average_dist_list)
         measure_dict['TotalDist_{}{}'.format(G_name, suff)] = np.array(total_dist_list)
