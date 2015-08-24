@@ -507,7 +507,7 @@ def save_network_values(measure_dict, G_name, graph_dict):
             degree_list += [ data['degree'].mean() ]
             pc_list += [ data['pc'].mean() ]
             closeness_list += [ data['closeness'].mean() ]
-            beteweenness_list += [ data['closeness'].mean() ]
+            betweenness_list += [ data['betweenness'].mean() ]
             clustering_list += [ data['clustering'].mean() ]
             average_dist_list += [ data['average_dist'].mean() ]
             total_dist_list += [ data['total_dist'].mean() ]
