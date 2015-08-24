@@ -2183,6 +2183,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', rich_club=False):
     
     if rich_club:
         filename = filename.replace('.png', '_RC.png')
+        print filename
         
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
 
