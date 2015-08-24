@@ -269,7 +269,6 @@ def write_latex_table(table_df, table_file, caption):
                                         index=True, 
                                         escape=False)
 
-    latex_table = latex_table.replace('lll', 'lcc')
     latex_table = latex_table.replace('\\multirow', '\\rule{0pt}{4ex} \\multirow')
     latex_table = add_caption(latex_table, caption)
 
