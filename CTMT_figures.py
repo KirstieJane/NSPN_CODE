@@ -2057,13 +2057,13 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
         # Put the four hor brains in one row
         #=========================================================================
         f_list = [ os.path.join(results_dir, 'PNGS',
-                                    '{}_CT_covar_ones_all_COST_10_lh_pial_lateral.png'.format(network_measure)),
+                                    '{}_CT_covar_ones_all_COST_10_lh_pial_classic_lateral.png'.format(network_measure)),
                     os.path.join(results_dir, 'PNGS', 
-                                    '{}_CT_covar_ones_all_COST_10_lh_pial_medial.png'.format(network_measure)),
+                                    '{}_CT_covar_ones_all_COST_10_lh_pial_classic_medial.png'.format(network_measure)),
                     os.path.join(results_dir, 'PNGS', 
-                                    '{}_CT_covar_ones_all_COST_10_rh_pial_medial.png'.format(network_measure)),
+                                    '{}_CT_covar_ones_all_COST_10_rh_pial_classic_medial.png'.format(network_measure)),
                     os.path.join(results_dir, 'PNGS', 
-                                    '{}_CT_covar_ones_all_COST_10_rh_pial_lateral.png'.format(network_measure)) ]
+                                    '{}_CT_covar_ones_all_COST_10_rh_pial_classic_lateral.png'.format(network_measure)) ]
 
         grid = gridspec.GridSpec(1, 4)
         bottom = (1 - ((5*i)+2)/ 15.0 ) -0.01
