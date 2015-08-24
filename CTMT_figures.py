@@ -3048,7 +3048,7 @@ def network_matrix(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT')
 
     network_df = pd.DataFrame()
     
-    measure_list = ['Degree', 'TotalDist', 'Closeness', 'AverageDist', 'InterhemProp', 'PC', 'Clustering' ]
+    measure_list = ['Degree', 'TotalDist', 'Closeness', 'Betweenness', 'AverageDist', 'InterhemProp', 'PC', 'Clustering' ]
             
     for network_measure in measure_list:
         measure_name = '{}_CT_covar_ones_all_COST_10'.format(network_measure)
