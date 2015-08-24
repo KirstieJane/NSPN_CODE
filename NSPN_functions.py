@@ -209,7 +209,9 @@ def create_pysurfer_command(roi_file,
                             t=-99, 
                             s='pial', 
                             cst='classic',
-                            center=False):
+                            center=False,
+                            c2=None,
+                            t2=None):
     '''
     Create a text string containing the appropriate options for
     the pysurfer command
