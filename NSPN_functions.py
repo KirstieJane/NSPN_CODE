@@ -234,6 +234,10 @@ def create_pysurfer_command(roi_file,
     if c:
         command_list += [ '-c {}'.format(c) ]
 
+    # Set the other colormap
+    if c2:
+        command_list += [ '-c2 {}'.format(c2) ]
+        
     # Set the colormap limits
     if l:
         command_list += [ '-l {}'.format(l) ]
@@ -243,6 +247,10 @@ def create_pysurfer_command(roi_file,
     # Set the threshold
     if t:
         command_list += [ '-t {}'.format(t) ]
+        
+    # Set the other threshold
+    if t2:
+        command_list += [ '-t2 {}'.format(t2) ]
 
     # Center if necessary
     if center:
