@@ -828,6 +828,11 @@ def calculate_nodal_measures(G, centroids, aparc_names):
     # Closeness
     closeness = nx.closeness_centrality(G).values()
     nodal_dict['closeness'] = np.array(closeness)
+    
+    #==================================
+    # Betweenness
+    betweenness = nx.betweenness_centrality(G).values()
+    nodal_dict['betweenness'] = np.array(betweenness)
 
     #==================================
     # Shortest path length

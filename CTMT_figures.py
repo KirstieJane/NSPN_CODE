@@ -23,6 +23,7 @@ import matplotlib.patches as mpatches
 
 from networkx_functions import *
 from regional_correlation_functions import *
+from NSPN_functions import *
 
 def plot_rich_club(rc, rc_rand, ax=None, figure_name=None, x_max=200, y_max=1.2, color=sns.color_palette()[0], norm=False):
     '''
@@ -2919,11 +2920,11 @@ def rich_edges_nodes(G, thresh=75):
     return rich_edges, rich_nodes
     
     
-def figure_1_replication(measure_dict_D, measure_dict_V):
+def figure_1_replication(measure_dict_D, measure_dict_V, paper_dir):
 
     # Set the seaborn context and style
     sns.set(style="white")
-    sns.set_context("poster", font_scale=2)
+    sns.set_context("poster", font_scale=2.5)
 
     # Get the set values
     min_max_dict_D = get_min_max_values(measure_dict_D)
@@ -2931,7 +2932,8 @@ def figure_1_replication(measure_dict_D, measure_dict_V):
     axis_label_dict = get_axis_label_dict()
 
     # Create the big figure
-    big_fig, ax_list = plt.subplots(2,2, figsize=(20,20), facecolor='white')
+    big_fig, ax_list = plt.subplots(2,2, figsize=(20, 12), facecolor='white')
+    plt.subplots_adjust(wspace=0.25, hspace=0.5, bottom=0.15)
     
     measure_list = ['CT_all_slope_age_at14',
                          'CT_all_slope_age',
@@ -2940,21 +2942,48 @@ def figure_1_replication(measure_dict_D, measure_dict_V):
 
     for i, measure in enumerate(measure_list):
     
+        ax = ax_list.reshape(-1)[i]
         DV_min = np.min([min_max_dict_D['{}_min'.format(measure)], 
                         min_max_dict_V['{}_min'.format(measure)]])
-        DV_max = np.min([min_max_dict_D['{}_max'.format(measure)], 
+        DV_max = np.max([min_max_dict_D['{}_max'.format(measure)], 
                         min_max_dict_V['{}_max'.format(measure)]])
         
-        ax_list.reshape(-1)[i] = pretty_scatter(measure_dict_D[measure],
-                                                measure_dict_V[measure],
+        if DV_max - DV_min < 0.1:
+            mul=100
+            exp = 'x10-2'
+        else:
+            mul=1
+            exp=''
+            
+        # Put a linear regression for Discovery vs Valication
+        ax = pretty_scatter(measure_dict_D[measure]*mul,
+                                                measure_dict_V[measure]*mul,
                                                 x_label='Discovery', 
                                                 y_label='Validation', 
-                                                x_min=DV_min, x_max=DV_max,
-                                                y_min=DV_min, y_max=DV_max,
-                                                ax=ax_list.reshape(-1)[i], 
+                                                x_min=DV_min*mul, x_max=DV_max*mul,
+                                                y_min=DV_min*mul, y_max=DV_max*mul,
+                                                marker_size=60,
+                                                ax=ax, 
                                                 figure=big_fig)
-    
-        m, c, r, p, sterr, perm_p = permutation_correlation(measure_dict_D[measure], measure_dict_V[measure])
-        print '{:2.2f}, {:2.8f}'.format(r**2, perm_p)
-    big_fig.savefig('replication_testing.png', bbox_inches=0, dpi=100)
+                                                
+        # Add a unity line
+        ax.plot([DV_min*mul, DV_max*mul], [DV_min*mul, DV_max*mul], linestyle='--', color='k')
+        
+        # Put a title on the subplot
+        title = axis_label_dict[measure].split(' (')[0]
+        if not title.endswith('yrs'):
+            title = '{} with age'.format(title)
+        ax.set_title(title)
+        
+        #m, c, r, p, sterr, perm_p = permutation_correlation(measure_dict_D[measure], measure_dict_V[measure])
+        #print '{:2.2f}, {:2.8f}'.format(r**2, perm_p)
+        
+    for ax in ax_list[:,0]:
+        ax.yaxis.set_label_coords(-0.15, 0.5)
+    for ax in ax_list[:,1]:
+        ax.set_ylabel('')
+    for ax in ax_list[0,:]:
+        ax.set_xlabel('')
+        
+    big_fig.savefig(os.path.join(paper_dir, 'Replication_Figure1.png'), bbox_inches=0, dpi=100)
     plt.close(big_fig)

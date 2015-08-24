@@ -514,7 +514,7 @@ def save_network_values(measure_dict, G_name, graph_dict):
             
     # Add in these last two that only make sense for n=308
     measure_dict['Module_{}'.format(G_name)] = nodal_dict['module'] + 1
-    measure_dict['ShortestPath_{}{}'.format(G_name, suff)] = nodal_dict['shortest_path']
+    measure_dict['ShortestPath_{}'.format(G_name)] = nodal_dict['shortest_path']
     
     # Now put in the global measures
     measure_dict['Global_Clustering_{}'.format(G_name)] = global_dict['C']
