@@ -2067,8 +2067,8 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', rich_club=False):
                                     '{}_CT_covar_ones_all_COST_10_rh_pial_classic_lateral.png'.format(network_measure)) ]
 
         if rich_club and network_measure == 'Degree':
-            for i, f in enumerate(f_list):
-                f_list[i] = f.replace('Degree_CT', 'Degree_RC_CT')
+            for j, f in enumerate(f_list):
+                f_list[j] = f.replace('Degree_CT', 'Degree_RC_CT')
         
         grid = gridspec.GridSpec(1, 4)
         bottom = (1 - ((5*i)+2)/ 15.0 ) -0.01
