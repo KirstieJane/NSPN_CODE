@@ -2134,7 +2134,6 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT', rich_club=False):
                                                 x_min=network_measure_min, x_max=network_measure_max,
                                                 y_min=measure_min,y_max=measure_max, 
                                                 color='k',
-                                                marker='^',
                                                 ax=ax_list[j+1],
                                                 figure=big_fig)    
                     
