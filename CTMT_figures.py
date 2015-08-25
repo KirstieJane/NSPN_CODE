@@ -3042,29 +3042,53 @@ def figure_3_replication(measure_dict_D, measure_dict_V, paper_dir):
     plt.close(big_fig)
     
     
-def network_matrix(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT'):
+def network_matrix(measure_dict, figures_dir, results_dir, mpm='MT', just_network=True):
     
     # Set the seaborn context and style
     sns.set(style="white")
     sns.set_context("poster", font_scale=1.5)
 
-    fig, ax = plt.subplots(figsize=(10, 8), facecolor='white')
+    # Get the variable names
+    axis_label_dict = get_axis_label_dict()
+    
+    # Create the figure
+    fig, ax = plt.subplots(figsize=(9, 9), facecolor='white')
 
+    # Make an empty data frame
     network_df = pd.DataFrame()
     
-    measure_list = ['Degree', 'TotalDist', 'Closeness', 'Betweenness', 'AverageDist', 'InterhemProp', 'PC', 'Clustering' ]
-            
-    for network_measure in measure_list:
-        measure_name = '{}_CT_covar_ones_all_COST_10'.format(network_measure)
+    # Make a list of the useful nodal measures
+    measure_name_list = ['Degree', 'Closeness', 'AverageDist', 'Clustering' ]
+    measure_list = [ '{}_CT_covar_ones_all_COST_10'.format(x) for x in measure_name_list ]
+    
+    
+    if not just_network:
+        measure_list += [ 'CT_all_slope_age_at14', 
+                            'CT_all_slope_age', 
+                            '{}_projfrac+030_all_slope_age_at14'.format(mpm),
+                            '{}_projfrac+030_all_slope_age'.format(mpm) ]
+                            
+        measure_name_list += [ axis_label_dict[x].split(' (')[0] for x in measure_list[4:] ]
         
-        network_df[network_measure] = measure_dict[measure_name]
+    for name, measure in zip(measure_name_list, measure_list):
+        
+        network_df[name] = measure_dict[measure]
 
     # Create a mask to show the diagonal and only the lower triangle
     mask = np.zeros_like(network_df.corr())
     mask[np.triu_indices_from(mask, k=1)] = True
     
     # Now plot the heatmap
-    ax = sns.heatmap(network_df.corr(), ax=ax, annot=True, mask=mask)
+    cbar_ax = fig.add_axes([.87, .42, .02, .53])
+    cbar_ax.text(-0.05,
+                    0.5, 
+                    'Pearson correlation coefficient', 
+                    rotation=90, 
+                    horizontalalignment='right', 
+                    verticalalignment='center',
+                    fontsize='x-large')
+                    
+    ax = sns.heatmap(network_df.corr(), ax=ax, fmt='+2.2f', square=True, cbar_ax=cbar_ax, annot=True, mask=mask)
     
     # Adjust the x labels
     labels = ax.get_xticklabels()
