@@ -324,6 +324,7 @@ latex_table = table_df.to_latex(longtable=True,
                                     index=True, 
                                     escape=False)
 
+latex_table = latex_table.replace('\\multirow', '\\rule{0pt}{4ex} \\multirow')
 latex_table = latex_table.replace('llll', 'lccc')
 latex_table = add_caption(latex_table, caption)
 
