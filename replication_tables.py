@@ -251,6 +251,165 @@ def create_dict_figure3(measure_dict_dict):
 
     return table_dict, col_list
     
+    
+#=============================================================================
+# VON ECONOMO CREATE DICT
+#-----------------------------------------------------------------------------
+def create_dict_voneconomo(measure_dict_dict):
+    name_dict = { 'DISCOVERY_EXCLBAD' : 'Discovery',
+                  'VALIDATION_EXCLBAD' : 'Validation',
+                  'COMPLETE_EXCLBAD' : 'Complete' }
+
+    table_dict = {}
+
+    for cohort in ['DISCOVERY_EXCLBAD', 'VALIDATION_EXCLBAD', 'COMPLETE_EXCLBAD']:
+        measure_dict = measure_dict_dict[cohort]
+        print '==={}==='.format(name_dict[cohort])
+        
+        data_list = []
+        col_list = []
+        
+        #=======================================================
+        # CT at 14 
+        #=======================================================    
+        results, p_perm = permutation_multiple_correlation(measure_dict['von_economo'],
+                                                                measure_dict['CT_all_slope_age_at14'], 
+                                                                covars=[], 
+                                                                n_perm=1000,
+                                                                categorical=True)
+        
+        data_list += [ 'F[{:1.0f},{:1.0f}] = {:2.1f}'.format(results.df_model,
+                                                                results.df_resid,
+                                                                results.fvalue) ]
+        data_list += [ format_p(p_perm) ]
+        
+        col_list += [ '\\multirow{2}{*}{\\textbf{CT at 14}}']
+        col_list += [ '' ]
+        
+        #=======================================================
+        # Delta CT 
+        #=======================================================    
+        results, p_perm = permutation_multiple_correlation(measure_dict['von_economo'],
+                                                                measure_dict['CT_all_slope_age'], 
+                                                                covars=[], 
+                                                                n_perm=1000,
+                                                                categorical=True)
+        
+        data_list += [ 'F[{:1.0f},{:1.0f}] = {:2.2f}'.format(results.df_model,
+                                                                results.df_resid,
+                                                                results.fvalue) ]
+        data_list += [ format_p(p_perm) ]
+        
+        col_list += [ '\\multirow{2}{*}{\\textbf{$\\Delta$CT vs Age}}']
+        col_list += [ '' ]
+
+        #=======================================================
+        # MT at 14 
+        #=======================================================    
+        results, p_perm = permutation_multiple_correlation(measure_dict['von_economo'],
+                                                                measure_dict['MT_projfrac+030_all_slope_age_at14'], 
+                                                                covars=[], 
+                                                                n_perm=1000,
+                                                                categorical=True)
+        
+        data_list += [ 'F[{:1.0f},{:1.0f}] = {:2.1f}'.format(results.df_model,
+                                                                results.df_resid,
+                                                                results.fvalue) ]
+        data_list += [ format_p(p_perm) ]
+        
+        col_list += [ '\\multirow{2}{*}{\\textbf{MT at 14}}']
+        col_list += [ '' ]
+        
+        #=======================================================
+        # Delta MT 
+        #=======================================================    
+        results, p_perm = permutation_multiple_correlation(measure_dict['von_economo'],
+                                                                measure_dict['MT_projfrac+030_all_slope_age'], 
+                                                                covars=[], 
+                                                                n_perm=1000,
+                                                                categorical=True)
+        
+        data_list += [ 'F[{:1.0f},{:1.0f}] = {:2.2f}'.format(results.df_model,
+                                                                results.df_resid,
+                                                                results.fvalue) ]
+        data_list += [ format_p(p_perm) ]
+        
+        col_list += [ '\\multirow{2}{*}{\\textbf{$\\Delta$MT vs Age}}']
+        col_list += [ '' ]
+
+        #=======================================================
+        # Degree 
+        #=======================================================    
+        results, p_perm = permutation_multiple_correlation(measure_dict['von_economo'],
+                                                                measure_dict['Degree_CT_covar_ones_all_COST_10'], 
+                                                                covars=[], 
+                                                                n_perm=1000,
+                                                                categorical=True)
+        
+        data_list += [ 'F[{:1.0f},{:1.0f}] = {:2.2f}'.format(results.df_model,
+                                                                results.df_resid,
+                                                                results.fvalue) ]
+        data_list += [ format_p(p_perm) ]
+        
+        col_list += [ '\\multirow{2}{*}{\\textbf{Degree}}']
+        col_list += [ '' ]
+        
+        #=======================================================
+        # Closeness
+        #=======================================================    
+        results, p_perm = permutation_multiple_correlation(measure_dict['von_economo'],
+                                                                measure_dict['Closeness_CT_covar_ones_all_COST_10'], 
+                                                                covars=[], 
+                                                                n_perm=1000,
+                                                                categorical=True)
+        
+        data_list += [ 'F[{:1.0f},{:1.0f}] = {:2.2f}'.format(results.df_model,
+                                                                results.df_resid,
+                                                                results.fvalue) ]
+        data_list += [ format_p(p_perm) ]
+        
+        col_list += [ '\\multirow{2}{*}{\\textbf{Closeness}}']
+        col_list += [ '' ]
+
+        #=======================================================
+        # Average Distance
+        #=======================================================    
+        results, p_perm = permutation_multiple_correlation(measure_dict['von_economo'],
+                                                                measure_dict['AverageDist_CT_covar_ones_all_COST_10'], 
+                                                                covars=[], 
+                                                                n_perm=1000,
+                                                                categorical=True)
+        
+        data_list += [ 'F[{:1.0f},{:1.0f}] = {:2.2f}'.format(results.df_model,
+                                                                results.df_resid,
+                                                                results.fvalue) ]
+        data_list += [ format_p(p_perm) ]
+        
+        col_list += [ '\\multirow{2}{*}{\\textbf{Average Distance (mm)}}']
+        col_list += [ '' ]
+
+        #=======================================================
+        # Clustering
+        #=======================================================    
+        results, p_perm = permutation_multiple_correlation(measure_dict['von_economo'],
+                                                                measure_dict['Clustering_CT_covar_ones_all_COST_10'], 
+                                                                covars=[], 
+                                                                n_perm=1000,
+                                                                categorical=True)
+        
+        data_list += [ 'F[{:1.0f},{:1.0f}] = {:2.2f}'.format(results.df_model,
+                                                                results.df_resid,
+                                                                results.fvalue) ]
+        data_list += [ format_p(p_perm) ]
+        
+        col_list += [ '\\multirow{2}{*}{\\textbf{Clustering}}']
+        col_list += [ '' ]
+
+        table_dict['\\textbf{{{}}}'.format(name_dict[cohort])] = data_list
+
+    return table_dict, col_list
+    
+    
 #=============================================================================
 # MAKE DICT INTO A PANDAS DATA FRAME
 #-----------------------------------------------------------------------------
@@ -297,13 +456,7 @@ def write_latex_table(table_df, table_file, caption):
 # PUT IT ALL TOGETHER
 #-----------------------------------------------------------------------------
 def make_replication_table_figures1and2(measure_dict_dict, paper_dir):
-    #=============================================================================
-    # INPUTS
-    #-----------------------------------------------------------------------------
-    measure_dict_D = measure_dict_dict['DISCOVERY_EXCLBAD']
-    measure_dict_V = measure_dict_dict['VALIDATION_EXCLBAD']
-    measure_dict_C = measure_dict_dict['COMPLETE_EXCLBAD']
-    
+
     #=============================================================================
     # GET STARTED BY SETTING THE CAPTION AND NAME YOUR OUTPUT FILE
     #-----------------------------------------------------------------------------
@@ -318,14 +471,9 @@ def make_replication_table_figures1and2(measure_dict_dict, paper_dir):
     table_df = make_table_df(table_dict, col_list)
     write_latex_table(table_df, table_file, caption)
     
-def make_replication_table_figure3(measure_dict_dict, paper_dir):
-    #=============================================================================
-    # INPUTS
-    #-----------------------------------------------------------------------------
-    measure_dict_D = measure_dict_dict['DISCOVERY_EXCLBAD']
-    measure_dict_V = measure_dict_dict['VALIDATION_EXCLBAD']
-    measure_dict_C = measure_dict_dict['COMPLETE_EXCLBAD']
     
+def make_replication_table_figure3(measure_dict_dict, paper_dir):
+
     #=============================================================================
     # GET STARTED BY SETTING THE CAPTION AND NAME YOUR OUTPUT FILE
     #-----------------------------------------------------------------------------
@@ -340,5 +488,20 @@ def make_replication_table_figure3(measure_dict_dict, paper_dir):
     table_df = make_table_df(table_dict, col_list)
     write_latex_table(table_df, table_file, caption)
     
+def make_replication_table_voneconomo(measure_dict_dict, paper_dir):
+
+    #=============================================================================
+    # GET STARTED BY SETTING THE CAPTION AND NAME YOUR OUTPUT FILE
+    #-----------------------------------------------------------------------------
+    caption = 'Nodal measures by von Economo type'
+
+    table_file = os.path.join(paper_dir, 'VonEconomo_Table.tex')
+
+    #=============================================================================
+    # Make the data frame
+    #-----------------------------------------------------------------------------
+    table_dict, col_list = create_dict_voneconomo(measure_dict_dict)
+    table_df = make_table_df(table_dict, col_list)
+    write_latex_table(table_df, table_file, caption)
     
 # DONE - well done :)

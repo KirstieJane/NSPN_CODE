@@ -54,7 +54,8 @@ def permutation_correlation(x_orig, y_orig, n_perm=1000):
     
     return m, c, r, p, sterr, perm_p
 
-def permutation_multiple_correlation(x_orig, y_orig, covars=[], n_perm=1000):
+    
+def permutation_multiple_correlation(x_orig, y_orig, covars=[], n_perm=1000, categorical=True):
     '''
     Define a permuation test for multiple regression
     in which we first calculate the real model fit,
@@ -77,9 +78,12 @@ def permutation_multiple_correlation(x_orig, y_orig, covars=[], n_perm=1000):
     # Create the data frame
     df =  pd.DataFrame({'x' : x,
                         'y' : y})
-                        
+                            
     # Create your formula
-    formula = 'y ~ x'
+    if categorical:
+        formula = 'y ~ C(x)'
+    else:    
+        formula = 'y ~ x'
 
     # Add in the covariates
     for i in range(len(covars)):
@@ -89,8 +93,15 @@ def permutation_multiple_correlation(x_orig, y_orig, covars=[], n_perm=1000):
     # Fit the model
     model = sm.OLS.from_formula(formula, df)
     results = model.fit()
-    m = results.params['x']
-
+    
+    # Get the real measure you care about
+    # m for continuous regression,
+    # F for categorical variables
+    if categorical:
+        m = results.fvalue
+    else:
+        m = results.params['x']
+    
     # Create an m_array that will hold the shuffled
     # slope values
     m_array = np.ones([n_perm])
@@ -102,8 +113,12 @@ def permutation_multiple_correlation(x_orig, y_orig, covars=[], n_perm=1000):
         df['y'] = y
         model_shuf = sm.OLS.from_formula(formula, df)
         results_shuf = model_shuf.fit()
-        m_array[i] = results_shuf.params['x']
         
+        if categorical:
+            m_array[i] = results_shuf.fvalue
+        else:
+            m_array[i] = results_shuf.params['x']
+            
     # If the true slope is positive then we want to look
     # for the proportion of shuffled slopes that are
     # larger than the true slope
@@ -120,6 +135,7 @@ def permutation_multiple_correlation(x_orig, y_orig, covars=[], n_perm=1000):
     perm_p = perm_p*2.0
     
     return results, perm_p
+    
     
 def read_in_df(data_file, aparc_names):
     '''

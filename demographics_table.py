@@ -22,7 +22,7 @@ def add_caption(latex_table, caption):
     for this table
     '''
     latex_table_list = latex_table.split('\n')
-    latex_table_list[0] = latex_table_list[0] + '\n\\caption{{{}}} \\\\'.format(caption)         
+    latex_table_list[0] = latex_table_list[0] + '\n\\caption*{{{}}} \\\\'.format(caption)         
     latex_table = '\n'.join(latex_table_list)
 
     return latex_table

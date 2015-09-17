@@ -3001,10 +3001,12 @@ def figure_3_replication(measure_dict_D, measure_dict_V, paper_dir):
     min_max_dict_V = get_min_max_values(measure_dict_V)
     axis_label_dict = get_axis_label_dict()
 
-    # Create the big figure
-    big_fig, ax_list = plt.subplots(1,3, figsize=(30, 8), facecolor='white')
+    # Define the measures you care about
+    measure_list = ['Degree', 'Closeness', 'AverageDist', 'Clustering' ]
     
-    measure_list = ['Degree', 'Closeness', 'AverageDist' ]
+    # Create the big figure
+    big_fig, ax_list = plt.subplots(1,len(measure_list), figsize=(30, 8), facecolor='white')
+    
 
     for i, measure in enumerate(measure_list):
     
