@@ -59,24 +59,26 @@ subjid=MRI0
     
 for hemi in lh rh; do
     
-    # Transform the surface parcellation from fsaverage space 
-    # to indiviual native space
-    mri_surf2surf --srcsubject ${fsaverage_subid} \
-                    --sval-annot ${SUBJECTS_DIR}/${fsaverage_subid}/label/${hemi}.500.aparc \
-                    --trgsubject ${sub}/SURFER/${subjid} \
-                    --trgsurfval ${SUBJECTS_DIR}/${sub}/SURFER/${subjid}/label/${hemi}.500.aparc \
-                    --hemi ${hemi}
+    if [[ ! -f ${SUBJECTS_DIR}/${sub}/SURFER/${subjid}/label/${hemi}.500.aparc ]]; then
+    
+        # Transform the surface parcellation from fsaverage space 
+        # to indiviual native space
+        mri_surf2surf --srcsubject ${fsaverage_subid} \
+                        --sval-annot ${SUBJECTS_DIR}/${fsaverage_subid}/label/${hemi}.500.aparc \
+                        --trgsubject ${sub}/SURFER/${subjid} \
+                        --trgsurfval ${SUBJECTS_DIR}/${sub}/SURFER/${subjid}/label/${hemi}.500.aparc \
+                        --hemi ${hemi}
+    fi
 done
 
-# Transform indivual surface parcellation to individual volume parcellation
-mkdir -p ${SUBJECTS_DIR}/${sub}/SURFER/${subjid}/parcellation/
-mri_aparc2aseg --s ${sub}/SURFER/${subjid} \
-                --o ${SUBJECTS_DIR}/${sub}/SURFER/${subjid}/parcellation/500.aparc.nii.gz \
-                --annot 500.aparc \
-                --rip-unknown \
-                --hypo-as-wm
-
-done
-
+if [[ ! -f ${SUBJECTS_DIR}/${sub}/SURFER/${subjid}/parcellation/500.aparc.nii.gz ]]; then
+    # Transform indivual surface parcellation to individual volume parcellation
+    mkdir -p ${SUBJECTS_DIR}/${sub}/SURFER/${subjid}/parcellation/
+    mri_aparc2aseg --s ${sub}/SURFER/${subjid} \
+                    --o ${SUBJECTS_DIR}/${sub}/SURFER/${subjid}/parcellation/500.aparc.nii.gz \
+                    --annot 500.aparc \
+                    --rip-unknown \
+                    --hypo-as-wm
+fi
 #================================================================
 
