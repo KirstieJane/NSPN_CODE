@@ -77,8 +77,8 @@ fi
 sub_data_dir=${study_dir}/SUB_DATA
 fsaverage_subid=fsaverageSubP
 
-surfer_dir=${sub_data_dir}/SURFER/MRI0/
-mpm_dir=${sub_data_dir}/MPM/MRI0/
+surfer_dir=${sub_data_dir}/${sub}/SURFER/MRI0/
+mpm_dir=${sub_data_dir}/${sub}/MPM/MRI0/
 
 
 #================================================================
