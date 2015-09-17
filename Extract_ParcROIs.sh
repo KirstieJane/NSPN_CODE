@@ -80,12 +80,15 @@ fsaverage_subid=fsaverageSubP
 surfer_dir=${sub_data_dir}/${sub}/SURFER/MRI0/
 mpm_dir=${sub_data_dir}/${sub}/MPM/MRI0/
 
+SUBJECTS_DIR=${surfer_dir}/../
+surf_sub=`basename ${surfer_dir}`
+
 
 #================================================================
 # TRANSFORM MPM MEASURES FILES TO FREESURFER SPACE
 #================================================================
-# If the mpm measure file doesn't exist yet in the <surfer_dir>/mri folder
-# then you have to make it
+# If the mpm measure file doesn't exist yet in the 
+# <surfer_dir>/mri folder then you have to make it
 
 # Loop through the mpm outputs that you're interested in
 for mpm in MT; do
@@ -122,7 +125,7 @@ done
 #     500.aparc
 #     lobesStrict
 #=================================================================
-   
+ 
 # Loop over both left and right hemispheres
 for hemi in lh rh; do
 
@@ -150,7 +153,7 @@ for hemi in lh rh; do
                 
                     mri_vol2surf --mov ${surfer_dir}/mri/${measure}.mgz \
                                     --o ${surfer_dir}/surf/${hemi}.${measure}_projfrac${frac}.mgh \
-                                    --regheader MRI0 \
+                                    --regheader ${surf_sub} \
                                     --projfrac ${frac} \
                                     --interp nearest \
                                     --surf white \
@@ -164,7 +167,7 @@ for hemi in lh rh; do
                     mris_anatomical_stats -a ${surfer_dir}/label/${hemi}.${parc}.annot \
                                             -t ${surfer_dir}/surf/${hemi}.${measure}_projfrac${frac}.mgh \
                                             -f ${surfer_dir}/stats/${hemi}.${parc}.${measure}_projfrac${frac}.stats \
-                                            MRI0 \
+                                            ${surf_sub} \
                                             ${hemi}
                 fi
         
@@ -178,7 +181,7 @@ for hemi in lh rh; do
                 
                     mri_vol2surf --mov ${surfer_dir}/mri/${measure}.mgz \
                                     --o ${surfer_dir}/surf/${hemi}.${measure}_projdist${dist}_fromBoundary.mgh \
-                                    --regheader MRI0 \
+                                    --regheader ${surf_sub} \
                                     --projdist ${dist} \
                                     --interp nearest \
                                     --surf white \
@@ -193,7 +196,7 @@ for hemi in lh rh; do
                     mris_anatomical_stats -a ${surfer_dir}/label/${hemi}.${parc}.annot \
                                             -t ${surfer_dir}/surf/${hemi}.${measure}_projdist${dist}_fromBoundary.mgh \
                                             -f ${surfer_dir}/stats/${hemi}.${parc}.${measure}_projdist${dist}_fromBoundary.stats \
-                                            MRI0 \
+                                            ${surf_sub} \
                                             ${hemi}
                 fi
             done # Close the absolute distance **from boundary** loop
