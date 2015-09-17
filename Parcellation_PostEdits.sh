@@ -59,7 +59,7 @@ subjid=MRI0
     
 for hemi in lh rh; do
     
-    if [[ ! -f ${SUBJECTS_DIR}/${sub}/SURFER/${subjid}/label/${hemi}.500.aparc ]]; then
+    if [[ ! -f ${SUBJECTS_DIR}/${sub}/SURFER/${subjid}/label/${hemi}.500.aparc.annot ]]; then
     
         # Transform the surface parcellation from fsaverage space 
         # to indiviual native space
