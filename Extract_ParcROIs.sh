@@ -150,7 +150,7 @@ for hemi in lh rh; do
                 
                     mri_vol2surf --mov ${surfer_dir}/mri/${measure}.mgz \
                                     --o ${surfer_dir}/surf/${hemi}.${measure}_projfrac${frac}.mgh \
-                                    --regheader ${surf_sub} \
+                                    --regheader MRI0 \
                                     --projfrac ${frac} \
                                     --interp nearest \
                                     --surf white \
@@ -164,7 +164,7 @@ for hemi in lh rh; do
                     mris_anatomical_stats -a ${surfer_dir}/label/${hemi}.${parc}.annot \
                                             -t ${surfer_dir}/surf/${hemi}.${measure}_projfrac${frac}.mgh \
                                             -f ${surfer_dir}/stats/${hemi}.${parc}.${measure}_projfrac${frac}.stats \
-                                            ${surf_sub} \
+                                            MRI0 \
                                             ${hemi}
                 fi
         
@@ -178,7 +178,7 @@ for hemi in lh rh; do
                 
                     mri_vol2surf --mov ${surfer_dir}/mri/${measure}.mgz \
                                     --o ${surfer_dir}/surf/${hemi}.${measure}_projdist${dist}_fromBoundary.mgh \
-                                    --regheader ${surf_sub} \
+                                    --regheader MRI0 \
                                     --projdist ${dist} \
                                     --interp nearest \
                                     --surf white \
@@ -193,7 +193,7 @@ for hemi in lh rh; do
                     mris_anatomical_stats -a ${surfer_dir}/label/${hemi}.${parc}.annot \
                                             -t ${surfer_dir}/surf/${hemi}.${measure}_projdist${dist}_fromBoundary.mgh \
                                             -f ${surfer_dir}/stats/${hemi}.${parc}.${measure}_projdist${dist}_fromBoundary.stats \
-                                            ${surf_sub} \
+                                            MRI0 \
                                             ${hemi}
                 fi
             done # Close the absolute distance **from boundary** loop
