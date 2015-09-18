@@ -124,14 +124,14 @@ for parc in aparc 500.aparc lobesStrict; do
                                 --meas ${measure} \
                                 -d comma \
                                 --skip \
-                                -t ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temp2.csv 
+                                -t ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temptemp.csv 
                                 
             # Drop the first column because it isn't necessary
-            cut -d, -f2- ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temp2.csv \
+            cut -d, -f2- ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temptemp.csv \
                     > ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temp.csv 
             
             # But save it for later!
-            cut -d, -f1 ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temp2.csv \
+            cut -d, -f1 ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${hemi}_temptemp.csv \
                     > ${data_dir}/FS_ROIS/nspn_id_col
         done
         
@@ -170,11 +170,11 @@ for parc in aparc 500.aparc lobesStrict; do
         fi
         
         # Now loop through all the measures
-        for measure in R1 MT R2s A FA MD MO L1 L23 sse synthetic; do
-        #for measure in MT synthetic; do
+        #for measure in R1 MT R2s A FA MD MO L1 L23 sse synthetic; do
+        for measure in MT ; do
                 
-            for frac in `seq -f %+02.2f -1 0.05 1`; do
-            #for frac in `seq -f %+02.2f 0 0.1 1`; do
+            #for frac in `seq -f %+02.2f -1 0.05 1`; do
+            for frac in `seq -f %+02.2f 0 0.1 1`; do
             
                 for hemi in lh rh; do
 
@@ -220,7 +220,7 @@ for parc in aparc 500.aparc lobesStrict; do
             
             done # Close frac loop
             
-            for dist in `seq -f %+02.2f 0 -0.1 -2`; do
+            for dist in `seq -f %+02.2f 0 -0.2 -2`; do
             
                 for hemi in lh rh; do
 
