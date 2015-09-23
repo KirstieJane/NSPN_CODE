@@ -152,7 +152,7 @@ for hemi in lh rh; do
                     mri_vol2surf --mov ${surfer_dir}/mri/${measure}.mgz \
                                     --o ${surfer_dir}/surf/${hemi}.${measure}_cortexAv.mgh \
                                     --regheader ${surf_sub} \
-                                    --projfrac-avg 0 1 \
+                                    --projfrac-avg 0 1 0.1 \
                                     --interp nearest \
                                     --surf white \
                                     --hemi ${hemi} 
