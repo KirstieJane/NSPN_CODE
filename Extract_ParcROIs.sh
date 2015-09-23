@@ -144,6 +144,31 @@ for hemi in lh rh; do
         # Next loop through all the different MPM and DTI files
         for measure in MT; do
 
+            # First take the average across all of cortex
+            
+                # Project the values to the surface
+                if [[ ! -f ${surfer_dir}/surf/${hemi}.${measure}_cortexAv.mgh ]]; then
+                
+                    mri_vol2surf --mov ${surfer_dir}/mri/${measure}.mgz \
+                                    --o ${surfer_dir}/surf/${hemi}.${measure}_cortexAv.mgh \
+                                    --regheader ${surf_sub} \
+                                    --projfrac-avg 0 1 \
+                                    --interp nearest \
+                                    --surf white \
+                                    --hemi ${hemi} 
+                fi
+
+                # Calculate the stats
+                if [[ ! -f ${surfer_dir}/stats/${hemi}.${parc}.${measure}_cortexAv.stats \
+                            && -f ${surfer_dir}/label/${hemi}.${parc}.annot ]]; then
+                            
+                    mris_anatomical_stats -a ${surfer_dir}/label/${hemi}.${parc}.annot \
+                                            -t ${surfer_dir}/surf/${hemi}.${measure}_cortexAv.mgh \
+                                            -f ${surfer_dir}/stats/${hemi}.${parc}.${measure}_cortexAv.stats \
+                                            ${surf_sub} \
+                                            ${hemi}
+                fi
+            
             # Loop through a bunch of different fractional depths 
             # from the white matter surface
             for frac in `seq -f %+02.2f 0 0.1 1`; do
