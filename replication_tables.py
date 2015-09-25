@@ -464,7 +464,7 @@ def write_latex_table(table_df, table_file, caption):
 #=============================================================================
 # PUT IT ALL TOGETHER
 #-----------------------------------------------------------------------------
-def make_replication_table_figures1and2(measure_dict_dict, paper_dir):
+def make_replication_table_figures1and2(measure_dict_dict, paper_dir, cohort_list=['DISCOVERY_ALL', 'VALIDATION_ALL', 'COMPLETE_ALL']):
 
     #=============================================================================
     # GET STARTED BY SETTING THE CAPTION AND NAME YOUR OUTPUT FILE
@@ -476,12 +476,12 @@ def make_replication_table_figures1and2(measure_dict_dict, paper_dir):
     #=============================================================================
     # Make the data frame
     #-----------------------------------------------------------------------------
-    table_dict, col_list = create_dict_figures1and2(measure_dict_dict)
+    table_dict, col_list = create_dict_figures1and2(measure_dict_dict, cohort_list)
     table_df = make_table_df(table_dict, col_list)
     write_latex_table(table_df, table_file, caption)
     
     
-def make_replication_table_figure3(measure_dict_dict, paper_dir):
+def make_replication_table_figure3(measure_dict_dict, paper_dir, cohort_list=['DISCOVERY_ALL', 'VALIDATION_ALL', 'COMPLETE_ALL']):
 
     #=============================================================================
     # GET STARTED BY SETTING THE CAPTION AND NAME YOUR OUTPUT FILE
@@ -493,11 +493,11 @@ def make_replication_table_figure3(measure_dict_dict, paper_dir):
     #=============================================================================
     # Make the data frame
     #-----------------------------------------------------------------------------
-    table_dict, col_list = create_dict_figure3(measure_dict_dict)
+    table_dict, col_list = create_dict_figure3(measure_dict_dict, cohort_list)
     table_df = make_table_df(table_dict, col_list)
     write_latex_table(table_df, table_file, caption)
     
-def make_replication_table_voneconomo(measure_dict_dict, paper_dir):
+def make_replication_table_voneconomo(measure_dict_dict, paper_dir, cohort_list=['DISCOVERY_ALL', 'VALIDATION_ALL', 'COMPLETE_ALL']):
 
     #=============================================================================
     # GET STARTED BY SETTING THE CAPTION AND NAME YOUR OUTPUT FILE
@@ -509,7 +509,7 @@ def make_replication_table_voneconomo(measure_dict_dict, paper_dir):
     #=============================================================================
     # Make the data frame
     #-----------------------------------------------------------------------------
-    table_dict, col_list = create_dict_voneconomo(measure_dict_dict)
+    table_dict, col_list = create_dict_voneconomo(measure_dict_dict, cohort_list)
     table_df = make_table_df(table_dict, col_list)
     write_latex_table(table_df, table_file, caption)
     
