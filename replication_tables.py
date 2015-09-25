@@ -50,14 +50,17 @@ def format_p(x):
 #=============================================================================
 # FIGURES 1 and 2 CREATE DICT
 #-----------------------------------------------------------------------------
-def create_dict_figures1and2(measure_dict_dict):
-    name_dict = { 'DISCOVERY_EXCLBAD' : 'Discovery',
-                  'VALIDATION_EXCLBAD' : 'Validation',
-                  'COMPLETE_EXCLBAD' : 'Complete' }
+def create_dict_figures1and2(measure_dict_dict, cohort_list=['DISCOVERY_ALL', 'VALIDATION_ALL', 'COMPLETE_ALL']):
+    name_dict = { 'DISCOVERY_EXCLBAD' : 'Discovery ExclBad',
+                  'VALIDATION_EXCLBAD' : 'Validation ExclBad',
+                  'COMPLETE_EXCLBAD' : 'Complete ExclBad',
+                  'DISCOVERY_ALL' : 'Discovery',
+                  'VALIDATION_ALL' : 'Validation',
+                  'COMPLETE_ALL' : 'Complete'}
 
     table_dict = {}
 
-    for cohort in ['DISCOVERY_EXCLBAD', 'VALIDATION_EXCLBAD', 'COMPLETE_EXCLBAD']:
+    for cohort in cohort_list:
         measure_dict = measure_dict_dict[cohort]
         print '==={}==='.format(name_dict[cohort])
         
@@ -154,14 +157,17 @@ def create_dict_figures1and2(measure_dict_dict):
 #=============================================================================
 # FIGURE 3 CREATE DICT
 #-----------------------------------------------------------------------------
-def create_dict_figure3(measure_dict_dict):
-    name_dict = { 'DISCOVERY_EXCLBAD' : 'Discovery',
-                  'VALIDATION_EXCLBAD' : 'Validation',
-                  'COMPLETE_EXCLBAD' : 'Complete' }
+def create_dict_figure3(measure_dict_dict, cohort_list=['DISCOVERY_ALL', 'VALIDATION_ALL', 'COMPLETE_ALL']):
+    name_dict = { 'DISCOVERY_EXCLBAD' : 'Discovery ExclBad',
+                  'VALIDATION_EXCLBAD' : 'Validation ExclBad',
+                  'COMPLETE_EXCLBAD' : 'Complete ExclBad',
+                  'DISCOVERY_ALL' : 'Discovery',
+                  'VALIDATION_ALL' : 'Validation',
+                  'COMPLETE_ALL' : 'Complete'}
 
     table_dict = {}
 
-    for cohort in ['DISCOVERY_EXCLBAD', 'VALIDATION_EXCLBAD', 'COMPLETE_EXCLBAD']:
+    for cohort in cohort_list:
         measure_dict = measure_dict_dict[cohort]
         print '==={}==='.format(name_dict[cohort])
         
@@ -255,14 +261,17 @@ def create_dict_figure3(measure_dict_dict):
 #=============================================================================
 # VON ECONOMO CREATE DICT
 #-----------------------------------------------------------------------------
-def create_dict_voneconomo(measure_dict_dict):
-    name_dict = { 'DISCOVERY_EXCLBAD' : 'Discovery',
-                  'VALIDATION_EXCLBAD' : 'Validation',
-                  'COMPLETE_EXCLBAD' : 'Complete' }
+def create_dict_voneconomo(measure_dict_dict, cohort_list=['DISCOVERY_ALL', 'VALIDATION_ALL', 'COMPLETE_ALL']):
+    name_dict = { 'DISCOVERY_EXCLBAD' : 'Discovery ExclBad',
+                  'VALIDATION_EXCLBAD' : 'Validation ExclBad',
+                  'COMPLETE_EXCLBAD' : 'Complete ExclBad',
+                  'DISCOVERY_ALL' : 'Discovery',
+                  'VALIDATION_ALL' : 'Validation',
+                  'COMPLETE_ALL' : 'Complete'}
 
     table_dict = {}
 
-    for cohort in ['DISCOVERY_EXCLBAD', 'VALIDATION_EXCLBAD', 'COMPLETE_EXCLBAD']:
+    for cohort in cohort_list:
         measure_dict = measure_dict_dict[cohort]
         print '==={}==='.format(name_dict[cohort])
         
