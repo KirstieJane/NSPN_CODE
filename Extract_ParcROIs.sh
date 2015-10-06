@@ -91,7 +91,7 @@ surf_sub=`basename ${surfer_dir}`
 # <surfer_dir>/mri folder then you have to make it
 
 # Loop through the mpm outputs that you're interested in
-for mpm in MT; do
+for mpm in MT R1 R2s R1R2s; do
     mpm_file=${mpm_dir}/${mpm}_head.nii.gz
 
     if [[ -f ${mpm_file} ]]; then
@@ -104,8 +104,16 @@ for mpm in MT; do
             mpm_file=${mpm_file/.nii/_mul1000.nii}
         fi
         
+        # If the mpm label is R1R2s then you need to create
+        # the file
+        if [[ ${mpm} == R1R2s &&  ! -f ${mpm_file} ]]; then
+            fslmaths ${mpm_dir}/R1_head.nii.gz \
+                     -div ${mpm_dir}/R2s_head_mul1000.nii.gz \
+                     ${mpm_file}
+        fi
+        
+        # Align the mgz file to "freesurfer" anatomical space
         if [[ ! -f ${surfer_dir}/mri/${mpm}.mgz ]]; then
-            # Align the mgz file to "freesurfer" anatomical space
             mri_vol2vol --mov ${mpm_file} \
                         --targ ${surfer_dir}/mri/T1.mgz \
                         --regheader \
@@ -142,32 +150,56 @@ for hemi in lh rh; do
         fi
         
         # Next loop through all the different MPM and DTI files
-        for measure in MT; do
+        for measure in MT R1 R2s R1R2s; do
 
             # First take the average across all of cortex
             
-                # Project the values to the surface
-                if [[ ! -f ${surfer_dir}/surf/${hemi}.${measure}_cortexAv.mgh ]]; then
-                
-                    mri_vol2surf --mov ${surfer_dir}/mri/${measure}.mgz \
-                                    --o ${surfer_dir}/surf/${hemi}.${measure}_cortexAv.mgh \
-                                    --regheader ${surf_sub} \
-                                    --projfrac-avg 0 1 0.1 \
-                                    --interp nearest \
-                                    --surf white \
-                                    --hemi ${hemi} 
-                fi
+            # Project the values to the surface
+            if [[ ! -f ${surfer_dir}/surf/${hemi}.${measure}_cortexAv.mgh ]]; then
+            
+                mri_vol2surf --mov ${surfer_dir}/mri/${measure}.mgz \
+                                --o ${surfer_dir}/surf/${hemi}.${measure}_cortexAv.mgh \
+                                --regheader ${surf_sub} \
+                                --projfrac-avg 0 1 0.1 \
+                                --interp nearest \
+                                --surf white \
+                                --hemi ${hemi} 
+            fi
 
-                # Calculate the stats
-                if [[ ! -f ${surfer_dir}/stats/${hemi}.${parc}.${measure}_cortexAv.stats \
-                            && -f ${surfer_dir}/label/${hemi}.${parc}.annot ]]; then
-                            
-                    mris_anatomical_stats -a ${surfer_dir}/label/${hemi}.${parc}.annot \
-                                            -t ${surfer_dir}/surf/${hemi}.${measure}_cortexAv.mgh \
-                                            -f ${surfer_dir}/stats/${hemi}.${parc}.${measure}_cortexAv.stats \
-                                            ${surf_sub} \
-                                            ${hemi}
-                fi
+            # Calculate the stats
+            if [[ ! -f ${surfer_dir}/stats/${hemi}.${parc}.${measure}_cortexAv.stats \
+                        && -f ${surfer_dir}/label/${hemi}.${parc}.annot ]]; then
+                        
+                mris_anatomical_stats -a ${surfer_dir}/label/${hemi}.${parc}.annot \
+                                        -t ${surfer_dir}/surf/${hemi}.${measure}_cortexAv.mgh \
+                                        -f ${surfer_dir}/stats/${hemi}.${parc}.${measure}_cortexAv.stats \
+                                        ${surf_sub} \
+                                        ${hemi}
+            fi
+            
+            # Then average across white matter
+            # Project the values to the surface
+            if [[ ! -f ${surfer_dir}/surf/${hemi}.${measure}_wmAv.mgh ]]; then
+            
+                mri_vol2surf --mov ${surfer_dir}/mri/${measure}.mgz \
+                                --o ${surfer_dir}/surf/${hemi}.${measure}_wmAv.mgh \
+                                --regheader ${surf_sub} \
+                                --projdist-avg -2 0 0.1 \
+                                --interp nearest \
+                                --surf white \
+                                --hemi ${hemi} 
+            fi
+
+            # Calculate the stats
+            if [[ ! -f ${surfer_dir}/stats/${hemi}.${parc}.${measure}_wmAv.stats \
+                        && -f ${surfer_dir}/label/${hemi}.${parc}.annot ]]; then
+                        
+                mris_anatomical_stats -a ${surfer_dir}/label/${hemi}.${parc}.annot \
+                                        -t ${surfer_dir}/surf/${hemi}.${measure}_wmAv.mgh \
+                                        -f ${surfer_dir}/stats/${hemi}.${parc}.${measure}_wmAv.stats \
+                                        ${surf_sub} \
+                                        ${hemi}
+            fi
             
             # Loop through a bunch of different fractional depths 
             # from the white matter surface
@@ -200,7 +232,7 @@ for hemi in lh rh; do
             
             # Now loop through the different absolute depths
             # **from the grey/white matter boundary**
-            for dist in `seq -f %+02.2f -2 0.2 0`; do
+            for dist in `seq -f %+02.2f -2 0.1 0`; do
 
                 if [[ ! -f ${surfer_dir}/surf/${hemi}.${measure}_projdist${dist}_fromBoundary.mgh ]]; then
                 
