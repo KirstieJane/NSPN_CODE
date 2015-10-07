@@ -122,7 +122,6 @@ for mpm in MT R1 R2s R1R2s; do
                     --regheader \
                     --o ${surfer_dir}/mri/${mpm}.mgz \
                     --no-save-reg
-        fi
     fi
 done
 
