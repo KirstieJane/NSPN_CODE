@@ -104,21 +104,24 @@ for mpm in MT R1 R2s R1R2s; do
             mpm_file=${mpm_file/.nii/_mul1000.nii}
         fi
         
+    elif [[ ${mpm} == R1R2s ]]; then
         # If the mpm label is R1R2s then you need to create
         # the file
-        if [[ ${mpm} == R1R2s &&  ! -f ${mpm_file} ]]; then
+        if [[ ! -f ${mpm_file} ]]; then
             fslmaths ${mpm_dir}/R1_head.nii.gz \
                      -div ${mpm_dir}/R2s_head_mul1000.nii.gz \
                      ${mpm_file}
         fi
-        
-        # Align the mgz file to "freesurfer" anatomical space
-        if [[ ! -f ${surfer_dir}/mri/${mpm}.mgz ]]; then
-            mri_vol2vol --mov ${mpm_file} \
-                        --targ ${surfer_dir}/mri/T1.mgz \
-                        --regheader \
-                        --o ${surfer_dir}/mri/${mpm}.mgz \
-                        --no-save-reg
+
+    fi
+    
+    # Align the mgz file to "freesurfer" anatomical space
+    if [[ -f ${mpm_file} && ! -f ${surfer_dir}/mri/${mpm}.mgz ]]; then
+        mri_vol2vol --mov ${mpm_file} \
+                    --targ ${surfer_dir}/mri/T1.mgz \
+                    --regheader \
+                    --o ${surfer_dir}/mri/${mpm}.mgz \
+                    --no-save-reg
         fi
     fi
 done
