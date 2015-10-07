@@ -265,6 +265,54 @@ for parc in aparc 500.aparc lobesStrict; do
                 rm ${data_dir}/FS_ROIS/nspn_id_col
             
             done # Close dist loop
+            
+            # Loop over the two different averages
+            for av in cortexAv wmAv; do
+            
+                for hemi in lh rh; do
+
+                    # Combine stats for all subjects for each measure and for each 
+                    # hemisphere separately
+                    aparcstats2table --hemi ${hemi} \
+                                        --subjects ${subjects[@]} \
+                                        --parc ${parc}.${measure}_${av} \
+                                        --meas ${stat} \
+                                        -d comma \
+                                        --skip \
+                                        -t ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${av}_${stat_name}_${hemi}_temptemp.csv 
+                                        
+                    # Drop the first column because it isn't necessary
+                    cut -d, -f2- ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${av}_${stat_name}_${hemi}_temptemp.csv \
+                            > ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${av}_${stat_name}_${hemi}_temp.csv 
+                    
+                    # But save it for later!
+                    cut -d, -f1 ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${av}_${stat_name}_${hemi}_temptemp.csv \
+                            > ${data_dir}/FS_ROIS/nspn_id_col
+                done
+                
+                sed -i "s|${data_dir}/SUB_DATA/||g" ${data_dir}/FS_ROIS/nspn_id_col
+                sed -i "s|/SURFER/MRI|,|g" ${data_dir}/FS_ROIS/nspn_id_col
+                sed -i "s|/||g" ${data_dir}/FS_ROIS/nspn_id_col
+                sed -i "s|${hemi}.${parc}.${measure}_${av}.${stat}|nspn_id,occ|g" ${data_dir}/FS_ROIS/nspn_id_col
+                
+                # Now paste the data together
+                paste -d , ${data_dir}/FS_ROIS/nspn_id_col \
+                        ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${av}_${stat_name}_lh_temp.csv \
+                        ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${av}_${stat_name}_rh_temp.csv \
+                            > ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${av}_${stat_name}.csv
+                
+                # And replace all '-' with '_' because statsmodels in python
+                # likes that more :P but only on the first row
+                sed -i "1 s/-/_/g" ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${av}_${stat_name}.csv
+                # And replace the : marker
+                sed -i "s/://g" ${data_dir}/FS_ROIS/PARC_${parc}_${measure}_${av}_${stat_name}.csv
+                
+                # Remove the temporary files
+                rm ${data_dir}/FS_ROIS/*temp.csv
+                rm ${data_dir}/FS_ROIS/nspn_id_col
+            
+            done # Close dist loop
+
         done # Close measure loop
     done # Close stat loop
 done # Close parc loop
