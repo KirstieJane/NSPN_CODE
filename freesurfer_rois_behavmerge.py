@@ -32,6 +32,11 @@ def usage():
 #=============================================================================
 # READ IN COMMAND LINE ARGUMENTS
 #=============================================================================
+# Check that two arguments have been passed
+if len sys.argv < 2:
+    print "Not enough arguments passed"
+    usage()
+    
 # Get the fs_rois_dir from the command line
 if not sys.argv[1]:
     print "Can't find FS_ROIS directory"
