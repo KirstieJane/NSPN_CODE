@@ -1649,13 +1649,13 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     #==== FOUR ROWS OF DATA ======================================
     # Make a list of the file names for the left lateral image
     left_lat_fname_list = [ os.path.join(results_dir, 'PNGS', 
-                                    'SlopeAge_at14_CT_lh_pial_lateral.png'),
+                                    'SlopeAge_at14_CT_lh_pial_classic_lateral.png'),
                                os.path.join(results_dir, 'PNGS', 
-                                    'SlopeAge_FDRmask_CT_lh_pial_lateral.png'),
+                                    'SlopeAge_FDRmask_CT_lh_pial_classic_lateral.png'),
                                os.path.join(results_dir, 'PNGS', 
-                                    'SlopeAge_at14_MT_projfrac+030_lh_pial_lateral.png'),
+                                    'SlopeAge_at14_MT_projfrac+030_lh_pial_classic_lateral.png'),
                                os.path.join(results_dir, 'PNGS', 
-                                    'SlopeAge_FDRmask_MT_projfrac+030_lh_pial_lateral.png') ]
+                                    'SlopeAge_FDRmask_MT_projfrac+030_lh_pial_classic_lateral.png') ]
     
     # List the var names that will be used to get the axis labels
     # and min/max values
@@ -1690,9 +1690,9 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
         #==== BRAIN IMAGES ======================================
         # Plot the braaaaains
         f_list = [ left_lat_fname, 
-                    left_lat_fname.replace('lh_pial_lateral', 'lh_pial_medial'),
-                    left_lat_fname.replace('lh_pial_lateral', 'rh_pial_lateral'),
-                    left_lat_fname.replace('lh_pial_lateral', 'rh_pial_medial') ]
+                    left_lat_fname.replace('lh_pial_classic_lateral', 'lh_pial_classic_medial'),
+                    left_lat_fname.replace('lh_pial_classic_lateral', 'rh_pial_classic_lateral'),
+                    left_lat_fname.replace('lh_pial_classic_lateral', 'rh_pial_classic_medial') ]
         
         grid = gridspec.GridSpec(1,4)
         
@@ -2208,13 +2208,13 @@ def figure_3_separate(measure_dict, figures_dir, results_dir, mpm='MT', network_
     # Start by putting the high degree nodes in the top row
     #=========================================================================
     f_list = [ os.path.join(results_dir, 'PNGS',
-                                '{}_CT_covar_ones_all_COST_10_lh_pial_lateral.png'.format(network_measure)),
+                                '{}_CT_covar_ones_all_COST_10_lh_pial_classic_lateral.png'.format(network_measure)),
                 os.path.join(results_dir, 'PNGS', 
-                                '{}_CT_covar_ones_all_COST_10_lh_pial_medial.png'.format(network_measure)),
+                                '{}_CT_covar_ones_all_COST_10_lh_pial_classic_medial.png'.format(network_measure)),
                 os.path.join(results_dir, 'PNGS', 
-                                '{}_CT_covar_ones_all_COST_10_rh_pial_medial.png'.format(network_measure)),
+                                '{}_CT_covar_ones_all_COST_10_rh_pial_classic_medial.png'.format(network_measure)),
                 os.path.join(results_dir, 'PNGS', 
-                                '{}_CT_covar_ones_all_COST_10_rh_pial_lateral.png'.format(network_measure)) ]
+                                '{}_CT_covar_ones_all_COST_10_rh_pial_classic_lateral.png'.format(network_measure)) ]
 
     grid = gridspec.GridSpec(1, 4)
     grid.update(left=0, right=1, bottom=0.66, top=1, wspace=0, hspace=0)
