@@ -33,7 +33,7 @@ def usage():
 # READ IN COMMAND LINE ARGUMENTS
 #=============================================================================
 # Check that two arguments have been passed
-if len sys.argv < 2:
+if len(sys.argv) < 2:
     print "Not enough arguments passed"
     usage()
     

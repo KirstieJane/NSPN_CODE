@@ -1,12 +1,8 @@
 for cohort in [ 'DISCOVERY', 'VALIDATION', 'COMPLETE' ]:
 
-    graph_dict = graph_dict_dict['{}_EXCLBAD'.format(cohort)]
     measure_dict = measure_dict_dict['{}_EXCLBAD'.format(cohort)]
 
-    G = graph_dict['CT_covar_ones_all_COST_10']
-
     df_PV = pd.DataFrame(data=aparc_names, columns=['ROI_name'])
-    #df_PV['hemi'] = nx.get_node_attributes(G, 'hemi').values()
     df_PV['von_economo'] = von_economo
     df_PV['lobe'] = lobes
 
@@ -15,9 +11,7 @@ for cohort in [ 'DISCOVERY', 'VALIDATION', 'COMPLETE' ]:
     df_PV['pc'] = measure_dict['PC_CT_covar_ones_all_COST_10']
     df_PV['closeness'] = measure_dict['Closeness_CT_covar_ones_all_COST_10']
     df_PV['clustering'] = measure_dict['Clustering_CT_covar_ones_all_COST_10']
-    L = shortest_path(G).values()
-    df_PV['L'] = np.array(L)
-    #df_PV['L'] = measure_dict['ShortestPath_CT_covar_ones_all_COST_10']
+    df_PV['L'] = measure_dict['ShortestPath_CT_covar_ones_all_COST_10']
     df_PV['d_euc_av'] = measure_dict['AverageDist_CT_covar_ones_all_COST_10']
     df_PV['d_euc_tot'] = measure_dict['TotalDist_CT_covar_ones_all_COST_10']
     df_PV['interhem_proportion'] = measure_dict['InterhemProp_CT_covar_ones_all_COST_10']
@@ -31,12 +25,12 @@ for cohort in [ 'DISCOVERY', 'VALIDATION', 'COMPLETE' ]:
     df_PV['MT_projfrac+030_all_slope_age_at14'] = measure_dict['MT_projfrac+030_all_slope_age_at14']
     df_PV['MT_projfrac+030_all_slope_ct_at14'] = measure_dict['MT_projfrac+030_all_slope_ct_at14']
 
-    measure_dict_1415 = measure_dict_dict['AGE_BIN_1_EXCLBAD']
-    df_PV['CT_1415_mean'] = measure_dict_1415['CT_all_mean']
-    df_PV['MT_projfrac+030_1415_mean'] = measure_dict_1415['MT_projfrac+030_all_mean']
+    #measure_dict_1415 = measure_dict_dict['AGE_BIN_1_EXCLBAD']
+    #df_PV['CT_1415_mean'] = measure_dict_1415['CT_all_mean']
+    #df_PV['MT_projfrac+030_1415_mean'] = measure_dict_1415['MT_projfrac+030_all_mean']
 
-    measure_dict_2224 = measure_dict_dict['AGE_BIN_5_EXCLBAD']
-    df_PV['CT_2224_mean'] = measure_dict_2224['CT_all_mean']
-    df_PV['MT_projfrac+030_2224_mean'] = measure_dict_2224['MT_projfrac+030_all_mean']
+    #measure_dict_2224 = measure_dict_dict['AGE_BIN_5_EXCLBAD']
+    #df_PV['CT_2224_mean'] = measure_dict_2224['CT_all_mean']
+    #df_PV['MT_projfrac+030_2224_mean'] = measure_dict_2224['MT_projfrac+030_all_mean']
 
-    df_PV.to_csv('CTMT_data_20150715_{}_EXCLBAD.csv'.format(cohort))
+    df_PV.to_csv('CTMT_data_20151008_{}_EXCLBAD.csv'.format(cohort))
