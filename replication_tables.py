@@ -485,12 +485,11 @@ def make_replication_table_figures1and2(measure_dict_dict,
     #-----------------------------------------------------------------------------
     caption = 'Associated statistics for Figures 1 and 2'
 
-    table_file = os.path.join(paper_dir, 'Replication_Table_Figures1and2.tex')
+    table_dir = os.path.join(paper_dir, cohort_list_name)
+    table_file = os.path.join(table_dir, 'Replication_Table_Figures1and2.tex')
 
     #=============================================================================
     # Make the output folder
-    table_dir = os.path.join(paper_dir, cohort_list_name)
-    
     if not os.path.isdir(table_dir):
         os.makedirs(table_dir)
         
@@ -511,13 +510,12 @@ def make_replication_table_figure3(measure_dict_dict,
     # GET STARTED BY SETTING THE CAPTION AND NAME YOUR OUTPUT FILE
     #-----------------------------------------------------------------------------
     caption = 'Associated statistics for Figure 3'
-
-    table_file = os.path.join(paper_dir, 'Replication_Table_Figure3.tex')
+    
+    table_dir = os.path.join(paper_dir, cohort_list_name)
+    table_file = os.path.join(table_dir, 'Replication_Table_Figure3.tex')
 
     #=============================================================================
     # Make the output folder
-    table_dir = os.path.join(paper_dir, cohort_list_name)
-    
     if not os.path.isdir(table_dir):
         os.makedirs(table_dir)
     
@@ -535,12 +533,11 @@ def make_replication_table_voneconomo(measure_dict_dict, paper_dir, cohort_list=
     #-----------------------------------------------------------------------------
     caption = 'Nodal measures by von Economo type'
 
-    table_file = os.path.join(paper_dir, 'VonEconomo_Table.tex')
+    table_dir = os.path.join(paper_dir, cohort_list_name)
+    table_file = os.path.join(table_dir, 'VonEconomo_Table.tex')
 
     #=============================================================================
     # Make the output folder
-    table_dir = os.path.join(paper_dir, cohort_list_name)
-    
     if not os.path.isdir(table_dir):
         os.makedirs(table_dir)
         
