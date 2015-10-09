@@ -424,8 +424,19 @@ def create_dict_voneconomo(measure_dict_dict, cohort_list=['DISCOVERY_ALL', 'VAL
 #-----------------------------------------------------------------------------
 def make_table_df(table_dict, col_list):
 
+    name_dict = { 'DISCOVERY_EXCLBAD' : 'Discovery ExclBad',
+                  'VALIDATION_EXCLBAD' : 'Validation ExclBad',
+                  'COMPLETE_EXCLBAD' : 'Complete ExclBad',
+                  'DISCOVERY_ALL' : 'Discovery',
+                  'VALIDATION_ALL' : 'Validation',
+                  'COMPLETE_ALL' : 'Complete'}
+                  
     table_df = pd.DataFrame(table_dict, index=col_list)
-    table_df = table_df.loc[:, ['\\textbf{Discovery}', '\\textbf{Validation}', '\\textbf{Complete}']]
+    group_list = [ x for x in table_df.columns if 'Discovery' in x ]
+    group_list += [ x for x in table_df.columns if 'Complete' in x ]
+    group_list += [ x for x in table_df.columns if 'Validation' in x ]
+    
+    table_df = table_df.loc[:, group_list]
 
     return table_df
     
