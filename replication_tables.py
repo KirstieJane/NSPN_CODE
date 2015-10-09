@@ -481,7 +481,7 @@ def make_replication_table_figures1and2(measure_dict_dict,
     table_dir = os.path.join(paper_dir, cohort_list_name)
     
     if not os.path.isdir(table_dir):
-        os.mkdirs(table_dir)
+        os.makedirs(table_dir)
         
     #=============================================================================
     # Make the data frame
@@ -508,7 +508,7 @@ def make_replication_table_figure3(measure_dict_dict,
     table_dir = os.path.join(paper_dir, cohort_list_name)
     
     if not os.path.isdir(table_dir):
-        os.mkdirs(table_dir)
+        os.makedirs(table_dir)
     
     #=============================================================================
     # Make the data frame
@@ -531,7 +531,7 @@ def make_replication_table_voneconomo(measure_dict_dict, paper_dir, cohort_list=
     table_dir = os.path.join(paper_dir, cohort_list_name)
     
     if not os.path.isdir(table_dir):
-        os.mkdirs(table_dir)
+        os.makedirs(table_dir)
         
     #=============================================================================
     # Make the data frame
