@@ -433,8 +433,8 @@ def make_table_df(table_dict, col_list):
                   
     table_df = pd.DataFrame(table_dict, index=col_list)
     group_list = [ x for x in table_df.columns if 'Discovery' in x ]
-    group_list += [ x for x in table_df.columns if 'Complete' in x ]
     group_list += [ x for x in table_df.columns if 'Validation' in x ]
+    group_list += [ x for x in table_df.columns if 'Complete' in x ]
     
     table_df = table_df.loc[:, group_list]
 
