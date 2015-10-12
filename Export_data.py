@@ -1,6 +1,6 @@
 for cohort in [ 'DISCOVERY', 'VALIDATION', 'COMPLETE' ]:
 
-    measure_dict = measure_dict_dict['{}_EXCLBAD'.format(cohort)]
+    measure_dict = measure_dict_dict['{}_ALL'.format(cohort)]
 
     df_PV = pd.DataFrame(data=aparc_names, columns=['ROI_name'])
     df_PV['von_economo'] = von_economo
@@ -18,12 +18,15 @@ for cohort in [ 'DISCOVERY', 'VALIDATION', 'COMPLETE' ]:
 
     df_PV['CT_all_mean'] = measure_dict['CT_all_mean']
     df_PV['MT_projfrac+030_all_mean'] = measure_dict['MT_projfrac+030_all_mean']
+    df_PV['MT_projdist-100_all_mean'] = measure_dict['MT_projdist-100_all_mean']
     df_PV['CT_all_slope_age'] = measure_dict['CT_all_slope_age']
     df_PV['MT_projfrac+030_all_slope_age'] = measure_dict['MT_projfrac+030_all_slope_age']
+    df_PV['MT_projdist-100_all_slope_age'] = measure_dict['MT_projdist-100_all_slope_age']
     df_PV['MT_projfrac+030_all_slope_ct'] = measure_dict['MT_projfrac+030_all_slope_ct']
+    df_PV['MT_projdist-100_all_slope_ct'] = measure_dict['MT_projdist-100_all_slope_ct']
     df_PV['CT_all_slope_age_at14'] = measure_dict['CT_all_slope_age_at14']
     df_PV['MT_projfrac+030_all_slope_age_at14'] = measure_dict['MT_projfrac+030_all_slope_age_at14']
-    df_PV['MT_projfrac+030_all_slope_ct_at14'] = measure_dict['MT_projfrac+030_all_slope_ct_at14']
+    df_PV['MT_projdist-100_all_slope_age_at14'] = measure_dict['MT_projdist-100_all_slope_age_at14']
 
     #measure_dict_1415 = measure_dict_dict['AGE_BIN_1_EXCLBAD']
     #df_PV['CT_1415_mean'] = measure_dict_1415['CT_all_mean']
@@ -33,4 +36,4 @@ for cohort in [ 'DISCOVERY', 'VALIDATION', 'COMPLETE' ]:
     #df_PV['CT_2224_mean'] = measure_dict_2224['CT_all_mean']
     #df_PV['MT_projfrac+030_2224_mean'] = measure_dict_2224['MT_projfrac+030_all_mean']
 
-    df_PV.to_csv('CTMT_data_20151008_{}_EXCLBAD.csv'.format(cohort))
+    df_PV.to_csv('CTMT_data_20151010_{}_ALL.csv'.format(cohort))

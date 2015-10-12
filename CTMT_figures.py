@@ -3101,3 +3101,4 @@ def network_matrix(measure_dict, figures_dir, results_dir, mpm='MT', just_networ
     plt.tight_layout()
     fig.savefig(os.path.join(figures_dir, 'Network_Matrix.png'), bbox_inches=0, dpi=100)
     plt.close(fig)
+    
