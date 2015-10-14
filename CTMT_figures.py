@@ -481,8 +481,20 @@ def create_violin_data(measure_dict, mpm='MT', measure='all_slope_age', cmap='Rd
     
     # Create an empty data frame for the data 
     # and an empty list for the associated colors
-    n_values = len(measure_dict['{}_projfrac+000_{}'.format(mpm, measure)])
-    df =  pd.DataFrame({'index' : range(n_values)})
+    
+    # The shape of the data frame should be the
+    # same in the end, but its creation is different 
+    # if we're giving an array of numbers or just
+    # one value per depth
+    
+    # Multiple values per depth
+    if type(measure_dict['{}_projfrac+000_{}'.format(mpm, measure)]) == np.ndarray:
+        n_values = len(measure_dict['{}_projfrac+000_{}'.format(mpm, measure)])
+        df =  pd.DataFrame({'index' : range(n_values)})
+    else:
+        n_values = len(np.array([measure_dict['{}_projfrac+000_{}'.format(mpm, measure)]]))
+        df = pd.DataFrame({'index' : range(n_values) })
+        
     color_list = []
     color_dict = {}
     
@@ -548,10 +560,27 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
     else:
         fig = figure
         
-    # Create the box plot
+    # Create the box plot if you have multiple measures per depth
     ##### You could change this here to a violin plot if you wanted to...
-    ax = sns.boxplot(df[df.columns[1:]], palette=color_dict, ax=ax, vert=vert)
+    if df.shape[0] > 1:
+        ax = sns.boxplot(df[df.columns[1:]], palette=color_dict, ax=ax, vert=vert)
+
+    # Or make a simple line plot if you're showing one value
+    # per depth
+    else:
+        x = np.arange(len(df[df.columns[1:]].values[0]), 0, -1) - 1
+        y = df[df.columns[1:]].values[0]
+        if vert:
+            ax.plot(x, y, color=color_list[0])
+            ax.set_xlim(-0.5, 12.5)
+            ax.set_xticks(range(13))
+        else:
+            ax.plot(y, x, color=color_list[0])
+            ax.invert_yaxis()
+            ax.set_ylim(12.5, -0.5)
+            ax.set_yticks(range(13))
     
+    # Adjust a bunch of values to make the plot look lovely!
     if vert:
         # Fix the y axis limits
         if np.isscalar(y_max) and np.isscalar(y_min):
@@ -572,15 +601,18 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
             ax.set_ylabel(y_label)
 
     else:
-        # Fix the y axis limits
+        # Fix the x axis limits
         if np.isscalar(y_max) and np.isscalar(y_min):
             ax.set_xlim((y_min, y_max))
-        ax.set_yticklabels(labels_list)
+        # Set tick labels to be in scientific format if they're larger than 100
+        # or smaller than 0.001
         ax.ticklabel_format(axis='x', style='sci', scilimits=(-5,5))    
         size = ax.get_yticklabels()[0].get_fontsize()
         for lab in ax.get_yticklabels():
             f_size = lab.get_fontsize()
             lab.set_fontsize(f_size * 0.7)  
+        # Add in the tick labels
+        ax.set_yticklabels(labels_list)
         # Make sure there aren't too many bins!
         ax.locator_params(axis='x', nbins=4)
         # Put a line at the grey white matter boundary
@@ -665,11 +697,15 @@ def violin_add_laminae(ax, vert=True, labels=True):
     # (this changes according to the number of samples into
     # white matter that you've plotted)
     if vert:
-        bottom = ax.get_xlim()[0]
+        left = ax.get_xlim()[0]
+        right = ax.get_xlim()[1]
+        boundary_values[0] = left
+        boundary_values = boundary_values + [ right ]
     else:
         bottom = ax.get_ylim()[0]
-
-    boundary_values += [ bottom ]
+        top = ax.get_ylim()[1]
+        boundary_values[0] = top
+        boundary_values = boundary_values + [ bottom ]
 
     # Put in the mean boundaries
     for top, bottom in zip(boundary_values[1::2], boundary_values[2::2]):
@@ -686,7 +722,7 @@ def violin_add_laminae(ax, vert=True, labels=True):
             f_size = lab.get_fontsize()
         print f_size
         
-        for top, bottom, numeral in zip(boundary_values[0::1], boundary_values[1::1], numerals):
+        for top, bottom, numeral in zip(boundary_values[0:-1], boundary_values[1:], numerals):
 
             if vert:
                 x_pos = np.mean([top, bottom])
