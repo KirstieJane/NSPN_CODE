@@ -642,7 +642,7 @@ def save_corr_genes(measure_name, measure_dict, gene_df, indices=None):
     '''
     Correlate measures with mpb and cux values
     '''
-    if not indices:
+    if not indices is None:
         indices = range(len(measure_dict['{}_all_slope_age_at14'.format(measure_name)]))
     
     for gene in gene_df.columns:
