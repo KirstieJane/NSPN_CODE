@@ -345,6 +345,11 @@ def save_name_lists(measure_dict, aparc_names, lobes, von_economo, von_economo_3
     # Centroids - for 308 only at the moment!
     measure_dict['centroids'] = centroids
     
+    # Add in the x, y, z coordinates
+    measure_dict['x'] = measure_dict['centroids'][:,0]
+    measure_dict['y'] = measure_dict['centroids'][:,1]
+    measure_dict['z'] = measure_dict['centroids'][:,2]
+    
     # Record the number of subregions for each DK atlas region
     measure_dict['N_SubRegions'] = np.ones(308)
     # 34
