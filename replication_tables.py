@@ -154,6 +154,7 @@ def create_dict_figures1and2(measure_dict_dict, cohort_list=['DISCOVERY_ALL', 'V
 
     return table_dict, col_list
 
+    
 #=============================================================================
 # FIGURE 3 CREATE DICT
 #-----------------------------------------------------------------------------
@@ -170,6 +171,141 @@ def create_dict_figure3(measure_dict_dict, cohort_list=['DISCOVERY_ALL', 'VALIDA
     for cohort in cohort_list:
         measure_dict = measure_dict_dict[cohort]
         print '==={}==='.format(name_dict[cohort])
+
+        gene_indices = measure_dict['gene_indices']
+        
+        data_list = []
+        col_list = []
+        
+        #=======================================================
+        # PLS1 vs CT at 14
+        #=======================================================    
+        m, c, r, p, sterr, p_perm = permutation_correlation(measure_dict['CT_all_slope_age_at14'][gene_indices], 
+                                    measure_dict['PLS1'][gene_indices])
+        
+        data_list += [ '\\textit{{r\\textsuperscript{{2}}}} = {:2.2f}'.format(r**2) ]
+        data_list += [ format_p(p) ]
+        data_list += [ '$\\beta$ = {:2.3f}'.format(m) ]
+        
+        col_list += [ '\\multirow{3}{*}{\\textbf{PLS1 vs CT at 14}}']
+        col_list += [ '' ] * 2
+
+        #=======================================================
+        # PLS1 vs delta CT
+        #=======================================================    
+        m, c, r, p, sterr, p_perm = permutation_correlation(measure_dict['CT_all_slope_age'][gene_indices], 
+                                    measure_dict['PLS1'][gene_indices])
+
+        data_list += [ '\\textit{{r\\textsuperscript{{2}}}} = {:2.2f}'.format(r**2) ]
+        data_list += [ format_p(p) ]
+        data_list += [ '$\\beta$ = {:2.2f}'.format(m) ]
+        
+        col_list += [ '\\multirow{3}{*}{\\textbf{PLS1 vs $\\Delta$CT}}']
+        col_list += [ '' ] * 2
+        
+        #=======================================================
+        # PLS1 vs MT at 14
+        #=======================================================    
+        m, c, r, p, sterr, p_perm = permutation_correlation(measure_dict['MT_projfrac+030_all_slope_age_at14'][gene_indices], 
+                                    measure_dict['PLS1'][gene_indices])
+
+        data_list += [ '\\textit{{r\\textsuperscript{{2}}}} = {:2.2f}'.format(r**2) ]
+        data_list += [ format_p(p) ]
+        data_list += [ '$\\beta$ = {:2.3f}'.format(m) ]
+        
+        col_list += [ '\\multirow{3}{*}{\\textbf{PLS1 vs MT at 14}}']
+        col_list += [ '' ] * 2
+
+        #=======================================================
+        # PLS1 vs delta MT
+        #=======================================================    
+        m, c, r, p, sterr, p_perm = permutation_correlation(measure_dict['MT_projfrac+030_all_slope_age'][gene_indices], 
+                                    measure_dict['PLS1'][gene_indices])
+
+        data_list += [ '\\textit{{r\\textsuperscript{{2}}}} = {:2.2f}'.format(r**2) ]
+        data_list += [ format_p(p) ]
+        data_list += [ '$\\beta$ = {:2.1f}'.format(m) ]
+        
+        col_list += [ '\\multirow{3}{*}{\\textbf{PLS1 vs $\\Delta$MT}}']
+        col_list += [ '' ] * 2
+
+        #=======================================================
+        # PLS2 vs CT at 14
+        #=======================================================    
+        m, c, r, p, sterr, p_perm = permutation_correlation(measure_dict['CT_all_slope_age_at14'][gene_indices], 
+                                    measure_dict['PLS2'][gene_indices])
+
+        data_list += [ '\\textit{{r\\textsuperscript{{2}}}} = {:2.2f}'.format(r**2) ]
+        data_list += [ format_p(p) ]
+        data_list += [ '$\\beta$ = {:2.3f}'.format(m) ]
+        
+        col_list += [ '\\multirow{3}{*}{\\textbf{PLS2 vs CT at 14}}']
+        col_list += [ '' ] * 2
+
+        #=======================================================
+        # PLS2 vs delta CT
+        #=======================================================    
+        m, c, r, p, sterr, p_perm = permutation_correlation(measure_dict['CT_all_slope_age'][gene_indices], 
+                                    measure_dict['PLS2'][gene_indices])
+
+        data_list += [ '\\textit{{r\\textsuperscript{{2}}}} = {:2.2f}'.format(r**2) ]
+        data_list += [ format_p(p) ]
+        data_list += [ '$\\beta$ = {:2.2f}'.format(m) ]
+        
+        col_list += [ '\\multirow{3}{*}{\\textbf{PLS2 vs $\\Delta$CT}}']
+        col_list += [ '' ] * 2
+
+        #=======================================================
+        # PLS2 vs MT at 14
+        #=======================================================    
+        m, c, r, p, sterr, p_perm = permutation_correlation(measure_dict['MT_projfrac+030_all_slope_age_at14'][gene_indices], 
+                                    measure_dict['PLS2'][gene_indices])
+
+        data_list += [ '\\textit{{r\\textsuperscript{{2}}}} = {:2.2f}'.format(r**2) ]
+        data_list += [ format_p(p) ]
+        data_list += [ '$\\beta$ = {:2.3f}'.format(m) ]
+        
+        col_list += [ '\\multirow{3}{*}{\\textbf{PLS2 vs MT at 14}}']
+        col_list += [ '' ] * 2
+
+        #=======================================================
+        # PLS2 vs delta MT
+        #=======================================================    
+        m, c, r, p, sterr, p_perm = permutation_correlation(measure_dict['MT_projfrac+030_all_slope_age'][gene_indices], 
+                                    measure_dict['PLS2'][gene_indices])
+
+        data_list += [ '\\textit{{r\\textsuperscript{{2}}}} = {:2.2f}'.format(r**2) ]
+        data_list += [ format_p(p) ]
+        data_list += [ '$\\beta$ = {:2.1f}'.format(m) ]
+        
+        col_list += [ '\\multirow{3}{*}{\\textbf{PLS2 vs $\\Delta$MT}}']
+        col_list += [ '' ] * 2
+
+        #=======================================================    
+        # Save to a dictionary
+        #=======================================================    
+        table_dict['\\textbf{{{}}}'.format(name_dict[cohort])] = data_list
+
+    return table_dict, col_list
+
+#=============================================================================
+# FIGURE 4 CREATE DICT
+#-----------------------------------------------------------------------------
+def create_dict_figure4(measure_dict_dict, cohort_list=['DISCOVERY_ALL', 'VALIDATION_ALL', 'COMPLETE_ALL']):
+    name_dict = { 'DISCOVERY_EXCLBAD' : 'Discovery ExclBad',
+                  'VALIDATION_EXCLBAD' : 'Validation ExclBad',
+                  'COMPLETE_EXCLBAD' : 'Complete ExclBad',
+                  'DISCOVERY_ALL' : 'Discovery',
+                  'VALIDATION_ALL' : 'Validation',
+                  'COMPLETE_ALL' : 'Complete'}
+
+    table_dict = {}
+
+    for cohort in cohort_list:
+        measure_dict = measure_dict_dict[cohort]
+        print '==={}==='.format(name_dict[cohort])
+
+        gene_indices = measure_dict['gene_indices']
         
         data_list = []
         col_list = []
@@ -201,6 +337,19 @@ def create_dict_figure3(measure_dict_dict, cohort_list=['DISCOVERY_ALL', 'VALIDA
         col_list += [ '' ] * 2
 
         #=======================================================
+        # PLS2 vs Degree
+        #=======================================================    
+        m, c, r, p, sterr, p_perm = permutation_correlation(measure_dict['Degree_CT_covar_ones_all_COST_10'][gene_indices], 
+                                    measure_dict['PLS2'][gene_indices])
+
+        data_list += [ '\\textit{{r\\textsuperscript{{2}}}} = {:2.2f}'.format(r**2) ]
+        data_list += [ format_p(p) ]
+        data_list += [ '$\\beta$ = {:2.2f}$\\times10^{{-3}}$'.format(m*1000) ]
+        
+        col_list += [ '\\multirow{3}{*}{\\textbf{PLS2 vs Degree}}']
+        col_list += [ '' ] * 2
+
+        #=======================================================
         # Delta CT vs Closeness
         #=======================================================    
         m, c, r, p, sterr, p_perm = permutation_correlation(measure_dict['Closeness_CT_covar_ones_all_COST_10'], 
@@ -224,6 +373,19 @@ def create_dict_figure3(measure_dict_dict, cohort_list=['DISCOVERY_ALL', 'VALIDA
         data_list += [ '$\\beta$ = {:2.1f}$\\times10^{{-3}}$'.format(m*1000) ]
         
         col_list += [ '\\multirow{3}{*}{\\textbf{$\\Delta$MT vs Closeness}}']
+        col_list += [ '' ] * 2
+        
+        #=======================================================
+        # PLS2 vs Closeness
+        #=======================================================    
+        m, c, r, p, sterr, p_perm = permutation_correlation(measure_dict['Closeness_CT_covar_ones_all_COST_10'][gene_indices], 
+                                    measure_dict['PLS2'][gene_indices])
+
+        data_list += [ '\\textit{{r\\textsuperscript{{2}}}} = {:2.2f}'.format(r**2) ]
+        data_list += [ format_p(p) ]
+        data_list += [ '$\\beta$ = {:2.3f}'.format(m) ]
+        
+        col_list += [ '\\multirow{3}{*}{\\textbf{PLS2 vs Closeness}}']
         col_list += [ '' ] * 2
         
         #=======================================================
@@ -252,7 +414,22 @@ def create_dict_figure3(measure_dict_dict, cohort_list=['DISCOVERY_ALL', 'VALIDA
         col_list += [ '\\multirow{3}{*}{\\textbf{$\\Delta$MT vs Av Dist}}']
         col_list += [ '' ] * 2
 
+        #=======================================================
+        # PLS2 vs Average Distance
+        #=======================================================    
+        m, c, r, p, sterr, p_perm = permutation_correlation(measure_dict['AverageDist_CT_covar_ones_all_COST_10'][gene_indices], 
+                                    measure_dict['PLS2'][gene_indices])
 
+        data_list += [ '\\textit{{r\\textsuperscript{{2}}}} = {:2.2f}'.format(r**2) ]
+        data_list += [ format_p(p) ]
+        data_list += [ '$\\beta$ = {:2.2f}$\\times10^{{-3}}$'.format(m*1000) ]
+        
+        col_list += [ '\\multirow{3}{*}{\\textbf{PLS2 vs Av Dist}}']
+        col_list += [ '' ] * 2
+        
+        #=======================================================    
+        # Save to a dictionary
+        #=======================================================    
         table_dict['\\textbf{{{}}}'.format(name_dict[cohort])] = data_list
 
     return table_dict, col_list
@@ -500,7 +677,6 @@ def make_replication_table_figures1and2(measure_dict_dict,
     table_df = make_table_df(table_dict, col_list)
     write_latex_table(table_df, table_file, caption)
     
-    
 def make_replication_table_figure3(measure_dict_dict, 
                                         paper_dir, 
                                         cohort_list=['DISCOVERY_ALL', 'VALIDATION_ALL', 'COMPLETE_ALL'], 
@@ -523,6 +699,31 @@ def make_replication_table_figure3(measure_dict_dict,
     # Make the data frame
     #-----------------------------------------------------------------------------
     table_dict, col_list = create_dict_figure3(measure_dict_dict, cohort_list)
+    table_df = make_table_df(table_dict, col_list)
+    write_latex_table(table_df, table_file, caption)
+    
+def make_replication_table_figure4(measure_dict_dict, 
+                                        paper_dir, 
+                                        cohort_list=['DISCOVERY_ALL', 'VALIDATION_ALL', 'COMPLETE_ALL'], 
+                                        cohort_list_name='THREE_ALL'):
+
+    #=============================================================================
+    # GET STARTED BY SETTING THE CAPTION AND NAME YOUR OUTPUT FILE
+    #-----------------------------------------------------------------------------
+    caption = 'Associated statistics for Figure 4'
+    
+    table_dir = os.path.join(paper_dir, cohort_list_name)
+    table_file = os.path.join(table_dir, 'Replication_Table_Figure4.tex')
+
+    #=============================================================================
+    # Make the output folder
+    if not os.path.isdir(table_dir):
+        os.makedirs(table_dir)
+    
+    #=============================================================================
+    # Make the data frame
+    #-----------------------------------------------------------------------------
+    table_dict, col_list = create_dict_figure4(measure_dict_dict, cohort_list)
     table_df = make_table_df(table_dict, col_list)
     write_latex_table(table_df, table_file, caption)
     
