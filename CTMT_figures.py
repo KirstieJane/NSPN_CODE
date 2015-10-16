@@ -1780,7 +1780,11 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
         
         # Make sure axis is in scientific format
         ax_list[i*2].ticklabel_format(axis='y', style='sci', scilimits=(-2,2))
-                                      
+        
+        # And that there are a sensible number of bins for delta CT
+        if var_name[0] = 'CT_all_slope_age':
+            ax.locator_params(axis='y', nbins=6)
+                              
         # Update the font size for the labels
         # to be a little smaller
         for lab in [ ax_list[i*2].yaxis.label, ax_list[i*2].xaxis.label ]:
@@ -3102,8 +3106,8 @@ def get_min_max_values(measure_dict, gene_indices=None):
         min_max_dict['{}_min'.format(measure_name)] = measure_min
         min_max_dict['{}_max'.format(measure_name)] = measure_max
     
-    min_max_dict['CT_all_slope_age_CBAR_min'] = -0.035
-    min_max_dict['CT_all_slope_age_CBAR_max'] = -0.015
+    min_max_dict['CT_all_slope_age_CBAR_min'] = -0.03
+    min_max_dict['CT_all_slope_age_CBAR_max'] = -0.01
     min_max_dict['CT_all_slope_age_at14_CBAR_min'] = 2.5
     min_max_dict['CT_all_slope_age_at14_CBAR_max'] = 3.5
     min_max_dict['MT_projfrac+030_all_slope_age_CBAR_min'] = 0.005
