@@ -1782,7 +1782,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
         ax_list[i*2].ticklabel_format(axis='y', style='sci', scilimits=(-2,2))
         
         # And that there are a sensible number of bins for delta CT
-        if var_name[0] = 'CT_all_slope_age':
+        if var_name[0] == 'CT_all_slope_age':
             ax.locator_params(axis='y', nbins=6)
                               
         # Update the font size for the labels
