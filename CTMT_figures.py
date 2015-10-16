@@ -1728,8 +1728,8 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
         # Plot the braaaaains
         f_list = [ left_lat_fname, 
                     left_lat_fname.replace('lh_pial_classic_lateral', 'lh_pial_classic_medial'),
-                    left_lat_fname.replace('lh_pial_classic_lateral', 'rh_pial_classic_lateral'),
-                    left_lat_fname.replace('lh_pial_classic_lateral', 'rh_pial_classic_medial') ]
+                    left_lat_fname.replace('lh_pial_classic_lateral', 'rh_pial_classic_medial'),
+                    left_lat_fname.replace('lh_pial_classic_lateral', 'rh_pial_classic_lateral') ]
         
         grid = gridspec.GridSpec(1,4)
         
@@ -1952,7 +1952,6 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT', indices=None):
                                             y_min=min_max_dict['{}_min'.format(mri_measure)],
                                             y_max=min_max_dict['{}_max'.format(mri_measure)],
                                             color='k',
-                                            marker='^',
                                             ax=ax,
                                             figure=big_fig)    
         
@@ -2210,8 +2209,8 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
         # Plot the braaaaains
         f_list = [ left_lat_fname, 
                     left_lat_fname.replace('lh_pial_classic_lateral', 'lh_pial_classic_medial'),
-                    left_lat_fname.replace('lh_pial_classic_lateral', 'rh_pial_classic_lateral'),
-                    left_lat_fname.replace('lh_pial_classic_lateral', 'rh_pial_classic_medial') ]
+                    left_lat_fname.replace('lh_pial_classic_lateral', 'rh_pial_classic_medial'),
+                    left_lat_fname.replace('lh_pial_classic_lateral', 'rh_pial_classic_lateral') ]
         
         grid = gridspec.GridSpec(1,4)
         
@@ -2271,6 +2270,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
                                                 y_min=min_max_dict['{}_min'.format(var_name)],
                                                 y_max=min_max_dict['{}_max'.format(var_name)], 
                                                 color=color,
+                                                marker_size=40,
                                                 ax=ax_list[8*i+4+j],
                                                 figure=big_fig)
                 
