@@ -1639,7 +1639,8 @@ def add_cells_picture(figures_dir, big_fig):
     
     # Add an axis in the bottom left corner
     grid = gridspec.GridSpec(1, 1)
-    grid.update(left=0.33, right=0.45, top=0.47, bottom=0.1, wspace=0, hspace=0)
+    #grid.update(left=0.33, right=0.45, top=0.47, bottom=0.1, wspace=0, hspace=0)
+    grid.update(left=0.87, right=0.99, top=0.97, bottom=0.5, wspace=0, hspace=0)
     ax = plt.Subplot(big_fig, grid[0])
     big_fig.add_subplot(ax)
 
@@ -1880,17 +1881,17 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT', indices=None):
     # Make a list of indices that include all regions
     # indices if you haven't passed a list
     # of regions you want to include
-    if not indices:
-        indices = range(len(measure_dict['{}_all_slope_age_at14'.format(measure_name)]))
+    if indices is None:
+        indices = range(len(measure_dict['CT_all_slope_age_at14']))
         
     # Create the big figure
-    big_fig, big_ax = plt.subplots(figsize=(46, 22), facecolor='white')
+    big_fig, big_ax = plt.subplots(figsize=(23, 15), facecolor='white')
     big_fig.subplots_adjust(left=0.05, right=0.98, bottom=0.07, top=0.95, wspace=0.05, hspace=0.05)
     
     #=========================================================================
     # We're going to set up a grid for the top row so we can 
     # adjust the spacings without screwing up the spacings in the bottom row
-    grid = gridspec.GridSpec(1, 5)
+    grid = gridspec.GridSpec(1, 3)
     grid.update(left=0.17, bottom=0.57, top=0.96, wspace=0.2, hspace=0)
     top_ax_list = []
     for g_loc in grid:
@@ -1907,8 +1908,35 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT', indices=None):
     ax.axis('off')
     
     #=========================================================================
+    # Add in the mean MT violin plot next on the top row
+    ax=top_ax_list[1]
+    ax.set_position([0.4, 0.5, 0.4, 0.45])
+    
+    measure = 'all_slope_age_at14'
+    cmap = 'jet'
+    
+    ax = violin_mt_depths(measure_dict,
+                            measure=measure,
+                            y_label=axis_label_dict['{}_{}'.format(mpm, measure)],
+                            cmap=cmap,
+                            y_min=min_max_dict['{}_{}_min'.format(mpm, measure)],
+                            y_max=min_max_dict['{}_{}_max'.format(mpm, measure)], 
+                            cmap_min=min_max_dict['{}_{}_min'.format(mpm, measure)],
+                            cmap_max=min_max_dict['{}_{}_max'.format(mpm, measure)],
+                            lam_labels=False,
+                            ax=ax,
+                            figure=big_fig,
+                            mpm=mpm,
+                            vert=False,
+                            cbar=True)
+                                                
+    #=========================================================================
+    # Schematic for the different cytoarchitectonics for each layer
+    big_fig = add_cells_picture(figures_dir, big_fig)
+    
+    #=========================================================================
     # CT, MT vs MBP, CUX
-
+    '''
     mri_measure_list = ['CT_all_slope_age_at14', 
                         '{}_projfrac+030_all_slope_age_at14'.format(mpm)]
     gene_list = [ 'cux', 'mbp' ]
@@ -1929,7 +1957,6 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT', indices=None):
                                                 figure=big_fig)    
         
         top_ax_list[i+1].yaxis.set_label_coords(-0.14, 0.5)
-        
     #=========================================================================
     # We're going to set up two separate grids for the bottom row so we can 
     # adjust the spacings without screwing up the spacings in the top row
@@ -1949,9 +1976,6 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT', indices=None):
         violin_ax_list += [ plt.Subplot(big_fig, g_loc) ]
         big_fig.add_subplot(violin_ax_list[-1])
     
-    #=========================================================================
-    # Schematic for the different cytoarchitectonics for each layer
-    big_fig = add_cells_picture(figures_dir, big_fig)
     
     #=========================================================================
     # Plot the violin plots for:
@@ -1995,6 +2019,7 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT', indices=None):
     for ax in violin_ax_list[1:]:
         ax.set_yticklabels([])
     
+    '''   
     '''
     # Place the A, B, C and i, ii, iii labels
     let_list = [ 'A', 'B', 'C' ]
@@ -3018,6 +3043,8 @@ def get_min_max_values(measure_dict, gene_indices=None):
     min_max_dict['MT_all_mean_max'] = 1.8 
     min_max_dict['MT_all_slope_age_min'] = -0.01
     min_max_dict['MT_all_slope_age_max'] = 0.016
+    min_max_dict['MT_all_slope_age_at14_min'] = 0.4
+    min_max_dict['MT_all_slope_age_at14_max'] = 1.8
     min_max_dict['MT_all_slope_ct_min'] = -5.5
     min_max_dict['MT_all_slope_ct_max'] = 2.2 
     
@@ -3086,6 +3113,7 @@ def get_axis_label_dict():
     axis_label_dict['MT_all_mean'] = 'Mean MT across regions (AU)'
     axis_label_dict['MT_all_slope_ct'] = r'$\Delta$MT with CT (AU/mm)'
     axis_label_dict['MT_all_slope_age'] = r'$\Delta$MT with age (AU/year)'
+    axis_label_dict['MT_all_slope_age_at14'] = 'MT at 14 yrs (AU)'
     axis_label_dict['mbp'] = 'Myelin Basic Protein'
     axis_label_dict['cux'] = 'CUX'
     axis_label_dict['x'] = 'X coordinate'
@@ -3403,7 +3431,7 @@ def rich_edges_nodes(G, thresh=75):
     return rich_edges, rich_nodes
     
     
-def figure_1_replication(measure_dict_D, measure_dict_V, paper_dir):
+def figure_1_replication(measure_dict_D, measure_dict_V, three_cohorts_dir):
 
     # Set the seaborn context and style
     sns.set(style="white")
@@ -3461,11 +3489,11 @@ def figure_1_replication(measure_dict_D, measure_dict_V, paper_dir):
         ax.set_ylabel('')
     
     plt.tight_layout()
-    big_fig.savefig(os.path.join(paper_dir, 'Replication_Figure1.png'), bbox_inches=0, dpi=100)
+    big_fig.savefig(os.path.join(three_cohorts_dir, 'Replication_Figure1.png'), bbox_inches=0, dpi=100)
     plt.close(big_fig)
 
     
-def figure_4_replication(measure_dict_D, measure_dict_V, paper_dir):
+def figure_4_replication(measure_dict_D, measure_dict_V, three_cohorts_dir):
 
     # Set the seaborn context and style
     sns.set(style="white")
@@ -3515,7 +3543,7 @@ def figure_4_replication(measure_dict_D, measure_dict_V, paper_dir):
         ax.set_ylabel('')
 
     plt.tight_layout()
-    big_fig.savefig(os.path.join(paper_dir, 'Replication_Figure3.png'), bbox_inches=0, dpi=100)
+    big_fig.savefig(os.path.join(three_cohorts_dir, 'Replication_Figure4.png'), bbox_inches=0, dpi=100)
     plt.close(big_fig)
     
     

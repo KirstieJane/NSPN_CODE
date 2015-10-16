@@ -647,12 +647,12 @@ def save_corr_genes(measure_name, measure_dict, gene_df, indices=None):
     '''
     Correlate measures with mpb and cux values
     '''
-    if not indices is None:
+    if indices is None:
         indices = range(len(measure_dict['{}_all_slope_age_at14'.format(measure_name)]))
     
     for gene in gene_df.columns:
-        m, c, r, p, sterr, perm_p = permutation_correlation(measure_dict['{}_all_slope_age'.format(measure_name)][indices], 
-                                                                    gene_df[gene][indices])
+        m, c, r, p, sterr, perm_p = permutation_correlation(gene_df[gene][indices],
+                                                                measure_dict['{}_all_slope_age'.format(measure_name)][indices])
         
         measure_dict['{}_all_slope_age_vs_{}'.format(measure_name, gene)] = m
         measure_dict['{}_all_slope_age_vs_{}_c'.format(measure_name, gene)] = c
@@ -660,8 +660,8 @@ def save_corr_genes(measure_name, measure_dict, gene_df, indices=None):
         measure_dict['{}_all_slope_age_vs_{}_p'.format(measure_name, gene)] = p
         measure_dict['{}_all_slope_age_vs_{}_p_perm'.format(measure_name, gene)] = perm_p
         
-        m, c, r, p, sterr, perm_p = permutation_correlation(measure_dict['{}_all_slope_age_at14'.format(measure_name)][indices], 
-                                                                    gene_df[gene][indices])
+        m, c, r, p, sterr, perm_p = permutation_correlation(gene_df[gene][indices],
+                                                                measure_dict['{}_all_slope_age'.format(measure_name)][indices])
         
         measure_dict['{}_all_slope_age_at14_vs_{}'.format(measure_name, gene)] = m
         measure_dict['{}_all_slope_age_at14_vs_{}_c'.format(measure_name, gene)] = c
