@@ -1783,7 +1783,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
         
         # And that there are a sensible number of bins for delta CT
         if var_name[0] == 'CT_all_slope_age':
-            ax.locator_params(axis='y', nbins=6)
+            ax_list[i*2].locator_params(axis='y', nbins=6)
                               
         # Update the font size for the labels
         # to be a little smaller
