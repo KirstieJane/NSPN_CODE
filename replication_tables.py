@@ -82,6 +82,19 @@ def create_dict_figures1and2(measure_dict_dict, cohort_list=['DISCOVERY_ALL', 'V
         col_list += [ '' ] * 2
 
         #=======================================================
+        # Global CT std vs Age
+        #=======================================================    
+        m, c, r, p, sterr, p_perm = permutation_correlation(measure_dict['age_scan'], 
+                                                                measure_dict['CT_global_std'])
+
+        data_list += [ '\\textit{{r\\textsuperscript{{2}}}} = {:2.2f}'.format(r**2) ]
+        data_list += [ format_p(p) ]
+        data_list += [ '$\\beta$ = {:2.1f}$\\times10^{{-3}}$'.format(m*1000) ]
+        
+        col_list += [ '\\multirow{3}{*}{\\textbf{Global CT std vs Age}}']
+        col_list += [ '' ] * 2
+
+        #=======================================================
         # Delta CT vs CT at 14
         #=======================================================    
         m = measure_dict['CT_all_slope_age_vs_at14']
@@ -108,6 +121,19 @@ def create_dict_figures1and2(measure_dict_dict, cohort_list=['DISCOVERY_ALL', 'V
         
         col_list += [ '\\multirow{3}{*}{\\textbf{Global MT vs Age}}']
         
+        col_list += [ '' ] * 2
+
+        #=======================================================
+        # Global CT std vs Age
+        #=======================================================    
+        m, c, r, p, sterr, p_perm = permutation_correlation(measure_dict['age_scan'], 
+                                                                measure_dict['MT_projfrac+030_global_std'])
+
+        data_list += [ '\\textit{{r\\textsuperscript{{2}}}} = {:2.2f}'.format(r**2) ]
+        data_list += [ format_p(p) ]
+        data_list += [ '$\\beta$ = {:2.1f}$\\times10^{{-3}}$'.format(m*1000) ]
+        
+        col_list += [ '\\multirow{3}{*}{\\textbf{Global MT std vs Age}}']
         col_list += [ '' ] * 2
 
         #=======================================================
