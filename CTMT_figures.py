@@ -1997,8 +1997,8 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT', indices=None):
                     cmap=cmap,
                     y_min=min_max_dict['{}_{}_min'.format(mpm, measure)],
                     y_max=min_max_dict['{}_{}_max'.format(mpm, measure)], 
-                    cmap_min=min_max_dict['{}_{}_min'.format(mpm, measure)],
-                    cmap_max=min_max_dict['{}_{}_max'.format(mpm, measure)],
+                    cmap_min=min_max_dict['{}_{}_CBAR_min'.format(mpm, measure)],
+                    cmap_max=min_max_dict['{}_{}_CBAR_max'.format(mpm, measure)],
                     lam_labels=False,
                     ax=ax,
                     figure=big_fig,
@@ -2191,7 +2191,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     # Scatter and von economo grid
     grid = gridspec.GridSpec(4, 4)
-    grid.update(left=0.08, bottom=0.06, top=0.97, right=0.96, hspace=0.5, wspace=0.15)
+    grid.update(left=0.08, bottom=0.06, top=0.97, right=0.96, hspace=0.3, wspace=0.15)
                     
     ax_list = []
     for g_loc in grid:
@@ -2298,6 +2298,11 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
             ax.yaxis.set_ticklabels([])
             # And make sure the x axis is in scientific format
             #ax.ticklabel_format(axis='x', style='sci', scilimits=(-2,2))
+            
+        if i%8 == 5:  
+            # Make sure there aren't too many bins#
+            # for the delta CT plot
+            ax.locator_params(axis='x', nbins=3)
             
         # Update the font size for the labels
         # to be a little smaller
@@ -3115,8 +3120,10 @@ def get_min_max_values(measure_dict, gene_indices=None):
     min_max_dict['PLS2_usable_CBAR_max'] = 0.07    
     min_max_dict['MT_all_mean_min'] = 0.4
     min_max_dict['MT_all_mean_max'] = 1.8 
-    min_max_dict['MT_all_slope_age_min'] = -0.01
+    min_max_dict['MT_all_slope_age_min'] = -0.007
     min_max_dict['MT_all_slope_age_max'] = 0.016
+    min_max_dict['MT_all_slope_age_CBAR_min'] = -0.007
+    min_max_dict['MT_all_slope_age_CBAR_max'] = 0.007
     min_max_dict['MT_all_slope_age_at14_min'] = 0.4
     min_max_dict['MT_all_slope_age_at14_max'] = 1.8
     min_max_dict['MT_all_slope_ct_min'] = -5.5
