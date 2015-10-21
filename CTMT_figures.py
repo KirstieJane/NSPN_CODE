@@ -557,6 +557,7 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
         # Set the seaborn context and style
         sns.set(style="white")
         sns.set_context("poster", font_scale=2)
+        
     else:
         fig = figure
         
@@ -639,6 +640,7 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
             cb_grid.update(left=pos.x1+0.01, right=pos.x1+0.02, bottom=pos.y0, top=pos.y1, wspace=0, hspace=0)
         else:
             cb_grid.update(left=pos.x0, right=pos.x1, bottom=pos.y0-0.045, top=pos.y0-0.035, wspace=0, hspace=0)    
+            #cb_grid.update(left=pos.x0, right=pos.x1, bottom=pos.y0-0.01, top=pos.y0, wspace=0, hspace=0)    
             
         fig = add_colorbar(cb_grid[0], fig, 
                                 cmap_name=cmap, 
@@ -653,6 +655,7 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
             # If you add in a colorbar then you need to move the x axis label
             # down just a smidge
             ax.set_xlabel(y_label, labelpad=50)
+            #ax.set_xlabel(y_label, labelpad=30)
         
     if figure_name:
         # Do the tight layout because, again, it looks better!
@@ -1633,8 +1636,9 @@ def add_cells_picture(figures_dir, big_fig):
     
     # Add an axis in the bottom left corner
     grid = gridspec.GridSpec(1, 1)
+    grid.update(left=0.47, right=0.59, top=0.47, bottom=0.1, wspace=0, hspace=0)
     #grid.update(left=0.33, right=0.45, top=0.47, bottom=0.1, wspace=0, hspace=0)
-    grid.update(left=0.88, right=0.99, top=0.9675, bottom=0.59, wspace=0, hspace=0)
+    #grid.update(left=0.88, right=0.99, top=0.9675, bottom=0.59, wspace=0, hspace=0)
     ax = plt.Subplot(big_fig, grid[0])
     big_fig.add_subplot(ax)
 
@@ -1866,7 +1870,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     
 
     
-def figure_2(measure_dict, figures_dir, results_dir, mpm='MT', indices=None):
+def oct_figure_2(measure_dict, figures_dir, results_dir, mpm='MT', indices=None):
     
     # Set the seaborn context and style
     sns.set(style="white")
@@ -2187,10 +2191,10 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
     gene_indices = measure_dict['gene_indices']
     
     # List the colorbar names
-    cmap_name_list = [ 'PRGn', 'PRGn' ]
+    cmap_name_list = [ 'RdBu_r', 'RdBu_r' ]
     
     # List of min max color tuples
-    min_max_color_list = [ ('blue', 'red'), ('red', 'blue') ]
+    min_max_color_list = [ ('blue', 'red'), ('blue', 'red') ]
     
     # Scatter and von economo grid
     grid = gridspec.GridSpec(4, 4)
@@ -2562,6 +2566,185 @@ def previous_figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     plt.close()
     
+def figure_2(measure_dict, figures_dir, results_dir, mpm='MT', indices=None):    
+    
+    # Set the seaborn context and style
+    sns.set(style="white")
+    sns.set_context("poster", font_scale=3.5)
+
+    # Get the various min and max values:
+    min_max_dict = get_min_max_values(measure_dict)
+    axis_label_dict = get_axis_label_dict()
+    
+    # Create the big figure
+    big_fig, big_ax = plt.subplots(figsize=(34.5, 28), facecolor='white')
+    big_fig.subplots_adjust(left=0.05, right=0.98, bottom=0.07, top=0.95, wspace=0.05, hspace=0.05)
+    
+    #=========================================================================
+    # We're going to set up a grid for the top row so we can 
+    # adjust the spacings without screwing up the spacings in the bottom row
+    grid = gridspec.GridSpec(1, 2)
+    grid.update(left=0.07, bottom=0.5, top=0.96, wspace=0.2, hspace=0)
+    top_ax_list = []
+    for g_loc in grid:
+        top_ax_list += [ plt.Subplot(big_fig, g_loc) ]
+        big_fig.add_subplot(top_ax_list[-1])
+
+    #=========================================================================
+    # Schematic for how we measured the different layers
+    f_name = os.path.join(figures_dir, '../..', 'CorticalLayers_schematic_methods.jpg')
+    img = mpimg.imread(f_name)
+    ax = top_ax_list[0]
+    ax.set_position([-0.03, 0.49, 0.6, 0.48])
+    ax.imshow(img)
+    ax.axis('off')
+    
+    #=========================================================================
+    # Scatter plot of MBP vs MT at 14 years for 70% depth
+    ax = top_ax_list[1]
+    ax.set_position([0.62, 0.56, 0.35, 0.41])
+    mri_measure = '{}_projfrac+030_all_slope_age_at14'.format(mpm)
+    gene='mbp'
+    y_label = 'MT at age 14\n(70% cortical depth)'
+    ax = pretty_scatter(measure_dict[gene][indices], 
+                                            measure_dict[mri_measure][indices], 
+                                            x_label=axis_label_dict[gene],
+                                            y_label=y_label, 
+                                            x_min=min_max_dict['{}_usable_min'.format(gene)],
+                                            x_max=min_max_dict['{}_usable_max'.format(gene)], 
+                                            y_min=min_max_dict['{}_min'.format(mri_measure)],
+                                            y_max=min_max_dict['{}_max'.format(mri_measure)],
+                                            color='k',
+                                            ax=ax,
+                                            figure=big_fig)    
+        
+    ax.yaxis.set_label_coords(-0.12, 0.5)
+
+    #=========================================================================
+    # We're going to set up two separate grids for the bottom row so we can 
+    # adjust the spacings without screwing up the spacings in the top row
+    violin_ax_list = []
+    
+    # First a space for the first violin plot on the far left
+    grid = gridspec.GridSpec(1, 1)
+    grid.update(left=0.07, right=0.445, top=0.47, bottom=0.1, wspace=0, hspace=0)
+    for g_loc in grid:
+        violin_ax_list += [ plt.Subplot(big_fig, g_loc) ]
+        big_fig.add_subplot(violin_ax_list[-1])
+        
+    # Next a space for the corr with age
+    grid = gridspec.GridSpec(1, 1)
+    grid.update(left=0.605, right=0.98, top=0.47, bottom=0.1, wspace=0.08, hspace=0)
+    for g_loc in grid:
+        violin_ax_list += [ plt.Subplot(big_fig, g_loc) ]
+        big_fig.add_subplot(violin_ax_list[-1])
+    
+    #=========================================================================
+    # Schematic for the different cytoarchitectonics for each layer
+    big_fig = add_cells_picture(figures_dir, big_fig)
+    
+    #=========================================================================
+    # MEAN MT ACROSS NODES at different depths
+    violin_ax_list[0] = violin_mt_depths(measure_dict,
+                        measure='all_mean',
+                        y_label=axis_label_dict['{}_all_mean'.format(mpm)],
+                        cmap='jet',
+                        y_min=min_max_dict['{}_all_mean_min'.format(mpm)],
+                        y_max=min_max_dict['{}_all_mean_max'.format(mpm)], 
+                        cmap_min=min_max_dict['{}_all_mean_min'.format(mpm)],
+                        cmap_max=min_max_dict['{}_all_mean_max'.format(mpm)],
+                        lam_labels=False,
+                        ax=violin_ax_list[0],
+                        figure=big_fig,
+                        mpm=mpm,
+                        vert=False,
+                        cbar=True)
+                        
+    '''
+    violin_ax_list[0].set_ylabel('Summary across 308 cortical regions\nat increasing distances from pial surface',
+                                    fontsize=30)
+    '''    
+    # CORR WITH AGE ACROSS NODES at different depths
+    violin_ax_list[1] = violin_mt_depths(measure_dict,
+                        measure='all_slope_age',
+                        y_label=axis_label_dict['{}_all_slope_age'.format(mpm)],
+                        cmap='RdBu_r',
+                        y_min=min_max_dict['{}_all_slope_age_min'.format(mpm)], 
+                        y_max=min_max_dict['{}_all_slope_age_max'.format(mpm)], 
+                        cmap_min=min_max_dict['{}_all_slope_age_max'.format(mpm)]*-1/2.0, 
+                        cmap_max=min_max_dict['{}_all_slope_age_max'.format(mpm)]/2.0,
+                        ax=violin_ax_list[1],
+                        figure=big_fig,
+                        lam_labels=False,
+                        mpm=mpm,
+                        vert=False,
+                        cbar=True)
+                         
+    # Turn off the axes for the first columns
+    for ax in [ big_ax, top_ax_list[0] ]:
+        ax.axis('off')
+    
+    # Also remove the y tick labels for the violin plots
+    # that are not the first
+    for ax in violin_ax_list[1:]:
+        ax.set_yticklabels([])
+    
+    '''
+    # Place the A, B, C and i, ii, iii labels
+    let_list = [ 'A', 'B', 'C' ]
+    rom_list = [ 'i', 'ii', 'iii', 'iv' ]
+    
+    # For the first column put the letters in the top left corner
+    for i, ax in enumerate(top_ax_list):
+        x_pos = ax.get_position().x0
+        
+        if i == 0:
+            big_fig.text(0.04, 0.965, '{}'.format(let_list[i]),
+                        horizontalalignment='left',
+                        verticalalignment='top',
+                        fontsize=40,
+                        weight='bold',
+                        color='white')
+        else:
+            big_fig.text(x_pos-0.03, 0.965, '{}'.format(let_list[i]),
+                        horizontalalignment='right',
+                        verticalalignment='top',
+                        fontsize=40,
+                        weight='bold',
+                        color='k')
+     
+    # Add in the figure panel number for the first violin plot
+    big_fig.text(0.04, 0.5, 'Di'.format(rom_list[i+1]),
+                horizontalalignment='left',
+                verticalalignment='top',
+                fontsize=40,
+                weight='bold',
+                color='k')
+                    
+    # Add in the figure panel number for the cells schematic
+    big_fig.text(0.37, 0.5, 'Dii',
+                    horizontalalignment='left',
+                    verticalalignment='top',
+                    fontsize=40,
+                    weight='bold',
+                    color='k')
+                
+    # And the figure panel numbers for the second two violin plots
+    for i, ax in enumerate(violin_ax_list[1:]):
+        x_pos = ax.get_position().x0
+        
+        big_fig.text(x_pos, 0.5, 'D{}'.format(rom_list[i+2]),
+                    horizontalalignment='right',
+                    verticalalignment='top',
+                    fontsize=40,
+                    weight='bold',
+                    color='k')
+    '''                
+    # Save the figure
+    filename = os.path.join(figures_dir, 'Figure2.png')
+    big_fig.savefig(filename, bbox_inches=0, dpi=100)
+    
+    plt.close()
     
     
 def figure_4(measure_dict, figures_dir, results_dir, mpm='MT', rich_club=False):
@@ -3130,6 +3313,8 @@ def get_min_max_values(measure_dict, gene_indices=None):
     min_max_dict['MT_all_slope_age_CBAR_max'] = 0.007
     min_max_dict['MT_all_slope_age_at14_min'] = 0.4
     min_max_dict['MT_all_slope_age_at14_max'] = 1.8
+    min_max_dict['MT_all_slope_age_at14_CBAR_min'] = 0.4
+    min_max_dict['MT_all_slope_age_at14_CBAR_max'] = 1.8
     min_max_dict['MT_all_slope_ct_min'] = -5.5
     min_max_dict['MT_all_slope_ct_max'] = 2.2 
     min_max_dict['MT_all_slope_age_vs_mbp_min'] = -0.002
@@ -3697,3 +3882,148 @@ def network_matrix(measure_dict, figures_dir, results_dir, mpm='MT', just_networ
     fig.savefig(os.path.join(figures_dir, 'Network_Matrix.png'), bbox_inches=0, dpi=100)
     plt.close(fig)
     
+    
+    
+def figs_for_talk(measure_dict, results_dir, talk_figs_dir):
+    
+    # Set the seaborn context and style
+    sns.set(style="white")
+    sns.set_context("poster", font_scale=2)
+
+    # Get the various min and max values:
+    min_max_dict = get_min_max_values(measure_dict)
+    axis_label_dict = get_axis_label_dict()
+    
+    # Set up the colormap dictionary
+    cmap_dict = {}
+    cmap_dict['CT_all_slope_age_at14'] = 'jet'
+    cmap_dict['CT_all_slope_age'] = 'winter_r'
+    cmap_dict['MT_projfrac+030_all_slope_age_at14'] = 'jet'
+    cmap_dict['MT_projfrac+030_all_slope_age'] = 'autumn'
+    cmap_dict['all_slope_age'] = 'RdBu_r'
+    cmap_dict['all_slope_age_at14'] = 'jet'
+    
+    # Set up the left_lat dictionary
+    left_lat_dict = {}
+    left_lat_dict['CT_all_slope_age_at14'] = os.path.join(results_dir, 
+                                                                'PNGS', 
+                                                                'SlopeAge_at14_CT_lh_pial_classic_lateral.png')   
+    left_lat_dict['CT_all_slope_age'] = os.path.join(results_dir, 
+                                                                'PNGS', 
+                                                                'SlopeAge_FDRmask_CT_lh_pial_classic_lateral.png')   
+    left_lat_dict['MT_projfrac+030_all_slope_age_at14'] = os.path.join(results_dir, 
+                                                                'PNGS', 
+                                                                'SlopeAge_at14_MT_projfrac+030_lh_pial_classic_lateral.png')   
+    left_lat_dict['MT_projfrac+030_all_slope_age'] = os.path.join(results_dir, 
+                                                                'PNGS', 
+                                                                'SlopeAge_FDRmask_MT_projfrac+030_lh_pial_classic_lateral.png')   
+        
+    # Make the brain images that you need
+    for measure in [ 'CT_all_slope_age_at14', 
+                     'CT_all_slope_age', 
+                     'MT_projfrac+030_all_slope_age_at14',
+                     'MT_projfrac+030_all_slope_age' ]:
+    
+        # Set up the figure
+        fig, ax = plt.subplots(figsize=(20,6), facecolor='white')
+        
+        # Set up the grid
+        grid = gridspec.GridSpec(1,4)
+        grid.update(left=0.01, right=0.99, top=1.05, bottom=0.2, wspace=0, hspace=0)
+        
+        # Set up the file list
+        left_lat_fname = left_lat_dict[measure]
+        f_list = [ left_lat_fname, 
+                    left_lat_fname.replace('lh_pial_classic_lateral', 'lh_pial_classic_medial'),
+                    left_lat_fname.replace('lh_pial_classic_lateral', 'rh_pial_classic_medial'),
+                    left_lat_fname.replace('lh_pial_classic_lateral', 'rh_pial_classic_lateral') ]
+        
+        # Add the brains
+        fig = add_four_hor_brains(grid, f_list, fig)
+        
+        # Set up the colorbar grid
+        cb_grid = gridspec.GridSpec(1,1)
+        
+        cb_grid.update(left=0.2, 
+                            right=0.8, 
+                            bottom=0.2,
+                            top=0.25, 
+                            wspace=0, 
+                            hspace=0)    
+        
+        fig = add_colorbar(cb_grid[0], fig, 
+                                cmap_name=cmap_dict[measure], 
+                                cbar_min=min_max_dict['{}_CBAR_min'.format(measure)], 
+                                cbar_max=min_max_dict['{}_CBAR_max'.format(measure)],
+                                y_min=min_max_dict['{}_CBAR_min'.format(measure)],
+                                y_max=min_max_dict['{}_CBAR_max'.format(measure)],
+                                label=axis_label_dict[measure])
+        # Turn off the axis
+        ax.set_axis_off()
+
+        # Save the figure
+        figure_name = os.path.join(talk_figs_dir, '{}_FourHorBrains.png'.format(measure))
+        fig.savefig(figure_name, dpi=100)
+        
+        # Close the figure
+        plt.close('all')
+        
+    # Make the scatter plots you need
+    x_list = [ 'age_scan', 'age_scan', 'CT_all_slope_age_at14', 'MT_projfrac+030_all_slope_age_at14' ]
+    y_list = [ 'CT_global_mean', 'MT_projfrac+030_global_mean', 'CT_all_slope_age', 'MT_projfrac+030_all_slope_age' ]
+    
+    for x_key, y_key in zip(x_list, y_list):
+        
+        figure_name = os.path.join(talk_figs_dir, 'Scatter_{}_vs_{}.png'.format(x_key, y_key))
+        
+        fig, ax = plt.subplots(figsize=(10,7), facecolor='white')
+        
+        if x_key == 'age_scan':
+            color_measure = y_key.replace('_global_mean', '_all_slope_age')
+            stat_key = y_key.replace('_mean', '_slope_age')
+            color_measure_cmap = cmap_dict[color_measure]
+            norm = mpl.colors.Normalize(vmin=min_max_dict['{}_CBAR_min'.format(color_measure)], 
+                                        vmax=min_max_dict['{}_CBAR_max'.format(color_measure)])
+            cmap_converter = mpl.cm.ScalarMappable(norm=norm, cmap=color_measure_cmap)
+            color = cmap_converter.to_rgba(measure_dict[stat_key])
+        else:
+            color='k'
+        
+        pretty_scatter(measure_dict[x_key], 
+                            measure_dict[y_key], 
+                            x_label=axis_label_dict[x_key], 
+                            y_label=axis_label_dict[y_key],
+                            x_max=min_max_dict['{}_max'.format(x_key)],
+                            x_min=min_max_dict['{}_min'.format(x_key)], 
+                            y_max=min_max_dict['{}_max'.format(y_key)],
+                            y_min=min_max_dict['{}_min'.format(y_key)],
+                            color=color,
+                            figure_name=figure_name, 
+                            ax=ax, 
+                            figure=fig)
+
+                            
+    # Now the violin plots
+    for measure in [ 'all_slope_age_at14', 'all_slope_age']:
+        
+        mpm='MT'
+        
+        figure_name = os.path.join(talk_figs_dir, 'Violin_{}.png'.format(measure))
+        
+        violin_mt_depths(measure_dict,
+                                measure=measure,
+                                y_label=axis_label_dict['{}_{}'.format(mpm, measure)],
+                                cmap=cmap_dict[measure],
+                                y_min=min_max_dict['{}_{}_min'.format(mpm, measure)],
+                                y_max=min_max_dict['{}_{}_max'.format(mpm, measure)], 
+                                cmap_min=min_max_dict['{}_{}_CBAR_min'.format(mpm, measure)],
+                                cmap_max=min_max_dict['{}_{}_CBAR_max'.format(mpm, measure)],
+                                lam_labels=False,
+                                mpm=mpm,
+                                vert=False,
+                                cbar=True,
+                                figure_name=figure_name)
+                                
+        
+        # Close the figure
+        plt.close('all')
