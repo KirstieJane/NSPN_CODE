@@ -1577,6 +1577,7 @@ def add_four_hor_brains(grid, f_list, big_fig):
     
     return big_fig
 
+
 def add_colorbar(grid, big_fig, cmap_name, y_min=0, y_max=1, cbar_min=0, cbar_max=1, vert=False, label=None, show_ticks=True):
     '''
     Add a colorbar to the big_fig in the location defined by grid 
@@ -2160,6 +2161,202 @@ def oct_figure_2(measure_dict, figures_dir, results_dir, mpm='MT', indices=None)
 
     
 def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
+    
+    # Set the seaborn context and style
+    sns.set(style="white")
+    sns.set_context("poster", font_scale=3.5)
+
+    # Get the various min and max values:
+    min_max_dict = get_min_max_values(measure_dict)
+    axis_label_dict = get_axis_label_dict()
+    
+    # Create the big figure
+    big_fig = plt.figure(figsize=(34.5, 30), facecolor='white')
+    
+    #==== TWO ROWS OF BRAIN DATA =================================
+    # Make a list of the file names for the left lateral image
+    left_lat_fname_list = [ os.path.join(results_dir, 'PNGS', 
+                                    'PLS1_lh_pial_classic_lateral.png'),
+                               os.path.join(results_dir, 'PNGS', 
+                                    'PLS2_lh_pial_classic_lateral.png') ]
+    
+    # List the var names that will be used to get the axis labels
+    # and min/max values
+    var_name_list = [ 'PLS1_usable', 'PLS2_usable' ]
+    
+    mri_measure_list = [ 'CT_all_slope_age_at14',
+                         'CT_all_slope_age',
+                         'MT_projfrac+030_all_slope_age_at14',
+                         'MT_projfrac+030_all_slope_age' ]   
+                         
+    gene_indices = measure_dict['gene_indices']
+    
+    # List the colorbar names
+    cmap_name_list = [ 'RdBu_r', 'RdBu_r' ]
+    
+    # List of min max color tuples
+    min_max_color_list = [ ('blue', 'red'), ('blue', 'red') ]
+    
+    # Scatter and von economo grid
+    grid = gridspec.GridSpec(4, 4)
+    grid.update(left=0.08, bottom=0.06, top=0.97, right=0.96, hspace=0.3, wspace=0.15)
+                    
+    ax_list = []
+    for g_loc in grid:
+        ax_list += [ plt.Subplot(big_fig, g_loc) ]
+        big_fig.add_subplot(ax_list[-1])
+    
+    for i, (left_lat_fname, 
+                var_name, 
+                cmap_name,
+                min_max_color) in enumerate(zip(left_lat_fname_list, 
+                                                                    var_name_list, 
+                                                                    cmap_name_list,
+                                                                    min_max_color_list)):
+        
+        #==== BRAIN IMAGES ======================================
+        # Plot the braaaaains
+        f_list = [ left_lat_fname, 
+                    left_lat_fname.replace('lh_pial_classic_lateral', 'lh_pial_classic_medial'),
+                    left_lat_fname.replace('lh_pial_classic_lateral', 'rh_pial_classic_medial'),
+                    left_lat_fname.replace('lh_pial_classic_lateral', 'rh_pial_classic_lateral') ]
+        
+        grid = gridspec.GridSpec(2,2)
+        
+        grid.update(left=0.01, 
+                        right=0.68,
+                        bottom=0.79 - (i*0.5), 
+                        top=0.99 - (i*0.5), 
+                        wspace=0, 
+                        hspace=0)
+        
+        # Put the four brains in a row
+        big_fig = add_four_hor_brains(grid, f_list, big_fig)
+        
+        # Add a colorbar
+        cb_grid = gridspec.GridSpec(1,1)
+        
+        cb_grid.update(left=0.16, 
+                            right=0.53, 
+                            bottom=0.79 - (i*0.5),
+                            top=0.80 - (i*0.5), 
+                            wspace=0, 
+                            hspace=0)    
+        
+        big_fig = add_colorbar(cb_grid[0], big_fig, 
+                                cmap_name=cmap_name, 
+                                cbar_min=min_max_dict['{}_CBAR_min'.format(var_name)], 
+                                cbar_max=min_max_dict['{}_CBAR_max'.format(var_name)],
+                                y_min=min_max_dict['{}_CBAR_min'.format(var_name)],
+                                y_max=min_max_dict['{}_CBAR_max'.format(var_name)],
+                                label='')
+    
+        #==== VON ECONOMO BOX PLOTS =============================
+        ax_list[8*i+3] = von_economo_boxes(measure_dict, figures_dir, 
+                                            measure_dict['von_economo_genes'], 
+                                            measure=var_name,
+                                            y_label=axis_label_dict[var_name], 
+                                            y_min=min_max_dict['{}_min'.format(var_name)], 
+                                            y_max=min_max_dict['{}_max'.format(var_name)], 
+                                            von_economo_colors=True,
+                                            max_color=min_max_color[1],
+                                            min_color=min_max_color[0],
+                                            alpha=0,
+                                            ax=ax_list[8*i+3],
+                                            figure=big_fig)
+  
+        
+        #==== SCATTER PLOTS =============================                            
+        for j, mri_var_name in enumerate(mri_measure_list):
+            color='k'
+            
+            ax_list[8*i+4+j] = pretty_scatter(measure_dict[mri_var_name][gene_indices], 
+                                                measure_dict[var_name], 
+                                                x_label=axis_label_dict[mri_var_name], 
+                                                y_label=axis_label_dict[var_name], 
+                                                x_min=min_max_dict['{}_min'.format(mri_var_name)], 
+                                                x_max=min_max_dict['{}_max'.format(mri_var_name)], 
+                                                y_min=min_max_dict['{}_min'.format(var_name)],
+                                                y_max=min_max_dict['{}_max'.format(var_name)], 
+                                                color=color,
+                                                marker_size=40,
+                                                ax=ax_list[8*i+4+j],
+                                                figure=big_fig)
+                
+    for i, ax in enumerate(ax_list):
+    
+        # Make sure y axis is in scientific format
+        ax.ticklabel_format(axis='y', style='sci', scilimits=(-2,2))
+        
+        # Turn off the axes under the brains
+        if i%8 < 3:
+            ax.axis('off')
+
+        elif i%8 == 3:
+            ax.yaxis.set_label_coords(-0.26, 0.5)
+            
+        elif i%8 == 4:
+            # Align the y labels
+            ax.yaxis.set_label_coords(-0.25, 0.5)
+            # And make sure the x axis is in scientific format
+            #ax.ticklabel_format(axis='x', style='sci', scilimits=(-2,2))
+        
+        else:
+            # Remove y label and ticklabels altogether
+            ax.yaxis.set_label_text('')
+            ax.yaxis.set_ticklabels([])
+            # And make sure the x axis is in scientific format
+            #ax.ticklabel_format(axis='x', style='sci', scilimits=(-2,2))
+            
+        if i%8 == 5:  
+            # Make sure there aren't too many bins#
+            # for the delta CT plot
+            ax.locator_params(axis='x', nbins=3)
+            
+        # Update the font size for the labels
+        # to be a little smaller
+        for lab in [ ax.yaxis.label, ax.xaxis.label ]:
+            f_size = lab.get_fontsize()
+            lab.set_fontsize(f_size * 0.88)     
+
+    '''
+    # Place the A, B, C and i, ii, iii labels
+    let_list = [ 'A', 'B', 'C', 'D' ]
+    rom_list = [ 'i', 'ii', 'iii' ]
+    
+    # For the first column put the letters in the top left corner
+    for i, ax in enumerate(ax_list[:,0]):
+        ax.text(-0.1, 0.95, '{}i'.format(let_list[i]),
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=40,
+                    transform=ax.transAxes,
+                    weight='bold')
+
+    for i, ax in enumerate(ax_list[:,2]):
+        ax.text(-0.2, 0.95, '{}ii'.format(let_list[i]),
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=40,
+                    transform=ax.transAxes,
+                    weight='bold')
+                    
+    for i, ax in enumerate(ax_list[:,3]):
+        ax.text(-0.2, 0.95, '{}iii'.format(let_list[i]),
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=40,
+                    transform=ax.transAxes,
+                    weight='bold')
+    
+    '''        
+    # Save the figure
+    filename = os.path.join(figures_dir, 'Figure3.png')
+    big_fig.savefig(filename, bbox_inches=0, dpi=100)
+    
+    plt.close()
+
+def previous_figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     # Set the seaborn context and style
     sns.set(style="white")
