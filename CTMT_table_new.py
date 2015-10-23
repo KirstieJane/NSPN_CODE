@@ -87,7 +87,7 @@ def create_header_footer():
     '''
     latex_header = '\n'.join([ '\\documentclass{article}', 
                             '\\usepackage{booktabs}', 
-                            '\\usepackage[a4paper, left={1cm}, right={1cm}, top={1.5cm}, bottom={1.5cm}, landscape]{geometry}',
+                            '\\usepackage[a4paper, left={1cm}, right={1cm}, top={1.5cm}, bottom={1cm}, landscape]{geometry}',
                             '\\usepackage{longtable}',
                             '\\usepackage{array}',
                             '\\begin{document}',
@@ -219,22 +219,6 @@ def get_dicts(measure_dict, n=308):
     bottom_title_dict['MT_projfrac+030_all_slope_age_p'] = 'P'
     multi_column_dict['MT_projfrac+030_all_slope_age_p'] = 0
 
-    table_dict['MT_projfrac+030_all_slope_ct'] = measure_dict['MT_projfrac+030_all_slope_ct{}'.format(suff)]
-    format_dict['MT_projfrac+030_all_slope_ct'] = f_dp2_exp_0
-    align_title_dict['MT_projfrac+030_all_slope_ct'] = 'C{1.3cm}'
-    align_col_dict['MT_projfrac+030_all_slope_ct'] = 'R{1.3cm}'
-    top_title_dict['MT_projfrac+030_all_slope_ct'] = '$\\Delta$MT with CT'
-    bottom_title_dict['MT_projfrac+030_all_slope_ct'] = '(AU/mm)'
-    multi_column_dict['MT_projfrac+030_all_slope_ct'] = 2
-
-    table_dict['MT_projfrac+030_all_slope_ct_p'] = measure_dict['MT_projfrac+030_all_slope_ct_p{}'.format(suff)]
-    format_dict['MT_projfrac+030_all_slope_ct_p'] = f_p
-    align_title_dict['MT_projfrac+030_all_slope_ct_p'] = 'C{1cm}'
-    align_col_dict['MT_projfrac+030_all_slope_ct_p'] = 'R{1cm}'
-    top_title_dict['MT_projfrac+030_all_slope_ct_p'] = ''
-    bottom_title_dict['MT_projfrac+030_all_slope_ct_p'] = 'P'
-    multi_column_dict['MT_projfrac+030_all_slope_ct_p'] = 0
-
     table_dict['Degree'] = measure_dict['Degree_CT_covar_ones_all_COST_10{}'.format(suff)]
     if n == 308:
         format_dict['Degree'] = i
@@ -266,7 +250,6 @@ def get_dicts(measure_dict, n=308):
                 'Hemi', 'SubRegion', 
                 'CT_all_slope_age_at14', 'CT_all_slope_age', 'CT_all_slope_age_p',
                 'MT_projfrac+030_all_slope_age_at14', 'MT_projfrac+030_all_slope_age', 'MT_projfrac+030_all_slope_age_p',
-                'MT_projfrac+030_all_slope_ct', 'MT_projfrac+030_all_slope_ct_p',
                 'Degree', 'Closeness', 'AverageDist' ]
 
     if n==34:

@@ -481,6 +481,8 @@ def create_dict_voneconomo(measure_dict_dict, cohort_list=['DISCOVERY_ALL', 'VAL
         data_list = []
         col_list = []
         
+        gene_indices = measure_dict['gene_indices']
+
         #=======================================================
         # CT at 14 
         #=======================================================    
@@ -550,6 +552,44 @@ def create_dict_voneconomo(measure_dict_dict, cohort_list=['DISCOVERY_ALL', 'VAL
         col_list += [ '' ]
 
         #=======================================================
+        # PLS1
+        #=======================================================    
+        results, p_perm = permutation_multiple_correlation(measure_dict['von_economo_genes'],
+                                                                measure_dict['PLS1_usable'], 
+                                                                covars=[], 
+                                                                n_perm=1000,
+                                                                categorical=True)
+        
+        data_list += [ 'F[{:1.0f},{:1.0f}] = {:2.2f}'.format(results.df_model,
+                                                                results.df_resid,
+                                                                results.fvalue) ]
+        data_list += [ format_p(p_perm) ]
+        
+        col_list += [ '\\multirow{2}{*}{\\textbf{PLS1}}']
+        col_list += [ '' ]
+
+        table_dict['\\textbf{{{}}}'.format(name_dict[cohort])] = data_list
+        
+        #=======================================================
+        # PLS2
+        #=======================================================    
+        results, p_perm = permutation_multiple_correlation(measure_dict['von_economo_genes'],
+                                                                measure_dict['PLS2_usable'], 
+                                                                covars=[], 
+                                                                n_perm=1000,
+                                                                categorical=True)
+        
+        data_list += [ 'F[{:1.0f},{:1.0f}] = {:2.2f}'.format(results.df_model,
+                                                                results.df_resid,
+                                                                results.fvalue) ]
+        data_list += [ format_p(p_perm) ]
+        
+        col_list += [ '\\multirow{2}{*}{\\textbf{PLS2}}']
+        col_list += [ '' ]
+
+        table_dict['\\textbf{{{}}}'.format(name_dict[cohort])] = data_list
+        
+        #=======================================================
         # Degree 
         #=======================================================    
         results, p_perm = permutation_multiple_correlation(measure_dict['von_economo'],
@@ -600,24 +640,6 @@ def create_dict_voneconomo(measure_dict_dict, cohort_list=['DISCOVERY_ALL', 'VAL
         col_list += [ '\\multirow{2}{*}{\\textbf{Average Distance (mm)}}']
         col_list += [ '' ]
 
-        #=======================================================
-        # Clustering
-        #=======================================================    
-        results, p_perm = permutation_multiple_correlation(measure_dict['von_economo'],
-                                                                measure_dict['Clustering_CT_covar_ones_all_COST_10'], 
-                                                                covars=[], 
-                                                                n_perm=1000,
-                                                                categorical=True)
-        
-        data_list += [ 'F[{:1.0f},{:1.0f}] = {:2.2f}'.format(results.df_model,
-                                                                results.df_resid,
-                                                                results.fvalue) ]
-        data_list += [ format_p(p_perm) ]
-        
-        col_list += [ '\\multirow{2}{*}{\\textbf{Clustering}}']
-        col_list += [ '' ]
-
-        table_dict['\\textbf{{{}}}'.format(name_dict[cohort])] = data_list
 
     return table_dict, col_list
     

@@ -136,6 +136,7 @@ def permutation_multiple_correlation(x_orig, y_orig, covars=[], n_perm=1000, cat
     
     return results, perm_p
     
+def residuals(
     
 def read_in_df(data_file, aparc_names):
     '''
