@@ -32,7 +32,7 @@ def add_caption(latex_table, caption):
     for this table
     '''
     latex_table_list = latex_table.split('\n')
-    latex_table_list[0] = latex_table_list[0] + '\n\\caption{{{}}} \\\\'.format(caption)         
+    latex_table_list[0] = latex_table_list[0] + '\n\\caption*{{{}}} \\\\'.format(caption)         
     latex_table = '\n'.join(latex_table_list)
 
     return latex_table
@@ -50,7 +50,7 @@ def format_p(x):
 #=============================================================================
 # FIGURES 1 and 2 CREATE DICT
 #-----------------------------------------------------------------------------
-def create_dict_figures1and2(measure_dict_dict, cohort_list=['DISCOVERY_ALL', 'VALIDATION_ALL', 'COMPLETE_ALL']):
+def create_dict_figure1(measure_dict_dict, cohort_list=['DISCOVERY_ALL', 'VALIDATION_ALL', 'COMPLETE_ALL']):
     name_dict = { 'DISCOVERY_EXCLBAD' : 'Discovery ExclBad',
                   'VALIDATION_EXCLBAD' : 'Validation ExclBad',
                   'COMPLETE_EXCLBAD' : 'Complete ExclBad',
@@ -700,7 +700,7 @@ def write_latex_table(table_df, table_file, caption):
 #=============================================================================
 # PUT IT ALL TOGETHER
 #-----------------------------------------------------------------------------
-def make_replication_table_figures1and2(measure_dict_dict, 
+def make_replication_table_figure1(measure_dict_dict, 
                                             paper_dir, 
                                             cohort_list=['DISCOVERY_ALL', 'VALIDATION_ALL', 'COMPLETE_ALL'],
                                             cohort_list_name='THREE_ALL'):
@@ -708,10 +708,10 @@ def make_replication_table_figures1and2(measure_dict_dict,
     #=============================================================================
     # GET STARTED BY SETTING THE CAPTION AND NAME YOUR OUTPUT FILE
     #-----------------------------------------------------------------------------
-    caption = 'Associated statistics for Figures 1 and 2'
+    caption = 'Cohort comparison: Correlations between CT, MT with age'
 
     table_dir = os.path.join(paper_dir, cohort_list_name)
-    table_file = os.path.join(table_dir, 'Replication_Table_Figures1and2.tex')
+    table_file = os.path.join(table_dir, 'Replication_Table_Figure1.tex')
 
     #=============================================================================
     # Make the output folder
@@ -721,7 +721,7 @@ def make_replication_table_figures1and2(measure_dict_dict,
     #=============================================================================
     # Make the data frame
     #-----------------------------------------------------------------------------
-    table_dict, col_list = create_dict_figures1and2(measure_dict_dict, cohort_list)
+    table_dict, col_list = create_dict_figure1(measure_dict_dict, cohort_list)
     table_df = make_table_df(table_dict, col_list)
     write_latex_table(table_df, table_file, caption)
     
@@ -733,7 +733,7 @@ def make_replication_table_figure3(measure_dict_dict,
     #=============================================================================
     # GET STARTED BY SETTING THE CAPTION AND NAME YOUR OUTPUT FILE
     #-----------------------------------------------------------------------------
-    caption = 'Associated statistics for Figure 3'
+    caption = 'Cohort comparison: Correlations with PLS scores'
     
     table_dir = os.path.join(paper_dir, cohort_list_name)
     table_file = os.path.join(table_dir, 'Replication_Table_Figure3.tex')
@@ -758,7 +758,7 @@ def make_replication_table_figure4(measure_dict_dict,
     #=============================================================================
     # GET STARTED BY SETTING THE CAPTION AND NAME YOUR OUTPUT FILE
     #-----------------------------------------------------------------------------
-    caption = 'Associated statistics for Figure 4'
+    caption = 'Cohort comparison: Correlations with network measures'
     
     table_dir = os.path.join(paper_dir, cohort_list_name)
     table_file = os.path.join(table_dir, 'Replication_Table_Figure4.tex')
