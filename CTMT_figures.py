@@ -1374,7 +1374,7 @@ def get_von_economo_color_dict(von_economo):
     Create a color dictionary for the von economo values you pass
     The color_list is hard coded at the moment... might change one day
     '''
-    color_list = [ 'purple', 'blue', 'green', 'orange', 'yellow' ]
+    color_list = [ 'purple', 'blue', 'green', 'orange', 'yellow', 'cyan' ]
     #color_list = [ '0.5', '0.6', '0.7', '0.8', '0.9' ]
     # You need to make it into a color dictionary
     color_dict={}
@@ -1779,7 +1779,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                                         y_label=axis_label_dict[var_name[0]], 
                                         y_min=min_max_dict['{}_min'.format(var_name[0])], 
                                         y_max=min_max_dict['{}_max'.format(var_name[0])], 
-                                        von_economo_colors=True,
+                                        von_economo_colors=False,
                                         max_color=min_max_color[1],
                                         min_color=min_max_color[0],
                                         alpha=0,

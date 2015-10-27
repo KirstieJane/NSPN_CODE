@@ -453,6 +453,45 @@ def create_dict_figure4(measure_dict_dict, cohort_list=['DISCOVERY_ALL', 'VALIDA
         col_list += [ '\\multirow{3}{*}{\\textbf{PLS2 vs Av Dist}}']
         col_list += [ '' ] * 2
         
+        #=======================================================
+        # Delta CT vs Clustering
+        #=======================================================    
+        m, c, r, p, sterr, p_perm = permutation_correlation(measure_dict['Clustering_CT_covar_ones_all_COST_10'], 
+                                    measure_dict['CT_all_slope_age'])
+
+        data_list += [ '\\textit{{r\\textsuperscript{{2}}}} = {:2.2f}'.format(r**2) ]
+        data_list += [ format_p(p) ]
+        data_list += [ '$\\beta$ = {:2.3f}$\\times10^{{-3}}$'.format(m*1000) ]
+        
+        col_list += [ '\\multirow{3}{*}{\\textbf{$\\Delta$CT vs Av Dist}}']
+        col_list += [ '' ] * 2
+
+        #=======================================================
+        # Delta MT vs Clustering
+        #=======================================================    
+        m, c, r, p, sterr, p_perm = permutation_correlation(measure_dict['Clustering_CT_covar_ones_all_COST_10'], 
+                                    measure_dict['MT_projfrac+030_all_slope_age'])
+
+        data_list += [ '\\textit{{r\\textsuperscript{{2}}}} = {:2.2f}'.format(r**2) ]
+        data_list += [ format_p(p) ]
+        data_list += [ '$\\beta$ = {:2.1f}$\\times10^{{-6}}$'.format(m*1000000) ]
+        
+        col_list += [ '\\multirow{3}{*}{\\textbf{$\\Delta$MT vs Av Dist}}']
+        col_list += [ '' ] * 2
+
+        #=======================================================
+        # PLS2 vs Clustering
+        #=======================================================    
+        m, c, r, p, sterr, p_perm = permutation_correlation(measure_dict['Clustering_CT_covar_ones_all_COST_10'][gene_indices], 
+                                    measure_dict['PLS2'][gene_indices])
+
+        data_list += [ '\\textit{{r\\textsuperscript{{2}}}} = {:2.2f}'.format(r**2) ]
+        data_list += [ format_p(p) ]
+        data_list += [ '$\\beta$ = {:2.2f}$\\times10^{{-3}}$'.format(m*1000) ]
+        
+        col_list += [ '\\multirow{3}{*}{\\textbf{PLS2 vs Av Dist}}']
+        col_list += [ '' ] * 2
+        
         #=======================================================    
         # Save to a dictionary
         #=======================================================    
