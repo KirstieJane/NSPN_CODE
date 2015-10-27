@@ -44,7 +44,8 @@ mkdir -p ${data_dir}/FS_ROIS/
 # Loop through the various segmentations
 for seg in aseg wmparc lobesStrict 500cortExpConsecWMoverlap 500cortConsec; do
     
-    for measure in R1 MT R2s A FA MD MO L1 L23 sse synthetic; do
+    #for measure in R1 MT R2s A FA MD MO L1 L23 sse synthetic; do
+    for measure in R1 MT R2s A FA MD MO L1 L23 sse; do
     #for measure in MT R1 R2s R1R2s; do
     
         # Find all the individual stats files for that segmentation
@@ -170,7 +171,8 @@ for parc in aparc 500.aparc lobesStrict; do
         fi
         
         # Now loop through all the measures
-        for measure in R1 MT R2s A FA MD MO L1 L23 sse synthetic; do
+        #for measure in R1 MT R2s A FA MD MO L1 L23 sse synthetic; do
+        for measure in R1 MT R2s A FA MD MO L1 L23 sse; do
         #for measure in MT R1 R2s R1R2s; do
                 
             #for frac in `seq -f %+02.2f -1 0.05 1`; do
