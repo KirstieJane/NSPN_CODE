@@ -170,8 +170,8 @@ for parc in aparc 500.aparc lobesStrict; do
         fi
         
         # Now loop through all the measures
-        #for measure in R1 MT R2s A FA MD MO L1 L23 sse synthetic; do
-        for measure in MT R1 R2s R1R2s; do
+        for measure in R1 MT R2s A FA MD MO L1 L23 sse synthetic; do
+        #for measure in MT R1 R2s R1R2s; do
                 
             #for frac in `seq -f %+02.2f -1 0.05 1`; do
             for frac in `seq -f %+02.2f 0 0.1 1`; do
