@@ -35,7 +35,6 @@ function usage {
 # Fine if you download the git repository but not fine 
 # if you've only take the script itself!
 #================================================================
-
 lobes_ctab=`dirname ${0}`/LobesStrictLUT.txt
 parc500_ctab=`dirname ${0}`/parc500LUT.txt
 
@@ -56,7 +55,6 @@ fi
 #================================================================
 # READ IN COMMAND LINE ARGUMENTS
 #================================================================
-
 study_dir=$1
 sub=$2
 
@@ -70,7 +68,6 @@ if [[ -z ${sub} ]]; then
     usage
 fi
 
-
 #================================================================
 # Set some useful variables
 #================================================================
@@ -79,6 +76,8 @@ fsaverage_subid=fsaverageSubP
 
 surfer_dir=${sub_data_dir}/${sub}/SURFER/MRI0/
 mpm_dir=${sub_data_dir}/${sub}/MPM/MRI0/
+dti_dir=${sub_data_dir}/${sub}/DTI/MRI0/
+reg_dir=${sub_data_dir}/${sub}/REG/MRI0/
 
 SUBJECTS_DIR=${surfer_dir}/../
 surf_sub=`basename ${surfer_dir}`
@@ -91,7 +90,7 @@ surf_sub=`basename ${surfer_dir}`
 # <surfer_dir>/mri folder then you have to make it
 
 # Loop through the mpm outputs that you're interested in
-for mpm in MT R1 R2s R1R2s; do
+for mpm in MT R1 R2s R1R2s A; do
     mpm_file=${mpm_dir}/${mpm}_head.nii.gz
 
     if [[ -f ${mpm_file} ]]; then
@@ -113,18 +112,78 @@ for mpm in MT R1 R2s R1R2s; do
                      ${mpm_file}
         fi
 
+    else
+        echo "${mpm} file doesn't exist in mpm_dir, skipping"
+        continue
     fi
     
     # Align the mgz file to "freesurfer" anatomical space
-    if [[ -f ${mpm_file} && ! -f ${surfer_dir}/mri/${mpm}.mgz ]]; then
+    if [[ ! -f ${surfer_dir}/mri/${mpm}.mgz ]]; then
+        echo "Registering ${mpm} file to freesurfer space"
         mri_vol2vol --mov ${mpm_file} \
                     --targ ${surfer_dir}/mri/T1.mgz \
                     --regheader \
                     --o ${surfer_dir}/mri/${mpm}.mgz \
                     --no-save-reg
+    else
+        echo  "${mpm} file already in freesurfer space"
     fi
 done
 
+
+#=============================================================================
+# PROCESS THE DTI DATA IF IT EXISTS
+#=============================================================================
+# REGISTER B0 TO FREESURFER SPACE
+#=============================================================================
+# The first step is ensuring that the dti_ec (B0) file
+# has been registered to freesurfer space
+if [[ ! -f ${reg_dir}/diffB0_TO_surf.dat && -f ${dti_dir}/dti_ec.nii.gz ]]; then
+    bbregister --s ${surf_sub} \
+               --mov ${dti_dir}/dti_ec.nii.gz \
+               --init-fsl \
+               --reg ${reg_dir}/diffB0_TO_surf.dat \
+               --t2
+fi
+
+
+#=============================================================================
+# TRANSFORM DTI MEASURES FILES TO FREESURFER SPACE
+#=============================================================================
+# If the dti measure file doesn't exist yet in the <surfer_dir>/mri folder
+# then you have to make it
+for measure in FA MD MO L1 L23 sse; do
+
+    measure_file_dti=`ls -d ${dti_dir}/FDT/*_${measure}.nii.gz 2> /dev/null`
+    if [[ ! -f ${measure_file_dti} ]]; then 
+        echo "${measure} file doesn't exist in dti_dir, skipping"
+        continue
+    fi
+    
+    # If the measure file has particularly small values
+    # then multiply this file by 1000 first
+    if [[ "MD L1 L23" =~ ${measure} ]]; then
+        if [[ ! -f ${measure_file_dti/.nii/_mul1000.nii} ]]; then
+            fslmaths ${measure_file_dti} -mul 1000 ${measure_file_dti/.nii/_mul1000.nii}
+        fi
+        measure_file_dti=${measure_file_dti/.nii/_mul1000.nii}
+    fi
+    
+    # Now transform this file to freesurfer space
+    if [[ ! -f ${surfer_dir}/mri/${measure}.mgz ]]; then
+        
+        echo "Registering ${measure} file to freesurfer space"
+        mri_vol2vol --mov ${measure_file_dti} \
+                    --targ ${surfer_dir}/mri/T1.mgz \
+                    --o ${surfer_dir}/mri/${measure}.mgz \
+                    --reg ${reg_dir}/diffB0_TO_surf.dat \
+                    --no-save-reg
+
+    else
+        echo "${measure} file already in freesurfer space"
+       
+    fi
+done
 
 #================================================================
 # Extract the stats from the surface parcellations
@@ -135,8 +194,7 @@ done
 #     500.aparc
 #     lobesStrict
 #=================================================================
- 
-# Loop over both left and right hemispheres
+ # Loop over both left and right hemispheres
 for hemi in lh rh; do
 
     # Loop over parcellations
@@ -152,8 +210,12 @@ for hemi in lh rh; do
         fi
         
         # Next loop through all the different MPM and DTI files
-        for measure in MT R1 R2s R1R2s; do
+        for measure in MT R1 R2s R1R2s A FA MD MO L1 L23 sse; do
 
+            if [[ ! -f ${surfer_dir}/mri/${measure}.mgz ]]; then
+                echo "Not extracting stats from ${measure} file"
+                continue
+            fi
             # First take the average across all of cortex
             
             # Project the values to the surface
