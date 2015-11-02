@@ -751,7 +751,7 @@ def old_figure_1(graph_dict,
                     axial_pos, 
                     measure_dict, 
                     n=10, 
-                    measure='CT', 
+            
                     covars_list=['ones'], 
                     group='all'):
     
@@ -3636,26 +3636,45 @@ def get_circular_layout(G, df):
     
     return pos_dict, theta_dict
     
-def setup_color_list(df, cmap_name='jet', measure='module'):
+def setup_color_list(df, cmap_name='jet', sns_palette=None, measure='module', continuous=False, vmax=1, vmin=0):
     '''
     Use a colormap to set colors for each value in the 
     sort_measure and return a list of colors for each node
     '''
+    import matplotlib as mpl
     
     colors_dict = {}
     
+    # Figure out how many different colors you need
     n = np.float(len(set(df[measure])))
-    
-    if type(cmap_name) is str:
-        cmap = plt.get_cmap(cmap_name)
-    else:
-        cmap = cmap_name
         
-    for i, mod in enumerate(sorted(set(df[measure]))):
-        colors_dict[mod] = cmap((i+0.5)/n)
-
-    colors_list = [ colors_dict[mod] for mod in df[measure].values ]
-
+    # FOR CONTINUOUS DATA
+    if continuous:
+        cNorm = mpl.colors.Normalize(vmin=vmin, vmax=vmax)
+        scalarMap = mpl.cm.ScalarMappable(norm=cNorm, cmap=cmap_name)
+        colors_list = [ scalarMap.to_rgba(x) for x in df[measure] ]    
+    
+    # FOR DISCRETE DATA
+    else:
+        # Option 1: If you've passed a matplotlib color map
+        if type(cmap_name) is str:
+            cmap = plt.get_cmap(cmap_name)
+        else:
+            cmap = cmap_name
+        
+        for i, mod in enumerate(sorted(set(df[measure]))):
+            colors_dict[mod] = cmap((i+0.5)/n)
+        
+        # Option 2: If you've passed a sns_color_palette
+        # (only designed to work with discrete variables)
+        if not sns_palette is None and not continuous:
+            color_palette = sns.palettes.color_palette(sns_palette, np.int(n))
+            
+            for i, mod in enumerate(sorted(set(df[measure]))):
+                colors_dict[mod] = color_palette[i]
+            
+        colors_list = [ colors_dict[mod] for mod in df[measure].values ]
+        
     return colors_list
     
 def plot_circular_network(G, measure_dict, sort_measure='module', wedge_measure='von_economo', sort_cmap_name='jet_r', wedge_cmap_name='von_economo', node_size=500, edge_list=None, edge_color='k', edge_width=0.2, figure=None, ax=None, show_wedge=False):
@@ -3742,7 +3761,13 @@ def add_wedge(df, theta_dict, wedge_colors_list, wedge_measure='von_economo', ax
         
     return ax
     
-def plot_anatomical_network(G, measure_dict, measure='module', orientation='sagittal', cmap_name='jet_r', edge_list=None, edge_color='k', edge_width=0.2, node_list=None, node_shape='o', node_size=500, figure=None, ax=None):
+def plot_anatomical_network(G, measure_dict, measure='module', orientation='sagittal', cmap_name='jet_r', vmax=None, vmin=None, sns_palette=None, edge_list=None, edge_color='k', edge_width=0.2, node_list=None, node_shape='o', node_size=500, node_size_list=None, figure=None, ax=None):
+    '''
+    Plots each node in the graph in one of three orientations
+    (sagittal, axial or coronal).
+    The nodes are sorted according to the measure given
+    (default value: module) and then plotted in that order.
+    '''
     
     # Set the seaborn context and style
     sns.set(style="white")
@@ -3765,31 +3790,39 @@ def plot_anatomical_network(G, measure_dict, measure='module', orientation='sagi
                         'x' : measure_dict['centroids'][:,0],
                         'y' : measure_dict['centroids'][:,1],
                         'z' : measure_dict['centroids'][:,2]})
+    
+    # If your desired measure isn't in the data frame already, then add it
+    if not measure in df.columns:
+        df[measure] = measure_dict[measure]
+    
+    # Add in a node index which relates to the node names in the graph
     df['node'] = range(len(df['degree']))
-            
-    # Get the module and wedge color lists
-    # (This has to be done before you sort the data frame)
+    
+    # Then use these node values to get the appropriate positions for each node    
+    pos_dict = {}
+    pos_dict['axial'], pos_dict['sagittal'], pos_dict['coronal'] = get_anatomical_layouts(G, df)
+    pos = pos_dict[orientation]
+
+    # Create a colors_list for the nodes
     von_economo_colors = get_von_economo_color_dict(measure_dict['von_economo'])
     if cmap_name == 'von_economo':
         cmap_name =  mpl.colors.ListedColormap(von_economo_colors.values())
 
-    colors_list = setup_color_list(df, cmap_name=cmap_name, measure=measure)
+    colors_list = setup_color_list(df, cmap_name=cmap_name, sns_palette=sns_palette, measure=measure, vmin=None, vmax=None)
     
-    # Eliminate all nodes that aren't in nodelist
-    df = df.loc[df['node'].isin(node_list)]
-
-    # Sort by x so that the nodes are plotted in a sensible order
+    # If the node size list is none then
+    # it'll just be the same size for each node
+    if node_size_list is None:
+        node_size_list = [ node_size ] * len(df['degree'])
+    
+    # We're going to figure out the best way to plot these nodes
+    # so that they're sensibly on top of each other
     sort_dict = {}
     sort_dict['axial'] = 'z'
     sort_dict['coronal'] = 'y'
     sort_dict['sagittal'] = 'x'
     
-    df.sort(columns=[sort_dict[orientation]], inplace=True)
-        
-    # Get the positions of nodes
-    pos_dict = {}
-    pos_dict['axial'], pos_dict['sagittal'], pos_dict['coronal'] = get_anatomical_layouts(G, df)
-    pos = pos_dict[orientation]
+    node_order = np.argsort(df[sort_dict[orientation]]).values
     
     # If you've given this code an axis and figure then use those
     # otherwise just create your own
@@ -3804,18 +3837,25 @@ def plot_anatomical_network(G, measure_dict, measure='module', orientation='sagi
     else:
         fig = figure
     
-    nx.draw_networkx(G, 
-                        pos=pos, 
-                        node_color=colors_list, 
-                        node_shape=node_shape,
-                        node_size=node_size,
-                        nodelist=node_list,
-                        edgelist=edge_list,
-                        width=edge_width,
-                        edge_color=edge_color,
-                        with_labels=False, 
-                        ax=ax)
-    
+    # Start by drawing in the edges:
+    nx.draw_networkx_edges(G, 
+                            pos=pos,
+                            edgelist=edge_list,
+                            width=edge_width,
+                            edge_color=edge_color,
+                            ax=ax)
+
+    # And then loop through each node and add it in order
+    for node in node_order:
+        nx.draw_networkx_nodes(G, 
+                                pos=pos, 
+                                node_color=colors_list[node], 
+                                node_shape=node_shape,
+                                node_size=node_size,
+                                nodelist=[node],
+                                with_labels=False, 
+                                ax=ax)
+        
     axis_limits_dict = {}
     axis_limits_dict['axial'] = [ -70, 70, -105, 70]
     axis_limits_dict['coronal'] = [ -70, 70, -45, 75 ]
@@ -3828,7 +3868,13 @@ def plot_anatomical_network(G, measure_dict, measure='module', orientation='sagi
     return ax
     
 def get_anatomical_layouts(G, df):
-
+    '''
+    This code takes in a data frame that has x, y, z coordinates and
+    integer node labels (0 to n-1) for n nodes and returns three dictionaries
+    containing appropriate pairs of coordinates for sagittal, coronal and 
+    axial slices.
+    '''
+    
     axial_dict = {}
     sagittal_dict = {}
     coronal_dict = {}
@@ -4079,6 +4125,8 @@ def figs_for_talk(measure_dict, results_dir, talk_figs_dir):
     cmap_dict['MT_projfrac+030_all_slope_age'] = 'autumn'
     cmap_dict['all_slope_age'] = 'RdBu_r'
     cmap_dict['all_slope_age_at14'] = 'jet'
+    cmap_dict['PLS1'] = 'RdBu_r'
+    cmap_dict['PLS2'] = 'RdBu_r'
     
     # Set up the left_lat dictionary
     left_lat_dict = {}
@@ -4094,12 +4142,21 @@ def figs_for_talk(measure_dict, results_dir, talk_figs_dir):
     left_lat_dict['MT_projfrac+030_all_slope_age'] = os.path.join(results_dir, 
                                                                 'PNGS', 
                                                                 'SlopeAge_FDRmask_MT_projfrac+030_lh_pial_classic_lateral.png')   
+    left_lat_dict['PLS1'] = os.path.join(results_dir, 
+                                            'PNGS', 
+                                            'PLS1_lh_pial_classic_lateral.png')   
+                                            
+    left_lat_dict['PLS2'] = os.path.join(results_dir, 
+                                            'PNGS', 
+                                            'PLS2_lh_pial_classic_lateral.png')   
         
     # Make the brain images that you need
     for measure in [ 'CT_all_slope_age_at14', 
                      'CT_all_slope_age', 
                      'MT_projfrac+030_all_slope_age_at14',
-                     'MT_projfrac+030_all_slope_age' ]:
+                     'MT_projfrac+030_all_slope_age',
+                     'PLS1',
+                     'PLS2' ]:
     
         # Set up the figure
         fig, ax = plt.subplots(figsize=(20,6), facecolor='white')
@@ -4204,3 +4261,5 @@ def figs_for_talk(measure_dict, results_dir, talk_figs_dir):
         
         # Close the figure
         plt.close('all')
+        
+        
