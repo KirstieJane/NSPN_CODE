@@ -1584,7 +1584,7 @@ def add_four_hor_brains(grid, f_list, big_fig, hor=True):
     return big_fig
 
 
-def add_colorbar(grid, big_fig, cmap_name, y_min=0, y_max=1, cbar_min=0, cbar_max=1, vert=False, label=None, show_ticks=True):
+def add_colorbar(grid, big_fig, cmap_name, y_min=0, y_max=1, cbar_min=0, cbar_max=1, vert=False, label=None, show_ticks=True, pad=0):
     '''
     Add a colorbar to the big_fig in the location defined by grid 
     
@@ -1598,6 +1598,7 @@ def add_colorbar(grid, big_fig, cmap_name, y_min=0, y_max=1, cbar_min=0, cbar_ma
     vert       :  whether the colorbar should be vertical (default False)
     label      :  the label for the colorbar (default: None)
     ticks      :  whether to put the tick values on the colorbar (default: True)
+    pad        :  how much to shift the colorbar label by (default: 0)
     '''
     import matplotlib as mpl
     from matplotlib.colors import LinearSegmentedColormap
@@ -1618,8 +1619,10 @@ def add_colorbar(grid, big_fig, cmap_name, y_min=0, y_max=1, cbar_min=0, cbar_ma
     # Figure out the orientation
     if vert:
         orientation='vertical'
+        rotation=270
     else:
         orientation='horizontal'
+        rotation=0
         
     # Add in your colorbar:
     cb = mpl.colorbar.ColorbarBase(ax_cbar, 
@@ -1630,8 +1633,8 @@ def add_colorbar(grid, big_fig, cmap_name, y_min=0, y_max=1, cbar_min=0, cbar_ma
                                        boundaries=np.linspace(y_min, y_max, 300))
                                        
     if label:
-        cb.set_label(label)
-        
+        cb.set_label(label, rotation=rotation, labelpad=pad)
+    
     return big_fig
     
 def add_cells_picture(figures_dir, big_fig):
@@ -2336,7 +2339,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     # Set the seaborn context and style
     sns.set(style="white")
-    sns.set_context("poster", font_scale=3)
+    sns.set_context("poster", font_scale=2.9)
 
     # Get the various min and max values:
     min_max_dict = get_min_max_values(measure_dict)
@@ -2476,20 +2479,16 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
             ax.axis('off')
 
         elif i in [ 3, 11 ]:
-            ax.yaxis.set_label_coords(-0.26, 0.5)
+            ax.yaxis.set_label_coords(-0.25, 0.5)
             
         elif i in [ 4, 6 ]:
             # Align the y labels
             ax.yaxis.set_label_coords(-0.25, 0.5)
-            # And make sure the x axis is in scientific format
-            #ax.ticklabel_format(axis='x', style='sci', scilimits=(-2,2))
         
         else:
             # Remove y label and ticklabels altogether
             ax.yaxis.set_label_text('')
             ax.yaxis.set_ticklabels([])
-            # And make sure the x axis is in scientific format
-            #ax.ticklabel_format(axis='x', style='sci', scilimits=(-2,2))
             
         if i == 6 :  
             # Make sure there aren't too many bins
@@ -3138,59 +3137,51 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_
 
     # Set the seaborn context and style
     sns.set(style="white")
-    sns.set_context("poster", font_scale=3.5)
+    sns.set_context("poster", font_scale=2.5)
 
     # Get the set values
     min_max_dict = get_min_max_values(measure_dict)
     axis_label_dict = get_axis_label_dict()
 
     # Create the big figure
-    big_fig, big_ax = plt.subplots(figsize=(34.5, 24), facecolor='white')
+    big_fig, big_ax = plt.subplots(figsize=(34.5, 20), facecolor='white')
     big_ax.axis('off')
     
     #======= ANATOMICAL NETWORKS ========================
     G = graph_dict['CT_covar_ones_all_COST_10']
     G_02 = graph_dict['CT_covar_ones_all_COST_02']
-    network_measures_dict = graph_dict['CT_covar_ones_all_COST_10_GlobalMeasures']
     
-    node_size = (measure_dict['Degree_CT_covar_ones_all_COST_10']*12) + 5
+    network_measure = 'Degree'
     
-    measure_list = [ 'module' , 'MT_projfrac+030_all_slope_age' ]
+    Deg_node_size = (16*measure_dict['Degree_CT_covar_ones_all_COST_10'])
+    PC_node_size = (100**measure_dict['PC_CT_covar_ones_all_COST_10']*10)
     
-    cmap_dict = { 'module' : 'jet' , 'MT_projfrac+030_all_slope_age' : 'autumn' }
-    continuous_dict = { 'module' : False , 'MT_projfrac+030_all_slope_age' : True }
-    sns_palette_dict = { 'module' : 'bright', 'MT_projfrac+030_all_slope_age' : None }
+    measure_list = [ 'renum_module' , 'MT_projfrac+030_all_slope_age' ]
     
-    min_max_dict = get_min_max_values(measure_dict)    
-    min_max_dict['module_CBAR_min'] = 1
-    min_max_dict['module_CBAR_max'] = 5
+    node_size_dict = { 'renum_module' : PC_node_size, 'MT_projfrac+030_all_slope_age' : Deg_node_size}
+    cmap_dict = { 'renum_module' : 'jet' , 'MT_projfrac+030_all_slope_age' : 'autumn' }
+    continuous_dict = { 'renum_module' : False , 'MT_projfrac+030_all_slope_age' : True }
+    sns_palette_dict = { 'renum_module' : 'bright', 'MT_projfrac+030_all_slope_age' : None }
     
-    i=0
+    min_max_dict = get_min_max_values(measure_dict)
+    
+    n_modules = np.max(measure_dict['Renumbered_Module_CT_covar_ones_all_COST_10'])
+    min_max_dict['renum_module_CBAR_min'] = 1
+    min_max_dict['renum_module_CBAR_max'] = n_modules
+    
+    rich_edges, rich_nodes = rich_edges_nodes(G, thresh=85)
+    
     grid = gridspec.GridSpec(1, 4)
-    bottom = 0.6
+    bottom = 0.65
     top = 0.99
-    grid.update(left=0, right=1, bottom=bottom, top=top, wspace=0, hspace=0)
+    grid.update(left=0, right=1, bottom=bottom, top=top, wspace=-0.07, hspace=0)
     
     for j, measure in enumerate(measure_list):
-    
-        print measure
 
         ###### SAGITTAL BRAIN
-        #grid = gridspec.GridSpec(1, 1)
-        #grid.update(left=0.01, right=0.55, top=1, bottom=0.6, wspace=0, hspace=0)
-        
-        ax = plt.Subplot(big_fig, grid[2*j])
+        ax = plt.Subplot(big_fig, grid[3*j])
         big_fig.add_subplot(ax)
         
-        pos = ax.get_position()
-        pos.y0 = pos.y0 * 1.2
-        ax.set_position(pos)
-        '''
-        ax.set_position([ 0.01 * (0.5*j), 
-                          0.1,
-                          1.2,
-                          0.8 ])
-        '''
         ax = plot_anatomical_network(G, 
                                         measure_dict, 
                                         measure=measure, 
@@ -3199,166 +3190,182 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_
                                         cmap_name=cmap_dict[measure],
                                         vmin=min_max_dict['{}_CBAR_min'.format(measure)], 
                                         vmax=min_max_dict['{}_CBAR_max'.format(measure)],
-                                        node_size_list=node_size, 
+                                        node_size_list=node_size_dict[measure], 
                                         edge_list=[], 
                                         ax=ax,
                                         continuous=continuous_dict[measure])
+        ax = plot_anatomical_network(G, 
+                                        measure_dict, 
+                                        measure=measure,
+                                        orientation='sagittal',
+                                        sns_palette=sns_palette_dict[measure], 
+                                        cmap_name=cmap_dict[measure],
+                                        vmin=min_max_dict['{}_CBAR_min'.format(measure)], 
+                                        vmax=min_max_dict['{}_CBAR_max'.format(measure)],
+                                        node_size_list=node_size_dict[measure], 
+                                        node_shape='s',
+                                        node_list=rich_nodes,
+                                        edge_list=[], 
+                                        ax=ax,
+                                        continuous=continuous_dict[measure])    
         ax = plot_anatomical_network(G_02, 
                                         measure_dict, 
                                         orientation='sagittal', 
                                         node_list=[], 
+                                        edge_width=0.8,
                                         ax=ax)
-        
-        ###### AXIAL BRAIN
-        ax = plt.Subplot(big_fig, grid[2*j +1])
+
+    #=========================================================================
+    # Put the von economo box plots for PLS1 and PLS2 by module
+    grid = gridspec.GridSpec(1, 4)
+    bottom = 0.74
+    top = 0.97
+    grid.update(bottom=bottom, top=top, left=0.07, right=0.98, hspace=0.1, wspace=0.3)
+    
+    pls_var_list = [ 'PLS1_usable', 'PLS2_usable' ]
+    gene_indices = measure_dict['gene_indices']
+    
+    for j, pls_var in enumerate(pls_var_list):
+    
+        ax = plt.Subplot(big_fig, grid[j+1])
         big_fig.add_subplot(ax)
-        
-        print ax.get_position()
-        pos = ax.get_position()
-        pos.x0 = pos.x0  + 0.02
-        pos.x1 = pos.x1 - 0.02
-        ax.set_position(pos)
-        print ax.get_position()
 
-        ax = plot_anatomical_network(G, 
-                                        measure_dict, 
-                                        measure=measure, 
-                                        orientation='axial', 
-                                        sns_palette=sns_palette_dict[measure], 
-                                        cmap_name=cmap_dict[measure],
-                                        vmin=min_max_dict['{}_CBAR_min'.format(measure)], 
-                                        vmax=min_max_dict['{}_CBAR_max'.format(measure)],
-                                        node_size_list=node_size, 
-                                        edge_list=[], 
-                                        ax=ax,
-                                        continuous=continuous_dict[measure])
-        ax = plot_anatomical_network(G_02, 
-                                        measure_dict, 
-                                        orientation='axial', 
-                                        node_list=[], 
-                                        ax=ax)    
-    
-    
-    #================================================
-    
-    # Set the list of network measures we care about for this figure
-    #network_measures_list = [ 'Degree', 'Closeness', 'AverageDist' ]
-    network_measures_list = [ 'Degree' ]
-    
-    # Loop through each network measure
-    for i, network_measure in enumerate(network_measures_list):
-    
-        i = i+1
-        #=========================================================================
-        # Put the four hor brains in one row
-        #=========================================================================
-        f_list = [ os.path.join(results_dir, 'PNGS',
-                                    '{}_CT_covar_ones_all_COST_10_lh_pial_classic_lateral.png'.format(network_measure)),
-                    os.path.join(results_dir, 'PNGS', 
-                                    '{}_CT_covar_ones_all_COST_10_lh_pial_classic_medial.png'.format(network_measure)),
-                    os.path.join(results_dir, 'PNGS', 
-                                    '{}_CT_covar_ones_all_COST_10_rh_pial_classic_medial.png'.format(network_measure)),
-                    os.path.join(results_dir, 'PNGS', 
-                                    '{}_CT_covar_ones_all_COST_10_rh_pial_classic_lateral.png'.format(network_measure)) ]
-
-        if rich_club and network_measure == 'Degree':
-            for j, f in enumerate(f_list):
-                f_list[j] = f.replace('Degree_CT', 'Degree_RC_CT')
+        # Get the appropriate min, max and label values
+        # for the y axis
+        measure_min = min_max_dict['{}_min'.format(pls_var)]
+        measure_max = min_max_dict['{}_max'.format(pls_var)]
+        y_label = axis_label_dict[pls_var]
+        x_label = 'Module'
         
-        grid = gridspec.GridSpec(1, 4)
-        bottom = (0.6/5.0 * 2)
-        top = 0.6        
-        grid.update(left=0, right=1, bottom=bottom, top=top, wspace=0, hspace=0)
-
-        big_fig = add_four_hor_brains(grid, f_list, big_fig)
-        
-        #=========================================================================
-        # Next put von economo box plots for this graph measure in the 
-        # first column of the next row
-        #=========================================================================
-        network_measure_min = min_max_dict['{}_CT_covar_ones_all_COST_10_min'.format(network_measure)]
-        network_measure_max = min_max_dict['{}_CT_covar_ones_all_COST_10_max'.format(network_measure)]
-        y_label = axis_label_dict[network_measure]
-        
-        '''
-        grid = gridspec.GridSpec(1, 3)
-        bottom = ( 1 - ((5*i)+5)/ 15.0 ) + 0.04
-        top = ( 1 - ((5*i)+2)/15.0 ) - 0.03
-        grid.update(bottom=bottom, top=top, left=0.07, right=0.98, hspace=0.1, wspace=0.3)
-        '''
-        grid = gridspec.GridSpec(1, 4)
-        bottom = 0.04
-        top = (0.6/5.0 * 2)
-        grid.update(bottom=bottom, top=top, left=0.07, right=0.98, hspace=0.1, wspace=0.4)
-        
-        ax_list = []
-        for g_loc in grid:
-            ax = plt.Subplot(big_fig, g_loc)
-            big_fig.add_subplot(ax)
-            ax_list += [ax]
-    
-        ax_list[0] = von_economo_boxes(measure_dict, figures_dir, 
-                                            measure_dict['von_economo'], 
-                                            measure='{}_CT_covar_ones_all_COST_10'.format(network_measure),
+        ax = von_economo_boxes(measure_dict, figures_dir, 
+                                            measure_dict['Renumbered_Module_CT_covar_ones_all_COST_10'][gene_indices], 
+                                            measure=pls_var,
+                                            group_label=x_label,
                                             y_label=y_label, 
-                                            y_min=network_measure_min, 
-                                            y_max=network_measure_max, 
-                                            max_color='red',
-                                            min_color='blue',
-                                            alpha=0,
-                                            ax=ax_list[0],
-                                            figure=big_fig)
-                                           
-        ax_list[0].yaxis.set_label_coords(-0.20, 0.5)
-                                           
-        # Update the font size for the labels
-        # to be a little smaller
-        for lab in [ ax_list[0].yaxis.label, ax_list[0].xaxis.label ]:
-            f_size = lab.get_fontsize()
-            #lab.set_fontsize(f_size * 0.88)   
-            
-        #=========================================================================
-        # Finally put scatter plots of deltaCT, and deltaMT by the network
-        # measure in the second and third spaces on the next row
-        #=========================================================================
+                                            y_min=measure_min, 
+                                            y_max=measure_max, 
+                                            ax=ax,
+                                            figure=big_fig,
+                                            von_economo_colors=False,
+                                            color_dict='bright')
+                                            
+        ax.yaxis.set_label_coords(-0.17, 0.5)
+                                        
+    #=========================================================================
+    # Put von economo box plots for this graph measure in the 
+    # first column of the next row
+    #=========================================================================
+    network_measure_min = min_max_dict['{}_CT_covar_ones_all_COST_10_min'.format(network_measure)]
+    network_measure_max = min_max_dict['{}_CT_covar_ones_all_COST_10_max'.format(network_measure)]
+    y_label = axis_label_dict[network_measure]
     
-        measure_list = [ 'CT_all_slope_age',
-                         '{}_projfrac+030_all_slope_age'.format(mpm),
-                         'PLS2_usable' ]
-                         
-        for j, measure in enumerate(measure_list):
+    grid = gridspec.GridSpec(1, 4)
+    bottom = 0.37
+    top = 0.63
+    grid.update(bottom=bottom, top=top, left=0.07, right=0.98, hspace=0.1, wspace=0.3)
+    
+    ax_list = []
+    for g_loc in grid:
+        ax = plt.Subplot(big_fig, g_loc)
+        big_fig.add_subplot(ax)
+        ax_list += [ax]
 
-            # Set the x and y data
-            x_data = measure_dict['{}_CT_covar_ones_all_COST_10'.format(network_measure)]
-            y_data = measure_dict[measure]
-            
-            # Mask the network values if you're looking at PLS2
-            if measure == 'PLS2_usable':
-                gene_indices = measure_dict['gene_indices']
-                x_data = x_data[gene_indices]
-            
-            # Get the appropriate min, max and label values
-            # for the y axis
-            measure_min = min_max_dict['{}_min'.format(measure)]
-            measure_max = min_max_dict['{}_max'.format(measure)]
-            y_label = axis_label_dict[measure]
-            x_label = axis_label_dict[network_measure]
-            
-            ax_list[j+1] = pretty_scatter(x_data, 
-                                            y_data, 
-                                            x_label=x_label,
-                                            y_label=y_label, 
-                                            x_min=network_measure_min, x_max=network_measure_max,
-                                            y_min=measure_min,y_max=measure_max, 
-                                            color='k',
-                                            ax=ax_list[j+1],
-                                            figure=big_fig)    
+    ax_list[0] = von_economo_boxes(measure_dict, figures_dir, 
+                                        measure_dict['von_economo'], 
+                                        measure='{}_CT_covar_ones_all_COST_10'.format(network_measure),
+                                        y_label=y_label, 
+                                        y_min=network_measure_min, 
+                                        y_max=network_measure_max, 
+                                        max_color='red',
+                                        min_color='blue',
+                                        alpha=0,
+                                        ax=ax_list[0],
+                                        figure=big_fig)
+                                       
+    ax_list[0].yaxis.set_label_coords(-0.17, 0.5)
         
-            # Update the font size for the labels
-            # to be a little smaller
-            for lab in [ ax_list[j+1].yaxis.label, ax_list[j+1].xaxis.label ]:
-                f_size = lab.get_fontsize()
-                lab.set_fontsize(f_size * 0.88)   
+    #=========================================================================
+    # Finally put scatter plots of deltaCT, and deltaMT by the network
+    # measure in the second and third spaces on the next row
+    #=========================================================================
+
+    measure_list = [ 'CT_all_slope_age',
+                     '{}_projfrac+030_all_slope_age'.format(mpm),
+                     'PLS2_usable' ]
+                     
+    for j, measure in enumerate(measure_list):
+
+        # Set the x and y data
+        x_data = measure_dict['{}_CT_covar_ones_all_COST_10'.format(network_measure)]
+        y_data = measure_dict[measure]
+        
+        # Mask the network values if you're looking at PLS2
+        if measure == 'PLS2_usable':
+            gene_indices = measure_dict['gene_indices']
+            x_data = x_data[gene_indices]
+        
+        # Get the appropriate min, max and label values
+        # for the y axis
+        measure_min = min_max_dict['{}_min'.format(measure)]
+        measure_max = min_max_dict['{}_max'.format(measure)]
+        y_label = axis_label_dict[measure]
+        x_label = axis_label_dict[network_measure]
+        
+        ax_list[j+1] = pretty_scatter(x_data, 
+                                        y_data, 
+                                        x_label=x_label,
+                                        y_label=y_label, 
+                                        x_min=network_measure_min, x_max=network_measure_max,
+                                        y_min=measure_min,y_max=measure_max, 
+                                        color='k',
+                                        ax=ax_list[j+1],
+                                        figure=big_fig)
+        
+        ax_list[j+1].yaxis.set_label_coords(-0.17, 0.5)
+                                        
+    #=========================================================================
+    # Put the four hor brains in one row
+    #=========================================================================
+    f_list = [ os.path.join(results_dir, 'PNGS',
+                                '{}_CT_covar_ones_all_COST_10_lh_pial_classic_lateral.png'.format(network_measure)),
+                os.path.join(results_dir, 'PNGS', 
+                                '{}_CT_covar_ones_all_COST_10_lh_pial_classic_medial.png'.format(network_measure)),
+                os.path.join(results_dir, 'PNGS', 
+                                '{}_CT_covar_ones_all_COST_10_rh_pial_classic_medial.png'.format(network_measure)),
+                os.path.join(results_dir, 'PNGS', 
+                                '{}_CT_covar_ones_all_COST_10_rh_pial_classic_lateral.png'.format(network_measure)) ]
+
+    if rich_club and network_measure == 'Degree':
+        for j, f in enumerate(f_list):
+            f_list[j] = f.replace('Degree_CT', 'Degree_RC_CT')
+    
+    grid = gridspec.GridSpec(1, 4)
+    bottom = 0
+    top = 0.31      
+    grid.update(left=0.03, right=0.9, bottom=bottom, top=top, wspace=0, hspace=0)
+
+    big_fig = add_four_hor_brains(grid, f_list, big_fig)
+    
+    # Set up the colorbar grid
+    cb_grid = gridspec.GridSpec(1,1)
+    
+    cb_grid.update(left=0.92, 
+                        right=0.93, 
+                        bottom=0.04,
+                        top=0.28, 
+                        wspace=0, 
+                        hspace=0)  
+
+    big_fig = add_colorbar(cb_grid[0], big_fig, 
+                            cmap_name='Reds', 
+                            cbar_min=np.percentile(x_data, 75), 
+                            cbar_max=np.percentile(x_data, 100),
+                            y_min=np.percentile(x_data, 75),
+                            y_max=np.percentile(x_data, 100),
+                            label=axis_label_dict[network_measure],
+                            vert=True, 
+                            pad=30)
+                                
     '''
     #=========================================================================
     # Add in the letters for each panel
@@ -4254,18 +4261,13 @@ def add_wedge(df, theta_dict, wedge_colors_list, wedge_measure='von_economo', ax
         
     return ax
     
-def plot_anatomical_network(G, measure_dict, measure='module', orientation='sagittal', cmap_name='jet_r', continuous=False, vmax=None, vmin=None, sns_palette=None, edge_list=None, edge_color='k', edge_width=0.2, node_list=None, node_shape='o', node_size=500, node_size_list=None, figure=None, ax=None):
+def plot_anatomical_network(G, measure_dict, measure='module', cost=10, covar='ones', orientation='sagittal', cmap_name='jet_r', continuous=False, vmax=None, vmin=None, sns_palette=None, edge_list=None, edge_color='k', edge_width=0.2, node_list=None, node_shape='o', node_size=500, node_size_list=None, figure=None, ax=None):
     '''
     Plots each node in the graph in one of three orientations
     (sagittal, axial or coronal).
     The nodes are sorted according to the measure given
     (default value: module) and then plotted in that order.
     '''
-    
-    # Set the seaborn context and style
-    sns.set(style="white")
-    sns.set_context("poster", font_scale=2)
-    
     if edge_list is None:
         edge_list = list(G.edges())
         
@@ -4275,9 +4277,9 @@ def plot_anatomical_network(G, measure_dict, measure='module', orientation='sagi
         
     # Put the measures you care about together
     # in a data frame
-    df = pd.DataFrame({ 'degree' : measure_dict['Degree_CT_covar_ones_all_COST_10'] ,
-                        'module' : measure_dict['Module_CT_covar_ones_all_COST_10'],
-                        'renum_module' : measure_dict['Renumbered_Module_CT_covar_ones_all_COST_10'],
+    df = pd.DataFrame({ 'degree' : measure_dict['Degree_CT_covar_{}_all_COST_{}'.format(covar, cost)] ,
+                        'module' : measure_dict['Module_CT_covar_{}_all_COST_{}'.format(covar, cost)],
+                        'renum_module' : measure_dict['Renumbered_Module_CT_covar_{}_all_COST_{}'.format(covar, cost)],
                         'von_economo' : measure_dict['von_economo'],
                         'lobes' : measure_dict['lobes'],
                         'x' : measure_dict['centroids'][:,0],
@@ -4336,6 +4338,11 @@ def plot_anatomical_network(G, measure_dict, measure='module', orientation='sagi
         fig_size_dict['coronal'] = (9,8)
         
         fig, ax = plt.subplots(figsize=fig_size_dict[orientation])
+        
+        # Set the seaborn context and style
+        sns.set(style="white")
+        sns.set_context("poster", font_scale=2)
+
     else:
         fig = figure
     
