@@ -89,7 +89,7 @@ def plot_rich_club(rc, rc_rand, ax=None, figure_name=None, x_max=200, y_max=1.2,
     else:
         return ax
 
-def plot_degree_dist(G, ax=None, figure_name=None, x_max=200, y_max=0.1, color=sns.color_palette()[0]):
+def plot_degree_dist(G, ER=True, ax=None, figure_name=None, x_max=200, y_max=0.1, color=sns.color_palette()[0]):
     '''
     Make a pretty plot of the degree distribution
     along with the degree distibution of an Erdos Renyi random
@@ -124,8 +124,9 @@ def plot_degree_dist(G, ax=None, figure_name=None, x_max=200, y_max=0.1, color=s
         fig=None
     
     # Plot the read degrees and the ER degrees
-    sns.kdeplot(degrees, ax=ax)
-    sns.kdeplot(degrees_ER, ax=ax, color='grey')
+    sns.distplot(degrees, ax=ax)
+    if ER:
+        sns.kdeplot(degrees_ER, ax=ax, color='grey')
     
     # Fix the x and y axis limits
     ax.set_xlim((0, x_max))
@@ -751,7 +752,6 @@ def old_figure_1(graph_dict,
                     axial_pos, 
                     measure_dict, 
                     n=10, 
-            
                     covars_list=['ones'], 
                     group='all'):
     
@@ -2336,6 +2336,220 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     # Set the seaborn context and style
     sns.set(style="white")
+    sns.set_context("poster", font_scale=3)
+
+    # Get the various min and max values:
+    min_max_dict = get_min_max_values(measure_dict)
+    axis_label_dict = get_axis_label_dict()
+    
+    # Create the big figure
+    big_fig = plt.figure(figsize=(34.5, 22), facecolor='white')
+    
+    # Set up the axis grid
+    grid = gridspec.GridSpec(3, 4)
+    grid.update(left=0.08, bottom=0.1, top=0.97, right=0.97, hspace=0.4, wspace=0.25)
+                    
+    # Put an axis in each of the spots on the grid
+    ax_list = []
+    for g_loc in grid:
+        ax_list += [ plt.Subplot(big_fig, g_loc) ]
+        big_fig.add_subplot(ax_list[-1])
+    
+    #==== TWO ROWS OF BRAIN DATA ===============================
+    # Make a list of the file names for the left lateral image
+    left_lat_fname_list = [ os.path.join(results_dir, 'PNGS', 
+                                    'PLS1_lh_pial_classic_lateral.png'),
+                               os.path.join(results_dir, 'PNGS', 
+                                    'PLS2_lh_pial_classic_lateral.png') ]
+    
+    # List the var names that will be used to get the axis labels
+    # and min/max values
+    var_name_list = [ 'PLS1_usable', 'PLS2_usable' ]
+    
+    # List the colorbar names
+    cmap_name_list = [ 'RdBu_r', 'RdBu_r' ]
+    
+
+    #===== TWO SCATTER PLOTS AT THE END OF THE BRAINS ==========
+    # List of genes we will correlate with the PLS scores
+    # (in the var_name_list)
+    gene_list = [ 'mbp_usable', 'oligo_usable' ]
+    
+    
+    # Loop over the two PLS scores and their associated genes
+    for i, (left_lat_fname, 
+                var_name, 
+                cmap_name,
+                gene_name) in enumerate(zip(left_lat_fname_list, 
+                                                        var_name_list, 
+                                                        cmap_name_list,
+                                                        gene_list)):
+        
+        #==== BRAIN IMAGES ======================================
+        # Plot the braaaaains
+        f_list = [ left_lat_fname, 
+                    left_lat_fname.replace('lh_pial_classic_lateral', 'lh_pial_classic_medial'),
+                    left_lat_fname.replace('lh_pial_classic_lateral', 'rh_pial_classic_medial'),
+                    left_lat_fname.replace('lh_pial_classic_lateral', 'rh_pial_classic_lateral') ]
+        
+        grid = gridspec.GridSpec(1,4)
+        
+        grid.update(left=0.01, 
+                        right=0.71,
+                        bottom=0.67 - (i*0.66), 
+                        top=1.05 - (i*0.66), 
+                        wspace=0, 
+                        hspace=0)
+        
+        # Put the four brains in a row
+        big_fig = add_four_hor_brains(grid, f_list, big_fig)
+        
+        # Add a colorbar
+        cb_grid = gridspec.GridSpec(1,1)
+        
+        cb_grid.update(left=0.16, 
+                            right=0.56, 
+                            bottom=0.74 - (i*0.66),
+                            top=0.75 - (i*0.66), 
+                            wspace=0, 
+                            hspace=0)    
+        
+        big_fig = add_colorbar(cb_grid[0], big_fig, 
+                                cmap_name=cmap_name, 
+                                cbar_min=min_max_dict['{}_CBAR_min'.format(var_name)], 
+                                cbar_max=min_max_dict['{}_CBAR_max'.format(var_name)],
+                                y_min=min_max_dict['{}_CBAR_min'.format(var_name)],
+                                y_max=min_max_dict['{}_CBAR_max'.format(var_name)],
+                                label=axis_label_dict[var_name])
+    
+        #==== CORR WITH GENE =============================
+        ax_list[8*i+3] = pretty_scatter(measure_dict[gene_name], 
+                                                measure_dict[var_name], 
+                                                x_label=axis_label_dict[gene_name], 
+                                                y_label=axis_label_dict[var_name], 
+                                                x_min=min_max_dict['{}_min'.format(gene_name)], 
+                                                x_max=min_max_dict['{}_max'.format(gene_name)], 
+                                                y_min=min_max_dict['{}_min'.format(var_name)],
+                                                y_max=min_max_dict['{}_max'.format(var_name)], 
+                                                color='k',
+                                                marker_size=70,
+                                                marker='^',
+                                                ax=ax_list[8*i+3],
+                                                figure=big_fig)
+        
+    #===== ONE ROW OF SCATTER PLOTS ============================
+    mri_measure_list = [ 'CT_all_slope_age_at14',
+                         'MT_projfrac+030_all_slope_age_at14',
+                         'CT_all_slope_age',
+                         'MT_projfrac+030_all_slope_age' ]   
+                         
+    pls_list = [ 'PLS1_usable', 
+                 'PLS1_usable',
+                 'PLS2_usable',
+                 'PLS2_usable' ]
+                 
+    gene_indices = measure_dict['gene_indices']
+        
+    for i, (pls_var_name, mri_var_name) in enumerate(zip(pls_list, mri_measure_list)):
+        color='k'
+        
+        ax_list[i+4] = pretty_scatter(measure_dict[mri_var_name][gene_indices], 
+                                            measure_dict[pls_var_name], 
+                                            x_label=axis_label_dict[mri_var_name], 
+                                            y_label=axis_label_dict[pls_var_name], 
+                                            x_min=min_max_dict['{}_min'.format(mri_var_name)], 
+                                            x_max=min_max_dict['{}_max'.format(mri_var_name)], 
+                                            y_min=min_max_dict['{}_min'.format(pls_var_name)],
+                                            y_max=min_max_dict['{}_max'.format(pls_var_name)], 
+                                            color=color,
+                                            marker_size=40,
+                                            ax=ax_list[i+4],
+                                            figure=big_fig)
+                
+    for i, ax in enumerate(ax_list):
+    
+        # Make sure y axis is in scientific format
+        ax.ticklabel_format(axis='y', style='sci', scilimits=(-2,2))
+        
+        # Turn off the axes under the brains
+        if i in [ 0, 1, 2, 8, 9, 10 ]:
+            ax.axis('off')
+
+        elif i in [ 3, 11 ]:
+            ax.yaxis.set_label_coords(-0.26, 0.5)
+            
+        elif i in [ 4, 6 ]:
+            # Align the y labels
+            ax.yaxis.set_label_coords(-0.25, 0.5)
+            # And make sure the x axis is in scientific format
+            #ax.ticklabel_format(axis='x', style='sci', scilimits=(-2,2))
+        
+        else:
+            # Remove y label and ticklabels altogether
+            ax.yaxis.set_label_text('')
+            ax.yaxis.set_ticklabels([])
+            # And make sure the x axis is in scientific format
+            #ax.ticklabel_format(axis='x', style='sci', scilimits=(-2,2))
+            
+        if i == 6 :  
+            # Make sure there aren't too many bins
+            # for the delta CT plot
+            ax.locator_params(axis='x', nbins=3)
+        
+        if i == 5:
+            pos = ax.get_position()
+            pos.x0 = pos.x0 - 0.03
+            pos.x1 = pos.x1 - 0.03
+            ax.set_position(pos)
+           
+        if i == 6:
+            pos = ax.get_position()
+            pos.x0 = pos.x0 + 0.03
+            pos.x1 = pos.x1 + 0.03
+            ax.set_position(pos)
+
+    '''
+    # Place the A, B, C and i, ii, iii labels
+    let_list = [ 'A', 'B', 'C', 'D' ]
+    rom_list = [ 'i', 'ii', 'iii' ]
+    
+    # For the first column put the letters in the top left corner
+    for i, ax in enumerate(ax_list[:,0]):
+        ax.text(-0.1, 0.95, '{}i'.format(let_list[i]),
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=40,
+                    transform=ax.transAxes,
+                    weight='bold')
+
+    for i, ax in enumerate(ax_list[:,2]):
+        ax.text(-0.2, 0.95, '{}ii'.format(let_list[i]),
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=40,
+                    transform=ax.transAxes,
+                    weight='bold')
+                    
+    for i, ax in enumerate(ax_list[:,3]):
+        ax.text(-0.2, 0.95, '{}iii'.format(let_list[i]),
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=40,
+                    transform=ax.transAxes,
+                    weight='bold')
+    
+    '''        
+    # Save the figure
+    filename = os.path.join(figures_dir, 'Figure3.png')
+    big_fig.savefig(filename, bbox_inches=0, dpi=100)
+    
+    plt.close()
+    
+    
+def previous_figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
+    
+    # Set the seaborn context and style
+    sns.set(style="white")
     sns.set_context("poster", font_scale=3.5)
 
     # Get the various min and max values:
@@ -2920,7 +3134,283 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT', indices=None):
     plt.close()
     
     
-def figure_4(measure_dict, figures_dir, results_dir, mpm='MT', rich_club=False):
+def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_club=False):
+
+    # Set the seaborn context and style
+    sns.set(style="white")
+    sns.set_context("poster", font_scale=3.5)
+
+    # Get the set values
+    min_max_dict = get_min_max_values(measure_dict)
+    axis_label_dict = get_axis_label_dict()
+
+    # Create the big figure
+    big_fig, big_ax = plt.subplots(figsize=(34.5, 24), facecolor='white')
+    big_ax.axis('off')
+    
+    #======= ANATOMICAL NETWORKS ========================
+    G = graph_dict['CT_covar_ones_all_COST_10']
+    G_02 = graph_dict['CT_covar_ones_all_COST_02']
+    network_measures_dict = graph_dict['CT_covar_ones_all_COST_10_GlobalMeasures']
+    
+    node_size = (measure_dict['Degree_CT_covar_ones_all_COST_10']*12) + 5
+    
+    measure_list = [ 'module' , 'MT_projfrac+030_all_slope_age' ]
+    
+    cmap_dict = { 'module' : 'jet' , 'MT_projfrac+030_all_slope_age' : 'autumn' }
+    continuous_dict = { 'module' : False , 'MT_projfrac+030_all_slope_age' : True }
+    sns_palette_dict = { 'module' : 'bright', 'MT_projfrac+030_all_slope_age' : None }
+    
+    min_max_dict = get_min_max_values(measure_dict)    
+    min_max_dict['module_CBAR_min'] = 1
+    min_max_dict['module_CBAR_max'] = 5
+    
+    i=0
+    grid = gridspec.GridSpec(1, 4)
+    bottom = 0.6
+    top = 0.99
+    grid.update(left=0, right=1, bottom=bottom, top=top, wspace=0, hspace=0)
+    
+    for j, measure in enumerate(measure_list):
+    
+        print measure
+
+        ###### SAGITTAL BRAIN
+        #grid = gridspec.GridSpec(1, 1)
+        #grid.update(left=0.01, right=0.55, top=1, bottom=0.6, wspace=0, hspace=0)
+        
+        ax = plt.Subplot(big_fig, grid[2*j])
+        big_fig.add_subplot(ax)
+        
+        pos = ax.get_position()
+        pos.y0 = pos.y0 * 1.2
+        ax.set_position(pos)
+        '''
+        ax.set_position([ 0.01 * (0.5*j), 
+                          0.1,
+                          1.2,
+                          0.8 ])
+        '''
+        ax = plot_anatomical_network(G, 
+                                        measure_dict, 
+                                        measure=measure, 
+                                        orientation='sagittal', 
+                                        sns_palette=sns_palette_dict[measure], 
+                                        cmap_name=cmap_dict[measure],
+                                        vmin=min_max_dict['{}_CBAR_min'.format(measure)], 
+                                        vmax=min_max_dict['{}_CBAR_max'.format(measure)],
+                                        node_size_list=node_size, 
+                                        edge_list=[], 
+                                        ax=ax,
+                                        continuous=continuous_dict[measure])
+        ax = plot_anatomical_network(G_02, 
+                                        measure_dict, 
+                                        orientation='sagittal', 
+                                        node_list=[], 
+                                        ax=ax)
+        
+        ###### AXIAL BRAIN
+        ax = plt.Subplot(big_fig, grid[2*j +1])
+        big_fig.add_subplot(ax)
+        
+        print ax.get_position()
+        pos = ax.get_position()
+        pos.x0 = pos.x0  + 0.02
+        pos.x1 = pos.x1 - 0.02
+        ax.set_position(pos)
+        print ax.get_position()
+
+        ax = plot_anatomical_network(G, 
+                                        measure_dict, 
+                                        measure=measure, 
+                                        orientation='axial', 
+                                        sns_palette=sns_palette_dict[measure], 
+                                        cmap_name=cmap_dict[measure],
+                                        vmin=min_max_dict['{}_CBAR_min'.format(measure)], 
+                                        vmax=min_max_dict['{}_CBAR_max'.format(measure)],
+                                        node_size_list=node_size, 
+                                        edge_list=[], 
+                                        ax=ax,
+                                        continuous=continuous_dict[measure])
+        ax = plot_anatomical_network(G_02, 
+                                        measure_dict, 
+                                        orientation='axial', 
+                                        node_list=[], 
+                                        ax=ax)    
+    
+    
+    #================================================
+    
+    # Set the list of network measures we care about for this figure
+    #network_measures_list = [ 'Degree', 'Closeness', 'AverageDist' ]
+    network_measures_list = [ 'Degree' ]
+    
+    # Loop through each network measure
+    for i, network_measure in enumerate(network_measures_list):
+    
+        i = i+1
+        #=========================================================================
+        # Put the four hor brains in one row
+        #=========================================================================
+        f_list = [ os.path.join(results_dir, 'PNGS',
+                                    '{}_CT_covar_ones_all_COST_10_lh_pial_classic_lateral.png'.format(network_measure)),
+                    os.path.join(results_dir, 'PNGS', 
+                                    '{}_CT_covar_ones_all_COST_10_lh_pial_classic_medial.png'.format(network_measure)),
+                    os.path.join(results_dir, 'PNGS', 
+                                    '{}_CT_covar_ones_all_COST_10_rh_pial_classic_medial.png'.format(network_measure)),
+                    os.path.join(results_dir, 'PNGS', 
+                                    '{}_CT_covar_ones_all_COST_10_rh_pial_classic_lateral.png'.format(network_measure)) ]
+
+        if rich_club and network_measure == 'Degree':
+            for j, f in enumerate(f_list):
+                f_list[j] = f.replace('Degree_CT', 'Degree_RC_CT')
+        
+        grid = gridspec.GridSpec(1, 4)
+        bottom = (0.6/5.0 * 2)
+        top = 0.6        
+        grid.update(left=0, right=1, bottom=bottom, top=top, wspace=0, hspace=0)
+
+        big_fig = add_four_hor_brains(grid, f_list, big_fig)
+        
+        #=========================================================================
+        # Next put von economo box plots for this graph measure in the 
+        # first column of the next row
+        #=========================================================================
+        network_measure_min = min_max_dict['{}_CT_covar_ones_all_COST_10_min'.format(network_measure)]
+        network_measure_max = min_max_dict['{}_CT_covar_ones_all_COST_10_max'.format(network_measure)]
+        y_label = axis_label_dict[network_measure]
+        
+        '''
+        grid = gridspec.GridSpec(1, 3)
+        bottom = ( 1 - ((5*i)+5)/ 15.0 ) + 0.04
+        top = ( 1 - ((5*i)+2)/15.0 ) - 0.03
+        grid.update(bottom=bottom, top=top, left=0.07, right=0.98, hspace=0.1, wspace=0.3)
+        '''
+        grid = gridspec.GridSpec(1, 4)
+        bottom = 0.04
+        top = (0.6/5.0 * 2)
+        grid.update(bottom=bottom, top=top, left=0.07, right=0.98, hspace=0.1, wspace=0.4)
+        
+        ax_list = []
+        for g_loc in grid:
+            ax = plt.Subplot(big_fig, g_loc)
+            big_fig.add_subplot(ax)
+            ax_list += [ax]
+    
+        ax_list[0] = von_economo_boxes(measure_dict, figures_dir, 
+                                            measure_dict['von_economo'], 
+                                            measure='{}_CT_covar_ones_all_COST_10'.format(network_measure),
+                                            y_label=y_label, 
+                                            y_min=network_measure_min, 
+                                            y_max=network_measure_max, 
+                                            max_color='red',
+                                            min_color='blue',
+                                            alpha=0,
+                                            ax=ax_list[0],
+                                            figure=big_fig)
+                                           
+        ax_list[0].yaxis.set_label_coords(-0.20, 0.5)
+                                           
+        # Update the font size for the labels
+        # to be a little smaller
+        for lab in [ ax_list[0].yaxis.label, ax_list[0].xaxis.label ]:
+            f_size = lab.get_fontsize()
+            #lab.set_fontsize(f_size * 0.88)   
+            
+        #=========================================================================
+        # Finally put scatter plots of deltaCT, and deltaMT by the network
+        # measure in the second and third spaces on the next row
+        #=========================================================================
+    
+        measure_list = [ 'CT_all_slope_age',
+                         '{}_projfrac+030_all_slope_age'.format(mpm),
+                         'PLS2_usable' ]
+                         
+        for j, measure in enumerate(measure_list):
+
+            # Set the x and y data
+            x_data = measure_dict['{}_CT_covar_ones_all_COST_10'.format(network_measure)]
+            y_data = measure_dict[measure]
+            
+            # Mask the network values if you're looking at PLS2
+            if measure == 'PLS2_usable':
+                gene_indices = measure_dict['gene_indices']
+                x_data = x_data[gene_indices]
+            
+            # Get the appropriate min, max and label values
+            # for the y axis
+            measure_min = min_max_dict['{}_min'.format(measure)]
+            measure_max = min_max_dict['{}_max'.format(measure)]
+            y_label = axis_label_dict[measure]
+            x_label = axis_label_dict[network_measure]
+            
+            ax_list[j+1] = pretty_scatter(x_data, 
+                                            y_data, 
+                                            x_label=x_label,
+                                            y_label=y_label, 
+                                            x_min=network_measure_min, x_max=network_measure_max,
+                                            y_min=measure_min,y_max=measure_max, 
+                                            color='k',
+                                            ax=ax_list[j+1],
+                                            figure=big_fig)    
+        
+            # Update the font size for the labels
+            # to be a little smaller
+            for lab in [ ax_list[j+1].yaxis.label, ax_list[j+1].xaxis.label ]:
+                f_size = lab.get_fontsize()
+                lab.set_fontsize(f_size * 0.88)   
+    '''
+    #=========================================================================
+    # Add in the letters for each panel
+    #=========================================================================
+    # Place the A, B, C and i, ii, iii labels
+    let_list = [ 'A', 'B', 'C' ]
+    rom_list = [ 'i', 'ii', 'iii', 'iv' ]
+
+    # Get all the axes
+    ax_list = big_fig.get_axes()
+    
+    # Put the right letter and the first roman numeral
+    # next to each row of brains
+    for i, ax in enumerate(ax_list[1::7]):
+        x_pos = ax.get_position().x0 + 0.01
+        y_pos = ax.get_position().y1
+        big_fig.text(x_pos, y_pos, 
+                    '{}i'.format(let_list[i]),
+                    horizontalalignment='left',
+                    verticalalignment='top',
+                    fontsize=40,
+                    weight='bold',
+                    color='k')
+        # For the same letter put ii, iii and iv next to each
+        # of the plots
+        for j in range(3):
+            ax = ax_list[5 + i*7 + j]
+            x_pos = ax.get_position().x0 - 0.04
+            y_pos = ax.get_position().y1
+            big_fig.text(x_pos, y_pos, 
+                        '{}{}'.format(let_list[i], rom_list[j+1]),
+                        horizontalalignment='left',
+                        verticalalignment='bottom',
+                        fontsize=40,
+                        weight='bold',
+                        color='k')
+    '''
+    #=========================================================================
+    # And finally clean everything up and save the figure
+    #=========================================================================
+    # Save the figure
+    filename = os.path.join(figures_dir, 'Figure4.png')
+    
+    if rich_club:
+        filename = filename.replace('.png', '_RC.png')
+        print filename
+        
+    big_fig.savefig(filename, bbox_inches=0, dpi=100)
+
+    plt.close()
+    
+def three_rows_figure_4(measure_dict, figures_dir, results_dir, mpm='MT', rich_club=False):
 
     # Set the seaborn context and style
     sns.set(style="white")
@@ -3099,6 +3589,7 @@ def figure_4(measure_dict, figures_dir, results_dir, mpm='MT', rich_club=False):
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
 
     plt.close()
+    
     
 def figure_4_separate(measure_dict, figures_dir, results_dir, mpm='MT', network_measure='Degree'):
     
@@ -3464,10 +3955,12 @@ def get_min_max_values(measure_dict, gene_indices=None):
     
     min_max_dict['CT_all_slope_age_CBAR_min'] = -0.03
     min_max_dict['CT_all_slope_age_CBAR_max'] = -0.01
+    min_max_dict['CT_all_slope_age_Uncorr_CBAR_min'] = -0.03
+    min_max_dict['CT_all_slope_age_Uncorr_CBAR_max'] = 0.03
     min_max_dict['CT_all_slope_age_at14_CBAR_min'] = 2.5
     min_max_dict['CT_all_slope_age_at14_CBAR_max'] = 3.5
-    min_max_dict['MT_projfrac+030_all_slope_age_CBAR_min'] = 0.005
-    min_max_dict['MT_projfrac+030_all_slope_age_CBAR_max'] = 0.01
+    min_max_dict['MT_projfrac+030_all_slope_age_CBAR_min'] = 0.002
+    min_max_dict['MT_projfrac+030_all_slope_age_CBAR_max'] = 0.005
     min_max_dict['MT_projfrac+030_all_slope_age_at14_CBAR_min'] = 0.8
     min_max_dict['MT_projfrac+030_all_slope_age_at14_CBAR_max'] = 1.0
     min_max_dict['PLS1_CBAR_min'] = -0.07
@@ -3480,10 +3973,10 @@ def get_min_max_values(measure_dict, gene_indices=None):
     min_max_dict['PLS2_usable_CBAR_max'] = 0.07    
     min_max_dict['MT_all_mean_min'] = 0.4
     min_max_dict['MT_all_mean_max'] = 1.8 
-    min_max_dict['MT_all_slope_age_min'] = -0.007
+    min_max_dict['MT_all_slope_age_min'] = -0.008
     min_max_dict['MT_all_slope_age_max'] = 0.016
-    min_max_dict['MT_all_slope_age_CBAR_min'] = -0.007
-    min_max_dict['MT_all_slope_age_CBAR_max'] = 0.007
+    min_max_dict['MT_all_slope_age_CBAR_min'] = -0.005
+    min_max_dict['MT_all_slope_age_CBAR_max'] = 0.005
     min_max_dict['MT_all_slope_age_at14_min'] = 0.4
     min_max_dict['MT_all_slope_age_at14_max'] = 1.8
     min_max_dict['MT_all_slope_age_at14_CBAR_min'] = 0.4
@@ -3761,7 +4254,7 @@ def add_wedge(df, theta_dict, wedge_colors_list, wedge_measure='von_economo', ax
         
     return ax
     
-def plot_anatomical_network(G, measure_dict, measure='module', orientation='sagittal', cmap_name='jet_r', vmax=None, vmin=None, sns_palette=None, edge_list=None, edge_color='k', edge_width=0.2, node_list=None, node_shape='o', node_size=500, node_size_list=None, figure=None, ax=None):
+def plot_anatomical_network(G, measure_dict, measure='module', orientation='sagittal', cmap_name='jet_r', continuous=False, vmax=None, vmin=None, sns_palette=None, edge_list=None, edge_color='k', edge_width=0.2, node_list=None, node_shape='o', node_size=500, node_size_list=None, figure=None, ax=None):
     '''
     Plots each node in the graph in one of three orientations
     (sagittal, axial or coronal).
@@ -3808,7 +4301,13 @@ def plot_anatomical_network(G, measure_dict, measure='module', orientation='sagi
     if cmap_name == 'von_economo':
         cmap_name =  mpl.colors.ListedColormap(von_economo_colors.values())
 
-    colors_list = setup_color_list(df, cmap_name=cmap_name, sns_palette=sns_palette, measure=measure, vmin=None, vmax=None)
+    colors_list = setup_color_list(df, 
+                                    cmap_name=cmap_name, 
+                                    sns_palette=sns_palette, 
+                                    measure=measure, 
+                                    vmin=vmin, 
+                                    vmax=vmax, 
+                                    continuous=continuous)
     
     # If the node size list is none then
     # it'll just be the same size for each node
@@ -3823,6 +4322,9 @@ def plot_anatomical_network(G, measure_dict, measure='module', orientation='sagi
     sort_dict['sagittal'] = 'x'
     
     node_order = np.argsort(df[sort_dict[orientation]]).values
+    
+    # Now remove all the nodes that are not in the node_list
+    node_order = [ x for x in node_order if x in node_list ]
     
     # If you've given this code an axis and figure then use those
     # otherwise just create your own
@@ -3851,7 +4353,7 @@ def plot_anatomical_network(G, measure_dict, measure='module', orientation='sagi
                                 pos=pos, 
                                 node_color=colors_list[node], 
                                 node_shape=node_shape,
-                                node_size=node_size,
+                                node_size=node_size_list[node],
                                 nodelist=[node],
                                 with_labels=False, 
                                 ax=ax)
@@ -4111,7 +4613,7 @@ def figs_for_talk(measure_dict, results_dir, talk_figs_dir):
     
     # Set the seaborn context and style
     sns.set(style="white")
-    sns.set_context("poster", font_scale=2)
+    sns.set_context("poster", font_scale=3)
 
     # Get the various min and max values:
     min_max_dict = get_min_max_values(measure_dict)
@@ -4121,6 +4623,7 @@ def figs_for_talk(measure_dict, results_dir, talk_figs_dir):
     cmap_dict = {}
     cmap_dict['CT_all_slope_age_at14'] = 'jet'
     cmap_dict['CT_all_slope_age'] = 'winter_r'
+    cmap_dict['CT_all_slope_age_Uncorr'] = 'RdBu_r'
     cmap_dict['MT_projfrac+030_all_slope_age_at14'] = 'jet'
     cmap_dict['MT_projfrac+030_all_slope_age'] = 'autumn'
     cmap_dict['all_slope_age'] = 'RdBu_r'
@@ -4133,15 +4636,23 @@ def figs_for_talk(measure_dict, results_dir, talk_figs_dir):
     left_lat_dict['CT_all_slope_age_at14'] = os.path.join(results_dir, 
                                                                 'PNGS', 
                                                                 'SlopeAge_at14_CT_lh_pial_classic_lateral.png')   
+    
     left_lat_dict['CT_all_slope_age'] = os.path.join(results_dir, 
                                                                 'PNGS', 
                                                                 'SlopeAge_FDRmask_CT_lh_pial_classic_lateral.png')   
+    
+    left_lat_dict['CT_all_slope_age_Uncorr'] = os.path.join(results_dir, 
+                                                                'PNGS', 
+                                                                'SlopeAge_Uncorr_CT_lh_pial_classic_lateral.png')   
+                                                                
     left_lat_dict['MT_projfrac+030_all_slope_age_at14'] = os.path.join(results_dir, 
                                                                 'PNGS', 
                                                                 'SlopeAge_at14_MT_projfrac+030_lh_pial_classic_lateral.png')   
+    
     left_lat_dict['MT_projfrac+030_all_slope_age'] = os.path.join(results_dir, 
                                                                 'PNGS', 
-                                                                'SlopeAge_FDRmask_MT_projfrac+030_lh_pial_classic_lateral.png')   
+                                                                'SlopeAge_FDRmask_MT_projfrac+030_lh_pial_classic_lateral.png')
+                                                                
     left_lat_dict['PLS1'] = os.path.join(results_dir, 
                                             'PNGS', 
                                             'PLS1_lh_pial_classic_lateral.png')   
@@ -4153,6 +4664,7 @@ def figs_for_talk(measure_dict, results_dir, talk_figs_dir):
     # Make the brain images that you need
     for measure in [ 'CT_all_slope_age_at14', 
                      'CT_all_slope_age', 
+                     'CT_all_slope_age_Uncorr', 
                      'MT_projfrac+030_all_slope_age_at14',
                      'MT_projfrac+030_all_slope_age',
                      'PLS1',
@@ -4191,7 +4703,7 @@ def figs_for_talk(measure_dict, results_dir, talk_figs_dir):
                                 cbar_max=min_max_dict['{}_CBAR_max'.format(measure)],
                                 y_min=min_max_dict['{}_CBAR_min'.format(measure)],
                                 y_max=min_max_dict['{}_CBAR_max'.format(measure)],
-                                label=axis_label_dict[measure])
+                                label=axis_label_dict[measure.rstrip('_Uncorr')])
         # Turn off the axis
         ax.set_axis_off()
 
@@ -4263,3 +4775,140 @@ def figs_for_talk(measure_dict, results_dir, talk_figs_dir):
         plt.close('all')
         
         
+def network_summary_fig(measure_dict, graph_dict, figures_dir):
+
+    G = graph_dict['CT_covar_ones_all_COST_10']
+    G_02 = graph_dict['CT_covar_ones_all_COST_02']
+    network_measures_dict = graph_dict['CT_covar_ones_all_COST_10_GlobalMeasures']
+    
+    node_size = (measure_dict['Degree_CT_covar_ones_all_COST_10']*12) + 5
+    
+    big_fig, big_ax = plt.subplots(figsize=(15,15))
+    big_ax.axis('off')
+    
+    ###### SAGITTAL BRAIN
+    grid = gridspec.GridSpec(1, 1)
+    grid.update(left=0.01, right=0.55, top=1, bottom=0.6, wspace=0, hspace=0)
+    
+    ax = plt.Subplot(big_fig, grid[0])
+    big_fig.add_subplot(ax)
+    
+    ax = plot_anatomical_network(G, 
+                                    measure_dict, 
+                                    measure='module', 
+                                    orientation='sagittal', 
+                                    sns_palette='bright', 
+                                    vmin=0, vmax=80,
+                                    node_size_list=node_size, 
+                                    edge_list=[], 
+                                    ax=ax,
+                                    continuous=False)
+    ax = plot_anatomical_network(G_02, 
+                                    measure_dict, 
+                                    orientation='sagittal', 
+                                    node_list=[], 
+                                    ax=ax)
+    
+    ###### AXIAL BRAIN
+    grid = gridspec.GridSpec(1, 1)
+    grid.update(left=0.55, right=0.98, top=1, bottom=0.45, wspace=0, hspace=0)
+    
+    ax = plt.Subplot(big_fig, grid[0])
+    big_fig.add_subplot(ax)
+    
+    ax = plot_anatomical_network(G, 
+                                    measure_dict, 
+                                    measure='module', 
+                                    orientation='axial', 
+                                    sns_palette='bright', 
+                                    vmin=0, vmax=80,
+                                    node_size_list=node_size, 
+                                    edge_list=[], 
+                                    ax=ax,
+                                    continuous=False)
+    ax = plot_anatomical_network(G_02, 
+                                    measure_dict, 
+                                    orientation='axial', 
+                                    node_list=[], 
+                                    ax=ax)
+                                    
+    ###### DEGREE DISTRIBUTION
+    grid = gridspec.GridSpec(1, 1)
+    grid.update(left=0.13, right=0.5, top=0.6, bottom=0.35, wspace=0, hspace=0)
+    
+    ax = plt.Subplot(big_fig, grid[0])
+    big_fig.add_subplot(ax)
+    
+    ax = plot_degree_dist(G, x_max=127.0, y_max=0.03, ax=ax, ER=False)
+    ax.xaxis.set_label_text('')
+    ax.yaxis.set_label_coords(-0.18, 0.5)
+    
+    ###### RICH CLUB
+    grid = gridspec.GridSpec(1, 1)
+    grid.update(left=0.13, right=0.5, top=0.3, bottom=0.1, wspace=0, hspace=0)
+    
+    ax = plt.Subplot(big_fig, grid[0])
+    big_fig.add_subplot(ax)
+    
+    deg, rc, rc_rand = rich_club(G, n=2)
+    
+    ax = plot_rich_club(rc, rc_rand, ax=ax, x_max=127.0)
+    ax.yaxis.set_label_coords(-0.18, 0.5)
+
+    ####### NETWORK MEASURES
+    grid = gridspec.GridSpec(1, 1)
+    grid.update(left=0.6, right=0.99, top=0.4, bottom=0.1, wspace=0, hspace=0)
+    
+    ax = plt.Subplot(big_fig, grid[0])
+    big_fig.add_subplot(ax)
+    
+    ax = plot_network_measures(network_measures_dict, ax=ax)
+    
+    big_fig.savefig(os.path.join(figures_dir, 'NetworkSummary.png'), bbox_inches=0, dpi=100)
+    plt.close(big_fig)
+    
+
+def mt_degree_network_fig(measure_dict, graph_dict, figures_dir):
+    
+    G = graph_dict['CT_covar_ones_all_COST_10']
+    G_02 = graph_dict['CT_covar_ones_all_COST_02']
+    
+    node_size = (measure_dict['Degree_CT_covar_ones_all_COST_10']*15) + 5
+    
+    fig, ax = plt.subplots(figsize=(12,8))
+    ax.axis('off')
+    
+    ###### SAGITTAL BRAIN
+    ax = plot_anatomical_network(G, 
+                                    measure_dict, 
+                                    measure='MT_projfrac+030_all_slope_age', 
+                                    orientation='sagittal', 
+                                    cmap_name='autumn', 
+                                    vmin=0.002, vmax=0.005,
+                                    node_size_list=node_size, 
+                                    node_shape='s',
+                                    edge_list=[], 
+                                    ax=ax,
+                                    continuous=True)
+    ax = plot_anatomical_network(G_02, 
+                                    measure_dict, 
+                                    orientation='sagittal', 
+                                    node_list=[], 
+                                    ax=ax)
+                                    
+    fig.savefig(os.path.join(figures_dir, 'MT_Degree_Network.png'), bbox_inches=0, dpi=100)
+    plt.close(fig)
+    
+    
+def prepare_violin_movie(fig, ax):
+
+    boxes = ax.findobj(match=mpl.patches.PathPatch)
+    lines = ax.findobj(match=mpl.lines.Line2D)
+    # Keep the y axis and the grey white matter boundary
+    lines = lines[:-2]
+    
+    for i, box in enumerate(boxes):
+        box.set_visible(False)
+    
+    
+    

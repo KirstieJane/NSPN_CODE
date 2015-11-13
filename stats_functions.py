@@ -38,6 +38,7 @@ def variance_partition(x1, x2, y):
     from statsmodels.formula.api import ols
     import numpy as np
     from scipy.stats import pearsonr
+    import pandas as pd
     
     # Set up the data frame
     df = pd.DataFrame( { 'Y' : y ,
