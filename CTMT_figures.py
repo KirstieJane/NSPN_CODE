@@ -2169,171 +2169,6 @@ def oct_figure_2(measure_dict, figures_dir, results_dir, mpm='MT', indices=None)
     plt.close()
 
     
-def vertical_figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
-    
-    # Set the seaborn context and style
-    sns.set(style="white")
-    sns.set_context("poster", font_scale=2.75)
-
-    # Get the various min and max values:
-    min_max_dict = get_min_max_values(measure_dict)
-    axis_label_dict = get_axis_label_dict()
-    
-    # Create the big figure
-    big_fig, big_ax = plt.subplots(figsize=(23, 33), facecolor='white')
-    
-    # Put a vertical line down the middle
-    big_fig.subplots_adjust(left=0, right=1, bottom=0, top=1, wspace=0, hspace=0)
-    big_ax.axvline(x=0.52, ymin=0, ymax=1, linewidth=3, color='k')
-    big_ax.axis('off')
-    
-    #==== TWO ROWS OF BRAIN DATA =================================
-    # Make a list of the file names for the left lateral image
-    left_lat_fname_list = [ os.path.join(results_dir, 'PNGS', 
-                                    'PLS1_lh_pial_classic_lateral.png'),
-                               os.path.join(results_dir, 'PNGS', 
-                                    'PLS2_lh_pial_classic_lateral.png') ]
-    
-    # List the var names that will be used to get the axis labels
-    # and min/max values
-    var_name_list = [ 'PLS1_usable', 'PLS2_usable' ]
-    
-    mri_measure_list = [ 'CT_all_slope_age_at14',
-                         'CT_all_slope_age',
-                         'MT_projfrac+030_all_slope_age_at14',
-                         'MT_projfrac+030_all_slope_age' ]   
-                         
-    gene_indices = measure_dict['gene_indices']
-    
-    # List the colorbar names
-    cmap_name_list = [ 'RdBu_r', 'RdBu_r' ]
-    
-    # Scatter grid
-    grid = gridspec.GridSpec(4, 2)
-    grid.update(left=0.10, bottom=0.06, top=0.73, right=0.98, hspace=0.25, wspace=0.2)
-                    
-    ax_list = []
-    for g_loc in grid:
-        ax_list += [ plt.Subplot(big_fig, g_loc) ]
-        big_fig.add_subplot(ax_list[-1])
-    
-    for i, (left_lat_fname, 
-                var_name, 
-                cmap_name) in enumerate(zip(left_lat_fname_list, 
-                                                var_name_list, 
-                                                cmap_name_list)):
-        
-        #==== BRAIN IMAGES ======================================
-        # Plot the braaaaains
-        f_list = [ left_lat_fname, 
-                    left_lat_fname.replace('lh_pial_classic_lateral', 'rh_pial_classic_lateral'),
-                    left_lat_fname.replace('lh_pial_classic_lateral', 'lh_pial_classic_medial'),
-                    left_lat_fname.replace('lh_pial_classic_lateral', 'rh_pial_classic_medial') ]
-        
-        grid = gridspec.GridSpec(2,2)
-        
-        grid.update(left=0.05 + (i * 0.5), 
-                        right=0.48 + (i * 0.5),
-                        bottom=0.79, 
-                        top=0.99, 
-                        wspace=0, 
-                        hspace=0)
-        
-        # Put the four brains in a row
-        big_fig = add_four_hor_brains(grid, f_list, big_fig, hor=False)
-        
-        # Add a colorbar
-        cb_grid = gridspec.GridSpec(1,1)
-        
-        cb_grid.update(left=0.13 + (i * 0.5), 
-                            right=0.41 + (i * 0.5), 
-                            bottom=0.77,
-                            top=0.78, 
-                            wspace=0, 
-                            hspace=0)    
-        
-        big_fig = add_colorbar(cb_grid[0], big_fig, 
-                                cmap_name=cmap_name, 
-                                cbar_min=min_max_dict['{}_CBAR_min'.format(var_name)], 
-                                cbar_max=min_max_dict['{}_CBAR_max'.format(var_name)],
-                                y_min=min_max_dict['{}_CBAR_min'.format(var_name)],
-                                y_max=min_max_dict['{}_CBAR_max'.format(var_name)],
-                                label='')
-    
-        #==== SCATTER PLOTS =============================                            
-        for j, mri_var_name in enumerate(mri_measure_list):
-            color='k'
-            
-            ax_list[i+(j*2)] = pretty_scatter(measure_dict[var_name], 
-                                                measure_dict[mri_var_name][gene_indices], 
-                                                x_label=axis_label_dict[var_name], 
-                                                y_label=axis_label_dict[mri_var_name], 
-                                                x_min=min_max_dict['{}_min'.format(var_name)],
-                                                x_max=min_max_dict['{}_max'.format(var_name)], 
-                                                y_min=min_max_dict['{}_min'.format(mri_var_name)], 
-                                                y_max=min_max_dict['{}_max'.format(mri_var_name)], 
-                                                color=color,
-                                                marker_size=40,
-                                                ax=ax_list[i+(j*2)],
-                                                figure=big_fig)
-                
-    for i, ax in enumerate(ax_list):
-    
-        # Make sure y axis is in scientific format
-        ax.ticklabel_format(axis='y', style='sci', scilimits=(-2,2))
-
-        if i % 2 == 0:
-            ax.yaxis.set_label_coords(-0.15, 0.5)
-
-        else:
-            # Remove y label for the right hand column
-            ax.yaxis.set_label_text('')
-            
-        if i < 6:
-            # Remove x label and ticklabels altogether
-            ax.xaxis.set_label_text('')
-            ax.xaxis.set_ticklabels([])
-        else:
-            lab = ax.xaxis.label
-            f_size = lab.get_fontsize()
-            lab.set_fontsize(f_size * 1.25)
-    '''
-    # Place the A, B, C and i, ii, iii labels
-    let_list = [ 'A', 'B', 'C', 'D' ]
-    rom_list = [ 'i', 'ii', 'iii' ]
-    
-    # For the first column put the letters in the top left corner
-    for i, ax in enumerate(ax_list[:,0]):
-        ax.text(-0.1, 0.95, '{}i'.format(let_list[i]),
-                    horizontalalignment='left',
-                    verticalalignment='bottom',
-                    fontsize=40,
-                    transform=ax.transAxes,
-                    weight='bold')
-
-    for i, ax in enumerate(ax_list[:,2]):
-        ax.text(-0.2, 0.95, '{}ii'.format(let_list[i]),
-                    horizontalalignment='left',
-                    verticalalignment='bottom',
-                    fontsize=40,
-                    transform=ax.transAxes,
-                    weight='bold')
-                    
-    for i, ax in enumerate(ax_list[:,3]):
-        ax.text(-0.2, 0.95, '{}iii'.format(let_list[i]),
-                    horizontalalignment='left',
-                    verticalalignment='bottom',
-                    fontsize=40,
-                    transform=ax.transAxes,
-                    weight='bold')
-    
-    ''' 
-    
-    # Save the figure
-    filename = os.path.join(figures_dir, 'Figure3.png')
-    big_fig.savefig(filename, bbox_inches=0, dpi=100)
-    
-    plt.close()
 
 def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
     
@@ -2544,6 +2379,193 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     plt.close()
     
+def vertical_figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
+    
+    # Set the seaborn context and style
+    sns.set(style="white")
+    sns.set_context("poster", font_scale=2.9)
+
+    # Get the various min and max values:
+    min_max_dict = get_min_max_values(measure_dict)
+    axis_label_dict = get_axis_label_dict()
+    
+    # Create the big figure
+    big_fig = plt.figure(figsize=(23, 27), facecolor='white')
+    
+    # Set up the axis grid
+    grid = gridspec.GridSpec(4, 3)
+    grid.update(left=0.1, bottom=0.06, top=1, right=0.97, hspace=0.3, wspace=0.1)
+                    
+    # Put an axis in each of the spots on the grid
+    ax_list = []
+    for g_loc in grid:
+        ax_list += [ plt.Subplot(big_fig, g_loc) ]
+        big_fig.add_subplot(ax_list[-1])
+    
+    #==== TWO ROWS OF BRAIN DATA ===============================
+    # Make a list of the file names for the left lateral image
+    left_lat_fname_list = [ os.path.join(results_dir, 'PNGS', 
+                                    'PLS1_lh_pial_classic_lateral.png'),
+                               os.path.join(results_dir, 'PNGS', 
+                                    'PLS2_lh_pial_classic_lateral.png') ]
+    
+    # List the var names that will be used to get the axis labels
+    # and min/max values
+    var_name_list = [ 'PLS1_usable', 'PLS2_usable' ]
+    
+    # List the colorbar names
+    cmap_name_list = [ 'RdBu_r', 'RdBu_r' ]
+    
+
+    #===== THREE SCATTER PLOTS AT THE END OF THE BRAINS ==========
+    # List of genes we will correlate with the PLS scores
+    # (in the var_name_list)
+    gene_list = [ 'mbp_usable', 'oligo_usable' ]
+    
+    mri_measure_list = [ 'CT_all_slope_age_at14',
+                         'MT_projfrac+030_all_slope_age_at14',
+                         'CT_all_slope_age',
+                         'MT_projfrac+030_all_slope_age' ]   
+    
+    # Loop over the two PLS scores and their associated genes
+    for i, (left_lat_fname, 
+                var_name, 
+                cmap_name,
+                gene_name) in enumerate(zip(left_lat_fname_list, 
+                                                        var_name_list, 
+                                                        cmap_name_list,
+                                                        gene_list)):
+        
+        #==== BRAIN IMAGES ======================================
+        # Plot the braaaaains
+        f_list = [ left_lat_fname, 
+                    left_lat_fname.replace('lh_pial_classic_lateral', 'lh_pial_classic_medial'),
+                    left_lat_fname.replace('lh_pial_classic_lateral', 'rh_pial_classic_medial'),
+                    left_lat_fname.replace('lh_pial_classic_lateral', 'rh_pial_classic_lateral') ]
+        
+        grid = gridspec.GridSpec(1,4)
+        
+        grid.update(left=0.01, 
+                        right=0.99,
+                        bottom=0.75 - (i*0.5), 
+                        top=1.06 - (i*0.5), 
+                        wspace=0, 
+                        hspace=0)
+        
+        # Put the four brains in a row
+        big_fig = add_four_hor_brains(grid, f_list, big_fig)
+        
+        # Add a colorbar
+        cb_grid = gridspec.GridSpec(1,1)
+        
+        cb_grid.update(left=0.25, 
+                            right=0.75, 
+                            bottom=0.81 - (i*0.5),
+                            top=0.82 - (i*0.5), 
+                            wspace=0, 
+                            hspace=0)    
+        
+        big_fig = add_colorbar(cb_grid[0], big_fig, 
+                                cmap_name=cmap_name, 
+                                cbar_min=min_max_dict['{}_CBAR_min'.format(var_name)], 
+                                cbar_max=min_max_dict['{}_CBAR_max'.format(var_name)],
+                                y_min=min_max_dict['{}_CBAR_min'.format(var_name)],
+                                y_max=min_max_dict['{}_CBAR_max'.format(var_name)],
+                                label=axis_label_dict[var_name])
+    
+        #==== CORR WITH GENE =============================
+        ax_list[3+(i*6)] = pretty_scatter(measure_dict[gene_name], 
+                                                measure_dict[var_name], 
+                                                x_label=axis_label_dict[gene_name], 
+                                                y_label=axis_label_dict[var_name], 
+                                                x_min=min_max_dict['{}_min'.format(gene_name)], 
+                                                x_max=min_max_dict['{}_max'.format(gene_name)], 
+                                                y_min=min_max_dict['{}_min'.format(var_name)],
+                                                y_max=min_max_dict['{}_max'.format(var_name)], 
+                                                color='k',
+                                                marker_size=70,
+                                                ax=ax_list[3+(i*6)],
+                                                figure=big_fig)
+        
+        #===== CORR W MRI ============================
+        gene_indices = measure_dict['gene_indices']
+        
+        color='k'
+        
+        mri_var_name = mri_measure_list[i*2]
+        
+        for j, mri_var_name in enumerate(mri_measure_list[(2*i):(2*i)+2]):
+            ax_list[4+j+(i*6)] = pretty_scatter(measure_dict[mri_var_name][gene_indices], 
+                                                measure_dict[var_name], 
+                                                x_label=axis_label_dict[mri_var_name], 
+                                                y_label=axis_label_dict[var_name], 
+                                                x_min=min_max_dict['{}_min'.format(mri_var_name)], 
+                                                x_max=min_max_dict['{}_max'.format(mri_var_name)], 
+                                                y_min=min_max_dict['{}_min'.format(var_name)],
+                                                y_max=min_max_dict['{}_max'.format(var_name)], 
+                                                color=color,
+                                                marker_size=40,
+                                                ax=ax_list[4+j+(i*6)],
+                                                figure=big_fig)
+                
+    for i, ax in enumerate(ax_list):
+    
+        # Make sure y axis is in scientific format
+        ax.ticklabel_format(axis='y', style='sci', scilimits=(-2,2))
+        
+        # Turn off the axes under the brains
+        if i in [ 0, 1, 2, 6, 7, 8 ]:
+            ax.axis('off')
+
+        elif i in [ 3, 9 ]:
+            ax.yaxis.set_label_coords(-0.25, 0.5)
+            
+        else:
+            # Remove y label and ticklabels altogether
+            ax.yaxis.set_label_text('')
+            ax.yaxis.set_ticklabels([])
+            
+        if i == 10 :  
+            # Make sure there aren't too many bins
+            # for the delta CT plot
+            ax.locator_params(axis='x', nbins=3)
+        
+    '''
+    # Place the A, B, C and i, ii, iii labels
+    let_list = [ 'A', 'B', 'C', 'D' ]
+    rom_list = [ 'i', 'ii', 'iii' ]
+    
+    # For the first column put the letters in the top left corner
+    for i, ax in enumerate(ax_list[:,0]):
+        ax.text(-0.1, 0.95, '{}i'.format(let_list[i]),
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=40,
+                    transform=ax.transAxes,
+                    weight='bold')
+
+    for i, ax in enumerate(ax_list[:,2]):
+        ax.text(-0.2, 0.95, '{}ii'.format(let_list[i]),
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=40,
+                    transform=ax.transAxes,
+                    weight='bold')
+                    
+    for i, ax in enumerate(ax_list[:,3]):
+        ax.text(-0.2, 0.95, '{}iii'.format(let_list[i]),
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=40,
+                    transform=ax.transAxes,
+                    weight='bold')
+    
+    '''        
+    # Save the figure
+    filename = os.path.join(figures_dir, 'Figure3_option2.png')
+    big_fig.savefig(filename, bbox_inches=0, dpi=100)
+    
+    plt.close()
     
 def previous_figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
     
@@ -4052,15 +4074,15 @@ def get_axis_label_dict():
     axis_label_dict['InterhemProp'] = 'Interhemispheric Connections'
     axis_label_dict['CT_all_slope_age_at14'] = 'CT at 14 yrs (mm)'
     axis_label_dict['CT_all_slope_age'] =  r'$\Delta$CT (mm/year)'
-    axis_label_dict['MT_projfrac+030_all_slope_age_at14'] = 'MT at 14 yrs (AU)'
-    axis_label_dict['MT_projfrac+030_all_slope_age'] = r'$\Delta$MT (AU/year)'
+    axis_label_dict['MT_projfrac+030_all_slope_age_at14'] = 'MT at 14 yrs (PU)'
+    axis_label_dict['MT_projfrac+030_all_slope_age'] = r'$\Delta$MT (PU/year)'
     axis_label_dict['age_scan'] = 'Age (years)'
     axis_label_dict['CT_global_mean'] = 'Global CT (mm)'
-    axis_label_dict['MT_projfrac+030_global_mean'] = 'Global MT (AU)'
-    axis_label_dict['MT_all_mean'] = 'Mean MT across regions (AU)'
-    axis_label_dict['MT_all_slope_ct'] = r'$\Delta$MT with CT (AU/mm)'
-    axis_label_dict['MT_all_slope_age'] = r'$\Delta$MT with age (AU/year)'
-    axis_label_dict['MT_all_slope_age_at14'] = 'MT at 14 yrs (AU)'
+    axis_label_dict['MT_projfrac+030_global_mean'] = 'Global MT (PU)'
+    axis_label_dict['MT_all_mean'] = 'Mean MT across regions (PU)'
+    axis_label_dict['MT_all_slope_ct'] = r'$\Delta$MT with CT (PU/mm)'
+    axis_label_dict['MT_all_slope_age'] = r'$\Delta$MT with age (PU/year)'
+    axis_label_dict['MT_all_slope_age_at14'] = 'MT at 14 yrs (PU)'
     axis_label_dict['mbp'] = 'Myelin Basic Protein'
     axis_label_dict['cux'] = 'CUX'
     axis_label_dict['oligo'] = 'Oligodendrocyte Expr'
