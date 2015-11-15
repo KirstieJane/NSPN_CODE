@@ -1696,7 +1696,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     # Create the big figure
     big_fig = plt.figure(figsize=(46, 30), facecolor='white')
-    
+        
     #==== FOUR ROWS OF DATA ======================================
     # Make a list of the file names for the left lateral image
     left_lat_fname_list = [ os.path.join(results_dir, 'PNGS', 
@@ -1841,39 +1841,52 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
             f_size = lab.get_fontsize()
             lab.set_fontsize(f_size * 0.88)     
 
-    '''
-    # Place the A, B, C and i, ii, iii labels
-    let_list = [ 'A', 'B', 'C', 'D' ]
-    rom_list = [ 'i', 'ii', 'iii' ]
+    #====== PANEL LABELS ==================================
+    big_ax = big_fig.add_subplot(111)
+    pos = big_ax.get_position()
+    pos.x0 = 0
+    pos.x1 = 1
+    pos.y0 = 0
+    pos.y1 = 1
+    big_ax.set_position(pos)
     
-    # For the first column put the letters in the top left corner
-    for i, ax in enumerate(ax_list[:,0]):
-        ax.text(-0.1, 0.95, '{}i'.format(let_list[i]),
-                    horizontalalignment='left',
-                    verticalalignment='bottom',
-                    fontsize=40,
-                    transform=ax.transAxes,
-                    weight='bold')
-
-    for i, ax in enumerate(ax_list[:,2]):
-        ax.text(-0.2, 0.95, '{}ii'.format(let_list[i]),
-                    horizontalalignment='left',
-                    verticalalignment='bottom',
-                    fontsize=40,
-                    transform=ax.transAxes,
-                    weight='bold')
-                    
-    for i, ax in enumerate(ax_list[:,3]):
-        ax.text(-0.2, 0.95, '{}iii'.format(let_list[i]),
-                    horizontalalignment='left',
-                    verticalalignment='bottom',
-                    fontsize=40,
-                    transform=ax.transAxes,
-                    weight='bold')
+    # Turn off the big axis
+    # You'll use it though to show
+    # the panel labels
+    big_ax.axis('off')
     
-    '''        
+    for i, letter in enumerate([ 'A', 'D', 'G', 'J' ]):
+        big_ax.text(0.01, 
+                        0.95 - (0.25*i), 
+                        letter,
+                        horizontalalignment='left',
+                        verticalalignment='bottom',
+                        fontsize=60,
+                        transform=big_ax.transAxes,
+                        weight='bold')
+    for i, letter in enumerate([ 'B', 'E', 'H', 'K' ]):
+        big_ax.text(0.72, 
+                        0.95 - (0.25*i), 
+                        letter,
+                        horizontalalignment='left',
+                        verticalalignment='bottom',
+                        fontsize=60,
+                        transform=big_ax.transAxes,
+                        weight='bold')
+    for i, letter in enumerate([ 'C', 'F', 'I', 'L' ]):
+        big_ax.text(0.97, 
+                        0.95 - (0.25*i), 
+                        letter,
+                        horizontalalignment='left',
+                        verticalalignment='bottom',
+                        fontsize=60,
+                        transform=big_ax.transAxes,
+                        weight='bold')
+                        
     # Save the figure
     filename = os.path.join(figures_dir, 'Figure1.png')
+    big_fig.savefig(filename, bbox_inches=0, dpi=100)
+    filename = os.path.join(figures_dir, 'Figure1.pdf')
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
     
     plt.close()
@@ -2170,7 +2183,7 @@ def oct_figure_2(measure_dict, figures_dir, results_dir, mpm='MT', indices=None)
 
     
 
-def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
+def nov_figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     # Set the seaborn context and style
     sns.set(style="white")
@@ -2379,7 +2392,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     plt.close()
     
-def vertical_figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
+def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     # Set the seaborn context and style
     sns.set(style="white")
@@ -2518,7 +2531,7 @@ def vertical_figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
             ax.axis('off')
 
         elif i in [ 3, 9 ]:
-            ax.yaxis.set_label_coords(-0.25, 0.5)
+            ax.yaxis.set_label_coords(-0.23, 0.5)
             
         else:
             # Remove y label and ticklabels altogether
@@ -2530,39 +2543,61 @@ def vertical_figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
             # for the delta CT plot
             ax.locator_params(axis='x', nbins=3)
         
-    '''
-    # Place the A, B, C and i, ii, iii labels
-    let_list = [ 'A', 'B', 'C', 'D' ]
-    rom_list = [ 'i', 'ii', 'iii' ]
+    #====== PANEL LABELS ==================================
+    big_ax = big_fig.add_subplot(111)
+    pos = big_ax.get_position()
+    pos.x0 = 0
+    pos.x1 = 1
+    pos.y0 = 0
+    pos.y1 = 1
+    big_ax.set_position(pos)
     
-    # For the first column put the letters in the top left corner
-    for i, ax in enumerate(ax_list[:,0]):
-        ax.text(-0.1, 0.95, '{}i'.format(let_list[i]),
-                    horizontalalignment='left',
-                    verticalalignment='bottom',
-                    fontsize=40,
-                    transform=ax.transAxes,
-                    weight='bold')
-
-    for i, ax in enumerate(ax_list[:,2]):
-        ax.text(-0.2, 0.95, '{}ii'.format(let_list[i]),
-                    horizontalalignment='left',
-                    verticalalignment='bottom',
-                    fontsize=40,
-                    transform=ax.transAxes,
-                    weight='bold')
-                    
-    for i, ax in enumerate(ax_list[:,3]):
-        ax.text(-0.2, 0.95, '{}iii'.format(let_list[i]),
-                    horizontalalignment='left',
-                    verticalalignment='bottom',
-                    fontsize=40,
-                    transform=ax.transAxes,
-                    weight='bold')
+    # Turn off the big axis
+    # You'll use it though to show
+    # the panel labels
+    big_ax.axis('off')
     
-    '''        
+    for i, letter in enumerate([ 'A', 'E' ]):
+        big_ax.text(0.01, 
+                        0.95 - (0.5*i), 
+                        letter,
+                        horizontalalignment='left',
+                        verticalalignment='bottom',
+                        fontsize=50,
+                        transform=big_ax.transAxes,
+                        weight='bold')
+    for i, letter in enumerate([ 'B', 'F' ]):
+        big_ax.text(0.11, 
+                        0.73 - (0.5*i), 
+                        letter,
+                        horizontalalignment='left',
+                        verticalalignment='bottom',
+                        fontsize=50,
+                        transform=big_ax.transAxes,
+                        weight='bold')
+    for i, letter in enumerate([ 'C', 'G' ]):
+        big_ax.text(0.65, 
+                        0.73 - (0.5*i), 
+                        letter,
+                        horizontalalignment='left',
+                        verticalalignment='bottom',
+                        fontsize=50,
+                        transform=big_ax.transAxes,
+                        weight='bold')
+    for i, letter in enumerate([ 'D', 'H' ]):
+        big_ax.text(0.71, 
+                        0.73 - (0.5*i), 
+                        letter,
+                        horizontalalignment='left',
+                        verticalalignment='bottom',
+                        fontsize=50,
+                        transform=big_ax.transAxes,
+                        weight='bold')
+    
     # Save the figure
-    filename = os.path.join(figures_dir, 'Figure3_option2.png')
+    filename = os.path.join(figures_dir, 'Figure3.png')
+    big_fig.savefig(filename, bbox_inches=0, dpi=100)
+    filename = os.path.join(figures_dir, 'Figure3.pdf')
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
     
     plt.close()
@@ -3068,10 +3103,6 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT', indices=None):
                         vert=False,
                         cbar=True)
                         
-    '''
-    violin_ax_list[0].set_ylabel('Summary across 308 cortical regions\nat increasing distances from pial surface',
-                                    fontsize=30)
-    '''    
     # CORR WITH AGE ACROSS NODES at different depths
     violin_ax_list[1] = violin_mt_depths(measure_dict,
                         measure='all_slope_age',
@@ -3097,59 +3128,68 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT', indices=None):
     for ax in violin_ax_list[1:]:
         ax.set_yticklabels([])
     
-    '''
-    # Place the A, B, C and i, ii, iii labels
-    let_list = [ 'A', 'B', 'C' ]
-    rom_list = [ 'i', 'ii', 'iii', 'iv' ]
+    #====== PANEL LABELS ==================================
+    big_ax = big_fig.add_subplot(111)
+    pos = big_ax.get_position()
+    pos.x0 = 0
+    pos.x1 = 1
+    pos.y0 = 0
+    pos.y1 = 1
+    big_ax.set_position(pos)
     
-    # For the first column put the letters in the top left corner
-    for i, ax in enumerate(top_ax_list):
-        x_pos = ax.get_position().x0
-        
-        if i == 0:
-            big_fig.text(0.04, 0.965, '{}'.format(let_list[i]),
-                        horizontalalignment='left',
-                        verticalalignment='top',
-                        fontsize=40,
-                        weight='bold',
-                        color='white')
-        else:
-            big_fig.text(x_pos-0.03, 0.965, '{}'.format(let_list[i]),
-                        horizontalalignment='right',
-                        verticalalignment='top',
-                        fontsize=40,
-                        weight='bold',
-                        color='k')
-     
-    # Add in the figure panel number for the first violin plot
-    big_fig.text(0.04, 0.5, 'Di'.format(rom_list[i+1]),
-                horizontalalignment='left',
-                verticalalignment='top',
-                fontsize=40,
-                weight='bold',
-                color='k')
-                    
-    # Add in the figure panel number for the cells schematic
-    big_fig.text(0.37, 0.5, 'Dii',
+    # Turn off the big axis
+    # You'll use it though to show
+    # the panel labels
+    big_ax.axis('off')
+    
+    big_ax.text(0.04, 
+                    0.93, 
+                    'A',
                     horizontalalignment='left',
-                    verticalalignment='top',
-                    fontsize=40,
+                    verticalalignment='bottom',
+                    fontsize=60,
+                    transform=big_ax.transAxes,
                     weight='bold',
-                    color='k')
-                
-    # And the figure panel numbers for the second two violin plots
-    for i, ax in enumerate(violin_ax_list[1:]):
-        x_pos = ax.get_position().x0
-        
-        big_fig.text(x_pos, 0.5, 'D{}'.format(rom_list[i+2]),
-                    horizontalalignment='right',
-                    verticalalignment='top',
-                    fontsize=40,
-                    weight='bold',
-                    color='k')
-    '''                
+                    color='w')
+                    
+    big_ax.text(0.95, 
+                    0.93, 
+                    'B',
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=60,
+                    transform=big_ax.transAxes,
+                    weight='bold')
+                        
+    big_ax.text(0.03, 
+                    0.47, 
+                    'C',
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=60,
+                    transform=big_ax.transAxes,
+                    weight='bold')
+    big_ax.text(0.44, 
+                    0.47, 
+                    'D',
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=60,
+                    transform=big_ax.transAxes,
+                    weight='bold')
+    big_ax.text(0.59, 
+                    0.47, 
+                    'E',
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=60,
+                    transform=big_ax.transAxes,
+                    weight='bold')
+                    
     # Save the figure
     filename = os.path.join(figures_dir, 'Figure2.png')
+    big_fig.savefig(filename, bbox_inches=0, dpi=100)
+    filename = os.path.join(figures_dir, 'Figure2.pdf')
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
     
     plt.close()
@@ -3292,6 +3332,10 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_
         big_fig.add_subplot(ax)
         ax_list += [ax]
 
+    for ax in ax_list:
+        pos = ax.get_position()
+        print pos
+        
     ax_list[0] = von_economo_boxes(measure_dict, figures_dir, 
                                         measure_dict['von_economo'], 
                                         measure='{}_CT_covar_ones_all_COST_10'.format(network_measure),
@@ -3340,6 +3384,7 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_
                                         x_min=network_measure_min, x_max=network_measure_max,
                                         y_min=measure_min,y_max=measure_max, 
                                         color='k',
+                                        marker_size=60,
                                         ax=ax_list[j+1],
                                         figure=big_fig)
         
@@ -3388,43 +3433,72 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_
                             vert=True, 
                             pad=30)
                                 
-    '''
-    #=========================================================================
-    # Add in the letters for each panel
-    #=========================================================================
-    # Place the A, B, C and i, ii, iii labels
-    let_list = [ 'A', 'B', 'C' ]
-    rom_list = [ 'i', 'ii', 'iii', 'iv' ]
-
-    # Get all the axes
-    ax_list = big_fig.get_axes()
+    #====== PANEL LABELS ==================================
+    big_ax = big_fig.add_subplot(111)
+    pos = big_ax.get_position()
+    pos.x0 = 0
+    pos.x1 = 1
+    pos.y0 = 0
+    pos.y1 = 1
+    big_ax.set_position(pos)
     
-    # Put the right letter and the first roman numeral
-    # next to each row of brains
-    for i, ax in enumerate(ax_list[1::7]):
-        x_pos = ax.get_position().x0 + 0.01
-        y_pos = ax.get_position().y1
-        big_fig.text(x_pos, y_pos, 
-                    '{}i'.format(let_list[i]),
+    # Turn off the big axis
+    # You'll use it though to show
+    # the panel labels
+    big_ax.axis('off')
+    
+    big_ax.text(0.01, 
+                    0.94, 
+                    'A',
                     horizontalalignment='left',
-                    verticalalignment='top',
-                    fontsize=40,
-                    weight='bold',
-                    color='k')
-        # For the same letter put ii, iii and iv next to each
-        # of the plots
-        for j in range(3):
-            ax = ax_list[5 + i*7 + j]
-            x_pos = ax.get_position().x0 - 0.04
-            y_pos = ax.get_position().y1
-            big_fig.text(x_pos, y_pos, 
-                        '{}{}'.format(let_list[i], rom_list[j+1]),
+                    verticalalignment='bottom',
+                    fontsize=45,
+                    transform=big_ax.transAxes,
+                    weight='bold')
+    big_ax.text(0.48, 
+                    0.94, 
+                    'B',
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=45,
+                    transform=big_ax.transAxes,
+                    weight='bold')
+    big_ax.text(0.56, 
+                    0.94, 
+                    'C',
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=45,
+                    transform=big_ax.transAxes,
+                    weight='bold')
+    big_ax.text(0.97, 
+                    0.94, 
+                    'D',
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=45,
+                    transform=big_ax.transAxes,
+                    weight='bold')
+    
+    for i, letter in enumerate([ 'E', 'F', 'G', 'H' ]):
+        big_ax.text(0.24 + (0.91/4.9)*1.3*i, 
+                        0.62, 
+                        letter,
                         horizontalalignment='left',
                         verticalalignment='bottom',
-                        fontsize=40,
-                        weight='bold',
-                        color='k')
-    '''
+                        fontsize=45,
+                        transform=big_ax.transAxes,
+                        weight='bold')
+                        
+    big_ax.text(0.04, 
+                    0.25, 
+                    'I',
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=45,
+                    transform=big_ax.transAxes,
+                    weight='bold')
+                        
     #=========================================================================
     # And finally clean everything up and save the figure
     #=========================================================================
@@ -3435,6 +3509,8 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_
         filename = filename.replace('.png', '_RC.png')
         print filename
         
+    big_fig.savefig(filename, bbox_inches=0, dpi=100)
+    filename.replace('.png', '.pdf')
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
 
     plt.close()
