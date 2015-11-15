@@ -3331,10 +3331,6 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_
         ax = plt.Subplot(big_fig, g_loc)
         big_fig.add_subplot(ax)
         ax_list += [ax]
-
-    for ax in ax_list:
-        pos = ax.get_position()
-        print pos
         
     ax_list[0] = von_economo_boxes(measure_dict, figures_dir, 
                                         measure_dict['von_economo'], 
