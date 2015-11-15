@@ -3506,7 +3506,7 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_
         print filename
         
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
-    filename.replace('.png', '.pdf')
+    filename = filename.replace('.png', '.pdf')
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
 
     plt.close()
