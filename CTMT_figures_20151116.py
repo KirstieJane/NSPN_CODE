@@ -38,13 +38,13 @@ def plot_rich_club(rc, rc_rand, ax=None, figure_name=None, x_max=200, y_max=1.2,
     import matplotlib.pylab as plt
     import seaborn as sns
     
+    # Set the seaborn context and style
+    sns.set(style="white")
+    sns.set_context("poster", font_scale=2)
+    
     if not ax:
         # Create a figure
         fig, ax = plt.subplots(figsize=(10, 6))
-        # Set the seaborn context and style
-        sns.set(style="white")
-        sns.set_context("poster", font_scale=2)
-    
     else:
         fig=None
     
@@ -113,13 +113,13 @@ def plot_degree_dist(G, ER=True, ax=None, figure_name=None, x_max=200, y_max=0.1
     degrees_ER = np.array(G_ER.degree().values())
     degrees_ER = degrees_ER.astype('float')
         
+    # Set the seaborn context and style
+    sns.set(style="white")
+    sns.set_context("poster", font_scale=2)
+    
     if not ax:
         # Create a figure
         fig, ax = plt.subplots(figsize=(10, 6))
-        # Set the seaborn context and style
-        sns.set(style="white")
-        sns.set_context("poster", font_scale=2)
-        
     else:
         fig=None
     
@@ -529,7 +529,7 @@ def create_violin_data(measure_dict, mpm='MT', measure='all_slope_age', cmap='Rd
     return df, color_list, color_dict
 
 
-def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn', cmap_min=-7, cmap_max=7, y_max=None, y_min=None, figure_name=None, ax=None, figure=None, y_label=None, vert=True, lam_labels=True, cbar=False, pad=30):
+def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn', cmap_min=-7, cmap_max=7, y_max=None, y_min=None, figure_name=None, ax=None, figure=None, y_label=None, vert=True, lam_labels=True, cbar=False):
     '''
     INPUTS:
         data_dir --------- where the PARC_*_behavmerge.csv files are saved
@@ -612,7 +612,7 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
         size = ax.get_yticklabels()[0].get_fontsize()
         for lab in ax.get_yticklabels():
             f_size = lab.get_fontsize()
-            lab.set_fontsize(f_size * 0.85)  
+            lab.set_fontsize(f_size * 0.7)  
         # Add in the tick labels
         ax.set_yticklabels(labels_list)
         # Make sure there aren't too many bins!
@@ -640,7 +640,8 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
         if vert:
             cb_grid.update(left=pos.x1+0.01, right=pos.x1+0.02, bottom=pos.y0, top=pos.y1, wspace=0, hspace=0)
         else:
-            cb_grid.update(left=pos.x0, right=pos.x1, bottom=pos.y0-0.075, top=pos.y0-0.06, wspace=0, hspace=0)    
+            cb_grid.update(left=pos.x0, right=pos.x1, bottom=pos.y0-0.045, top=pos.y0-0.035, wspace=0, hspace=0)    
+            #cb_grid.update(left=pos.x0, right=pos.x1, bottom=pos.y0-0.01, top=pos.y0, wspace=0, hspace=0)    
             
         fig = add_colorbar(cb_grid[0], fig, 
                                 cmap_name=cmap, 
@@ -654,7 +655,8 @@ def violin_mt_depths(measure_dict, mpm='MT', measure='all_slope_age', cmap='PRGn
         if not vert:
             # If you add in a colorbar then you need to move the x axis label
             # down just a smidge
-            ax.set_xlabel(y_label, labelpad=pad)
+            ax.set_xlabel(y_label, labelpad=50)
+            #ax.set_xlabel(y_label, labelpad=30)
         
     if figure_name:
         # Do the tight layout because, again, it looks better!
@@ -1635,7 +1637,7 @@ def add_colorbar(grid, big_fig, cmap_name, y_min=0, y_max=1, cbar_min=0, cbar_ma
     
     return big_fig
     
-def add_cells_picture(figures_dir, big_fig, grid):
+def add_cells_picture(figures_dir, big_fig):
     
     # Get the file name and read it in as an image
     f_name = os.path.join(figures_dir, '../..', 'CorticalLayers_schematic_cells.jpg')
@@ -1643,6 +1645,10 @@ def add_cells_picture(figures_dir, big_fig, grid):
     img_cropped = img[30:, :]
     
     # Add an axis in the bottom left corner
+    grid = gridspec.GridSpec(1, 1)
+    grid.update(left=0.47, right=0.59, top=0.47, bottom=0.1, wspace=0, hspace=0)
+    #grid.update(left=0.33, right=0.45, top=0.47, bottom=0.1, wspace=0, hspace=0)
+    #grid.update(left=0.88, right=0.99, top=0.9675, bottom=0.59, wspace=0, hspace=0)
     ax = plt.Subplot(big_fig, grid[0])
     big_fig.add_subplot(ax)
 
@@ -1682,50 +1688,55 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     # Set the seaborn context and style
     sns.set(style="white")
-    sns.set_context("poster", font_scale=3)
+    sns.set_context("poster", font_scale=3.5)
 
     # Get the various min and max values:
     min_max_dict = get_min_max_values(measure_dict)
     axis_label_dict = get_axis_label_dict()
     
     # Create the big figure
-    big_fig = plt.figure(figsize=(34.5, 28), facecolor='white')
+    big_fig = plt.figure(figsize=(46, 30), facecolor='white')
         
     #==== FOUR ROWS OF DATA ======================================
     # Make a list of the file names for the left lateral image
     left_lat_fname_list = [ os.path.join(results_dir, 'PNGS', 
                                     'SlopeAge_at14_CT_lh_pial_classic_lateral.png'),
                                os.path.join(results_dir, 'PNGS', 
-                                    'SlopeAge_at14_MT_projfrac+030_lh_pial_classic_lateral.png'),
-                               os.path.join(results_dir, 'PNGS', 
                                     'SlopeAge_FDRmask_CT_lh_pial_classic_lateral.png'),
+                               os.path.join(results_dir, 'PNGS', 
+                                    'SlopeAge_at14_MT_projfrac+030_lh_pial_classic_lateral.png'),
                                os.path.join(results_dir, 'PNGS', 
                                     'SlopeAge_FDRmask_MT_projfrac+030_lh_pial_classic_lateral.png') ]
     
     # List the var names that will be used to get the axis labels
     # and min/max values
-    var_name_list = [ ( 'CT_all_slope_age_at14', 'age_scan', 'CT_global_mean' ),
-                        ( 'MT_projfrac+030_all_slope_age_at14', 'age_scan', 'MT_projfrac+030_global_mean' ),
-                        ( 'CT_all_slope_age', 'CT_all_slope_age_at14', 'MT_projfrac+030_all_slope_age_at14' ),
-                        ( 'MT_projfrac+030_all_slope_age', 'CT_all_slope_age', 'MT_projfrac+030_all_slope_age' ) ]
+    var_name_list = [ ( 'CT_all_slope_age_at14', 'CT_global_mean' ),
+                        ( 'CT_all_slope_age', 'CT_all_slope_age' ),
+                        ( 'MT_projfrac+030_all_slope_age_at14', 'MT_projfrac+030_global_mean' ),
+                        ( 'MT_projfrac+030_all_slope_age', 'MT_projfrac+030_all_slope_age' ) ]
     
     # List the colorbar names
-    cmap_name_list = [ 'jet', 'jet', 'winter_r', 'autumn' ]
+    cmap_name_list = [ 'jet', 'winter_r', 'jet', 'autumn' ]
     
-    # Scatter grid
-    grid = gridspec.GridSpec(4, 1)
-    grid.update(left=0.75, bottom=0.06, top=0.97, right=0.99, hspace=0.5)
+    # List of min max color tuples
+    min_max_color_list = [ ('blue', 'red'), ('red', 'blue'), ('red', 'blue'), ('blue', 'red') ]
+    
+    # Scatter and von economo grid
+    grid = gridspec.GridSpec(4, 2)
+    grid.update(left=0.55, bottom=0.06, top=0.97, right=0.99, hspace=0.5, wspace=0.3)
                     
     ax_list = []
     for g_loc in grid:
         ax_list += [ plt.Subplot(big_fig, g_loc) ]
         big_fig.add_subplot(ax_list[-1])
-        
+    
     for i, (left_lat_fname, 
                 var_name, 
-                cmap_name) in enumerate(zip(left_lat_fname_list, 
-                                                var_name_list, 
-                                                cmap_name_list)):
+                cmap_name,
+                min_max_color) in enumerate(zip(left_lat_fname_list, 
+                                                                    var_name_list, 
+                                                                    cmap_name_list,
+                                                                    min_max_color_list)):
         
         #==== BRAIN IMAGES ======================================
         # Plot the braaaaains
@@ -1737,7 +1748,7 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
         grid = gridspec.GridSpec(1,4)
         
         grid.update(left=0.01, 
-                        right=0.69,
+                        right=0.5,
                         bottom=0.81 - (i*0.25), 
                         top=1.01 - (i*0.25), 
                         wspace=0, 
@@ -1749,8 +1760,8 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
         # Add a colorbar
         cb_grid = gridspec.GridSpec(1,1)
         
-        cb_grid.update(left=0.16, 
-                            right=0.52, 
+        cb_grid.update(left=0.11, 
+                            right=0.4, 
                             bottom=0.81 - (i*0.25),
                             top=0.82 - (i*0.25), 
                             wspace=0, 
@@ -1763,67 +1774,73 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                                 y_min=min_max_dict['{}_CBAR_min'.format(var_name[0])],
                                 y_max=min_max_dict['{}_CBAR_max'.format(var_name[0])],
                                 label=axis_label_dict[var_name[0]])
-                                
+    
+        #==== VON ECONOMO BOX PLOTS =============================
+        ax_list[i*2] = von_economo_boxes(measure_dict, figures_dir, 
+                                        measure_dict['von_economo'], 
+                                        measure=var_name[0],
+                                        y_label=axis_label_dict[var_name[0]], 
+                                        y_min=min_max_dict['{}_min'.format(var_name[0])], 
+                                        y_max=min_max_dict['{}_max'.format(var_name[0])], 
+                                        von_economo_colors=False,
+                                        max_color=min_max_color[1],
+                                        min_color=min_max_color[0],
+                                        alpha=0,
+                                        ax=ax_list[i*2],
+                                        figure=big_fig)
+    
+        # Allign the y labels for each column    
+        ax_list[i*2].yaxis.set_label_coords(-0.14, 0.5)
+        
+        # Make sure axis is in scientific format
+        ax_list[i*2].ticklabel_format(axis='y', style='sci', scilimits=(-2,2))
+        
+        # And that there are a sensible number of bins for delta CT
+        if var_name[0] == 'CT_all_slope_age':
+            ax_list[i*2].locator_params(axis='y', nbins=6)
+                              
+        # Update the font size for the labels
+        # to be a little smaller
+        for lab in [ ax_list[i*2].yaxis.label, ax_list[i*2].xaxis.label ]:
+            f_size = lab.get_fontsize()
+            lab.set_fontsize(f_size * 0.88)        
+        
         #==== SCATTER PLOTS =============================                            
-        x_name = var_name[1]
-        y_name = var_name[2]
-            
-        if not 'global' in y_name:
+        if not cmap_name == 'jet':
             color='k'
+            x_var = var_name[1].replace('age', 'age_at14')
         else:
-            if y_name == 'CT_global_mean':
-                cmap_name = 'winter_r'
-            else:
-                cmap_name = 'autumn'
-                
-            color_measure = y_name.replace('global_mean', 'all_slope_age')
+            color_measure = var_name_list[i+1][1]
+            color_measure_cmap = cmap_name_list[i+1]
             norm = mpl.colors.Normalize(vmin=min_max_dict['{}_CBAR_min'.format(color_measure)], 
                                         vmax=min_max_dict['{}_CBAR_max'.format(color_measure)])
-            cmap_converter = mpl.cm.ScalarMappable(norm=norm, cmap=cmap_name)
-            slope_name = y_name.replace('mean', 'slope_age')
-            color = cmap_converter.to_rgba(measure_dict['{}'.format(slope_name)])
-        '''    
-        if x_name == 'CT_all_slope_age':
-            mask = np.where(measure_dict[x_name]<0)
-            x_min_max_name = 'CT_all_slope_age_LT0'
-        else:
-            x_min_max_name = x_name
-            mask = np.arange(len(measure_dict[x_name]))
+            cmap_converter = mpl.cm.ScalarMappable(norm=norm, cmap=color_measure_cmap)
+            color = cmap_converter.to_rgba(measure_dict['{}'.format(var_name[1].replace('_mean', '_slope_age'))])
+            x_var = 'age_scan'
             
-        ax_list[i] = pretty_scatter(measure_dict[x_name][mask], measure_dict[y_name][mask], 
-                                            x_label=axis_label_dict[x_name], 
-                                            y_label=axis_label_dict[y_name], 
-                                            x_min=min_max_dict['{}_min'.format(x_min_max_name)], 
-                                            x_max=min_max_dict['{}_max'.format(x_min_max_name)], 
-                                            y_min=min_max_dict['{}_min'.format(y_name)],
-                                            y_max=min_max_dict['{}_max'.format(y_name)], 
+        ax_list[(i*2)+1] = pretty_scatter(measure_dict[x_var], measure_dict[var_name[1]], 
+                                            x_label=axis_label_dict[x_var], 
+                                            y_label=axis_label_dict[var_name[1]], 
+                                            x_min=min_max_dict['{}_min'.format(x_var)], 
+                                            x_max=min_max_dict['{}_max'.format(x_var)], 
+                                            y_min=min_max_dict['{}_min'.format(var_name[1])],
+                                            y_max=min_max_dict['{}_max'.format(var_name[1])], 
                                             color=color,
-                                            ax=ax_list[i],
+                                            ax=ax_list[(i*2)+1],
                                             figure=big_fig)
-        '''
-        ax_list[i] = pretty_scatter(measure_dict[x_name], measure_dict[y_name], 
-                                            x_label=axis_label_dict[x_name], 
-                                            y_label=axis_label_dict[y_name], 
-                                            x_min=min_max_dict['{}_min'.format(x_name)], 
-                                            x_max=min_max_dict['{}_max'.format(x_name)], 
-                                            y_min=min_max_dict['{}_min'.format(y_name)],
-                                            y_max=min_max_dict['{}_max'.format(y_name)], 
-                                            color=color,
-                                            ax=ax_list[i],
-                                            figure=big_fig)
-                                                    
+                                            
         # Make sure axis is in scientific format
-        ax_list[i].ticklabel_format(axis='y', style='sci', scilimits=(-2,2))
+        ax_list[(i*2)+1].ticklabel_format(axis='y', style='sci', scilimits=(-2,2))
                                         
         # Allign the y labels for each column    
-        ax_list[i].yaxis.set_label_coords(-0.14, 0.5)
+        ax_list[(i*2)+1].yaxis.set_label_coords(-0.14, 0.5)
 
         # Update the font size for the labels
         # to be a little smaller
-        for lab in [ ax_list[i].yaxis.label, ax_list[i].xaxis.label ]:
+        for lab in [ ax_list[(i*2)+1].yaxis.label, ax_list[(i*2)+1].xaxis.label ]:
             f_size = lab.get_fontsize()
-            lab.set_fontsize(f_size * 0.9)     
-            
+            lab.set_fontsize(f_size * 0.88)     
+
     #====== PANEL LABELS ==================================
     big_ax = big_fig.add_subplot(111)
     pos = big_ax.get_position()
@@ -1838,25 +1855,34 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
     # the panel labels
     big_ax.axis('off')
     
-    for i, letter in enumerate([ 'A', 'C', 'E', 'G' ]):
+    for i, letter in enumerate([ 'A', 'D', 'G', 'J' ]):
         big_ax.text(0.01, 
-                        0.96 - (0.25*i), 
+                        0.95 - (0.25*i), 
                         letter,
                         horizontalalignment='left',
                         verticalalignment='bottom',
                         fontsize=60,
                         transform=big_ax.transAxes,
                         weight='bold')
-    for i, letter in enumerate([ 'B', 'D', 'F', 'H' ]):
+    for i, letter in enumerate([ 'B', 'E', 'H', 'K' ]):
+        big_ax.text(0.72, 
+                        0.95 - (0.25*i), 
+                        letter,
+                        horizontalalignment='left',
+                        verticalalignment='bottom',
+                        fontsize=60,
+                        transform=big_ax.transAxes,
+                        weight='bold')
+    for i, letter in enumerate([ 'C', 'F', 'I', 'L' ]):
         big_ax.text(0.97, 
-                        0.96 - (0.25*i), 
+                        0.95 - (0.25*i), 
                         letter,
                         horizontalalignment='left',
                         verticalalignment='bottom',
                         fontsize=60,
                         transform=big_ax.transAxes,
                         weight='bold')
-
+                        
     # Save the figure
     filename = os.path.join(figures_dir, 'Figure1.png')
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
@@ -2987,52 +3013,78 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT', indices=None):
     
     # Set the seaborn context and style
     sns.set(style="white")
-    sns.set_context("poster", font_scale=3)
+    sns.set_context("poster", font_scale=3.5)
 
     # Get the various min and max values:
     min_max_dict = get_min_max_values(measure_dict)
     axis_label_dict = get_axis_label_dict()
     
     # Create the big figure
-    big_fig, big_ax = plt.subplots(figsize=(46, 13), facecolor='white')
-    big_ax.axis('off')
+    big_fig, big_ax = plt.subplots(figsize=(34.5, 28), facecolor='white')
+    big_fig.subplots_adjust(left=0.05, right=0.98, bottom=0.07, top=0.95, wspace=0.05, hspace=0.05)
     
     #=========================================================================
+    # We're going to set up a grid for the top row so we can 
+    # adjust the spacings without screwing up the spacings in the bottom row
+    grid = gridspec.GridSpec(1, 2)
+    grid.update(left=0.07, bottom=0.5, top=0.96, wspace=0.2, hspace=0)
+    top_ax_list = []
+    for g_loc in grid:
+        top_ax_list += [ plt.Subplot(big_fig, g_loc) ]
+        big_fig.add_subplot(top_ax_list[-1])
+
+    #=========================================================================
     # Schematic for how we measured the different layers
-    grid = gridspec.GridSpec(1, 1)
-    grid.update(left=0.01, bottom=0.01, top=0.99, right=0.34, wspace=0, hspace=0)
-    ax = plt.Subplot(big_fig, grid[0])
-    big_fig.add_subplot(ax)
-    
     f_name = os.path.join(figures_dir, '../..', 'CorticalLayers_schematic_methods.jpg')
     img = mpimg.imread(f_name)
+    ax = top_ax_list[0]
+    ax.set_position([-0.03, 0.49, 0.6, 0.48])
     ax.imshow(img)
     ax.axis('off')
     
     #=========================================================================
-    # We're going to set up two separate grids for the violin plots so we can 
-    # adjust the spacings independently without screwing up the others!
+    # Scatter plot of MBP vs MT at 14 years for 70% depth
+    ax = top_ax_list[1]
+    ax.set_position([0.62, 0.56, 0.35, 0.41])
+    mri_measure = '{}_projfrac+030_all_slope_age_at14'.format(mpm)
+    gene='mbp'
+    y_label = 'MT at age 14\n(70% cortical depth)'
+    ax = pretty_scatter(measure_dict[gene][indices], 
+                                            measure_dict[mri_measure][indices], 
+                                            x_label=axis_label_dict[gene],
+                                            y_label=y_label, 
+                                            x_min=min_max_dict['{}_usable_min'.format(gene)],
+                                            x_max=min_max_dict['{}_usable_max'.format(gene)], 
+                                            y_min=min_max_dict['{}_min'.format(mri_measure)],
+                                            y_max=min_max_dict['{}_max'.format(mri_measure)],
+                                            color='k',
+                                            ax=ax,
+                                            figure=big_fig)    
+        
+    ax.yaxis.set_label_coords(-0.12, 0.5)
+
+    #=========================================================================
+    # We're going to set up two separate grids for the bottom row so we can 
+    # adjust the spacings without screwing up the spacings in the top row
     violin_ax_list = []
     
     # First a space for the first violin plot on the far left
     grid = gridspec.GridSpec(1, 1)
-    grid.update(left=0.39, right=0.64, top=0.97, bottom=0.16, wspace=0, hspace=0)
+    grid.update(left=0.07, right=0.445, top=0.47, bottom=0.1, wspace=0, hspace=0)
     for g_loc in grid:
         violin_ax_list += [ plt.Subplot(big_fig, g_loc) ]
         big_fig.add_subplot(violin_ax_list[-1])
         
     # Next a space for the corr with age
     grid = gridspec.GridSpec(1, 1)
-    grid.update(left=0.74, right=0.99, top=0.97, bottom=0.16, wspace=0, hspace=0)
+    grid.update(left=0.605, right=0.98, top=0.47, bottom=0.1, wspace=0.08, hspace=0)
     for g_loc in grid:
         violin_ax_list += [ plt.Subplot(big_fig, g_loc) ]
         big_fig.add_subplot(violin_ax_list[-1])
     
     #=========================================================================
     # Schematic for the different cytoarchitectonics for each layer
-    grid = gridspec.GridSpec(1, 1)
-    grid.update(left=0.64, right=0.74, top=0.97, bottom=0.155, wspace=0, hspace=0)
-    big_fig = add_cells_picture(figures_dir, big_fig, grid)
+    big_fig = add_cells_picture(figures_dir, big_fig)
     
     #=========================================================================
     # MEAN MT ACROSS NODES at different depths
@@ -3067,6 +3119,10 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT', indices=None):
                         vert=False,
                         cbar=True)
                          
+    # Turn off the axes for the first columns
+    for ax in [ big_ax, top_ax_list[0] ]:
+        ax.axis('off')
+    
     # Also remove the y tick labels for the violin plots
     # that are not the first
     for ax in violin_ax_list[1:]:
@@ -3086,34 +3142,50 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT', indices=None):
     # the panel labels
     big_ax.axis('off')
     
-    big_ax.text(0.015, 
-                    0.9, 
+    big_ax.text(0.04, 
+                    0.93, 
                     'A',
                     horizontalalignment='left',
                     verticalalignment='bottom',
-                    fontsize=50,
+                    fontsize=60,
                     transform=big_ax.transAxes,
                     weight='bold',
                     color='w')
                     
-    big_ax.text(0.61, 
-                    0.9, 
+    big_ax.text(0.95, 
+                    0.93, 
                     'B',
                     horizontalalignment='left',
                     verticalalignment='bottom',
-                    fontsize=50,
+                    fontsize=60,
                     transform=big_ax.transAxes,
                     weight='bold')
                         
-    big_ax.text(0.97, 
-                    0.9, 
+    big_ax.text(0.03, 
+                    0.47, 
                     'C',
                     horizontalalignment='left',
                     verticalalignment='bottom',
-                    fontsize=50,
+                    fontsize=60,
                     transform=big_ax.transAxes,
                     weight='bold')
-    
+    big_ax.text(0.44, 
+                    0.47, 
+                    'D',
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=60,
+                    transform=big_ax.transAxes,
+                    weight='bold')
+    big_ax.text(0.59, 
+                    0.47, 
+                    'E',
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=60,
+                    transform=big_ax.transAxes,
+                    weight='bold')
+                    
     # Save the figure
     filename = os.path.join(figures_dir, 'Figure2.png')
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
@@ -3134,100 +3206,124 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_
     axis_label_dict = get_axis_label_dict()
 
     # Create the big figure
-    big_fig, big_ax = plt.subplots(figsize=(34.5, 18), facecolor='white')
+    big_fig, big_ax = plt.subplots(figsize=(34.5, 20), facecolor='white')
     big_ax.axis('off')
-
-    # Create the grid
-    grid = gridspec.GridSpec(1, 3)
-    bottom = 0.52
-    top = 0.99
-    grid.update(left=0, right=1, bottom=bottom, top=top, wspace=0, hspace=0)
-
-    ax_list = []
-    for g_loc in grid:
-        ax = plt.Subplot(big_fig, g_loc)
-        big_fig.add_subplot(ax)
-        ax_list += [ax]    
-        
+    
     #======= ANATOMICAL NETWORKS ========================
     G = graph_dict['CT_covar_ones_all_COST_10']
     G_02 = graph_dict['CT_covar_ones_all_COST_02']
     
-    node_size_dict = { 'Degree' : 16*measure_dict['Degree_CT_covar_ones_all_COST_10'] , 
-                        'Closeness' : 2000*measure_dict['Closeness_CT_covar_ones_all_COST_10'],
-                        'AverageDist' : 14*measure_dict['AverageDist_CT_covar_ones_all_COST_10']}
-       
+    network_measure = 'Degree'
+    
+    Deg_node_size = (16*measure_dict['Degree_CT_covar_ones_all_COST_10'])
+    PC_node_size = (100**measure_dict['PC_CT_covar_ones_all_COST_10']*10)
+    
+    measure_list = [ 'renum_module' , 'MT_projfrac+030_all_slope_age' ]
+    
+    node_size_dict = { 'renum_module' : PC_node_size, 'MT_projfrac+030_all_slope_age' : Deg_node_size}
+    cmap_dict = { 'renum_module' : 'jet' , 'MT_projfrac+030_all_slope_age' : 'autumn' }
+    continuous_dict = { 'renum_module' : False , 'MT_projfrac+030_all_slope_age' : True }
+    sns_palette_dict = { 'renum_module' : 'bright', 'MT_projfrac+030_all_slope_age' : None }
+    
+    min_max_dict = get_min_max_values(measure_dict)
+    
+    n_modules = np.max(measure_dict['Renumbered_Module_CT_covar_ones_all_COST_10'])
+    min_max_dict['renum_module_CBAR_min'] = 1
+    min_max_dict['renum_module_CBAR_max'] = n_modules
+    
     rich_edges, rich_nodes = rich_edges_nodes(G, thresh=85)
-
-    cmap_dict = { 'Degree' : 'Reds' , 
-                    'Closeness' : 'Greens',
-                    'AverageDist' : 'Blues' }
-
-    for i, network_measure in enumerate([ 'Degree', 'Closeness', 'AverageDist' ]):
     
-        network_measure_key = '{}_CT_covar_ones_all_COST_10'.format(network_measure)
-        network_measure_min = min_max_dict['{}_CBAR_min'.format(network_measure)]
-        network_measure_max = min_max_dict['{}_CBAR_max'.format(network_measure)]
+    grid = gridspec.GridSpec(1, 4)
+    bottom = 0.65
+    top = 0.99
+    grid.update(left=0, right=1, bottom=bottom, top=top, wspace=-0.07, hspace=0)
+    
+    for j, measure in enumerate(measure_list):
+
+        ###### SAGITTAL BRAIN
+        ax = plt.Subplot(big_fig, grid[3*j])
+        big_fig.add_subplot(ax)
         
-        ax_list[i] = plot_anatomical_network(G, 
+        ax = plot_anatomical_network(G, 
                                         measure_dict, 
-                                        measure=network_measure_key, 
+                                        measure=measure, 
                                         orientation='sagittal', 
-                                        cmap_name=cmap_dict[network_measure],
-                                        vmin=network_measure_min, 
-                                        vmax=network_measure_max,
-                                        node_size_list=node_size_dict[network_measure], 
+                                        sns_palette=sns_palette_dict[measure], 
+                                        cmap_name=cmap_dict[measure],
+                                        vmin=min_max_dict['{}_CBAR_min'.format(measure)], 
+                                        vmax=min_max_dict['{}_CBAR_max'.format(measure)],
+                                        node_size_list=node_size_dict[measure], 
                                         edge_list=[], 
-                                        ax=ax_list[i],
-                                        continuous=True)
-                                        
-        if rich_club:
-            ax_list[i] = plot_anatomical_network(G, 
-                                                measure_dict, 
-                                                measure=network_measure_key,
-                                                orientation='sagittal', 
-                                                cmap_name=cmap_dict[network_measure],
-                                                vmin=network_measure_min, 
-                                                vmax=network_measure_max,
-                                                node_size_list=node_size_dict[network_measure],
-                                                node_shape='s',
-                                                node_list=rich_nodes,
-                                                edge_list=[], 
-                                                ax=ax_list[i],
-                                                continuous=True)
-                                        
-        ax_list[i] = plot_anatomical_network(G_02, 
-                                                measure_dict, 
-                                                orientation='sagittal', 
-                                                node_list=[], 
-                                                edge_width=0.8,
-                                                ax=ax_list[i])
-                                                
-        # Add a colorbar
-        cb_grid = gridspec.GridSpec(1,1)
-        
-        cb_grid.update(left= 0.05 + (i*0.333), 
-                            right=0.283 + (i*0.333), 
-                            bottom=0.51,
-                            top=0.52, 
-                            wspace=0, 
-                            hspace=0)
-        
-        big_fig = add_colorbar(cb_grid[0], big_fig, 
-                                cmap_name=cmap_dict[network_measure], 
-                                cbar_min=network_measure_min, 
-                                cbar_max=network_measure_max,
-                                y_min=network_measure_min,
-                                y_max=network_measure_max,
-                                label=axis_label_dict[network_measure])
+                                        ax=ax,
+                                        continuous=continuous_dict[measure])
+        ax = plot_anatomical_network(G, 
+                                        measure_dict, 
+                                        measure=measure,
+                                        orientation='sagittal',
+                                        sns_palette=sns_palette_dict[measure], 
+                                        cmap_name=cmap_dict[measure],
+                                        vmin=min_max_dict['{}_CBAR_min'.format(measure)], 
+                                        vmax=min_max_dict['{}_CBAR_max'.format(measure)],
+                                        node_size_list=node_size_dict[measure], 
+                                        node_shape='s',
+                                        node_list=rich_nodes,
+                                        edge_list=[], 
+                                        ax=ax,
+                                        continuous=continuous_dict[measure])    
+        ax = plot_anatomical_network(G_02, 
+                                        measure_dict, 
+                                        orientation='sagittal', 
+                                        node_list=[], 
+                                        edge_width=0.8,
+                                        ax=ax)
+
+    #=========================================================================
+    # Put the von economo box plots for PLS1 and PLS2 by module
+    grid = gridspec.GridSpec(1, 4)
+    bottom = 0.74
+    top = 0.97
+    grid.update(bottom=bottom, top=top, left=0.07, right=0.98, hspace=0.1, wspace=0.3)
     
+    pls_var_list = [ 'PLS1_usable', 'PLS2_usable' ]
+    gene_indices = measure_dict['gene_indices']
+    
+    for j, pls_var in enumerate(pls_var_list):
+    
+        ax = plt.Subplot(big_fig, grid[j+1])
+        big_fig.add_subplot(ax)
+
+        # Get the appropriate min, max and label values
+        # for the y axis
+        measure_min = min_max_dict['{}_min'.format(pls_var)]
+        measure_max = min_max_dict['{}_max'.format(pls_var)]
+        y_label = axis_label_dict[pls_var]
+        x_label = 'Module'
+        
+        ax = von_economo_boxes(measure_dict, figures_dir, 
+                                            measure_dict['Renumbered_Module_CT_covar_ones_all_COST_10'][gene_indices], 
+                                            measure=pls_var,
+                                            group_label=x_label,
+                                            y_label=y_label, 
+                                            y_min=measure_min, 
+                                            y_max=measure_max, 
+                                            ax=ax,
+                                            figure=big_fig,
+                                            von_economo_colors=False,
+                                            color_dict='bright')
+                                            
+        ax.yaxis.set_label_coords(-0.17, 0.5)
+                                        
     #=========================================================================
     # Put von economo box plots for this graph measure in the 
     # first column of the next row
     #=========================================================================
-    grid = gridspec.GridSpec(1, 3)
-    bottom = 0.1
-    top = 0.4
+    network_measure_min = min_max_dict['{}_CT_covar_ones_all_COST_10_min'.format(network_measure)]
+    network_measure_max = min_max_dict['{}_CT_covar_ones_all_COST_10_max'.format(network_measure)]
+    y_label = axis_label_dict[network_measure]
+    
+    grid = gridspec.GridSpec(1, 4)
+    bottom = 0.37
+    top = 0.63
     grid.update(bottom=bottom, top=top, left=0.07, right=0.98, hspace=0.1, wspace=0.3)
     
     ax_list = []
@@ -3236,20 +3332,30 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_
         big_fig.add_subplot(ax)
         ax_list += [ax]
         
+    ax_list[0] = von_economo_boxes(measure_dict, figures_dir, 
+                                        measure_dict['von_economo'], 
+                                        measure='{}_CT_covar_ones_all_COST_10'.format(network_measure),
+                                        y_label=y_label, 
+                                        y_min=network_measure_min, 
+                                        y_max=network_measure_max, 
+                                        max_color='red',
+                                        min_color='blue',
+                                        alpha=0,
+                                        ax=ax_list[0],
+                                        figure=big_fig)
+                                       
+    ax_list[0].yaxis.set_label_coords(-0.17, 0.5)
+        
     #=========================================================================
     # Finally put scatter plots of deltaCT, and deltaMT by the network
     # measure in the second and third spaces on the next row
     #=========================================================================
-    network_measure = 'Degree'
-    network_measure_min = min_max_dict['{}_CT_covar_ones_all_COST_10_min'.format(network_measure)]
-    network_measure_max = min_max_dict['{}_CT_covar_ones_all_COST_10_max'.format(network_measure)]
-    y_label = axis_label_dict[network_measure]
 
     measure_list = [ 'CT_all_slope_age',
                      '{}_projfrac+030_all_slope_age'.format(mpm),
                      'PLS2_usable' ]
                      
-    for i, measure in enumerate(measure_list):
+    for j, measure in enumerate(measure_list):
 
         # Set the x and y data
         x_data = measure_dict['{}_CT_covar_ones_all_COST_10'.format(network_measure)]
@@ -3267,7 +3373,7 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_
         y_label = axis_label_dict[measure]
         x_label = axis_label_dict[network_measure]
         
-        ax_list[i] = pretty_scatter(x_data, 
+        ax_list[j+1] = pretty_scatter(x_data, 
                                         y_data, 
                                         x_label=x_label,
                                         y_label=y_label, 
@@ -3275,11 +3381,53 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_
                                         y_min=measure_min,y_max=measure_max, 
                                         color='k',
                                         marker_size=60,
-                                        ax=ax_list[i],
+                                        ax=ax_list[j+1],
                                         figure=big_fig)
         
-        ax_list[i].yaxis.set_label_coords(-0.12, 0.5)
+        ax_list[j+1].yaxis.set_label_coords(-0.17, 0.5)
                                         
+    #=========================================================================
+    # Put the four hor brains in one row
+    #=========================================================================
+    f_list = [ os.path.join(results_dir, 'PNGS',
+                                '{}_CT_covar_ones_all_COST_10_lh_pial_classic_lateral.png'.format(network_measure)),
+                os.path.join(results_dir, 'PNGS', 
+                                '{}_CT_covar_ones_all_COST_10_lh_pial_classic_medial.png'.format(network_measure)),
+                os.path.join(results_dir, 'PNGS', 
+                                '{}_CT_covar_ones_all_COST_10_rh_pial_classic_medial.png'.format(network_measure)),
+                os.path.join(results_dir, 'PNGS', 
+                                '{}_CT_covar_ones_all_COST_10_rh_pial_classic_lateral.png'.format(network_measure)) ]
+
+    if rich_club and network_measure == 'Degree':
+        for j, f in enumerate(f_list):
+            f_list[j] = f.replace('Degree_CT', 'Degree_RC_CT')
+    
+    grid = gridspec.GridSpec(1, 4)
+    bottom = 0
+    top = 0.31      
+    grid.update(left=0.03, right=0.9, bottom=bottom, top=top, wspace=0, hspace=0)
+
+    big_fig = add_four_hor_brains(grid, f_list, big_fig)
+    
+    # Set up the colorbar grid
+    cb_grid = gridspec.GridSpec(1,1)
+    
+    cb_grid.update(left=0.92, 
+                        right=0.93, 
+                        bottom=0.04,
+                        top=0.28, 
+                        wspace=0, 
+                        hspace=0)  
+
+    big_fig = add_colorbar(cb_grid[0], big_fig, 
+                            cmap_name='Reds', 
+                            cbar_min=np.percentile(x_data, 75), 
+                            cbar_max=np.percentile(x_data, 100),
+                            y_min=np.percentile(x_data, 75),
+                            y_max=np.percentile(x_data, 100),
+                            label=axis_label_dict[network_measure],
+                            vert=True, 
+                            pad=30)
                                 
     #====== PANEL LABELS ==================================
     big_ax = big_fig.add_subplot(111)
@@ -3295,26 +3443,57 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_
     # the panel labels
     big_ax.axis('off')
     
-    for i, letter in enumerate(['A', 'B', 'C']):
-        big_ax.text(0.02 + (0.333 * i), 
-                    0.92, 
-                    letter,
+    big_ax.text(0.01, 
+                    0.94, 
+                    'A',
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=45,
+                    transform=big_ax.transAxes,
+                    weight='bold')
+    big_ax.text(0.48, 
+                    0.94, 
+                    'B',
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=45,
+                    transform=big_ax.transAxes,
+                    weight='bold')
+    big_ax.text(0.56, 
+                    0.94, 
+                    'C',
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=45,
+                    transform=big_ax.transAxes,
+                    weight='bold')
+    big_ax.text(0.97, 
+                    0.94, 
+                    'D',
                     horizontalalignment='left',
                     verticalalignment='bottom',
                     fontsize=45,
                     transform=big_ax.transAxes,
                     weight='bold')
     
-    for i, letter in enumerate([ 'D', 'E', 'F' ]):
-        big_ax.text(0.02 + (0.333 * i), 
-                        0.4, 
+    for i, letter in enumerate([ 'E', 'F', 'G', 'H' ]):
+        big_ax.text(0.24 + (0.91/4.9)*1.3*i, 
+                        0.62, 
                         letter,
                         horizontalalignment='left',
                         verticalalignment='bottom',
                         fontsize=45,
                         transform=big_ax.transAxes,
                         weight='bold')
-
+                        
+    big_ax.text(0.04, 
+                    0.25, 
+                    'I',
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=45,
+                    transform=big_ax.transAxes,
+                    weight='bold')
                         
     #=========================================================================
     # And finally clean everything up and save the figure
@@ -3331,201 +3510,6 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
 
     plt.close()
-
-def figure_4_degree(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_club=False):
-
-    # Set the seaborn context and style
-    sns.set(style="white")
-    sns.set_context("poster", font_scale=2.5)
-
-    # Get the set values
-    min_max_dict = get_min_max_values(measure_dict)
-    axis_label_dict = get_axis_label_dict()
-
-    # Create the big figure
-    big_fig, big_ax = plt.subplots(figsize=(23, 18), facecolor='white')
-    big_ax.axis('off')
-
-    # Create the grid
-    grid = gridspec.GridSpec(2, 2)
-    bottom = 0.1
-    top = 0.99
-    grid.update(bottom=bottom, top=top, left=0.07, right=0.98, hspace=0.1, wspace=0.3)
-
-    ax_list = []
-    for g_loc in grid:
-        ax = plt.Subplot(big_fig, g_loc)
-        big_fig.add_subplot(ax)
-        ax_list += [ax]    
-        
-    #======= ANATOMICAL NETWORKS ========================
-    G = graph_dict['CT_covar_ones_all_COST_10']
-    G_02 = graph_dict['CT_covar_ones_all_COST_02']
-    
-    node_size_dict = { 'Degree' : 16*measure_dict['Degree_CT_covar_ones_all_COST_10'] , 
-                        'Closeness' : 2000*measure_dict['Closeness_CT_covar_ones_all_COST_10'],
-                        'AverageDist' : 14*measure_dict['AverageDist_CT_covar_ones_all_COST_10']}
-       
-    rich_edges, rich_nodes = rich_edges_nodes(G, thresh=85)
-
-    cmap_dict = { 'Degree' : 'Reds' , 
-                    'Closeness' : 'Greens',
-                    'AverageDist' : 'Blues' }
-
-    for i, network_measure in enumerate([ 'Degree' ]):
-    
-        network_measure_key = '{}_CT_covar_ones_all_COST_10'.format(network_measure)
-        network_measure_min = min_max_dict['{}_CBAR_min'.format(network_measure)]
-        network_measure_max = min_max_dict['{}_CBAR_max'.format(network_measure)]
-        
-        ax_list[i] = plot_anatomical_network(G, 
-                                        measure_dict, 
-                                        measure=network_measure_key, 
-                                        orientation='sagittal', 
-                                        cmap_name=cmap_dict[network_measure],
-                                        vmin=network_measure_min, 
-                                        vmax=network_measure_max,
-                                        node_size_list=node_size_dict[network_measure], 
-                                        edge_list=[], 
-                                        ax=ax_list[i],
-                                        continuous=True)
-                                        
-        if rich_club:
-            ax_list[i] = plot_anatomical_network(G, 
-                                                measure_dict, 
-                                                measure=network_measure_key,
-                                                orientation='sagittal', 
-                                                cmap_name=cmap_dict[network_measure],
-                                                vmin=network_measure_min, 
-                                                vmax=network_measure_max,
-                                                node_size_list=node_size_dict[network_measure],
-                                                node_shape='s',
-                                                node_list=rich_nodes,
-                                                edge_list=[], 
-                                                ax=ax_list[i],
-                                                continuous=True)
-                                        
-        ax_list[i] = plot_anatomical_network(G_02, 
-                                                measure_dict, 
-                                                orientation='sagittal', 
-                                                node_list=[], 
-                                                edge_width=0.8,
-                                                ax=ax_list[i])
-                                                
-        # Add a colorbar
-        cb_grid = gridspec.GridSpec(1,1)
-        
-        cb_grid.update(left= 0.05 + (i*0.333), 
-                            right=0.283 + (i*0.333), 
-                            bottom=0.51,
-                            top=0.52, 
-                            wspace=0, 
-                            hspace=0)
-        
-        big_fig = add_colorbar(cb_grid[0], big_fig, 
-                                cmap_name=cmap_dict[network_measure], 
-                                cbar_min=network_measure_min, 
-                                cbar_max=network_measure_max,
-                                y_min=network_measure_min,
-                                y_max=network_measure_max,
-                                label=axis_label_dict[network_measure])
-    
-    #=========================================================================
-    # Finally put scatter plots of deltaCT, and deltaMT by the network
-    # measure in the second and third spaces on the next row
-    #=========================================================================
-    network_measure = 'Degree'
-    network_measure_min = min_max_dict['{}_CT_covar_ones_all_COST_10_min'.format(network_measure)]
-    network_measure_max = min_max_dict['{}_CT_covar_ones_all_COST_10_max'.format(network_measure)]
-    y_label = axis_label_dict[network_measure]
-
-    measure_list = [ 'CT_all_slope_age',
-                     '{}_projfrac+030_all_slope_age'.format(mpm),
-                     'PLS2_usable' ]
-                     
-    for i, measure in enumerate(measure_list):
-
-        # Set the x and y data
-        x_data = measure_dict['{}_CT_covar_ones_all_COST_10'.format(network_measure)]
-        y_data = measure_dict[measure]
-        
-        # Mask the network values if you're looking at PLS2
-        if measure == 'PLS2_usable':
-            gene_indices = measure_dict['gene_indices']
-            x_data = x_data[gene_indices]
-        
-        # Get the appropriate min, max and label values
-        # for the y axis
-        measure_min = min_max_dict['{}_min'.format(measure)]
-        measure_max = min_max_dict['{}_max'.format(measure)]
-        y_label = axis_label_dict[measure]
-        x_label = axis_label_dict[network_measure]
-        
-        ax_list[i+1] = pretty_scatter(x_data, 
-                                        y_data, 
-                                        x_label=x_label,
-                                        y_label=y_label, 
-                                        x_min=network_measure_min, x_max=network_measure_max,
-                                        y_min=measure_min,y_max=measure_max, 
-                                        color='k',
-                                        marker_size=60,
-                                        ax=ax_list[i+1],
-                                        figure=big_fig)
-        
-        ax_list[i+1].yaxis.set_label_coords(-0.12, 0.5)
-                                        
-                                
-    #====== PANEL LABELS ==================================
-    big_ax = big_fig.add_subplot(111)
-    pos = big_ax.get_position()
-    pos.x0 = 0
-    pos.x1 = 1
-    pos.y0 = 0
-    pos.y1 = 1
-    big_ax.set_position(pos)
-    
-    # Turn off the big axis
-    # You'll use it though to show
-    # the panel labels
-    big_ax.axis('off')
-    
-    for i, letter in enumerate(['A', 'B', 'C']):
-        big_ax.text(0.02 + (0.333 * i), 
-                    0.92, 
-                    letter,
-                    horizontalalignment='left',
-                    verticalalignment='bottom',
-                    fontsize=45,
-                    transform=big_ax.transAxes,
-                    weight='bold')
-    
-    for i, letter in enumerate([ 'D', 'E', 'F' ]):
-        big_ax.text(0.02 + (0.333 * i), 
-                        0.4, 
-                        letter,
-                        horizontalalignment='left',
-                        verticalalignment='bottom',
-                        fontsize=45,
-                        transform=big_ax.transAxes,
-                        weight='bold')
-
-                        
-    #=========================================================================
-    # And finally clean everything up and save the figure
-    #=========================================================================
-    # Save the figure
-    filename = os.path.join(figures_dir, 'Figure4.png')
-    
-    if rich_club:
-        filename = filename.replace('.png', '_RC.png')
-        print filename
-        
-    big_fig.savefig(filename, bbox_inches=0, dpi=100)
-    filename = filename.replace('.png', '.pdf')
-    big_fig.savefig(filename, bbox_inches=0, dpi=100)
-
-    plt.close()
-
     
 def three_rows_figure_4(measure_dict, figures_dir, results_dir, mpm='MT', rich_club=False):
 
@@ -4104,13 +4088,6 @@ def get_min_max_values(measure_dict, gene_indices=None):
     min_max_dict['MT_all_slope_age_vs_mbp_max'] = -0.0006
     min_max_dict['MT_all_slope_age_at14_vs_mbp_min'] = 0.01
     min_max_dict['MT_all_slope_age_at14_vs_mbp_max'] = 0.08
-    
-    min_max_dict['Degree_CBAR_min'] = 10
-    min_max_dict['Degree_CBAR_max'] = 60
-    min_max_dict['AverageDist_CBAR_min'] = 20
-    min_max_dict['AverageDist_CBAR_max'] = 70
-    min_max_dict['Closeness_CBAR_min'] = 0.4
-    min_max_dict['Closeness_CBAR_max'] = 0.5
     
     # Over write the min max values for the genes according
     # to the indices!
@@ -4974,7 +4951,7 @@ def network_summary_fig(measure_dict, graph_dict, figures_dir):
     ax = plt.Subplot(big_fig, grid[0])
     big_fig.add_subplot(ax)
     
-    deg, rc, rc_rand = rich_club(G, n=10)
+    deg, rc, rc_rand = rich_club(G, n=2)
     
     ax = plot_rich_club(rc, rc_rand, ax=ax, x_max=127.0)
     ax.yaxis.set_label_coords(-0.18, 0.5)
