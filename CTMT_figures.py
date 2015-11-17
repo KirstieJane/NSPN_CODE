@@ -2370,18 +2370,18 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     # Set the seaborn context and style
     sns.set(style="white")
-    sns.set_context("poster", font_scale=2.9)
+    sns.set_context("poster", font_scale=2)
 
     # Get the various min and max values:
     min_max_dict = get_min_max_values(measure_dict)
     axis_label_dict = get_axis_label_dict()
     
     # Create the big figure
-    big_fig = plt.figure(figsize=(23, 27), facecolor='white')
+    big_fig = plt.figure(figsize=(34.5, 10), facecolor='white')
     
     # Set up the axis grid
-    grid = gridspec.GridSpec(4, 3)
-    grid.update(left=0.1, bottom=0.06, top=1, right=0.97, hspace=0.3, wspace=0.1)
+    grid = gridspec.GridSpec(1, 4)
+    grid.update(left=0.05, bottom=0.12, top=0.48, right=0.64, hspace=0, wspace=0.2)
                     
     # Put an axis in each of the spots on the grid
     ax_list = []
@@ -2389,7 +2389,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
         ax_list += [ plt.Subplot(big_fig, g_loc) ]
         big_fig.add_subplot(ax_list[-1])
     
-    #==== TWO ROWS OF BRAIN DATA ===============================
+    #==== BRAIN DATA ===============================
     # Make a list of the file names for the left lateral image
     left_lat_fname_list = [ os.path.join(results_dir, 'PNGS', 
                                     'PLS1_lh_pial_classic_lateral.png'),
@@ -2404,11 +2404,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
     cmap_name_list = [ 'RdBu_r', 'RdBu_r' ]
     
 
-    #===== THREE SCATTER PLOTS AT THE END OF THE BRAINS ==========
-    # List of genes we will correlate with the PLS scores
-    # (in the var_name_list)
-    gene_list = [ 'mbp_usable', 'oligo_usable' ]
-    
+    #===== TWO SCATTER PLOTS FOR EACH PLS RESULT  ==========
     mri_measure_list = [ 'CT_all_slope_age_at14',
                          'MT_projfrac+030_all_slope_age_at14',
                          'CT_all_slope_age',
@@ -2417,25 +2413,21 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
     # Loop over the two PLS scores and their associated genes
     for i, (left_lat_fname, 
                 var_name, 
-                cmap_name,
-                gene_name) in enumerate(zip(left_lat_fname_list, 
+                cmap_name) in enumerate(zip(left_lat_fname_list, 
                                                         var_name_list, 
-                                                        cmap_name_list,
-                                                        gene_list)):
+                                                        cmap_name_list)):
         
         #==== BRAIN IMAGES ======================================
         # Plot the braaaaains
         f_list = [ left_lat_fname, 
-                    left_lat_fname.replace('lh_pial_classic_lateral', 'lh_pial_classic_medial'),
-                    left_lat_fname.replace('lh_pial_classic_lateral', 'rh_pial_classic_medial'),
-                    left_lat_fname.replace('lh_pial_classic_lateral', 'rh_pial_classic_lateral') ]
+                    left_lat_fname.replace('lh_pial_classic_lateral', 'lh_pial_classic_medial') ]
         
-        grid = gridspec.GridSpec(1,4)
+        grid = gridspec.GridSpec(1,2)
         
-        grid.update(left=0.01, 
-                        right=0.99,
-                        bottom=0.75 - (i*0.5), 
-                        top=1.06 - (i*0.5), 
+        grid.update(left=0 + (i*0.32), 
+                        right=0.32 + (i*0.32),
+                        bottom=0.63, 
+                        top=0.99, 
                         wspace=0, 
                         hspace=0)
         
@@ -2445,10 +2437,10 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
         # Add a colorbar
         cb_grid = gridspec.GridSpec(1,1)
         
-        cb_grid.update(left=0.25, 
-                            right=0.75, 
-                            bottom=0.81 - (i*0.5),
-                            top=0.82 - (i*0.5), 
+        cb_grid.update(left=0.05 + (i*0.32), 
+                            right=0.27 + (i*0.32), 
+                            bottom=0.6,
+                            top=0.62, 
                             wspace=0, 
                             hspace=0)    
         
@@ -2459,21 +2451,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
                                 y_min=min_max_dict['{}_CBAR_min'.format(var_name)],
                                 y_max=min_max_dict['{}_CBAR_max'.format(var_name)],
                                 label=axis_label_dict[var_name])
-    
-        #==== CORR WITH GENE =============================
-        ax_list[3+(i*6)] = pretty_scatter(measure_dict[gene_name], 
-                                                measure_dict[var_name], 
-                                                x_label=axis_label_dict[gene_name], 
-                                                y_label=axis_label_dict[var_name], 
-                                                x_min=min_max_dict['{}_min'.format(gene_name)], 
-                                                x_max=min_max_dict['{}_max'.format(gene_name)], 
-                                                y_min=min_max_dict['{}_min'.format(var_name)],
-                                                y_max=min_max_dict['{}_max'.format(var_name)], 
-                                                color='k',
-                                                marker_size=70,
-                                                ax=ax_list[3+(i*6)],
-                                                figure=big_fig)
-        
+            
         #===== CORR W MRI ============================
         gene_indices = measure_dict['gene_indices']
         
@@ -2482,7 +2460,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
         mri_var_name = mri_measure_list[i*2]
         
         for j, mri_var_name in enumerate(mri_measure_list[(2*i):(2*i)+2]):
-            ax_list[4+j+(i*6)] = pretty_scatter(measure_dict[mri_var_name][gene_indices], 
+            ax_list[j+(2*i)] = pretty_scatter(measure_dict[mri_var_name][gene_indices], 
                                                 measure_dict[var_name], 
                                                 x_label=axis_label_dict[mri_var_name], 
                                                 y_label=axis_label_dict[var_name], 
@@ -2492,7 +2470,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
                                                 y_max=min_max_dict['{}_max'.format(var_name)], 
                                                 color=color,
                                                 marker_size=40,
-                                                ax=ax_list[4+j+(i*6)],
+                                                ax=ax_list[j+(2*i)],
                                                 figure=big_fig)
                 
     for i, ax in enumerate(ax_list):
@@ -2500,11 +2478,7 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
         # Make sure y axis is in scientific format
         ax.ticklabel_format(axis='y', style='sci', scilimits=(-2,2))
         
-        # Turn off the axes under the brains
-        if i in [ 0, 1, 2, 6, 7, 8 ]:
-            ax.axis('off')
-
-        elif i in [ 3, 9 ]:
+        if i in [ 0, 2 ]:
             ax.yaxis.set_label_coords(-0.23, 0.5)
             
         else:
@@ -2512,10 +2486,35 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
             ax.yaxis.set_label_text('')
             ax.yaxis.set_ticklabels([])
             
-        if i == 10 :  
+        if i == 1:
+            pos = ax.get_position()
+            pos.x0 = pos.x0 - 0.015
+            pos.x1 = pos.x1 - 0.015
+            ax.set_position(pos)
+            
+        if i == 2:
+            pos = ax.get_position()
+            pos.x0 = pos.x0 + 0.015
+            pos.x1 = pos.x1 + 0.015
+            ax.set_position(pos)
+            
+        if i == 2 :  
             # Make sure there aren't too many bins
             # for the delta CT plot
             ax.locator_params(axis='x', nbins=3)
+        
+    #=========================================================================
+    # GO Results
+    grid = gridspec.GridSpec(1, 1)
+    grid.update(left=0.64, bottom=0, top=1, right=1, wspace=0, hspace=0)
+    ax = plt.Subplot(big_fig, grid[0])
+    big_fig.add_subplot(ax)
+    
+    f_name = os.path.join(figures_dir, '../..', 'GOenrichmentPLS2.jpg')
+    img = mpimg.imread(f_name)
+    print img.shape
+    ax.imshow(img[50:(-40), 100:(-70), :], interpolation='none')
+    ax.axis('off')
         
     #====== PANEL LABELS ==================================
     big_ax = big_fig.add_subplot(111)
@@ -2531,40 +2530,31 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
     # the panel labels
     big_ax.axis('off')
     
-    for i, letter in enumerate([ 'A', 'E' ]):
-        big_ax.text(0.01, 
-                        0.95 - (0.5*i), 
+    for i, letter in enumerate([ 'A', 'B', 'G' ]):
+        big_ax.text(0.01 + (0.32 * i), 
+                        0.93, 
                         letter,
                         horizontalalignment='left',
                         verticalalignment='bottom',
-                        fontsize=50,
+                        fontsize=40,
                         transform=big_ax.transAxes,
                         weight='bold')
-    for i, letter in enumerate([ 'B', 'F' ]):
-        big_ax.text(0.11, 
-                        0.73 - (0.5*i), 
+    for i, letter in enumerate([ 'C', 'E' ]):
+        big_ax.text(0.17 + (0.32*i), 
+                        0.44, 
                         letter,
                         horizontalalignment='left',
                         verticalalignment='bottom',
-                        fontsize=50,
+                        fontsize=40,
                         transform=big_ax.transAxes,
                         weight='bold')
-    for i, letter in enumerate([ 'C', 'G' ]):
-        big_ax.text(0.65, 
-                        0.73 - (0.5*i), 
+    for i, letter in enumerate([ 'D', 'F' ]):
+        big_ax.text(0.2 + (0.32*i), 
+                        0.44, 
                         letter,
                         horizontalalignment='left',
                         verticalalignment='bottom',
-                        fontsize=50,
-                        transform=big_ax.transAxes,
-                        weight='bold')
-    for i, letter in enumerate([ 'D', 'H' ]):
-        big_ax.text(0.71, 
-                        0.73 - (0.5*i), 
-                        letter,
-                        horizontalalignment='left',
-                        verticalalignment='bottom',
-                        fontsize=50,
+                        fontsize=40,
                         transform=big_ax.transAxes,
                         weight='bold')
     
@@ -2983,7 +2973,7 @@ def previous_figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     plt.close()
     
-def figure_2(measure_dict, figures_dir, results_dir, mpm='MT', indices=None):    
+def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):    
     
     # Set the seaborn context and style
     sns.set(style="white")
@@ -3343,14 +3333,14 @@ def figure_4_degree(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT'
     axis_label_dict = get_axis_label_dict()
 
     # Create the big figure
-    big_fig, big_ax = plt.subplots(figsize=(23, 18), facecolor='white')
+    big_fig, big_ax = plt.subplots(figsize=(23, 17), facecolor='white')
     big_ax.axis('off')
 
     # Create the grid
     grid = gridspec.GridSpec(2, 2)
     bottom = 0.1
-    top = 0.99
-    grid.update(bottom=bottom, top=top, left=0.07, right=0.98, hspace=0.1, wspace=0.3)
+    top = 0.95
+    grid.update(bottom=bottom, top=top, left=0.1, right=0.98, hspace=0.25, wspace=0.2)
 
     ax_list = []
     for g_loc in grid:
@@ -3378,6 +3368,7 @@ def figure_4_degree(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT'
         network_measure_min = min_max_dict['{}_CBAR_min'.format(network_measure)]
         network_measure_max = min_max_dict['{}_CBAR_max'.format(network_measure)]
         
+        ax_list[i].set_position([0.03, 0.56, 0.45, 0.42])
         ax_list[i] = plot_anatomical_network(G, 
                                         measure_dict, 
                                         measure=network_measure_key, 
@@ -3415,10 +3406,10 @@ def figure_4_degree(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT'
         # Add a colorbar
         cb_grid = gridspec.GridSpec(1,1)
         
-        cb_grid.update(left= 0.05 + (i*0.333), 
-                            right=0.283 + (i*0.333), 
-                            bottom=0.51,
-                            top=0.52, 
+        cb_grid.update(left=0.12, 
+                            right=0.42, 
+                            bottom=0.55,
+                            top=0.56, 
                             wspace=0, 
                             hspace=0)
         
@@ -3428,7 +3419,7 @@ def figure_4_degree(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT'
                                 cbar_max=network_measure_max,
                                 y_min=network_measure_min,
                                 y_max=network_measure_max,
-                                label=axis_label_dict[network_measure])
+                                label='')
     
     #=========================================================================
     # Finally put scatter plots of deltaCT, and deltaMT by the network
@@ -3439,9 +3430,9 @@ def figure_4_degree(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT'
     network_measure_max = min_max_dict['{}_CT_covar_ones_all_COST_10_max'.format(network_measure)]
     y_label = axis_label_dict[network_measure]
 
-    measure_list = [ 'CT_all_slope_age',
-                     '{}_projfrac+030_all_slope_age'.format(mpm),
-                     'PLS2_usable' ]
+    measure_list = [ 'PLS2_usable',
+                     'CT_all_slope_age',
+                     '{}_projfrac+030_all_slope_age'.format(mpm) ]
                      
     for i, measure in enumerate(measure_list):
 
@@ -3474,7 +3465,8 @@ def figure_4_degree(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT'
         
         ax_list[i+1].yaxis.set_label_coords(-0.12, 0.5)
                                         
-                                
+    ax_list[1].xaxis.set_label('')
+    
     #====== PANEL LABELS ==================================
     big_ax = big_fig.add_subplot(111)
     pos = big_ax.get_position()
@@ -3489,9 +3481,9 @@ def figure_4_degree(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT'
     # the panel labels
     big_ax.axis('off')
     
-    for i, letter in enumerate(['A', 'B', 'C']):
-        big_ax.text(0.02 + (0.333 * i), 
-                    0.92, 
+    for i, letter in enumerate(['A', 'B']):
+        big_ax.text(0.05 + (0.47 * i), 
+                    0.93, 
                     letter,
                     horizontalalignment='left',
                     verticalalignment='bottom',
@@ -3499,9 +3491,9 @@ def figure_4_degree(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT'
                     transform=big_ax.transAxes,
                     weight='bold')
     
-    for i, letter in enumerate([ 'D', 'E', 'F' ]):
-        big_ax.text(0.02 + (0.333 * i), 
-                        0.4, 
+    for i, letter in enumerate([ 'C', 'D' ]):
+        big_ax.text(0.05 + (0.47 * i), 
+                        0.45, 
                         letter,
                         horizontalalignment='left',
                         verticalalignment='bottom',
@@ -3514,7 +3506,7 @@ def figure_4_degree(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT'
     # And finally clean everything up and save the figure
     #=========================================================================
     # Save the figure
-    filename = os.path.join(figures_dir, 'Figure4.png')
+    filename = os.path.join(figures_dir, 'Figure4_degree.png')
     
     if rich_club:
         filename = filename.replace('.png', '_RC.png')
