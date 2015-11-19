@@ -2512,7 +2512,6 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     f_name = os.path.join(figures_dir, '../..', 'GOenrichmentPLS2.jpg')
     img = mpimg.imread(f_name)
-    print img.shape
     ax.imshow(img[50:(-40), 100:(-70), :], interpolation='none')
     ax.axis('off')
         
@@ -3025,15 +3024,15 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     big_fig = add_cells_picture(figures_dir, big_fig, grid)
     
     #=========================================================================
-    # MEAN MT ACROSS NODES at different depths
+    # MT at 14 (BASELINE MT) ACROSS NODES at different depths
     violin_ax_list[0] = violin_mt_depths(measure_dict,
                         measure='all_mean',
-                        y_label=axis_label_dict['{}_all_mean'.format(mpm)],
+                        y_label=axis_label_dict['{}_all_slope_age_at14'.format(mpm)],
                         cmap='jet',
-                        y_min=min_max_dict['{}_all_mean_min'.format(mpm)],
-                        y_max=min_max_dict['{}_all_mean_max'.format(mpm)], 
-                        cmap_min=min_max_dict['{}_all_mean_min'.format(mpm)],
-                        cmap_max=min_max_dict['{}_all_mean_max'.format(mpm)],
+                        y_min=min_max_dict['{}_all_slope_age_at14_min'.format(mpm)],
+                        y_max=min_max_dict['{}_all_slope_age_at14_max'.format(mpm)], 
+                        cmap_min=min_max_dict['{}_all_slope_age_at14_min'.format(mpm)],
+                        cmap_max=min_max_dict['{}_all_slope_age_at14_max'.format(mpm)],
                         lam_labels=False,
                         ax=violin_ax_list[0],
                         figure=big_fig,
