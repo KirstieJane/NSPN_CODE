@@ -340,7 +340,7 @@ def plot_sagittal_network(G,
     else:
         return ax
 
-def pretty_scatter(x, y, x_label='x', y_label='y', x_max=None, x_min=None, y_max=None, y_min=None, figure_name=None, ax=None, figure=None, color='k', marker_colors=None, marker_shapes=None, marker_size=100, marker='o'):
+def pretty_scatter(x, y, x_label='x', y_label='y', x_max=None, x_min=None, y_max=None, y_min=None, figure_name=None, ax=None, figure=None, color='k', marker_colors=None, marker_shapes=None, marker_size=100, marker='o', despine_right=True, y0_line=True, x0_line=False):
     '''
     This function creates a scatter plot with a regression line
     for the y variable against the degrees of graph G
@@ -361,7 +361,10 @@ def pretty_scatter(x, y, x_label='x', y_label='y', x_max=None, x_min=None, y_max
         sns.set(style="white")
         sns.set_context("poster", font_scale=2)
     else:
-        fig = figure
+        if figure is None:
+            fig = plt.gcf()
+        else:
+            fig = figure
         
     # Create a marker colors list if not given
     if not marker_colors:
@@ -398,10 +401,21 @@ def pretty_scatter(x, y, x_label='x', y_label='y', x_max=None, x_min=None, y_max
     ax.locator_params(axis='x', nbins=5)
     
     # Put a line at y = 0
-    ax.axhline(0, linewidth=1, color='black', linestyle='--')
+    if y0_line:
+        ax.axhline(0, linewidth=1, color='black', linestyle='--')
+    if x0_line:
+        ax.axvline(0, linewidth=1, color='black', linestyle='--')
 
     # Despine because we all agree it looks better that way
-    sns.despine()
+    # If you pass the argument "despine_right" then you aren't
+    # going to remove the right hand axis - necessary if you're
+    # going to need two axes.
+    if despine_right:
+        sns.despine(ax=ax)
+    else:
+        sns.despine(ax=ax, right=False)
+        ax.yaxis.label.set_rotation(270)
+        ax.yaxis.labelpad = 25
     
     if figure_name:
         # Do the tight layout because, again, it looks better!
@@ -1678,7 +1692,7 @@ def add_cells_picture(figures_dir, big_fig, grid):
     return big_fig
     
 
-def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
+def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     # Set the seaborn context and style
     sns.set(style="white")
@@ -1858,11 +1872,11 @@ def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):
                         weight='bold')
 
     # Save the figure
-    filename = os.path.join(figures_dir, 'Figure1.png')
+    filename = os.path.join(figures_dir, 'Figure2.png')
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
-    filename = os.path.join(figures_dir, 'Figure1.pdf')
-    big_fig.savefig(filename, bbox_inches=0, dpi=100)
-    
+    rescale(filename, suff='png')
+    rescale(filename, suff='pdf')
+
     plt.close()
     
 
@@ -2377,11 +2391,11 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
     axis_label_dict = get_axis_label_dict()
     
     # Create the big figure
-    big_fig = plt.figure(figsize=(34.5, 10), facecolor='white')
+    big_fig = plt.figure(figsize=(23, 25), facecolor='white')
     
     # Set up the axis grid
     grid = gridspec.GridSpec(1, 4)
-    grid.update(left=0.05, bottom=0.12, top=0.48, right=0.64, hspace=0, wspace=0.2)
+    grid.update(left=0.08, bottom=0.585, top=0.76, right=0.98, hspace=0, wspace=0.15)
                     
     # Put an axis in each of the spots on the grid
     ax_list = []
@@ -2424,10 +2438,10 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
         
         grid = gridspec.GridSpec(1,2)
         
-        grid.update(left=0 + (i*0.32), 
-                        right=0.32 + (i*0.32),
-                        bottom=0.63, 
-                        top=0.99, 
+        grid.update(left=0 + (i*0.5), 
+                        right=0.5 + (i*0.5),
+                        bottom=0.76, 
+                        top=1.06, 
                         wspace=0, 
                         hspace=0)
         
@@ -2437,10 +2451,10 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
         # Add a colorbar
         cb_grid = gridspec.GridSpec(1,1)
         
-        cb_grid.update(left=0.05 + (i*0.32), 
-                            right=0.27 + (i*0.32), 
-                            bottom=0.6,
-                            top=0.62, 
+        cb_grid.update(left=0.05 + (i*0.5), 
+                            right=0.45 + (i*0.5), 
+                            bottom=0.81,
+                            top=0.82, 
                             wspace=0, 
                             hspace=0)    
         
@@ -2488,14 +2502,14 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
             
         if i == 1:
             pos = ax.get_position()
-            pos.x0 = pos.x0 - 0.015
-            pos.x1 = pos.x1 - 0.015
+            pos.x0 = pos.x0 - 0.02
+            pos.x1 = pos.x1 - 0.02
             ax.set_position(pos)
             
         if i == 2:
             pos = ax.get_position()
-            pos.x0 = pos.x0 + 0.015
-            pos.x1 = pos.x1 + 0.015
+            pos.x0 = pos.x0 + 0.02
+            pos.x1 = pos.x1 + 0.02
             ax.set_position(pos)
             
         if i == 2 :  
@@ -2506,13 +2520,13 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
     #=========================================================================
     # GO Results
     grid = gridspec.GridSpec(1, 1)
-    grid.update(left=0.64, bottom=0, top=1, right=1, wspace=0, hspace=0)
+    grid.update(left=0, bottom=0, top=0.53, right=1, wspace=0, hspace=0)
     ax = plt.Subplot(big_fig, grid[0])
     big_fig.add_subplot(ax)
     
-    f_name = os.path.join(figures_dir, '../..', 'GOenrichmentPLS2.jpg')
+    f_name = os.path.join(figures_dir, '../..', 'GOEnrichmentPLS2.png')
     img = mpimg.imread(f_name)
-    ax.imshow(img[50:(-40), 100:(-70), :], interpolation='none')
+    ax.imshow(img[:, :, :], interpolation='none')
     ax.axis('off')
         
     #====== PANEL LABELS ==================================
@@ -2529,40 +2543,47 @@ def figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
     # the panel labels
     big_ax.axis('off')
     
-    for i, letter in enumerate([ 'A', 'B', 'G' ]):
-        big_ax.text(0.01 + (0.32 * i), 
-                        0.93, 
+    for i, letter in enumerate([ 'A', 'D' ]):
+        big_ax.text(0.01 + (0.5 * i), 
+                        0.96, 
                         letter,
                         horizontalalignment='left',
                         verticalalignment='bottom',
                         fontsize=40,
                         transform=big_ax.transAxes,
                         weight='bold')
-    for i, letter in enumerate([ 'C', 'E' ]):
-        big_ax.text(0.17 + (0.32*i), 
-                        0.44, 
+    for i, letter in enumerate([ 'B', 'E' ]):
+        big_ax.text(0.26 + (0.49*i), 
+                        0.73, 
                         letter,
                         horizontalalignment='left',
                         verticalalignment='bottom',
                         fontsize=40,
                         transform=big_ax.transAxes,
                         weight='bold')
-    for i, letter in enumerate([ 'D', 'F' ]):
-        big_ax.text(0.2 + (0.32*i), 
-                        0.44, 
+    for i, letter in enumerate([ 'C', 'F' ]):
+        big_ax.text(0.3 + (0.49*i), 
+                        0.73, 
                         letter,
                         horizontalalignment='left',
                         verticalalignment='bottom',
                         fontsize=40,
                         transform=big_ax.transAxes,
                         weight='bold')
-    
+    big_ax.text(0.05, 
+                    0.48, 
+                    'G',
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=40,
+                    transform=big_ax.transAxes,
+                    weight='bold')    
     # Save the figure
     filename = os.path.join(figures_dir, 'Figure3.png')
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
-    filename = os.path.join(figures_dir, 'Figure3.pdf')
-    big_fig.savefig(filename, bbox_inches=0, dpi=100)
-    
+    rescale(filename, suff='png')
+    rescale(filename, suff='pdf')
+
     plt.close()
     
 def previous_figure_3(measure_dict, figures_dir, results_dir, mpm='MT'):
@@ -2972,7 +2993,7 @@ def previous_figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
     
     plt.close()
     
-def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):    
+def figure_1(measure_dict, figures_dir, results_dir, mpm='MT'):    
     
     # Set the seaborn context and style
     sns.set(style="white")
@@ -3094,9 +3115,19 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                     transform=big_ax.transAxes,
                     weight='bold')
                         
+    big_ax.text(0.715, 
+                    0.9, 
+                    ' C ',
+                    horizontalalignment='left',
+                    verticalalignment='bottom',
+                    fontsize=50,
+                    transform=big_ax.transAxes,
+                    weight='bold',
+                    bbox=dict(facecolor='white',  edgecolor='white', alpha=0.8))
+                    
     big_ax.text(0.97, 
                     0.9, 
-                    'C',
+                    'D',
                     horizontalalignment='left',
                     verticalalignment='bottom',
                     fontsize=50,
@@ -3104,11 +3135,11 @@ def figure_2(measure_dict, figures_dir, results_dir, mpm='MT'):
                     weight='bold')
     
     # Save the figure
-    filename = os.path.join(figures_dir, 'Figure2.png')
+    filename = os.path.join(figures_dir, 'Figure1.png')
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
-    filename = os.path.join(figures_dir, 'Figure2.pdf')
-    big_fig.savefig(filename, bbox_inches=0, dpi=100)
-    
+    rescale(filename, suff='png')
+    rescale(filename, suff='pdf')    
+
     plt.close()
     
     
@@ -3116,21 +3147,21 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_
 
     # Set the seaborn context and style
     sns.set(style="white")
-    sns.set_context("poster", font_scale=2.5)
+    sns.set_context("poster", font_scale=2)
 
     # Get the set values
     min_max_dict = get_min_max_values(measure_dict)
     axis_label_dict = get_axis_label_dict()
 
     # Create the big figure
-    big_fig, big_ax = plt.subplots(figsize=(34.5, 18), facecolor='white')
+    big_fig, big_ax = plt.subplots(figsize=(23, 16), facecolor='white')
     big_ax.axis('off')
 
     # Create the grid
-    grid = gridspec.GridSpec(1, 3)
-    bottom = 0.52
-    top = 0.99
-    grid.update(left=0, right=1, bottom=bottom, top=top, wspace=0, hspace=0)
+    grid = gridspec.GridSpec(1, 2)
+    bottom = 0.6
+    top = 0.98
+    grid.update(left=0.05, right=0.95, bottom=bottom, top=top, wspace=0.15, hspace=0)
 
     ax_list = []
     for g_loc in grid:
@@ -3143,16 +3174,19 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_
     G_02 = graph_dict['CT_covar_ones_all_COST_02']
     
     node_size_dict = { 'Degree' : 16*measure_dict['Degree_CT_covar_ones_all_COST_10'] , 
-                        'Closeness' : 2000*measure_dict['Closeness_CT_covar_ones_all_COST_10'],
+                        'Closeness' : 1500*measure_dict['Closeness_CT_covar_ones_all_COST_10'],
                         'AverageDist' : 14*measure_dict['AverageDist_CT_covar_ones_all_COST_10']}
        
-    rich_edges, rich_nodes = rich_edges_nodes(G, thresh=85)
-
+    if rich_club:
+        rich_edges, rich_nodes = rich_edges_nodes(G, thresh=85)
+    else:
+        rich_nodes = []
+            
     cmap_dict = { 'Degree' : 'Reds' , 
                     'Closeness' : 'Greens',
                     'AverageDist' : 'Blues' }
 
-    for i, network_measure in enumerate([ 'Degree', 'Closeness', 'AverageDist' ]):
+    for i, network_measure in enumerate([ 'Degree', 'Closeness' ]):
     
         network_measure_key = '{}_CT_covar_ones_all_COST_10'.format(network_measure)
         network_measure_min = min_max_dict['{}_CBAR_min'.format(network_measure)]
@@ -3166,25 +3200,10 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_
                                         vmin=network_measure_min, 
                                         vmax=network_measure_max,
                                         node_size_list=node_size_dict[network_measure], 
+                                        rc_node_list=rich_nodes,
                                         edge_list=[], 
                                         ax=ax_list[i],
                                         continuous=True)
-                                        
-        if rich_club:
-            ax_list[i] = plot_anatomical_network(G, 
-                                                measure_dict, 
-                                                measure=network_measure_key,
-                                                orientation='sagittal', 
-                                                cmap_name=cmap_dict[network_measure],
-                                                vmin=network_measure_min, 
-                                                vmax=network_measure_max,
-                                                node_size_list=node_size_dict[network_measure],
-                                                node_shape='s',
-                                                node_list=rich_nodes,
-                                                edge_list=[], 
-                                                ax=ax_list[i],
-                                                continuous=True)
-                                        
         ax_list[i] = plot_anatomical_network(G_02, 
                                                 measure_dict, 
                                                 orientation='sagittal', 
@@ -3195,10 +3214,10 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_
         # Add a colorbar
         cb_grid = gridspec.GridSpec(1,1)
         
-        cb_grid.update(left= 0.05 + (i*0.333), 
-                            right=0.283 + (i*0.333), 
-                            bottom=0.51,
-                            top=0.52, 
+        cb_grid.update(left= 0.1 + (i*0.5), 
+                            right=0.4 + (i*0.5), 
+                            bottom=0.57,
+                            top=0.58, 
                             wspace=0, 
                             hspace=0)
         
@@ -3216,23 +3235,33 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_
     #=========================================================================
     grid = gridspec.GridSpec(1, 3)
     bottom = 0.1
-    top = 0.4
-    grid.update(bottom=bottom, top=top, left=0.07, right=0.98, hspace=0.1, wspace=0.3)
+    top = 0.45
+    grid.update(bottom=bottom, top=top, left=0.07, right=0.93, hspace=0.1, wspace=0.1)
     
-    ax_list = []
+    ax_list_left = []
+    ax_list_right = []
     for g_loc in grid:
         ax = plt.Subplot(big_fig, g_loc)
         big_fig.add_subplot(ax)
-        ax_list += [ax]
+        ax_list_left += [ax]
+        ax_r = ax.twinx()
+        ax_list_right += [ax_r]
         
     #=========================================================================
     # Finally put scatter plots of deltaCT, and deltaMT by the network
     # measure in the second and third spaces on the next row
     #=========================================================================
-    network_measure = 'Degree'
-    network_measure_min = min_max_dict['{}_CT_covar_ones_all_COST_10_min'.format(network_measure)]
-    network_measure_max = min_max_dict['{}_CT_covar_ones_all_COST_10_max'.format(network_measure)]
-    y_label = axis_label_dict[network_measure]
+    network_measure_left = 'Degree'
+    network_measure_left_min = min_max_dict['{}_CT_covar_ones_all_COST_10_min'.format(network_measure_left)]
+    network_measure_left_max = min_max_dict['{}_CT_covar_ones_all_COST_10_max'.format(network_measure_left)]
+    y_label_left = axis_label_dict[network_measure_left]
+    y_data_left = measure_dict['{}_CT_covar_ones_all_COST_10'.format(network_measure_left)]
+    
+    network_measure_right = 'Closeness'
+    network_measure_right_min = min_max_dict['{}_CT_covar_ones_all_COST_10_min'.format(network_measure_right)]
+    network_measure_right_max = min_max_dict['{}_CT_covar_ones_all_COST_10_max'.format(network_measure_right)]
+    y_label_right = axis_label_dict[network_measure_right]
+    y_data_right = measure_dict['{}_CT_covar_ones_all_COST_10'.format(network_measure_right)]
 
     measure_list = [ 'CT_all_slope_age',
                      '{}_projfrac+030_all_slope_age'.format(mpm),
@@ -3241,35 +3270,65 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_
     for i, measure in enumerate(measure_list):
 
         # Set the x and y data
-        x_data = measure_dict['{}_CT_covar_ones_all_COST_10'.format(network_measure)]
-        y_data = measure_dict[measure]
+        x_data = measure_dict[measure]
         
         # Mask the network values if you're looking at PLS2
         if measure == 'PLS2_usable':
             gene_indices = measure_dict['gene_indices']
-            x_data = x_data[gene_indices]
+            y_data_left = y_data_left[gene_indices]
+            y_data_right = y_data_right[gene_indices]
         
         # Get the appropriate min, max and label values
         # for the y axis
         measure_min = min_max_dict['{}_min'.format(measure)]
         measure_max = min_max_dict['{}_max'.format(measure)]
-        y_label = axis_label_dict[measure]
-        x_label = axis_label_dict[network_measure]
+        x_label = axis_label_dict[measure]
         
-        ax_list[i] = pretty_scatter(x_data, 
-                                        y_data, 
-                                        x_label=x_label,
-                                        y_label=y_label, 
-                                        x_min=network_measure_min, x_max=network_measure_max,
-                                        y_min=measure_min,y_max=measure_max, 
-                                        color='k',
-                                        marker_size=60,
-                                        ax=ax_list[i],
-                                        figure=big_fig)
+        ax = ax_list_left[i]
+        ax_r = ax_list_right[i]
         
-        ax_list[i].yaxis.set_label_coords(-0.12, 0.5)
-                                        
+        # Set the color from the colormap above
+        left_cmap = plt.get_cmap(cmap_dict[network_measure_left])
+        left_color = left_cmap(0.75)
+        right_cmap = plt.get_cmap(cmap_dict[network_measure_right])
+        right_color = right_cmap(0.75)
+        
+        ax = pretty_scatter(x_data, 
+                                y_data_left, 
+                                x_label=x_label,
+                                y_label=y_label_left, 
+                                x_min=measure_min, x_max=measure_max,
+                                y_min=network_measure_left_min,y_max=network_measure_left_max, 
+                                color=left_color,
+                                marker_size=60,
+                                marker='o',
+                                ax=ax,
+                                figure=big_fig,
+                                y0_line=False)
+        
+        ax.yaxis.set_label_coords(-0.12, 0.5)
+        
+        ax_r = pretty_scatter(x_data, 
+                                y_data_right, 
+                                x_label=x_label,
+                                y_label=y_label_right, 
+                                x_min=measure_min, x_max=measure_max,
+                                y_min=network_measure_right_min,y_max=network_measure_right_max, 
+                                color=right_color,
+                                marker_size=70,
+                                marker='^',
+                                ax=ax_r,
+                                figure=big_fig,
+                                despine_right=False,
+                                y0_line=False)
                                 
+        ax_r.yaxis.set_label_coords(1.2, 0.5)
+                                        
+    #====== REMOVE AXIS LABELS ==================================
+    for ax in ax_list_left[1:] + ax_list_right[:-1]:
+        ax.yaxis.set_label_text('')
+        ax.yaxis.set_ticklabels([])
+    
     #====== PANEL LABELS ==================================
     big_ax = big_fig.add_subplot(111)
     pos = big_ax.get_position()
@@ -3284,8 +3343,8 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_
     # the panel labels
     big_ax.axis('off')
     
-    for i, letter in enumerate(['A', 'B', 'C']):
-        big_ax.text(0.02 + (0.333 * i), 
+    for i, letter in enumerate(['A', 'B']):
+        big_ax.text(0.02 + (0.5 * i), 
                     0.92, 
                     letter,
                     horizontalalignment='left',
@@ -3294,16 +3353,24 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_
                     transform=big_ax.transAxes,
                     weight='bold')
     
-    for i, letter in enumerate([ 'D', 'E', 'F' ]):
-        big_ax.text(0.02 + (0.333 * i), 
-                        0.4, 
+    for i, letter in enumerate([ 'C' ]):
+        big_ax.text(0.035, 
+                        0.45, 
                         letter,
                         horizontalalignment='left',
                         verticalalignment='bottom',
                         fontsize=45,
                         transform=big_ax.transAxes,
                         weight='bold')
-
+    for i, letter in enumerate([ 'D', 'E' ]):
+        big_ax.text(0.38 + (0.295625 * i), 
+                        0.45, 
+                        letter,
+                        horizontalalignment='left',
+                        verticalalignment='bottom',
+                        fontsize=45,
+                        transform=big_ax.transAxes,
+                        weight='bold')
                         
     #=========================================================================
     # And finally clean everything up and save the figure
@@ -3313,15 +3380,14 @@ def figure_4(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_
     
     if rich_club:
         filename = filename.replace('.png', '_RC.png')
-        print filename
         
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
-    filename = filename.replace('.png', '.pdf')
-    big_fig.savefig(filename, bbox_inches=0, dpi=100)
+    rescale(filename, suff='png')
+    rescale(filename, suff='pdf')
 
     plt.close()
 
-def figure_4_degree(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_club=False):
+def figure_4_oldold(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT', rich_club=False):
 
     # Set the seaborn context and style
     sns.set(style="white")
@@ -3505,15 +3571,15 @@ def figure_4_degree(measure_dict, graph_dict, figures_dir, results_dir, mpm='MT'
     # And finally clean everything up and save the figure
     #=========================================================================
     # Save the figure
-    filename = os.path.join(figures_dir, 'Figure4_degree.png')
+    filename = os.path.join(figures_dir, 'Figure4.png')
     
     if rich_club:
         filename = filename.replace('.png', '_RC.png')
         print filename
         
     big_fig.savefig(filename, bbox_inches=0, dpi=100)
-    filename = filename.replace('.png', '.pdf')
-    big_fig.savefig(filename, bbox_inches=0, dpi=100)
+    rescale(filename, suff='png')
+    rescale(filename, suff='pdf')
 
     plt.close()
 
@@ -4369,7 +4435,7 @@ def add_wedge(df, theta_dict, wedge_colors_list, wedge_measure='von_economo', ax
         
     return ax
     
-def plot_anatomical_network(G, measure_dict, measure='module', cost=10, covar='ones', orientation='sagittal', cmap_name='jet_r', continuous=False, vmax=None, vmin=None, sns_palette=None, edge_list=None, edge_color='k', edge_width=0.2, node_list=None, node_shape='o', node_size=500, node_size_list=None, figure=None, ax=None):
+def plot_anatomical_network(G, measure_dict, measure='module', cost=10, covar='ones', orientation='sagittal', cmap_name='jet_r', continuous=False, vmax=None, vmin=None, sns_palette=None, edge_list=None, edge_color='k', edge_width=0.2, node_list=None, rc_node_list=[], node_shape='o', rc_node_shape='s', node_size=500, node_size_list=None, figure=None, ax=None):
     '''
     Plots each node in the graph in one of three orientations
     (sagittal, axial or coronal).
@@ -4382,7 +4448,7 @@ def plot_anatomical_network(G, measure_dict, measure='module', cost=10, covar='o
     if node_list is None:
         node_list = G.nodes()
         node_list = sorted(node_list)
-        
+                
     # Put the measures you care about together
     # in a data frame
     df = pd.DataFrame({ 'degree' : measure_dict['Degree_CT_covar_{}_all_COST_{}'.format(covar, cost)] ,
@@ -4424,6 +4490,14 @@ def plot_anatomical_network(G, measure_dict, measure='module', cost=10, covar='o
     if node_size_list is None:
         node_size_list = [ node_size ] * len(df['degree'])
     
+    # If you have no rich club nodes then all the nodes will
+    # have the same shape
+    node_shape_list = [ node_shape ] * len(df['degree'])
+    # If you have set rich nodes then you'll need to replace
+    # those indices with the rc_node_shape
+    for i in rc_node_list:
+        node_shape_list[i] = 's'
+        
     # We're going to figure out the best way to plot these nodes
     # so that they're sensibly on top of each other
     sort_dict = {}
@@ -4467,7 +4541,7 @@ def plot_anatomical_network(G, measure_dict, measure='module', cost=10, covar='o
         nx.draw_networkx_nodes(G, 
                                 pos=pos, 
                                 node_color=colors_list[node], 
-                                node_shape=node_shape,
+                                node_shape=node_shape_list[node],
                                 node_size=node_size_list[node],
                                 nodelist=[node],
                                 with_labels=False, 
@@ -5025,5 +5099,21 @@ def prepare_violin_movie(fig, ax):
     for i, box in enumerate(boxes):
         box.set_visible(False)
     
+
+def rescale(fname, suff='png'):
+    img = mpimg.imread(fname)
+    shape = np.array(img.shape)
+    scale_factor = 8.0/shape[1]
+    new_size = (shape[1]*scale_factor, shape[0]*scale_factor)
+    fig, ax = plt.subplots(figsize=new_size)
+    ax.imshow(img)
+    ax.axis('off')
     
+    new_name = ''.join([os.path.splitext(fname)[0],
+                                            '_ScienceSubmission.',
+                                            suff])
+                                            
+    fig.savefig(new_name, bbox_inches=0, dpi=300)
     
+    plt.close()
+
